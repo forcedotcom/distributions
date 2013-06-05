@@ -164,7 +164,7 @@ def generate_post(HP hp, SS ss):
     return {'p': post.tolist()}
 
 
-cpdef double pred_prob(HP hp, SS ss, int y):
+cpdef double pred_prob(HP hp, SS ss, int y) except ? 0:
     cdef SparseCounter * counter = ss.counter
     cdef double denom = hp.alpha + counter.get_total()
     cdef double numer
@@ -208,3 +208,4 @@ cpdef add_pred_probs(
     cdef int i
     for i in xrange(size):
         scores[i] += pred_prob(hp, ss[i], y)
+    return None  # workaround 'except *' incompatibility with 'cpdef void'
