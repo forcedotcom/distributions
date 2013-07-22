@@ -38,7 +38,6 @@ import numpy
 from numpy import dot, inner
 from numpy.linalg import cholesky, det, inv
 from numpy.random import permutation, multivariate_normal, beta
-import conjugate.scimath
 
 
 LOG = logging.getLogger(__name__)
@@ -56,7 +55,11 @@ H_table = [0, 1.0, 1.5, 1.8333333333333333, 2.083333333333333,
 
 def seed(x):
     numpy.random.seed(x)
-    conjugate.scimath.seed(x)
+    try:
+        import conjugate.scimath
+        conjugate.scimath.seed(x)
+    except ImportError:
+        pass
 
 
 def scores_to_probs(scores):
