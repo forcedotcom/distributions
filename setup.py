@@ -28,7 +28,7 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from setuptools import setup, Extension
+from setuptools import setup, Extension, Feature
 from Cython.Distutils import build_ext
 
 
@@ -41,15 +41,23 @@ def conj_ext(name):
         language='c++')
 
 
-setup(
-    cmdclass={'build_ext': build_ext},
+conj_ext_feature = Feature(
+    'cython component models',
+    standard=True,
+    optional=True,
     ext_modules=[
         conj_ext('scimath'),
         conj_ext('cynich'),
         conj_ext('cydd'),
         conj_ext('cydpm'),
         conj_ext('cygp'),
-        ],
+        ]
+    )
+
+
+setup(
+    features={'cython': conj_ext_feature},
+    cmdclass={'build_ext': build_ext},
     name='distributions',
     packages=[
         'distributions',
