@@ -30,6 +30,7 @@
 
 from nose.tools import assert_equal, assert_almost_equal, assert_set_equal
 from distributions import ComponentModel
+from util import check_cm
 
 
 DPS = 100
@@ -50,12 +51,16 @@ def assert_close(x, y, places=8):
 
 
 def check_hp(a, b):
+    check_cm(a)
+    check_cm(b)
     a = ComponentModel(a)
     b = ComponentModel(b)
     assert_equal(a.dump_hp(), b.dump_hp())
 
 
 def check_ss(a, b):
+    check_cm(a)
+    check_cm(b)
     a = ComponentModel(a)
     a.realize_hp()
     b = ComponentModel(b, hp=a.dump_hp())
@@ -72,6 +77,8 @@ def check_ss(a, b):
 
 
 def check_probs(a, b):
+    check_cm(a)
+    check_cm(b)
     a = ComponentModel(a)
     a.realize_hp()
     b = ComponentModel(b, hp=a.dump_hp())

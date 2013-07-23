@@ -56,6 +56,7 @@ from distributions.util import bin_samples, histogram
 import numpy as np
 from nose.tools import *
 from scipy.integrate import quad
+from util import check_cm
 
 
 SAMPS = 10000
@@ -76,6 +77,7 @@ def _check_discrete(cm):
 
 
 def check_dd(impl, data_count, D):
+    check_cm(impl)
     data = histogram(np.random.randint(D, size=data_count), bin_count=D)
     cm = ComponentModel(
             impl,
@@ -93,6 +95,7 @@ def test_dd():
 
 
 def check_dpm(impl, data_count, beta0):
+    check_cm(impl)
     data = histogram(np.random.randint(50, size=data_count))
     data = dict([(str(i), obs) for i, obs in enumerate(data)])
     betas = dict([(str(i), (1 - beta0) / len(data))
@@ -130,6 +133,7 @@ def test_dpm():
 
 
 def check_gp(impl, data_count, lam):
+    check_cm(impl)
     data = np.random.poisson(lam, size=data_count)
     ss = {
             'n': data_count,
@@ -148,6 +152,7 @@ def test_gp():
 
 
 def check_nich(impl, data_count, mean, std):
+    check_cm(impl)
     ss = None
     if data_count:
         data = np.random.normal(mean, std, size=data_count)
