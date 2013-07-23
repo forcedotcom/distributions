@@ -35,6 +35,7 @@ from numpy.testing import assert_array_almost_equal
 from distributions import ComponentModel
 from distributions.util import seed
 
+from util import check_cm
 
 COUNT = 10
 XRPS = [
