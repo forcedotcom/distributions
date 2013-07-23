@@ -31,47 +31,64 @@
 from distributions.conjugate import (
     bb,
     dd,
-    cydd,
     dpm,
-    cydpm,
     gp,
-    cygp,
     ngig,
-    cynich,
     nich,
     niw,
     )
+NAMES = {
+    'asymmetricdirichletdiscrete': dd,
+    'bb': bb,
+    'betabernoulli': bb,
+    'dd': dd,
+    'pydd': dd,
+    'dirichletprocessmultinomial': dpm,
+    'dpm': dpm,
+    'pydpm': dpm,
+    'gp': gp,
+    'pygp': gp,
+    'gammapoisson': gp,
+    'ngig': ngig,
+    'nich': nich,
+    'pynich': nich,
+    'niw': niw,
+    'normalinversechisq': nich,
+    'normalinversewishart': niw,
+    }
+
+try:
+    from distributions.conjugate import (
+        cydd,
+        cydpm,
+        cygp,
+        cynich)
+    NAMES.update({
+        'asymmetricdirichletdiscrete': cydd,
+        'dd': cydd,
+        'cydd': cydd,
+        'dpm': cydpm,
+        'cydpm': cydpm,
+        'dirichletprocessmultinomial': cydpm,
+        'gp': cygp,
+        'cygp': cygp,
+        'gammapoisson': cygp,
+        'nich': cynich,
+        'cynich': cynich,
+        'normalinversechisq': cynich,
+        })
+except ImportError:
+    pass
 
 from distributions import (
     crp,
     pyp
     )
-
-NAMES = {
-    'asymmetricdirichletdiscrete': cydd,
-    'bb': bb,
-    'betabernoulli': bb,
+NAMES.update({
     'crp': crp,
-    'dd': cydd,
-    'cydd': cydd,
-    'pydd': dd,
-    'dirichletprocessmultinomial': dpm,
-    'dpm': cydpm,
-    'cydpm': cydpm,
-    'pydpm': dpm,
-    'gp': cygp,
-    'cygp': cygp,
-    'pygp': gp,
-    'gammapoisson': cygp,
-    'ngig': ngig,
-    'nich': cynich,
-    'cynich': cynich,
-    'pynich': nich,
-    'niw': niw,
-    'normalinversechisq': cynich,
-    'normalinversewishart': niw,
     'pyp': pyp,
-    }
+    })
+
 
 
 class ComponentModel:

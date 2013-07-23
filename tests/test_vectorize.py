@@ -32,6 +32,7 @@
 import numpy
 from nose.tools import assert_equal, assert_almost_equal, assert_less
 from distributions import ComponentModel
+from util import check_cm
 
 DPS = 100
 COMPS = 10
@@ -46,6 +47,7 @@ MODELS = [
 
 def test_vectorize():
     for name in MODELS:
+        check_cm(name)
         cm0 = ComponentModel(name)
         cm0.realize_hp()
         hp0 = cm0.dump_hp()

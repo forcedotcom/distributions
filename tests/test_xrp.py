@@ -35,6 +35,7 @@ from numpy.testing import assert_array_almost_equal
 from distributions import ComponentModel
 from distributions.util import seed
 
+from util import check_cm
 
 COUNT = 10
 XRPS = [
@@ -50,6 +51,7 @@ XRPS = [
 
 
 def check_sample_data_seed(name):
+    check_cm(name)
     n = 10
     seed(0)
     cm1 = ComponentModel(name)
@@ -64,6 +66,7 @@ def check_sample_data_seed(name):
 
 
 def check_sums(name):
+    check_cm(name)
     cm = ComponentModel(name)
     cm.realize_hp()
     values = [cm.sample_data() for _ in range(COUNT)]
@@ -75,6 +78,7 @@ def check_sums(name):
 
 
 def check_exchangeable(name):
+    check_cm(name)
     cm = ComponentModel(name)
     cm.realize_hp()
     values = [cm.sample_data() for _ in range(COUNT)]
@@ -93,12 +97,14 @@ def check_exchangeable(name):
 
 
 def check_hp_io(name):
+    check_cm(name)
     cm = ComponentModel(name)
     cm.realize_hp()
     assert_equal(ComponentModel(name, hp=cm.dump_hp()).dump_hp(), cm.dump_hp())
 
 
 def check_ss_io(name):
+    check_cm(name)
     cm = ComponentModel(name)
     cm.realize_hp()
     assert_equal(ComponentModel(name, ss=cm.dump_ss()).dump_ss(), cm.dump_ss())

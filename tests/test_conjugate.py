@@ -39,6 +39,7 @@ from distributions import BasicDistribution, ComponentModel
 from distributions.util import seed
 from distributions.summaries import summarize
 from distributions.conjugate import nich, dd, gp, dpm
+from util import check_cm
 
 
 COUNT = 10
@@ -52,6 +53,7 @@ CONJUGATES = [
 
 
 def check_summarize(name):
+    check_cm(name)
     cm = ComponentModel(name)
     x = []
     for _ in range(COUNT):
@@ -60,12 +62,14 @@ def check_summarize(name):
 
 
 def check_summarize_N(name):
+    check_cm(name)
     cm = ComponentModel(name)
     x = cm.sample_data(COUNT)
     summarize(name, x)
 
 
 def check_sample_post_seed(name):
+    check_cm(name)
     seed(0)
     cm1 = ComponentModel(name)
     post_values1 = [cm1.sample_post() for _ in range(COUNT)]
@@ -77,6 +81,7 @@ def check_sample_post_seed(name):
 
 
 def check_generate(name):
+    check_cm(name)
     cm = ComponentModel(name)
     cm.realize_hp()
     params = cm.generate_post()

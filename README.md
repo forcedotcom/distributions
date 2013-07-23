@@ -15,6 +15,15 @@ After making a change to a .pyx or .pxd file, rebuild the extension:
 
     python setup.py build_ext --inplace
 
+To install without cython:
+    
+    python setup.py --without-cython install
+
+Or:
+    
+    pip install --global-option --without-cython .
+
+
 
 ## Component Model Interface
 
