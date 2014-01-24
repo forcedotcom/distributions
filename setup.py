@@ -29,7 +29,11 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from setuptools import setup, Extension, Feature
-from Cython.Distutils import build_ext
+build_ext = None
+try:
+    from Cython.Distutils import build_ext
+except ImportError:
+    print 'WARNING cython support disabled'
 
 
 def conj_ext(name):
@@ -54,14 +58,17 @@ conj_ext_feature = Feature(
         ]
     )
 
-
-setup(
-    features={'cython': conj_ext_feature},
-    cmdclass={'build_ext': build_ext},
-    name='distributions',
-    packages=[
+config = {
+    'features': {'cython': conj_ext_feature},
+    'name': 'distributions',
+    'packages': [
         'distributions',
         'distributions.basic',
         'distributions.conjugate',
         ],
-    )
+    }
+
+if build_ext is not None:
+    config['cmdclass'] = {'build_ext': build_ext}
+
+setup(**config)
