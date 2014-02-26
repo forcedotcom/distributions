@@ -1,7 +1,17 @@
 # Distributions
 
-Code in this package is meant to be understandable and auditable for
-correctness. It is not meant to perform especially well.
+WARNING
+This is the unstable 2.0 branch of distributions,
+which is a complete rewrite of the stable 1.0 master branch,
+and which breaks API compatibility.
+
+This package implements a variety of conjugate component models for
+Bayesian MCMC inference.
+Each model tries to have three implementations:
+* a pure python implementation for correctness auditing
+* a cython implementation for faster inference in python
+* a low-precision C++ implementation for fastest inference in C++
+although some models are missing some implementations.
 
 
 ## Cython
@@ -16,13 +26,12 @@ After making a change to a .pyx or .pxd file, rebuild the extension:
     python setup.py build_ext --inplace
 
 To install without cython:
-    
+
     python setup.py --without-cython install
 
 Or:
-    
-    pip install --global-option --without-cython .
 
+    pip install --global-option --without-cython .
 
 
 ## Component Model Interface
@@ -32,53 +41,25 @@ to emphasize their exact dependencies. The
 distributions.ComponentModel interface class wraps these functions for
 all models so that they may be used conveniently elsewhere.
 
-The component model functions are strictly divided in to two sets,
-those which change state and those which do interesting math. State
-change functions should be simple and fast.
+The component model functions are strictly divided in to three responsibilities:
+* mutating state
+* scoring functions
+* sampling functions
+State change functions should be simple and fast.
+Sampling functions consume explicit entropy sources.
+Scoring functions may also consume entropy, when implemented with monte carlo.
 
-Throughout the interface we use several short variable names:
+Throughout the interface we use three types of data:
 
-* ss: sufficient statistics
+* model: global model state including fixed parameters and hyperparameters
 
-* hp: hyperparameters
+* group: local component state including sufficient statistics and
+  possibly group parameters
 
-* p: parameters
+* value: individual observation state
 
-* y: data value
 
-The functions are as follows:
+## License
 
-* `create_ss(ss=None, p=None)` Create a valid suff stats dict,
-  optionally incorporating the suff stats and parameters provided in
-  the arguments.
-
-* `dump_ss(ss)` Return a serializable version of the sufficient
-  statistics contained in the argument.
-
-* `create_hp(hp=None, p=None)` Create a valid hyperparameters dict,
-  optionally incorporating the hps and parameters provided in the
-  argument.
-
-* `dump_hp(hp)` Return a serializable version of the hyperparameters
-  contained in the argument.
-
-* `add_data(ss, y)` Add the datapoint to the suff stats. Does not
-  explicitly check that the datapoint is valid. Returns None.
-
-* `remove_data(ss, y)` Removethe datapoint from the suff stats. Does
-  not explicitly check that the datapoint is valid, or that it was
-  added previously. Returns None.
-
-* `sample_data(hp, ss)` Sample a datapoint from the distribution
-  described by the hyperparameters and suff stats.
-
-* `sample_post(hp, ss)` Sample the model parameters from the posterior
-  distribution described by the hyperparameters and suff stats.
-
-* `pred_prob(hp, ss, y)` Compute the posterior predictive probability
-  of the datapoint, given the hyperparameters and suff stats (and
-  integrating over the model parameters).
-
-* `data_prob(hp, ss)` Compute the marginal probability of all of the
-  data summarized by the suff stats, given the hyperparameters (and
-  integrating over the model parameters).
+This code is released under the Revised BSD License.
+See [LICENSE.txt](LICENSE.txt) for details.
