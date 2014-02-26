@@ -8,9 +8,12 @@ before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq cython python-numpy python-scipy
 install:
+  - pip install pep8 pyflakes
   - pip install -e .
   - pip freeze
 script:
+  - pep8 --repeat setup.py distributions
+  - pyflakes setup.py distributions
   - nosetests -v
 cache:
   apt: true
