@@ -80,7 +80,8 @@ int std_random_poisson(double mu)
     return detail::generate_poisson(detail::rng, param_type(mu));
 }
 
-int std_random_categorical(size_t D, const double * ps)
+template<class real_t>
+int std_random_categorical(size_t D, const real_t * ps)
 {
     double t = detail::generate_unif01(detail::rng);
     for (size_t d = 0; d < D - 1; ++d) {
@@ -92,7 +93,8 @@ int std_random_categorical(size_t D, const double * ps)
     return D - 1;
 }
 
-void std_random_dirichlet(size_t D, const double * alphas, double * thetas)
+template<class real_t>
+void std_random_dirichlet(size_t D, const real_t * alphas, real_t * thetas)
 {
     double total = 0.0;
     for (size_t d = 0; d < D; ++d) {

@@ -45,13 +45,15 @@ to emphasize their exact dependencies. The
 distributions.ComponentModel interface class wraps these functions for
 all models so that they may be used conveniently elsewhere.
 
-The component model functions are strictly divided in to three responsibilities:
+Each component model API consist of:
 
-* mutating state
+* datatypes
 
-* scoring functions
+* state mutating functions
 
 * sampling functions
+
+* scoring functions
 
 State change functions should be simple and fast.
 Sampling functions consume explicit entropy sources.
@@ -65,6 +67,12 @@ Throughout the interface we use three types of data:
   possibly group parameters
 
 * value: individual observation state
+
+Faster inference requires two additional types of data:
+
+* samplers: partially evaluated per-component sampling functions
+
+* scorers: partially-evaluated per-component scoring functions
 
 
 ## License

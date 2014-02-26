@@ -1,10 +1,10 @@
 cpdef int MAX_DIM = 256
 
-cdef extern from "common.hpp" namespace "distributions":
+cdef extern from "distributions/common.hpp" namespace "distributions":
     cppclass rng_t:
         pass
 
-cdef extern from "models/dd.hpp" namespace "distributions:DirichletDiscrete<256>":
+cdef extern from "distributions/models/dd.hpp" namespace "distributions:DirichletDiscrete<256>":
 
     ctypedef int value_t
 
@@ -42,7 +42,7 @@ cdef extern from "models/dd.hpp" namespace "distributions:DirichletDiscrete<256>
             rng_t rng)
 
 
-cdef extern from "common.hpp" namespace "distributions":
+cdef extern from "distributions/common.hpp" namespace "distributions":
     int foo()
 
 

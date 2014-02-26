@@ -1,6 +1,8 @@
 #pragma once
 
-#include "../common.hpp"
+#include <distributions/common.hpp>
+#include <distributions/special.hpp>
+#include <distributions/random.hpp>
 
 namespace distributions
 {
@@ -25,7 +27,13 @@ struct group_t              // local per-component state
     int counts[max_dim];    // sufficient statistic
 };
 
-struct score_add_fun_t      // partially evaluated score_add function
+struct sampler_t            // partially evaluated sample_value function
+{
+    int dim;
+    float ps[max_dim];
+};
+
+struct scorer_t             // partially evaluated score_value function
 {
     float alpha_sum;
     float alphas[max_dim];
@@ -52,7 +60,7 @@ static void group_add_data (
    group.counts[value] += 1;
 }
 
-static void group_rem_data (
+static void group_remove_data (
         const value_t & value,
         group_t & group,
         const model_t & model)
@@ -72,63 +80,99 @@ static void group_merge (
 }
 
 //----------------------------------------------------------------------------
+// Sampling
+
+static void sampler_init (
+        sampler_t & sampler,
+        const group_t & group,
+        const model_t & model,
+        rng_t & rng)
+{
+    sampler.dim = model.dim;
+
+    for (int i = 0, dim = model.dim; i < dim; ++i) {
+        sampler.ps[i] = model.alphas[i] + group.counts[i];
+    }
+
+    sample_dirichlet(model.dim, sampler.ps, sampler.ps, rng);
+}
+
+static value_t sampler_eval (
+        const sampler_t & sampler,
+        rng_t & rng)
+{
+    return sample_multinomial(sampler.dim, sampler.ps);
+}
+
+static value_t sample_value (
+        const group_t & group,
+        const model_t & model,
+        rng_t & rng)
+{
+    sampler_t sampler;
+    sampler_init(sampler, group, model);
+    return sampler_eval(sampler, rng);
+}
+
+//----------------------------------------------------------------------------
 // Scoring
 
-static void score_add_fun_init (
-        score_add_fun_t & fun,
+static void scorer_init (
+        scorer_t & scorer,
         const group_t & group,
-        const model_t & model)
+        const model_t & model,
+        rng_t &)
 {
     float alpha_sum = 0;
 
     for (int i = 0, dim = model.dim; i < dim; ++i) {
         float alpha = model.alphas[i] + group.counts[i];
-        fun.alphas[i] = alpha;
+        scorer.alphas[i] = alpha;
         alpha_sum += alpha;
     }
 
-    fun.alpha_sum = alpha_sum;
+    scorer.alpha_sum = alpha_sum;
 }
 
-static float score_add_eval (
+static float scorer_eval (
         const value_t & value,
-        const score_add_fun_t & fun,
+        const scorer_t & scorer,
         rng_t &)
 {
-    return fastlog(fun->alphas[value] / fun->alpha_sum);
+    return fastlog(scorer->alphas[value] / scorer->alpha_sum);
 }
 
-static float score_add (
+static float score_value (
         const value_t & value,
         const group_t & group,
         const model_t & model,
-        rng_t & rng) 
+        rng_t & rng)
 {
-    score_add_fun_t fun;
-    score_add_fun_init(fun, group, model);
-    return score_add_eval(value, fun, rng);
+    scorer_t scorer;
+    scorer_init(scorer, group, model);
+    return scorer_eval(value, scorer, rng);
 }
 
 static float score_group (
         const group_t & group,
         const model_t & model,
-        rng_t &) 
+        rng_t &)
 {
     int count_sum = 0;
-    float alpha_sum = 0; 
-    float score = 0; 
+    float alpha_sum = 0;
+    float score = 0;
 
     for (int i = 0, dim = model.dim; i < dim; ++i) {
         int count = group.counts[i];
-        float alpha = model.alphas[i]; 
+        float alpha = model.alphas[i];
         count_sum += count;
         alpha_sum += alpha;
-        score += lgamma(alpha + count) - lgamma(alpha); 
+        score += lgamma(alpha + count) - lgamma(alpha);
     }
 
-    score += lgamma(alpha_sum) - lgamma(alpha_sum + count_sum); 
+    score += lgamma(alpha_sum) - lgamma(alpha_sum + count_sum);
 
-    return score; 
+    return score;
 }
 
 }; // struct AsymmetricDirichletDiscrete<max_dim>

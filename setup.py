@@ -14,10 +14,12 @@ def model_extension(name):
         [
             'distributions/models/{0}.pyx'.format(name),
             'src/common.cc',
+            'src/special.cc',
+            'src/random.cc',
         ],
         language='c++',
         libraries=['m'],
-        include_dirs=['include/distributions'],
+        include_dirs=['include'],
         extra_compile_args=[
             '-std=c++0x',
             '-Wall',

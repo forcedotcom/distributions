@@ -5,7 +5,7 @@ cimport numpy
 
 cpdef int MAX_DIM = 256
 
-cdef extern from "common.hpp" namespace "distributions":
+cdef extern from "distributions/common.hpp" namespace "distributions":
     cppclass rng_t:
         pass
 
@@ -46,11 +46,11 @@ def group_dump(group_t group):
     return {'counts': [group.counts[i] for i in xrange(group.dim)]}
 
 
-def add_data(group_t group, unsigned y):
+def grouo_add_data(group_t group, unsigned y):
     group.counts[y] += 1
 
 
-def remove_data(group_t group, unsigned y):
+def group_rem_data(group_t group, unsigned y):
     group.counts[y] -= 1
 
 
@@ -128,7 +128,7 @@ cpdef add_pred_probs(
         scores[i] += pred_prob(model, groups[i], y)
 
 
-cdef extern from "models/dd.hpp" namespace "distributions":
+cdef extern from "distributions/models/dd.hpp" namespace "distributions":
     int foo()
 
 
