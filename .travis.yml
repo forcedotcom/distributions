@@ -15,6 +15,7 @@ script:
   - pep8 --repeat setup.py distributions
   - pyflakes setup.py distributions
   - nosetests -v
+  - ./test_cmake.sh
 cache:
   apt: true
   directories:
