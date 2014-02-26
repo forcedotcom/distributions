@@ -8,9 +8,13 @@ and which breaks API compatibility.
 This package implements a variety of conjugate component models for
 Bayesian MCMC inference.
 Each model tries to have three implementations:
+
 * a pure python implementation for correctness auditing
+
 * a cython implementation for faster inference in python
+
 * a low-precision C++ implementation for fastest inference in C++
+
 although some models are missing some implementations.
 
 
