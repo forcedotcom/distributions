@@ -1,7 +1,5 @@
-*.pyc
-*.egg-info
-.DS_Store
-._.DS_Store
-*.so
 build
+*.egg-info
+*.pyc
 *.cpp
+*.so
