@@ -42,9 +42,13 @@ distributions.ComponentModel interface class wraps these functions for
 all models so that they may be used conveniently elsewhere.
 
 The component model functions are strictly divided in to three responsibilities:
+
 * mutating state
+
 * scoring functions
+
 * sampling functions
+
 State change functions should be simple and fast.
 Sampling functions consume explicit entropy sources.
 Scoring functions may also consume entropy, when implemented with monte carlo.
