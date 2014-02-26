@@ -18,5 +18,3 @@ script:
   - ./test_cmake.sh
 cache:
   apt: true
-  directories:
-    - $HOME/virtualenv/python2.7_with_system_site_packages/lib/python2.7/site-packages
