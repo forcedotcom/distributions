@@ -9,7 +9,6 @@ before_install:
   - sudo apt-get install -qq python-numpy python-scipy
 install:
   - pip install cython pep8 pyflakes
-  - cython --version
   - pip install -e .
   - pip freeze
 script:

@@ -1,5 +1,4 @@
-from itertools import izip
-from nose.tools import assert_true
+from nose.tools import assert_equal
 from distributions.models import dd_py, dd_cy, dd_cc
 
 
@@ -10,7 +9,7 @@ MODELS = [v.Model for v in VERSIONS]
 def test_methods_run():
     alphas = [0.2, 0.5, 1.0, 2.0]
     dim = len(alphas)
-    data = [3, 2, 3 ,1, 3, 2, 3, 0, 3, 2, 3, 1]
+    data = [3, 2, 3, 1, 3, 2, 3, 0, 3, 2, 3, 1]
 
     raw_model = {'alphas': alphas}
     models = []
@@ -31,9 +30,10 @@ def test_methods_run():
         model.score_group(group)
         for value in data:
             model.score_value(group, value)
+        model.group_merge(group2, group)
+        assert_equal(group2.dump(), group.dump())
         for value in data:
             model.group_remove_value(group, value)
-        model.group_merge(group2, group)
 
         model.dump_group(group)
         model.dump()

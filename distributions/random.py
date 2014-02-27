@@ -2,6 +2,10 @@ import numpy.random
 from numpy.random.mtrand import dirichlet as sample_dirichlet
 
 
+# pacify pyflakes
+assert sample_dirichlet
+
+
 def sample_discrete(ps):
     """
     Draws from a discrete distribution with the given (possibly unnormalized)
