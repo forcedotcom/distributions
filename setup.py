@@ -8,11 +8,11 @@ except ImportError:
     print 'not building cython extensions'
 
 
-def model_extension(name):
+def extension(name):
     return Extension(
-        'distributions.models.{0}'.format(name),
+        'distributions.{0}'.format(name.replace('/', '.')),
         [
-            'distributions/models/{0}.pyx'.format(name),
+            'distributions/{0}.pyx'.format(name),
             'src/common.cc',
             'src/special.cc',
             'src/random.cc',
@@ -23,6 +23,8 @@ def model_extension(name):
         extra_compile_args=[
             '-std=c++0x',
             '-Wall',
+            '-Werror',
+            '-Wno-unused-function',
             #'-Wno-sign-compare',
             #'-Wno-strict-aliasing',
             '-O3',
@@ -37,8 +39,10 @@ model_feature = Feature(
     standard=True,
     optional=True,
     ext_modules=[
-        model_extension('dd'),
-        model_extension('dd_lp'),
+        extension('cSpecial'),
+        extension('cRandom'),
+        extension('models/dd_cy'),
+        extension('models/dd_cc'),
     ]
 )
 

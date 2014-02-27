@@ -46,9 +46,9 @@ inline float fastlog (float x)
 
 
 extern const char LogTable256[256];
-extern const float lgamma_approx_coeff5[]; 
+extern const float lgamma_approx_coeff5[];
 
-inline float lgamma_approx_positive5 (float y)
+inline float fastlgamma (float y)
 {
     // A piecewise fifth-order approximation of loggamma,
     // which bottoms out in libc gammaln for vals < 1.0

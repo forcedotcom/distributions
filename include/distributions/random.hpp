@@ -7,6 +7,7 @@ namespace distributions
 {
 
 typedef std::mt19937 rng_t;
+extern rng_t global_rng;
 
 // HACK std::gamma_distribution<float> appears to be broken
 //typedef std::gamma_distribution<float> gamma_distribution_t;
@@ -34,7 +35,7 @@ void sample_dirichlet (
         float * ps,
         rng_t & rng);
 
-int sample_multinomial (
+int sample_discrete (
         size_t dim,
         const float * ps,
         rng_t & rng);

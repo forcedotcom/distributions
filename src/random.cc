@@ -3,6 +3,8 @@
 namespace distributions
 {
 
+rng_t global_rng;
+
 void sample_dirichlet (
         size_t dim,
         const float * alphas,
@@ -23,7 +25,7 @@ void sample_dirichlet (
     }
 }
 
-int sample_multinomial (
+int sample_discrete (
         size_t dim,
         const float * ps,
         rng_t & rng)

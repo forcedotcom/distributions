@@ -11,16 +11,17 @@ template<int max_dim>
 struct DirichletDiscrete
 {
 
+//                          Comments are only temporary
 //----------------------------------------------------------------------------
-// Datatypes                Comments are only temporary
+// Data
+
+int dim;                    // fixed paramter
+float alphas[max_dim];      // prior hyperparameter
+
+//----------------------------------------------------------------------------
+// Datatypes
 
 typedef int value_t;        // per-row state
-
-struct model_t              // global state
-{
-    int dim;                // paramter
-    float alphas[max_dim];  // hyperparameter
-};
 
 struct group_t              // local per-component state
 {
@@ -29,7 +30,6 @@ struct group_t              // local per-component state
 
 struct sampler_t            // partially evaluated sample_value function
 {
-    int dim;
     float ps[max_dim];
 };
 
@@ -42,39 +42,37 @@ struct scorer_t             // partially evaluated score_value function
 //----------------------------------------------------------------------------
 // Mutation
 
-static void group_init_prior (
+void group_init (
         group_t & group,
-        const model_t & model,
         rng_t &)
 {
-    for (int i = 0, dim = model.dim; i < dim; ++i) {
+    for (int i = 0; i < dim; ++i) {
         group.counts[i] = 0;
     }
 }
 
-static void group_add_data (
-        const value_t & value,
+void group_add_data (
         group_t & group,
-        const model_t & model)
+        const value_t & value,
+        rng_t &)
 {
    group.counts[value] += 1;
 }
 
-static void group_remove_data (
-        const value_t & value,
+void group_remove_data (
         group_t & group,
-        const model_t & model)
+        const value_t & value,
+        rng_t &) const
 {
    group.counts[value] -= 1;
 }
 
-static void group_merge (
+void group_merge (
         group_t & destin,
         const group_t & source,
-        const model_t & model)
+        rng_t &) const
 {
-    destin.count_sum += source.count_sum;
-    for (int i = 0, dim = model.dim; i < dim; ++i) {
+    for (int i = 0; i < dim; ++i) {
         destin.counts[i] += source.counts[i];
     }
 }
@@ -82,51 +80,46 @@ static void group_merge (
 //----------------------------------------------------------------------------
 // Sampling
 
-static void sampler_init (
+void sampler_init (
         sampler_t & sampler,
         const group_t & group,
-        const model_t & model,
         rng_t & rng)
 {
-    sampler.dim = model.dim;
-
-    for (int i = 0, dim = model.dim; i < dim; ++i) {
-        sampler.ps[i] = model.alphas[i] + group.counts[i];
+    for (int i = 0; i < dim; ++i) {
+        sampler.ps[i] = alphas[i] + group.counts[i];
     }
 
-    sample_dirichlet(model.dim, sampler.ps, sampler.ps, rng);
+    sample_dirichlet(dim, sampler.ps, sampler.ps, rng);
 }
 
-static value_t sampler_eval (
+value_t sampler_eval (
         const sampler_t & sampler,
         rng_t & rng)
 {
-    return sample_multinomial(sampler.dim, sampler.ps);
+    return sample_discrete(dim, sampler.ps, rng);
 }
 
-static value_t sample_value (
+value_t sample_value (
         const group_t & group,
-        const model_t & model,
         rng_t & rng)
 {
     sampler_t sampler;
-    sampler_init(sampler, group, model);
+    sampler_init(sampler, group, rng);
     return sampler_eval(sampler, rng);
 }
 
 //----------------------------------------------------------------------------
 // Scoring
 
-static void scorer_init (
+void scorer_init (
         scorer_t & scorer,
         const group_t & group,
-        const model_t & model,
         rng_t &)
 {
     float alpha_sum = 0;
 
-    for (int i = 0, dim = model.dim; i < dim; ++i) {
-        float alpha = model.alphas[i] + group.counts[i];
+    for (int i = 0; i < dim; ++i) {
+        float alpha = alphas[i] + group.counts[i];
         scorer.alphas[i] = alpha;
         alpha_sum += alpha;
     }
@@ -134,47 +127,45 @@ static void scorer_init (
     scorer.alpha_sum = alpha_sum;
 }
 
-static float scorer_eval (
-        const value_t & value,
+float scorer_eval (
         const scorer_t & scorer,
+        const value_t & value,
         rng_t &)
 {
-    return fastlog(scorer->alphas[value] / scorer->alpha_sum);
+    return fastlog(scorer.alphas[value] / scorer.alpha_sum);
 }
 
-static float score_value (
-        const value_t & value,
+float score_value (
         const group_t & group,
-        const model_t & model,
+        const value_t & value,
         rng_t & rng)
 {
     scorer_t scorer;
-    scorer_init(scorer, group, model);
-    return scorer_eval(value, scorer, rng);
+    scorer_init(scorer, group, rng);
+    return scorer_eval(scorer, value, rng);
 }
 
-static float score_group (
+float score_group (
         const group_t & group,
-        const model_t & model,
         rng_t &)
 {
     int count_sum = 0;
     float alpha_sum = 0;
     float score = 0;
 
-    for (int i = 0, dim = model.dim; i < dim; ++i) {
+    for (int i = 0; i < dim; ++i) {
         int count = group.counts[i];
-        float alpha = model.alphas[i];
+        float alpha = alphas[i];
         count_sum += count;
         alpha_sum += alpha;
-        score += lgamma(alpha + count) - lgamma(alpha);
+        score += fastlgamma(alpha + count) - fastlgamma(alpha);
     }
 
-    score += lgamma(alpha_sum) - lgamma(alpha_sum + count_sum);
+    score += fastlgamma(alpha_sum) - fastlgamma(alpha_sum + count_sum);
 
     return score;
 }
 
-}; // struct AsymmetricDirichletDiscrete<max_dim>
+}; // struct DirichletDiscrete<max_dim>
 
 } // namespace distributions
