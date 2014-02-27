@@ -1,4 +1,4 @@
-# Distributions
+# Distributions [![Build Status](https://travis-ci.org/forcedotcom/distributions.png)](https://travis-ci.org/forcedotcom/distributions)
 
 WARNING
 This is the unstable 2.0 branch of distributions,
