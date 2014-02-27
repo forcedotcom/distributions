@@ -1,6 +1,6 @@
 # Distributions [![Build Status](https://travis-ci.org/forcedotcom/distributions.png)](https://travis-ci.org/forcedotcom/distributions)
 
-WARNING
+<b>WARNING</b>
 This is the unstable 2.0 branch of distributions,
 which is a complete rewrite of the stable 1.0 master branch,
 and which breaks API compatibility.
