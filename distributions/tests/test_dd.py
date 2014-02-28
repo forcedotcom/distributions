@@ -25,7 +25,7 @@ def test_methods_run():
 
         model.group_init(group)
         for value in data:
-            model.group_add_value(group, value)
+            model.group_add_data(group, value)
         model.sample_value(group)
         model.score_group(group)
         for value in data:
@@ -33,7 +33,7 @@ def test_methods_run():
         model.group_merge(group2, group)
         assert_equal(group2.dump(), group.dump())
         for value in data:
-            model.group_remove_value(group, value)
+            model.group_remove_data(group, value)
 
         model.dump_group(group)
         model.dump()

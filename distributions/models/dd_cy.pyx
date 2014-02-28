@@ -58,10 +58,10 @@ cdef class DirichletDiscrete:
         for i in xrange(self.dim):
             group.counts[i] = 0
 
-    def group_add_value(self, Group group, int value):
+    def group_add_data(self, Group group, int value):
         group.counts[value] += 1
 
-    def group_remove_value(self, Group group, int value):
+    def group_remove_data(self, Group group, int value):
         group.counts[value] -= 1
 
     def group_merge(self, Group destin, Group source):

@@ -1,34 +1,32 @@
 from distributions.cRandom cimport global_rng
+from sparse_counter cimport SparseCounter, SparseCounter_iterator
 
-cpdef int MAX_DIM = 256
 
-
-cdef extern from "distributions/models/dd.hpp" namespace "distributions":
+cdef extern from "distributions/models/dpm.hpp" namespace "distributions":
     cppclass rng_t
-    ctypedef int value_t
-    cdef cppclass cModel "distributions::DirichletDiscrete<256>":
-        int dim
+    ctypedef unsigned value_t
+    cdef cppclass cModel "distributions::DirichletProcessMixture":
         cppclass hypers_t:
-            float alphas[256]
+            float gamma
+            float alpha
+            float beta0
+            vector[float] betas
         hypers_t hypers
         #cppclass value_t
-        cppclass group_t:
-            int counts[]
+        cppclass group_t
         void group_init (group_t &, rng_t &) nogil
         void group_add_data (group_t &, value_t &, rng_t &) nogil
         void group_remove_data (group_t &, value_t &, rng_t &) nogil
         void group_merge (group_t &, group_t &, rng_t &) nogil
-        value_t sample_value (group_t &, rng_t &) nogil
+        #value_t sample_value (group_t &, rng_t &) nogil
         float score_value (group_t &, value_t &, rng_t &) nogil
         float score_group (group_t &, rng_t &) nogil
 
 
 cdef class Group:
     cdef cModel.group_t * ptr
-    cdef int dim  # only required for dumping
     def __cinit__(self):
         self.ptr = new cModel.group_t()
-        self.dim = 0
     def __dealloc__(self):
         del self.ptr
 
@@ -61,14 +59,14 @@ cdef class DirichletDiscrete:
         self.ptr.dim = dim
         cdef int i
         for i in xrange(dim):
-            self.ptr.hypers.alphas[i] = alphas[i]
+            self.ptr.alphas[i] = alphas[i]
         return self
 
     def dump(self):
         alphas = []
         cdef int i
         for i in xrange(self.ptr.dim):
-            alphas.append(self.ptr.hypers.alphas[i])
+            alphas.append(self.ptr.alphas[i])
         return {'alphas': alphas}
 
     #-------------------------------------------------------------------------
@@ -95,9 +93,9 @@ cdef class DirichletDiscrete:
     #-------------------------------------------------------------------------
     # Sampling
 
-    def sample_value(self, Group group):
-        cdef int value = self.ptr.sample_value(group.ptr[0], global_rng)
-        return value
+    #def sample_value(self, Group group):
+    #    cdef int value = self.ptr.sample_value(group.ptr[0], global_rng)
+    #    return value
 
     #-------------------------------------------------------------------------
     # Scoring

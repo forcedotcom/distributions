@@ -3,46 +3,53 @@
 #include <distributions/common.hpp>
 #include <distributions/special.hpp>
 #include <distributions/random.hpp>
+#include <distributions/sparse_counter.hpp>
 
 namespace distributions
 {
 
-template<int max_dim>
-struct DirichletDiscrete
+struct DirichletProcessMixture
 {
 
-//                          Comments are only temporary
 //----------------------------------------------------------------------------
 // Data
 
-int dim;                    // fixed paramter
+typedef std::vector<float> betas_t;  // dense
 
 struct hypers_t
 {
-    float alphas[max_dim];
+    float gamma;
+    float alpha;
+    float beta0;
+    betas_t betas;
 };
 
-hypers_t hypers;            // prior hyperparameter
+hypers_t hypers;
 
 //----------------------------------------------------------------------------
 // Datatypes
 
-typedef int value_t;        // per-row state
+typedef uint32_t value_t;
 
-struct group_t              // local per-component state
+struct group_t
 {
-    int counts[max_dim];    // sufficient statistic
+    typedef SparseCounter<value_t, uint32_t> counts_t;  // sparse
+
+    counts_t counts;
 };
 
-struct sampler_t            // partially evaluated sample_value function
+struct sampler_t
 {
-    float ps[max_dim];
+    typedef std::vector<float> probs_t;  // dense
+
+    probs_t probs;
 };
 
-struct scorer_t             // partially evaluated score_value function
+struct scorer_t
 {
-    float alpha_sum;
-    float alphas[max_dim];
+    typedef std::vector<float> scores_t;  // dense
+
+    scores_t scores;
 };
 
 //----------------------------------------------------------------------------
@@ -52,9 +59,7 @@ void group_init (
         group_t & group,
         rng_t &) const
 {
-    for (int i = 0; i < dim; ++i) {
-        group.counts[i] = 0;
-    }
+    group.counts.clear();
 }
 
 void group_add_data (
@@ -62,7 +67,7 @@ void group_add_data (
         const value_t & value,
         rng_t &) const
 {
-   group.counts[value] += 1;
+   group.counts.add(value);
 }
 
 void group_remove_data (
@@ -70,7 +75,7 @@ void group_remove_data (
         const value_t & value,
         rng_t &) const
 {
-   group.counts[value] -= 1;
+   group.counts.remove(value);
 }
 
 void group_merge (
@@ -78,21 +83,20 @@ void group_merge (
         const group_t & source,
         rng_t &) const
 {
-    for (int i = 0; i < dim; ++i) {
-        destin.counts[i] += source.counts[i];
-    }
+    destin.counts.merge(source);
 }
 
 //----------------------------------------------------------------------------
 // Sampling
 
+#if 0
 void sampler_init (
         sampler_t & sampler,
         const group_t & group,
         rng_t & rng) const
 {
     for (int i = 0; i < dim; ++i) {
-        sampler.ps[i] = hypers.alphas[i] + group.counts[i];
+        sampler.ps[i] = alphas[i] + group.counts[i];
     }
 
     sample_dirichlet(dim, sampler.ps, sampler.ps, rng);
@@ -113,6 +117,7 @@ value_t sample_value (
     sampler_init(sampler, group, rng);
     return sampler_eval(sampler, rng);
 }
+#endif
 
 //----------------------------------------------------------------------------
 // Scoring
@@ -122,15 +127,23 @@ void scorer_init (
         const group_t & group,
         rng_t &) const
 {
-    float alpha_sum = 0;
+    const size_t size = hypers.betas.size();
+    const size_t total = group.counts.total();
+    auto & scores = scorer.scores;
+    scores.resize(size);
 
-    for (int i = 0; i < dim; ++i) {
-        float alpha = hypers.alphas[i] + group.counts[i];
-        scorer.alphas[i] = alpha;
-        alpha_sum += alpha;
+    const float betas_scale = hypers.alpha / (hypers.alpha + total);
+    for (size_t i = 0; i < size; ++i) {
+        scores[i] = betas_scale * hypers.betas[i];
     }
 
-    scorer.alpha_sum = alpha_sum;
+    const float counts_scale = 1.0f / (hypers.alpha + total);
+    for (auto i : group.counts) {
+        value_t value = i.first;
+        DIST_ASSERT(value < size,
+            "unknown DPM value: " << value << " >= " << size);
+        scores[value] += counts_scale * i.second;
+    }
 }
 
 float scorer_eval (
@@ -138,7 +151,11 @@ float scorer_eval (
         const value_t & value,
         rng_t &) const
 {
-    return fastlog(scorer.alphas[value] / scorer.alpha_sum);
+    const auto & scores = scorer.scores;
+    size_t size = scores.size();
+    DIST_ASSERT(value < size,
+        "unknown DPM value: " << value << " >= " << size);
+    return fastlog(scores[value]);
 }
 
 float score_value (
@@ -155,19 +172,20 @@ float score_group (
         const group_t & group,
         rng_t &) const
 {
-    int count_sum = 0;
-    float alpha_sum = 0;
+    const size_t size = hypers.betas.size();
+    const size_t total = group.counts.total();
+
     float score = 0;
-
-    for (int i = 0; i < dim; ++i) {
-        int count = group.counts[i];
-        float alpha = hypers.alphas[i];
-        count_sum += count;
-        alpha_sum += alpha;
-        score += fastlgamma(alpha + count) - fastlgamma(alpha);
+    for (auto i : group.counts) {
+        value_t value = i.first;
+        DIST_ASSERT(value < size,
+            "unknown DPM value: " << value << " >= " << size);
+        float prior_i = hypers.betas[value] * hypers.alpha;
+        score += fastlgamma(prior_i + i.second)
+               - fastlgamma(prior_i);
     }
-
-    score += fastlgamma(alpha_sum) - fastlgamma(alpha_sum + count_sum);
+    score += fastlgamma(hypers.alpha)
+           - fastlgamma(hypers.alpha + total);
 
     return score;
 }

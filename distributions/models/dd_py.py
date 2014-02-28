@@ -38,10 +38,10 @@ class DirichletDiscrete(object):
     def group_init(self, group):
         group.counts = numpy.zeros(self.dim, dtype=numpy.int)
 
-    def group_add_value(self, group, value):
+    def group_add_data(self, group, value):
         group.counts[value] += 1
 
-    def group_remove_value(self, group, value):
+    def group_remove_data(self, group, value):
         group.counts[value] -= 1
 
     def group_merge(self, destin, source):
