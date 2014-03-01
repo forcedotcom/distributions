@@ -26,6 +26,9 @@ cdef class Group:
         return {'counts': [self.counts[i] for i in xrange(self.dim)]}
 
 
+_Group = Group
+
+
 cdef class DirichletDiscrete:
     cdef double[256] alphas
     cdef int dim
@@ -47,7 +50,8 @@ cdef class DirichletDiscrete:
     #-------------------------------------------------------------------------
     # Datatypes
 
-    Group = staticmethod(lambda: Group())  # HACK nested classes in cython
+    Model = DirichletDiscrete
+    Group = _Group
 
     #-------------------------------------------------------------------------
     # Mutation
@@ -126,7 +130,7 @@ cdef class DirichletDiscrete:
     #-------------------------------------------------------------------------
     # Serialization
 
-    load_group = staticmethod(lambda raw: DirichletDiscrete.Group().load(raw))
+    load_group = staticmethod(lambda raw: Group().load(raw))
     dump_group = staticmethod(lambda group: group.dump())
     load_model = staticmethod(lambda raw: DirichletDiscrete().load(raw))
     dump_model = staticmethod(lambda model: model.dump())
