@@ -1,4 +1,5 @@
 from distributions.cRandom cimport global_rng
+from distributions.mixins import Serializable
 
 cpdef int MAX_DIM = 256
 
@@ -6,7 +7,7 @@ cpdef int MAX_DIM = 256
 cdef extern from "distributions/models/dd.hpp" namespace "distributions":
     cppclass rng_t
     ctypedef int value_t
-    cdef cppclass cModel "distributions::DirichletDiscrete<256>":
+    cdef cppclass Model_cc "distributions::DirichletDiscrete<256>":
         int dim
         cppclass hypers_t:
             float alphas[256]
@@ -24,10 +25,10 @@ cdef extern from "distributions/models/dd.hpp" namespace "distributions":
 
 
 cdef class Group:
-    cdef cModel.group_t * ptr
+    cdef Model_cc.group_t * ptr
     cdef int dim  # only required for dumping
     def __cinit__(self):
-        self.ptr = new cModel.group_t()
+        self.ptr = new Model_cc.group_t()
         self.dim = 0
     def __dealloc__(self):
         del self.ptr
@@ -38,7 +39,6 @@ cdef class Group:
         cdef int i
         for i in xrange(self.dim):
             self.ptr.counts[i] = counts[i]
-        return self
 
     def dump(self):
         counts = []
@@ -48,10 +48,10 @@ cdef class Group:
         return {'counts': counts}
 
 
-cdef class DirichletDiscrete:
-    cdef cModel * ptr
+cdef class Model_cy:
+    cdef Model_cc * ptr
     def __cinit__(self):
-        self.ptr = new cModel()
+        self.ptr = new Model_cc()
     def __dealloc__(self):
         del self.ptr
 
@@ -62,7 +62,6 @@ cdef class DirichletDiscrete:
         cdef int i
         for i in xrange(dim):
             self.ptr.hypers.alphas[i] = float(alphas[i])
-        return self
 
     def dump(self):
         alphas = []
@@ -70,11 +69,6 @@ cdef class DirichletDiscrete:
         for i in xrange(self.ptr.dim):
             alphas.append(float(self.ptr.hypers.alphas[i]))
         return {'alphas': alphas}
-
-    #-------------------------------------------------------------------------
-    # Datatypes
-
-    Group = staticmethod(lambda: Group())  # HACK nested classes in cython
 
     #-------------------------------------------------------------------------
     # Mutation
@@ -108,13 +102,9 @@ cdef class DirichletDiscrete:
     def score_group(self, Group group):
         return self.ptr.score_group(group.ptr[0], global_rng)
 
-    #-------------------------------------------------------------------------
-    # Serialization
 
-    load_group = staticmethod(lambda raw: Group().load(raw))
-    dump_group = staticmethod(lambda group: group.dump())
-    load_model = staticmethod(lambda raw: DirichletDiscrete().load(raw))
-    dump_model = staticmethod(lambda model: model.dump())
+class DirichletDiscrete(Model_cy, Serializable):
+    Group = Group
 
 
 Model = DirichletDiscrete

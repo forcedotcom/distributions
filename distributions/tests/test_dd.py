@@ -14,13 +14,15 @@ def test_methods_run():
     raw_model = {'alphas': alphas}
     models = []
     for Model in MODELS:
-        Model().load(raw_model)
-        model = Model.load_model(raw_model)
+        model = Model()
+        model.load(raw_model)
+        Model.load_model(raw_model)
         models.append(model)
 
     raw_group = {'counts': [0] * dim}
     for model in models:
-        group = model.Group().load(raw_group)
+        group = model.Group()
+        group.load(raw_group)
         group2 = model.load_group(raw_group)
 
         model.group_init(group)

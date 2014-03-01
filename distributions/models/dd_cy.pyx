@@ -3,6 +3,7 @@ cimport numpy
 numpy.import_array()
 from distributions.cSpecial cimport log, gammaln
 from distributions.cRandom cimport sample_dirichlet, sample_discrete
+from distributions.mixins import Serializable
 
 cpdef int MAX_DIM = 256
 
@@ -20,16 +21,12 @@ cdef class Group:
         cdef int i
         for i in xrange(self.dim):
             self.counts[i] = counts[i]
-        return self
 
     def dump(self):
         return {'counts': [self.counts[i] for i in xrange(self.dim)]}
 
 
-_Group = Group
-
-
-cdef class DirichletDiscrete:
+cdef class Model_cy:
     cdef double[256] alphas
     cdef int dim
     def __cinit__(self):
@@ -42,16 +39,9 @@ cdef class DirichletDiscrete:
         cdef int i
         for i in xrange(self.dim):
             self.alphas[i] = alphas[i]
-        return self
 
     def dump(self):
         return {'alphas': [self.alphas[i] for i in xrange(self.dim)]}
-
-    #-------------------------------------------------------------------------
-    # Datatypes
-
-    Model = DirichletDiscrete
-    Group = _Group
 
     #-------------------------------------------------------------------------
     # Mutation
@@ -127,13 +117,9 @@ cdef class DirichletDiscrete:
                     - gammaln(self.alphas[i]))
         return sum + gammaln(alpha_sum) - gammaln(alpha_sum + count_sum)
 
-    #-------------------------------------------------------------------------
-    # Serialization
 
-    load_group = staticmethod(lambda raw: Group().load(raw))
-    dump_group = staticmethod(lambda group: group.dump())
-    load_model = staticmethod(lambda raw: DirichletDiscrete().load(raw))
-    dump_model = staticmethod(lambda model: model.dump())
+class DirichletDiscrete(Model_cy, Serializable):
+    Group = Group
 
 
 Model = DirichletDiscrete

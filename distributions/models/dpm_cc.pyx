@@ -2,12 +2,13 @@ from libcpp.vector cimport vector
 from cython.operator cimport dereference as deref, preincrement as inc
 from distributions.cRandom cimport global_rng
 from distributions.sparse_counter cimport SparseCounter
+from distributions.mixins import Serializable
 
 
 cdef extern from "distributions/models/dpm.hpp" namespace "distributions":
     cppclass rng_t
     ctypedef unsigned value_t
-    cdef cppclass cModel "distributions::DirichletProcessMixture":
+    cdef cppclass Model_cc "distributions::DirichletProcessMixture":
         cppclass hypers_t:
             float gamma
             float alpha
@@ -27,9 +28,9 @@ cdef extern from "distributions/models/dpm.hpp" namespace "distributions":
 
 
 cdef class Group:
-    cdef cModel.group_t * ptr
+    cdef Model_cc.group_t * ptr
     def __cinit__(self):
-        self.ptr = new cModel.group_t()
+        self.ptr = new Model_cc.group_t()
     def __dealloc__(self):
         del self.ptr
 
@@ -38,7 +39,6 @@ cdef class Group:
         counts.clear()
         for i, count in raw['counts'].iteritems():
             counts.init_count(int(i), count)
-        return self
 
     def dump(self):
         counts = {}
@@ -50,25 +50,24 @@ cdef class Group:
         return {'counts': counts}
 
 
-cdef class DirichletProcessMixture:
-    cdef cModel * ptr
+cdef class Model_cy:
+    cdef Model_cc * ptr
     def __cinit__(self):
-        self.ptr = new cModel()
+        self.ptr = new Model_cc()
     def __dealloc__(self):
         del self.ptr
 
     def load(self, raw):
-        cdef cModel.hypers_t * hypers = & self.ptr.hypers
+        cdef Model_cc.hypers_t * hypers = & self.ptr.hypers
         hypers.gamma = float(raw['gamma'])
         hypers.alpha = float(raw['alpha'])
         hypers.beta0 = float(raw['beta0'])
         hypers.betas.clear()
         for beta in raw['betas']:
             hypers.betas.push_back(float(beta))
-        return self
 
     def dump(self):
-        cdef cModel.hypers_t * hypers = & self.ptr.hypers
+        cdef Model_cc.hypers_t * hypers = & self.ptr.hypers
         betas = []
         cdef int i
         cdef int size = hypers.betas.size()
@@ -117,13 +116,9 @@ cdef class DirichletProcessMixture:
     def score_group(self, Group group):
         return self.ptr.score_group(group.ptr[0], global_rng)
 
-    #-------------------------------------------------------------------------
-    # Serialization
 
-    load_group = staticmethod(lambda raw: Group().load(raw))
-    dump_group = staticmethod(lambda group: group.dump())
-    load_model = staticmethod(lambda raw: DirichletProcessMixture().load(raw))
-    dump_model = staticmethod(lambda model: model.dump())
+class DirichletProcessMixture(Model_cy, Serializable):
+    Group = Group
 
 
 Model = DirichletProcessMixture

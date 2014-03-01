@@ -1,9 +1,10 @@
 import numpy
 from distributions.special import log, gammaln
 from distributions.random import sample_discrete, sample_dirichlet
+from distributions.mixins import Serializable
 
 
-class DirichletDiscrete(object):
+class DirichletDiscrete(Serializable):
     def __init__(self):
         self.alphas = None
 
@@ -13,7 +14,6 @@ class DirichletDiscrete(object):
 
     def load(self, raw):
         self.alphas = numpy.array(raw['alphas'], dtype=numpy.float)
-        return self
 
     def dump(self):
         return {'alphas': self.alphas.tolist()}
@@ -25,12 +25,11 @@ class DirichletDiscrete(object):
         def __init__(self):
             self.counts = None
 
-        def load(group, raw):
-            group.counts = numpy.array(raw['counts'], dtype=numpy.int)
-            return group
+        def load(self, raw):
+            self.counts = numpy.array(raw['counts'], dtype=numpy.int)
 
-        def dump(group):
-            return {'counts': group.counts.tolist()}
+        def dump(self):
+            return {'counts': self.counts.tolist()}
 
     #-------------------------------------------------------------------------
     # Mutation
@@ -86,14 +85,6 @@ class DirichletDiscrete(object):
         score += gammaln(a.sum())
         score -= gammaln(a.sum() + m.sum())
         return score
-
-    #-------------------------------------------------------------------------
-    # Serialization
-
-    load_group = staticmethod(lambda raw: DirichletDiscrete.Group().load(raw))
-    dump_group = staticmethod(lambda group: group.dump())
-    load_model = staticmethod(lambda raw: DirichletDiscrete().load(raw))
-    dump_model = staticmethod(lambda model: model.dump())
 
 
 Model = DirichletDiscrete
