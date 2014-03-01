@@ -83,7 +83,7 @@ void group_merge (
         const group_t & source,
         rng_t &) const
 {
-    destin.counts.merge(source);
+    destin.counts.merge(source.counts);
 }
 
 //----------------------------------------------------------------------------
@@ -128,7 +128,7 @@ void scorer_init (
         rng_t &) const
 {
     const size_t size = hypers.betas.size();
-    const size_t total = group.counts.total();
+    const size_t total = group.counts.get_total();
     auto & scores = scorer.scores;
     scores.resize(size);
 
@@ -173,7 +173,7 @@ float score_group (
         rng_t &) const
 {
     const size_t size = hypers.betas.size();
-    const size_t total = group.counts.total();
+    const size_t total = group.counts.get_total();
 
     float score = 0;
     for (auto i : group.counts) {

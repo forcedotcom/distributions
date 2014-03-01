@@ -43,6 +43,7 @@ model_feature = Feature(
         extension('cRandom'),
         extension('models/dd_cy'),
         extension('models/dd_cc'),
+        extension('models/dpm_cc'),
     ]
 )
 

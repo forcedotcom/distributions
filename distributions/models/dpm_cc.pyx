@@ -1,5 +1,6 @@
+from libcpp.vector cimport vector
 from distributions.cRandom cimport global_rng
-from sparse_counter cimport SparseCounter, SparseCounter_iterator
+from distributions.sparse_counter cimport SparseCounter, SparseCounter_iterator
 
 
 cdef extern from "distributions/models/dpm.hpp" namespace "distributions":
