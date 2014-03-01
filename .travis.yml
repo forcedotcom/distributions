@@ -12,8 +12,8 @@ install:
   - pip install -e .
   - pip freeze
 script:
-  - pep8 --repeat setup.py distributions
   - pyflakes setup.py distributions
+  - pep8 --repeat setup.py distributions
   - nosetests -v
   - ./ctest.sh
   - ./test_cmake.sh

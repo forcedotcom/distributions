@@ -1,13 +1,13 @@
 from libcpp.utility cimport pair
 
-cdef extern from "sparse_counter.hpp":
-    cdef cppclass SparseCounter_iterator "SparseCounter<uint32_t, uint32_t>::iterator":
-        pair[int, int]& operator*() nogil
-        SparseCounter_iterator operator++() nogil
-        SparseCounter_iterator operator--() nogil
-        bint operator==(SparseCounter_iterator) nogil
-        bint operator!=(SparseCounter_iterator) nogil
-    cdef cppclass SparseCounter "SparseCounter<uint32_t, uint32_t>":
+cdef extern from "distributions/sparse_counter.hpp":
+    cdef cppclass SparseCounter "distributions::SparseCounter<uint32_t, uint32_t>":
+        cppclass iterator:
+            pair[int, int]& operator*() nogil
+            iterator operator++() nogil
+            iterator operator--() nogil
+            bint operator==(iterator) nogil
+            bint operator!=(iterator) nogil
         SparseCounter() nogil except +
         SparseCounter(SparseCounter&) nogil except +
         void clear() nogil
@@ -17,8 +17,8 @@ cdef extern from "sparse_counter.hpp":
         void add(int) nogil
         void remove(int) nogil
         #SparseCounter& operator=(SparseCounter&)
-        SparseCounter_iterator begin() nogil
-        SparseCounter_iterator end() nogil
+        iterator begin() nogil
+        iterator end() nogil
         #bint empty() nogil
         #size_t size() nogil
         #void swap(SparseCounter&) nogil

@@ -23,7 +23,7 @@ public:
 
     typedef Key key_t;
     typedef Value value_t;
-    typedef typename map_t::const_iterator iterator_t;
+    typedef typename map_t::const_iterator iterator;
 
     void clear ()
     {
@@ -77,8 +77,8 @@ public:
         total_ += other.total_;
     }
 
-    iterator_t begin () const { return map_.begin(); }
-    iterator_t end () const { return map_.end(); }
+    iterator begin () const { return map_.begin(); }
+    iterator end () const { return map_.end(); }
 
 private:
 

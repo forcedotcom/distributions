@@ -1,4 +1,5 @@
-build
+build/
+lib/
 *.egg-info
 *.pyc
 *.cpp

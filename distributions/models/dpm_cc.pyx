@@ -1,6 +1,7 @@
 from libcpp.vector cimport vector
+from cython.operator cimport dereference as deref, preincrement as inc
 from distributions.cRandom cimport global_rng
-from distributions.sparse_counter cimport SparseCounter, SparseCounter_iterator
+from distributions.sparse_counter cimport SparseCounter
 
 
 cdef extern from "distributions/models/dpm.hpp" namespace "distributions":
@@ -14,7 +15,8 @@ cdef extern from "distributions/models/dpm.hpp" namespace "distributions":
             vector[float] betas
         hypers_t hypers
         #cppclass value_t
-        cppclass group_t
+        cppclass group_t:
+            SparseCounter counts
         void group_init (group_t &, rng_t &) nogil
         void group_add_data (group_t &, value_t &, rng_t &) nogil
         void group_remove_data (group_t &, value_t &, rng_t &) nogil
@@ -32,22 +34,23 @@ cdef class Group:
         del self.ptr
 
     def load(self, raw):
-        counts = raw['counts']
-        self.dim = len(counts)
-        cdef int i
-        for i in xrange(self.dim):
-            self.ptr.counts[i] = counts[i]
+        cdef SparseCounter * counts = & self.ptr.counts
+        counts.clear()
+        for i, count in raw['counts'].iteritems():
+            counts.init_count(int(i), count)
         return self
 
     def dump(self):
-        counts = []
-        cdef int i
-        for i in xrange(self.dim):
-            counts.append(self.ptr.counts[i])
+        counts = {}
+        cdef SparseCounter.iterator it = self.ptr.counts.begin()
+        cdef SparseCounter.iterator end = self.ptr.counts.end()
+        while it != end:
+            counts[str(deref(it).first)] = deref(it).second
+            inc(it)
         return {'counts': counts}
 
 
-cdef class DirichletDiscrete:
+cdef class DirichletProcessMixture:
     cdef cModel * ptr
     def __cinit__(self):
         self.ptr = new cModel()
@@ -55,20 +58,28 @@ cdef class DirichletDiscrete:
         del self.ptr
 
     def load(self, raw):
-        alphas = raw['alphas']
-        cdef int dim = len(alphas)
-        self.ptr.dim = dim
-        cdef int i
-        for i in xrange(dim):
-            self.ptr.alphas[i] = alphas[i]
+        cdef cModel.hypers_t * hypers = & self.ptr.hypers
+        hypers.gamma = float(raw['gamma'])
+        hypers.alpha = float(raw['alpha'])
+        hypers.beta0 = float(raw['beta0'])
+        hypers.betas.clear()
+        for beta in raw['betas']:
+            hypers.betas.push_back(float(beta))
         return self
 
     def dump(self):
-        alphas = []
+        cdef cModel.hypers_t * hypers = & self.ptr.hypers
+        betas = []
         cdef int i
-        for i in xrange(self.ptr.dim):
-            alphas.append(self.ptr.alphas[i])
-        return {'alphas': alphas}
+        cdef int size = hypers.betas.size()
+        for i in xrange(size):
+            betas.append(float(hypers.betas[i]))
+        return {
+            'gamma': float(hypers.gamma),
+            'alpha': float(hypers.alpha),
+            'beta0': float(hypers.beta0),
+            'betas': betas,
+        }
 
     #-------------------------------------------------------------------------
     # Datatypes
@@ -79,7 +90,6 @@ cdef class DirichletDiscrete:
     # Mutation
 
     def group_init(self, Group group):
-        group.dim = self.ptr.dim
         self.ptr.group_init(group.ptr[0], global_rng)
 
     def group_add_data(self, Group group, int value):
@@ -110,10 +120,10 @@ cdef class DirichletDiscrete:
     #-------------------------------------------------------------------------
     # Serialization
 
-    load_group = staticmethod(lambda raw: DirichletDiscrete.Group().load(raw))
+    load_group = staticmethod(lambda raw: Group().load(raw))
     dump_group = staticmethod(lambda group: group.dump())
-    load_model = staticmethod(lambda raw: DirichletDiscrete().load(raw))
+    load_model = staticmethod(lambda raw: DirichletProcessMixture().load(raw))
     dump_model = staticmethod(lambda model: model.dump())
 
 
-Model = DirichletDiscrete
+Model = DirichletProcessMixture

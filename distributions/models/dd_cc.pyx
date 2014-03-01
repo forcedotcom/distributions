@@ -61,14 +61,14 @@ cdef class DirichletDiscrete:
         self.ptr.dim = dim
         cdef int i
         for i in xrange(dim):
-            self.ptr.hypers.alphas[i] = alphas[i]
+            self.ptr.hypers.alphas[i] = float(alphas[i])
         return self
 
     def dump(self):
         alphas = []
         cdef int i
         for i in xrange(self.ptr.dim):
-            alphas.append(self.ptr.hypers.alphas[i])
+            alphas.append(float(self.ptr.hypers.alphas[i]))
         return {'alphas': alphas}
 
     #-------------------------------------------------------------------------
@@ -111,7 +111,7 @@ cdef class DirichletDiscrete:
     #-------------------------------------------------------------------------
     # Serialization
 
-    load_group = staticmethod(lambda raw: DirichletDiscrete.Group().load(raw))
+    load_group = staticmethod(lambda raw: Group().load(raw))
     dump_group = staticmethod(lambda group: group.dump())
     load_model = staticmethod(lambda raw: DirichletDiscrete().load(raw))
     dump_model = staticmethod(lambda model: model.dump())
