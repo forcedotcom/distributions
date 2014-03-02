@@ -12,10 +12,6 @@ install:
   - pip install -e .
   - pip freeze
 script:
-  - pyflakes setup.py distributions
-  - pep8 --repeat setup.py distributions
-  - nosetests -v
-  - ./ctest.sh
-  - ./test_cmake.sh
+  - make test
 cache:
   apt: true

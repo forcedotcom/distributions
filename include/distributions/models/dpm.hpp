@@ -89,24 +89,30 @@ void group_merge (
 //----------------------------------------------------------------------------
 // Sampling
 
-#if 0
 void sampler_init (
         sampler_t & sampler,
         const group_t & group,
         rng_t & rng) const
 {
-    for (int i = 0; i < dim; ++i) {
-        sampler.ps[i] = alphas[i] + group.counts[i];
+    std::vector<float> & probs = sampler.probs;
+    probs.clear();
+    probs.reserve(hypers.betas.size() + 1);
+    for (float beta : hypers.betas) {
+        probs.push_back(beta * hypers.alpha);
     }
+    for (auto i : group.counts) {
+        probs[i.first] += i.second;
+    }
+    probs.push_back(hypers.beta0 * hypers.alpha);
 
-    sample_dirichlet(dim, sampler.ps, sampler.ps, rng);
+    sample_dirichlet(probs.size(), probs.data(), probs.data(), rng);
 }
 
 value_t sampler_eval (
         const sampler_t & sampler,
         rng_t & rng) const
 {
-    return sample_discrete(dim, sampler.ps, rng);
+    return sample_discrete(sampler.probs.size(), sampler.probs.data(), rng);
 }
 
 value_t sample_value (
@@ -117,7 +123,6 @@ value_t sample_value (
     sampler_init(sampler, group, rng);
     return sampler_eval(sampler, rng);
 }
-#endif
 
 //----------------------------------------------------------------------------
 // Scoring

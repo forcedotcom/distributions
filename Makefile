@@ -1,13 +1,16 @@
-install:
+install: FORCE
 	pip install -e .
+	mkdir -p build
+	cd build && cmake .. &&  make
 
-test:
-	pip install -e .
+test: install
 	pyflakes setup.py distributions
 	pep8 --repeat setup.py distributions
 	nosetests -v
-	./ctest.sh
+	cd build && ctest
 	./test_cmake.sh
 
-clean:
+clean: FORCE
 	git clean -dfx
+
+FORCE:
