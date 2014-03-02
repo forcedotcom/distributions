@@ -81,11 +81,6 @@ cdef class Model_cy:
         }
 
     #-------------------------------------------------------------------------
-    # Datatypes
-
-    Group = staticmethod(lambda: Group())  # HACK nested classes in cython
-
-    #-------------------------------------------------------------------------
     # Mutation
 
     def group_init(self, Group group):
@@ -103,9 +98,13 @@ cdef class Model_cy:
     #-------------------------------------------------------------------------
     # Sampling
 
-    #def sample_value(self, Group group):
-    #    cdef int value = self.ptr.sample_value(group.ptr[0], global_rng)
-    #    return value
+    def sample_value(self, Group group):
+        raise NotImplementedError()
+        #cdef int value = self.ptr.sample_value(group.ptr[0], global_rng)
+        #return value
+
+    def sample_group(self, int size):
+        raise NotImplementedError()
 
     #-------------------------------------------------------------------------
     # Scoring
@@ -115,6 +114,19 @@ cdef class Model_cy:
 
     def score_group(self, Group group):
         return self.ptr.score_group(group.ptr[0], global_rng)
+
+    #-------------------------------------------------------------------------
+    # Examples
+
+    EXAMPLE = {
+        'values': [0, 1, 0, 2, 0, 1, 0],
+        'model': {
+            'gamma': 0.5,
+            'alpha': 0.5,
+            'beta0': 0.1,
+            'betas': [0.5, 0.5, 0.5],
+        },
+    }
 
 
 class DirichletProcessMixture(Model_cy, Serializable):

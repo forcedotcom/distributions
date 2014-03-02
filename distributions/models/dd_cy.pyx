@@ -66,7 +66,7 @@ cdef class Model_cy:
     #-------------------------------------------------------------------------
     # Sampling
 
-    def sampler_init(self, Group group):
+    cpdef sampler_init(self, Group group):
         cdef numpy.ndarray[numpy.float64_t, ndim=1] \
             sampler = numpy.zeros(self.dim, dtype=numpy.float64)
         cdef double * ps = <double *> sampler.data
@@ -76,7 +76,7 @@ cdef class Model_cy:
         sample_dirichlet(self.dim, ps, ps)
         return sampler
 
-    def sampler_eval(self, numpy.ndarray[numpy.float64_t, ndim=1] sampler):
+    cpdef sampler_eval(self, numpy.ndarray[numpy.float64_t, ndim=1] sampler):
         cdef double * ps = <double *> sampler.data
         return sample_discrete(self.dim, ps)
 
@@ -84,6 +84,17 @@ cdef class Model_cy:
         cdef numpy.ndarray[numpy.float64_t, ndim=1] \
             sampler = self.sampler_init(group)
         return self.sampler_eval(sampler)
+
+    def sample_group(self, int size):
+        cdef Group group = Group()
+        self.group_init(group)
+        cdef numpy.ndarray[numpy.float64_t, ndim=1] \
+            sampler = self.sampler_init(group)
+        cdef list result = []
+        cdef int i
+        for i in xrange(size):
+            result.append(self.sampler_eval(sampler))
+        return result
 
     #-------------------------------------------------------------------------
     # Scoring
@@ -116,6 +127,16 @@ cdef class Model_cy:
             sum += (gammaln(self.alphas[i] + group.counts[i])
                     - gammaln(self.alphas[i]))
         return sum + gammaln(alpha_sum) - gammaln(alpha_sum + count_sum)
+
+    #-------------------------------------------------------------------------
+    # Examples
+
+    EXAMPLE = {
+        'values': [0, 1, 0, 2, 0, 1, 0],
+        'model': {
+            'alphas': [0.5, 0.5, 0.5, 0.5],
+        },
+    }
 
 
 class DirichletDiscrete(Model_cy, Serializable):

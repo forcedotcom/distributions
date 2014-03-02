@@ -59,6 +59,12 @@ class DirichletDiscrete(Serializable):
         sampler = self.sampler_init(group)
         return self.sampler_eval(sampler)
 
+    def sample_group(self, size):
+        group = self.Group()
+        self.group_init(group)
+        sampler = self.sampler_init(group)
+        return [self.sampler_eval(sampler) for _ in xrange(size)]
+
     #-------------------------------------------------------------------------
     # Scoring
 
@@ -85,6 +91,16 @@ class DirichletDiscrete(Serializable):
         score += gammaln(a.sum())
         score -= gammaln(a.sum() + m.sum())
         return score
+
+    #-------------------------------------------------------------------------
+    # Examples
+
+    EXAMPLE = {
+        'values': [0, 1, 0, 2, 0, 1, 0],
+        'model': {
+            'alphas': [0.5, 0.5, 0.5, 0.5],
+        },
+    }
 
 
 Model = DirichletDiscrete

@@ -15,10 +15,17 @@ cdef extern from "distributions/models/dd.hpp" namespace "distributions":
         #cppclass value_t
         cppclass group_t:
             int counts[]
+        cppclass sampler_t:
+            float ps[256]
+        cppclass scorer_t:
+            float alpha_sum
+            float alphas[256]
         void group_init (group_t &, rng_t &) nogil
         void group_add_data (group_t &, value_t &, rng_t &) nogil
         void group_remove_data (group_t &, value_t &, rng_t &) nogil
         void group_merge (group_t &, group_t &, rng_t &) nogil
+        void sampler_init (sampler_t &, group_t &, rng_t &) nogil
+        value_t sampler_eval (sampler_t &, rng_t &) nogil
         value_t sample_value (group_t &, rng_t &) nogil
         float score_value (group_t &, value_t &, rng_t &) nogil
         float score_group (group_t &, rng_t &) nogil
@@ -93,6 +100,18 @@ cdef class Model_cy:
         cdef int value = self.ptr.sample_value(group.ptr[0], global_rng)
         return value
 
+    def sample_group(self, int size):
+        cdef Group group = Group()
+        cdef Model_cc.sampler_t sampler
+        self.ptr.sampler_init(sampler, group.ptr[0], global_rng)
+        cdef list result = []
+        cdef int i
+        cdef int value
+        for i in xrange(size):
+            value = self.ptr.sampler_eval(sampler, global_rng)
+            result.append(value)
+        return result
+
     #-------------------------------------------------------------------------
     # Scoring
 
@@ -101,6 +120,16 @@ cdef class Model_cy:
 
     def score_group(self, Group group):
         return self.ptr.score_group(group.ptr[0], global_rng)
+
+    #-------------------------------------------------------------------------
+    # Examples
+
+    EXAMPLE = {
+        'values': [0, 1, 0, 2, 0, 1, 0],
+        'model': {
+            'alphas': [0.5, 0.5, 0.5, 0.5],
+        },
+    }
 
 
 class DirichletDiscrete(Model_cy, Serializable):
