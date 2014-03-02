@@ -19,8 +19,8 @@ cdef extern from "distributions/models/dpm.hpp" namespace "distributions":
         cppclass group_t:
             SparseCounter counts
         void group_init (group_t &, rng_t &) nogil
-        void group_add_data (group_t &, value_t &, rng_t &) nogil
-        void group_remove_data (group_t &, value_t &, rng_t &) nogil
+        void group_add_value (group_t &, value_t &, rng_t &) nogil
+        void group_remove_value (group_t &, value_t &, rng_t &) nogil
         void group_merge (group_t &, group_t &, rng_t &) nogil
         #value_t sample_value (group_t &, rng_t &) nogil
         float score_value (group_t &, value_t &, rng_t &) nogil
@@ -86,11 +86,11 @@ cdef class Model_cy:
     def group_init(self, Group group):
         self.ptr.group_init(group.ptr[0], global_rng)
 
-    def group_add_data(self, Group group, int value):
-        self.ptr.group_add_data(group.ptr[0], value, global_rng)
+    def group_add_value(self, Group group, int value):
+        self.ptr.group_add_value(group.ptr[0], value, global_rng)
 
-    def group_remove_data(self, Group group, int value):
-        self.ptr.group_remove_data(group.ptr[0], value, global_rng)
+    def group_remove_value(self, Group group, int value):
+        self.ptr.group_remove_value(group.ptr[0], value, global_rng)
 
     def group_merge(self, Group destin, Group source):
         self.ptr.group_merge(destin.ptr[0], source.ptr[0], global_rng)

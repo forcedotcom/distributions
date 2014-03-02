@@ -57,7 +57,7 @@ void group_init (
     }
 }
 
-void group_add_data (
+void group_add_value (
         group_t & group,
         const value_t & value,
         rng_t &) const
@@ -65,7 +65,7 @@ void group_add_data (
    group.counts[value] += 1;
 }
 
-void group_remove_data (
+void group_remove_value (
         group_t & group,
         const value_t & value,
         rng_t &) const

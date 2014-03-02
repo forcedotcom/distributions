@@ -43,10 +43,10 @@ def _test_interface(name):
     model.group_init(group1)
     model.group_init(group2)
     for value in values:
-        model.group_add_data(group1, value)
-        model.group_add_data(group2, value)
+        model.group_add_value(group1, value)
+        model.group_add_value(group2, value)
     for value in values:
-        model.group_remove_data(group2, value)
+        model.group_remove_value(group2, value)
     model.group_merge(group2, group1)
 
     for value in values:

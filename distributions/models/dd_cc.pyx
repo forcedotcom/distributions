@@ -21,8 +21,8 @@ cdef extern from "distributions/models/dd.hpp" namespace "distributions":
             float alpha_sum
             float alphas[256]
         void group_init (group_t &, rng_t &) nogil
-        void group_add_data (group_t &, value_t &, rng_t &) nogil
-        void group_remove_data (group_t &, value_t &, rng_t &) nogil
+        void group_add_value (group_t &, value_t &, rng_t &) nogil
+        void group_remove_value (group_t &, value_t &, rng_t &) nogil
         void group_merge (group_t &, group_t &, rng_t &) nogil
         void sampler_init (sampler_t &, group_t &, rng_t &) nogil
         value_t sampler_eval (sampler_t &, rng_t &) nogil
@@ -84,11 +84,11 @@ cdef class Model_cy:
         group.dim = self.ptr.dim
         self.ptr.group_init(group.ptr[0], global_rng)
 
-    def group_add_data(self, Group group, int value):
-        self.ptr.group_add_data(group.ptr[0], value, global_rng)
+    def group_add_value(self, Group group, int value):
+        self.ptr.group_add_value(group.ptr[0], value, global_rng)
 
-    def group_remove_data(self, Group group, int value):
-        self.ptr.group_remove_data(group.ptr[0], value, global_rng)
+    def group_remove_value(self, Group group, int value):
+        self.ptr.group_remove_value(group.ptr[0], value, global_rng)
 
     def group_merge(self, Group destin, Group source):
         self.ptr.group_merge(destin.ptr[0], source.ptr[0], global_rng)

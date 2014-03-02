@@ -62,7 +62,7 @@ void group_init (
     group.counts.clear();
 }
 
-void group_add_data (
+void group_add_value (
         group_t & group,
         const value_t & value,
         rng_t &) const
@@ -70,7 +70,7 @@ void group_add_data (
    group.counts.add(value);
 }
 
-void group_remove_data (
+void group_remove_value (
         group_t & group,
         const value_t & value,
         rng_t &) const
