@@ -142,7 +142,12 @@ cdef class Model_cy:
 
 
 class DirichletDiscrete(Model_cy, Serializable):
+
+    #-------------------------------------------------------------------------
+    # Datatypes
+
     Value = int
+
     Group = Group
 
 

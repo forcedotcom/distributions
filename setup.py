@@ -54,8 +54,8 @@ config = {
     'packages': [
         'distributions',
         'distributions.models',
-        ],
-    }
+    ],
+}
 
 
 if cython:

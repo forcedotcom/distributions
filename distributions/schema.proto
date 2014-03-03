@@ -1,0 +1,8 @@
+package distributions;
+
+message Row {
+  optional string id = 1;
+  repeated bool booleans = 2;
+  repeated uint32 categoricals = 3;
+  repeated float reals = 4;
+}
