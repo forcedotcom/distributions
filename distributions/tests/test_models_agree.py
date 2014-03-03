@@ -9,26 +9,57 @@ for key, val in MODULES.iteritems():
     MODULES[key] = [import_model(m) for m in val]
 
 
-def test_dump_group():
+def test_model():
     for name in MODULES:
-        yield _test_dump_group, name
+        yield _test_model, name
 
 
-def _test_dump_group(name):
+def _test_model(name):
     MODELS = [m.Model for m in MODULES[name]]
     EXAMPLES = [e for m in MODELS for e in m.EXAMPLES]
     for EXAMPLE in EXAMPLES:
         raw_model = EXAMPLE['model']
-        values = EXAMPLE['values']
+        models = [Model.load_model(raw_model) for Model in MODELS]
+        dumped = [m.dump() for m in models]
+        assert_all_close(dumped, err_msg='dump_model')
+
+
+def test_group():
+    for name in MODULES:
+        yield _test_group, name
+
+
+def _test_group(name):
+    MODELS = [m.Model for m in MODULES[name]]
+    EXAMPLES = [e for m in MODELS for e in m.EXAMPLES]
+    for EXAMPLE in EXAMPLES:
+        raw_model = EXAMPLE['model']
+        values = EXAMPLE['values'][:]
         models = [Model.load_model(raw_model) for Model in MODELS]
 
-        groups = []
-        for model in models:
-            group = model.Group()
+        groups = [model.Group() for model in models]
+        models_groups = zip(models, groups)
+        for model, group in models_groups:
             model.group_init(group)
-            for value in values:
-                model.group_add_value(group, value)
-            groups.append(group)
 
-        dumped = [g.dump() for g in groups]
-        assert_all_close(dumped, err_msg='group')
+        for value in values:
+            for model, group in models_groups:
+                model.group_add_value(group, value)
+            dumped = [g.dump() for g in groups]
+            assert_all_close(dumped, err_msg='dump_group')
+
+        for model, group in models_groups:
+            values.append(model.sample_value(group))
+
+        for value in values:
+            scores = [
+                model.score_value(group, value)
+                for model, group in models_groups
+            ]
+            assert_all_close(scores, err_msg='score_value')
+
+        scores = [
+            model.score_group(group)
+            for model, group in models_groups
+        ]
+        assert_all_close(scores, err_msg='score_group')

@@ -76,14 +76,14 @@ def _test_interface(name):
         assert_close(group1.dump(), Model.dump_group(group1))
 
 
-def test_add_remove_add():
+def test_add_remove():
     for name in MODULES:
-        yield add_remove_add, name
+        yield _test_add_remove, name
 
 
-def add_remove_add(name):
+def _test_add_remove(name):
     '''
-    Test group_add_value, group_remove_value, pred_prob, data_prob
+    Test group_add_value, group_remove_value, score_group, score_value
     '''
     Model = MODULES[name].Model
     DATA_COUNT = 20
@@ -133,15 +133,18 @@ def add_remove_add(name):
 
 def test_add_merge():
     for name in MODULES:
-        yield add_remove_add, name
+        yield _test_add_merge, name
 
 
 def _test_add_merge(name):
+    '''
+    Test group_add_value, group_merge
+    '''
     Model = MODULES[name].Model
 
     for EXAMPLE in iter_examples(Model):
         model = Model.load_model(EXAMPLE['model'])
-        values = model['values'][:]
+        values = EXAMPLE['values'][:]
 
         def create_group(values):
             group = model.Group()
