@@ -1,13 +1,22 @@
-from distributions.tests.util import assert_all_close
-from distributions.models import dd_py, dd_cy, dd_cc
+from distributions.tests.util import assert_all_close, import_model
 
 
-MODULES = [dd_py, dd_cy, dd_cc]
-MODELS = [m.Model for m in MODULES]
-EXAMPLES = [e for m in MODELS for e in m.EXAMPLES]
+MODULES = {
+    'dd': ['dd_py', 'dd_cy', 'dd_cc'],
+    'dpm': ['dpm_cc'],
+}
+for key, val in MODULES.iteritems():
+    MODULES[key] = [import_model(m) for m in val]
 
 
 def test_dump_group():
+    for name in MODULES:
+        yield _test_dump_group, name
+
+
+def _test_dump_group(name):
+    MODELS = [m.Model for m in MODULES[name]]
+    EXAMPLES = [e for m in MODELS for e in m.EXAMPLES]
     for EXAMPLE in EXAMPLES:
         raw_model = EXAMPLE['model']
         values = EXAMPLE['values']

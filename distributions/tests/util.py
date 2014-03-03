@@ -1,6 +1,12 @@
 from nose.tools import assert_true, assert_less, assert_equal
 import numpy
 from numpy.testing import assert_array_almost_equal
+import importlib
+
+
+def import_model(name):
+    module_name = 'distributions.models.{}'.format(name)
+    return importlib.import_module(module_name)
 
 
 def assert_hasattr(thing, attr):

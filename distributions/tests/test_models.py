@@ -1,9 +1,8 @@
 import os
 import glob
-import importlib
-from nose.tools import assert_in
+from nose.tools import assert_true, assert_in
 import random
-from distributions.tests.util import assert_hasattr, assert_close
+from distributions.tests.util import assert_hasattr, assert_close, import_model
 
 MODULES = {}
 
@@ -15,8 +14,7 @@ def setUp():
         filename = os.path.split(path)[-1]
         name = os.path.splitext(filename)[0]
         if not name.startswith('__'):
-            module_name = 'distributions.models.{}'.format(name)
-            module = importlib.import_module(module_name)
+            module = import_model(name)
             MODULES[name] = module
 
 
@@ -27,7 +25,9 @@ def test_interface():
 
 def iter_examples(Model):
     assert_hasattr(Model, 'EXAMPLES')
-    for i, EXAMPLE in enumerate(Model.EXAMPLES):
+    EXAMPLES = Model.EXAMPLES
+    assert_true(EXAMPLES, 'no examples provided')
+    for i, EXAMPLE in enumerate(EXAMPLES):
         print 'testing example {}/{}'.format(1 + i, len(Model.EXAMPLES))
         assert_in('model', EXAMPLE)
         assert_in('values', EXAMPLE)

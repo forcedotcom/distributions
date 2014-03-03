@@ -9,6 +9,7 @@ test: install
 	nosetests -v
 	cd build && ctest
 	./test_cmake.sh
+	@echo '---- Passed All Tests ----'
 
 clean: FORCE
 	git clean -dfx
