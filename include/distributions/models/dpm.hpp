@@ -16,7 +16,7 @@ struct DirichletProcessMixture
 
 typedef std::vector<float> betas_t;  // dense
 
-struct hypers_t
+struct Hypers
 {
     float gamma;
     float alpha;
@@ -24,28 +24,28 @@ struct hypers_t
     betas_t betas;
 };
 
-hypers_t hypers;
+Hypers hypers;
 
 //----------------------------------------------------------------------------
 // Datatypes
 
-typedef uint32_t value_t;
+typedef uint32_t Value;
 
-struct group_t
+struct Group
 {
-    typedef SparseCounter<value_t, uint32_t> counts_t;  // sparse
+    typedef SparseCounter<Value, uint32_t> counts_t;  // sparse
 
     counts_t counts;
 };
 
-struct sampler_t
+struct Sampler
 {
     typedef std::vector<float> probs_t;  // dense
 
     probs_t probs;
 };
 
-struct scorer_t
+struct Scorer
 {
     typedef std::vector<float> scores_t;  // dense
 
@@ -56,31 +56,31 @@ struct scorer_t
 // Mutation
 
 void group_init (
-        group_t & group,
+        Group & group,
         rng_t &) const
 {
     group.counts.clear();
 }
 
 void group_add_value (
-        group_t & group,
-        const value_t & value,
+        Group & group,
+        const Value & value,
         rng_t &) const
 {
    group.counts.add(value);
 }
 
 void group_remove_value (
-        group_t & group,
-        const value_t & value,
+        Group & group,
+        const Value & value,
         rng_t &) const
 {
    group.counts.remove(value);
 }
 
 void group_merge (
-        group_t & destin,
-        const group_t & source,
+        Group & destin,
+        const Group & source,
         rng_t &) const
 {
     destin.counts.merge(source.counts);
@@ -90,8 +90,8 @@ void group_merge (
 // Sampling
 
 void sampler_init (
-        sampler_t & sampler,
-        const group_t & group,
+        Sampler & sampler,
+        const Group & group,
         rng_t & rng) const
 {
     std::vector<float> & probs = sampler.probs;
@@ -108,18 +108,18 @@ void sampler_init (
     sample_dirichlet(probs.size(), probs.data(), probs.data(), rng);
 }
 
-value_t sampler_eval (
-        const sampler_t & sampler,
+Value sampler_eval (
+        const Sampler & sampler,
         rng_t & rng) const
 {
     return sample_discrete(sampler.probs.size(), sampler.probs.data(), rng);
 }
 
-value_t sample_value (
-        const group_t & group,
+Value sample_value (
+        const Group & group,
         rng_t & rng) const
 {
-    sampler_t sampler;
+    Sampler sampler;
     sampler_init(sampler, group, rng);
     return sampler_eval(sampler, rng);
 }
@@ -128,8 +128,8 @@ value_t sample_value (
 // Scoring
 
 void scorer_init (
-        scorer_t & scorer,
-        const group_t & group,
+        Scorer & scorer,
+        const Group & group,
         rng_t &) const
 {
     const size_t size = hypers.betas.size();
@@ -144,7 +144,7 @@ void scorer_init (
 
     const float counts_scale = 1.0f / (hypers.alpha + total);
     for (auto i : group.counts) {
-        value_t value = i.first;
+        Value value = i.first;
         DIST_ASSERT(value < size,
             "unknown DPM value: " << value << " >= " << size);
         scores[value] += counts_scale * i.second;
@@ -152,8 +152,8 @@ void scorer_init (
 }
 
 float scorer_eval (
-        const scorer_t & scorer,
-        const value_t & value,
+        const Scorer & scorer,
+        const Value & value,
         rng_t &) const
 {
     const auto & scores = scorer.scores;
@@ -164,17 +164,17 @@ float scorer_eval (
 }
 
 float score_value (
-        const group_t & group,
-        const value_t & value,
+        const Group & group,
+        const Value & value,
         rng_t & rng) const
 {
-    scorer_t scorer;
+    Scorer scorer;
     scorer_init(scorer, group, rng);
     return scorer_eval(scorer, value, rng);
 }
 
 float score_group (
-        const group_t & group,
+        const Group & group,
         rng_t &) const
 {
     const size_t size = hypers.betas.size();
@@ -182,7 +182,7 @@ float score_group (
 
     float score = 0;
     for (auto i : group.counts) {
-        value_t value = i.first;
+        Value value = i.first;
         DIST_ASSERT(value < size,
             "unknown DPM value: " << value << " >= " << size);
         float prior_i = hypers.betas[value] * hypers.alpha;

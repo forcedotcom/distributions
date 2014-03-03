@@ -17,29 +17,29 @@ struct DirichletDiscrete
 
 int dim;                    // fixed paramter
 
-struct hypers_t
+struct Hypers
 {
     float alphas[max_dim];
 };
 
-hypers_t hypers;            // prior hyperparameter
+Hypers hypers;            // prior hyperparameter
 
 //----------------------------------------------------------------------------
 // Datatypes
 
-typedef int value_t;        // per-row state
+typedef int Value;        // per-row state
 
-struct group_t              // local per-component state
+struct Group              // local per-component state
 {
     int counts[max_dim];    // sufficient statistic
 };
 
-struct sampler_t            // partially evaluated sample_value function
+struct Sampler            // partially evaluated sample_value function
 {
     float ps[max_dim];
 };
 
-struct scorer_t             // partially evaluated score_value function
+struct Scorer             // partially evaluated score_value function
 {
     float alpha_sum;
     float alphas[max_dim];
@@ -49,7 +49,7 @@ struct scorer_t             // partially evaluated score_value function
 // Mutation
 
 void group_init (
-        group_t & group,
+        Group & group,
         rng_t &) const
 {
     for (int i = 0; i < dim; ++i) {
@@ -58,24 +58,24 @@ void group_init (
 }
 
 void group_add_value (
-        group_t & group,
-        const value_t & value,
+        Group & group,
+        const Value & value,
         rng_t &) const
 {
    group.counts[value] += 1;
 }
 
 void group_remove_value (
-        group_t & group,
-        const value_t & value,
+        Group & group,
+        const Value & value,
         rng_t &) const
 {
    group.counts[value] -= 1;
 }
 
 void group_merge (
-        group_t & destin,
-        const group_t & source,
+        Group & destin,
+        const Group & source,
         rng_t &) const
 {
     for (int i = 0; i < dim; ++i) {
@@ -87,8 +87,8 @@ void group_merge (
 // Sampling
 
 void sampler_init (
-        sampler_t & sampler,
-        const group_t & group,
+        Sampler & sampler,
+        const Group & group,
         rng_t & rng) const
 {
     for (int i = 0; i < dim; ++i) {
@@ -98,18 +98,18 @@ void sampler_init (
     sample_dirichlet(dim, sampler.ps, sampler.ps, rng);
 }
 
-value_t sampler_eval (
-        const sampler_t & sampler,
+Value sampler_eval (
+        const Sampler & sampler,
         rng_t & rng) const
 {
     return sample_discrete(dim, sampler.ps, rng);
 }
 
-value_t sample_value (
-        const group_t & group,
+Value sample_value (
+        const Group & group,
         rng_t & rng) const
 {
-    sampler_t sampler;
+    Sampler sampler;
     sampler_init(sampler, group, rng);
     return sampler_eval(sampler, rng);
 }
@@ -118,8 +118,8 @@ value_t sample_value (
 // Scoring
 
 void scorer_init (
-        scorer_t & scorer,
-        const group_t & group,
+        Scorer & scorer,
+        const Group & group,
         rng_t &) const
 {
     float alpha_sum = 0;
@@ -134,25 +134,25 @@ void scorer_init (
 }
 
 float scorer_eval (
-        const scorer_t & scorer,
-        const value_t & value,
+        const Scorer & scorer,
+        const Value & value,
         rng_t &) const
 {
     return fastlog(scorer.alphas[value] / scorer.alpha_sum);
 }
 
 float score_value (
-        const group_t & group,
-        const value_t & value,
+        const Group & group,
+        const Value & value,
         rng_t & rng) const
 {
-    scorer_t scorer;
+    Scorer scorer;
     scorer_init(scorer, group, rng);
     return scorer_eval(scorer, value, rng);
 }
 
 float score_group (
-        const group_t & group,
+        const Group & group,
         rng_t &) const
 {
     int count_sum = 0;

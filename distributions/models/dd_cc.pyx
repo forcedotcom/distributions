@@ -6,36 +6,36 @@ cpdef int MAX_DIM = 256
 
 cdef extern from "distributions/models/dd.hpp" namespace "distributions":
     cppclass rng_t
-    ctypedef int value_t
+    ctypedef int Value
     cdef cppclass Model_cc "distributions::DirichletDiscrete<256>":
         int dim
-        cppclass hypers_t:
+        cppclass Hypers:
             float alphas[256]
-        hypers_t hypers
-        #cppclass value_t
-        cppclass group_t:
+        Hypers hypers
+        #cppclass Value
+        cppclass Group:
             int counts[]
-        cppclass sampler_t:
+        cppclass Sampler:
             float ps[256]
-        cppclass scorer_t:
+        cppclass Scorer:
             float alpha_sum
             float alphas[256]
-        void group_init (group_t &, rng_t &) nogil
-        void group_add_value (group_t &, value_t &, rng_t &) nogil
-        void group_remove_value (group_t &, value_t &, rng_t &) nogil
-        void group_merge (group_t &, group_t &, rng_t &) nogil
-        void sampler_init (sampler_t &, group_t &, rng_t &) nogil
-        value_t sampler_eval (sampler_t &, rng_t &) nogil
-        value_t sample_value (group_t &, rng_t &) nogil
-        float score_value (group_t &, value_t &, rng_t &) nogil
-        float score_group (group_t &, rng_t &) nogil
+        void group_init (Group &, rng_t &) nogil
+        void group_add_value (Group &, Value &, rng_t &) nogil
+        void group_remove_value (Group &, Value &, rng_t &) nogil
+        void group_merge (Group &, Group &, rng_t &) nogil
+        void sampler_init (Sampler &, Group &, rng_t &) nogil
+        Value sampler_eval (Sampler &, rng_t &) nogil
+        Value sample_value (Group &, rng_t &) nogil
+        float score_value (Group &, Value &, rng_t &) nogil
+        float score_group (Group &, rng_t &) nogil
 
 
 cdef class Group:
-    cdef Model_cc.group_t * ptr
+    cdef Model_cc.Group * ptr
     cdef int dim  # only required for dumping
     def __cinit__(self):
-        self.ptr = new Model_cc.group_t()
+        self.ptr = new Model_cc.Group()
         self.dim = 0
     def __dealloc__(self):
         del self.ptr
@@ -102,7 +102,7 @@ cdef class Model_cy:
 
     def sample_group(self, int size):
         cdef Group group = Group()
-        cdef Model_cc.sampler_t sampler
+        cdef Model_cc.Sampler sampler
         self.ptr.sampler_init(sampler, group.ptr[0], global_rng)
         cdef list result = []
         cdef int i

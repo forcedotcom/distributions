@@ -7,36 +7,36 @@ from distributions.mixins import Serializable
 
 cdef extern from "distributions/models/dpm.hpp" namespace "distributions":
     cppclass rng_t
-    ctypedef unsigned value_t
+    ctypedef unsigned Value
     cdef cppclass Model_cc "distributions::DirichletProcessMixture":
-        cppclass hypers_t:
+        cppclass Hypers:
             float gamma
             float alpha
             float beta0
             vector[float] betas
-        hypers_t hypers
-        #cppclass value_t
-        cppclass group_t:
+        Hypers hypers
+        #cppclass Value
+        cppclass Group:
             SparseCounter counts
-        cppclass sampler_t:
+        cppclass Sampler:
             vector[float] probs
-        cppclass scorer_t:
+        cppclass Scorer:
             vector[float] scores
-        void group_init (group_t &, rng_t &) nogil
-        void group_add_value (group_t &, value_t &, rng_t &) nogil
-        void group_remove_value (group_t &, value_t &, rng_t &) nogil
-        void group_merge (group_t &, group_t &, rng_t &) nogil
-        void sampler_init (sampler_t &, group_t &, rng_t &) nogil
-        value_t sampler_eval (sampler_t &, rng_t &) nogil
-        value_t sample_value (group_t &, rng_t &) nogil
-        float score_value (group_t &, value_t &, rng_t &) nogil
-        float score_group (group_t &, rng_t &) nogil
+        void group_init (Group &, rng_t &) nogil
+        void group_add_value (Group &, Value &, rng_t &) nogil
+        void group_remove_value (Group &, Value &, rng_t &) nogil
+        void group_merge (Group &, Group &, rng_t &) nogil
+        void sampler_init (Sampler &, Group &, rng_t &) nogil
+        Value sampler_eval (Sampler &, rng_t &) nogil
+        Value sample_value (Group &, rng_t &) nogil
+        float score_value (Group &, Value &, rng_t &) nogil
+        float score_group (Group &, rng_t &) nogil
 
 
 cdef class Group:
-    cdef Model_cc.group_t * ptr
+    cdef Model_cc.Group * ptr
     def __cinit__(self):
-        self.ptr = new Model_cc.group_t()
+        self.ptr = new Model_cc.Group()
     def __dealloc__(self):
         del self.ptr
 
@@ -64,7 +64,7 @@ cdef class Model_cy:
         del self.ptr
 
     def load(self, raw):
-        cdef Model_cc.hypers_t * hypers = & self.ptr.hypers
+        cdef Model_cc.Hypers * hypers = & self.ptr.hypers
         hypers.gamma = float(raw['gamma'])
         hypers.alpha = float(raw['alpha'])
         hypers.beta0 = float(raw['beta0'])
@@ -73,7 +73,7 @@ cdef class Model_cy:
             hypers.betas.push_back(float(beta))
 
     def dump(self):
-        cdef Model_cc.hypers_t * hypers = & self.ptr.hypers
+        cdef Model_cc.Hypers * hypers = & self.ptr.hypers
         betas = []
         cdef int i
         cdef int size = hypers.betas.size()
@@ -113,7 +113,7 @@ cdef class Model_cy:
 
     def sample_group(self, int size):
         cdef Group group = Group()
-        cdef Model_cc.sampler_t sampler
+        cdef Model_cc.Sampler sampler
         self.ptr.sampler_init(sampler, group.ptr[0], global_rng)
         cdef list result = []
         cdef int i
