@@ -5,22 +5,13 @@ import random
 from distributions.tests.util import assert_hasattr, assert_close, import_model
 
 MODULES = {}
-
-
-def setUp():
-    root = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-    models = os.path.join(root, 'models')
-    for path in glob.glob(os.path.join(models, '*.p*')):
-        filename = os.path.split(path)[-1]
-        name = os.path.splitext(filename)[0]
-        if not name.startswith('__'):
-            module = import_model(name)
-            MODULES[name] = module
-
-
-def test_interface():
-    for name in MODULES:
-        yield _test_interface, name
+ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+for path in glob.glob(os.path.join(ROOT, 'models', '*.p*')):
+    filename = os.path.split(path)[-1]
+    name = os.path.splitext(filename)[0]
+    if not name.startswith('__'):
+        module = import_model(name)
+        MODULES[name] = module
 
 
 def iter_examples(Model):
@@ -32,6 +23,11 @@ def iter_examples(Model):
         assert_in('model', EXAMPLE)
         assert_in('values', EXAMPLE)
         yield EXAMPLE
+
+
+def test_interface():
+    for name in MODULES:
+        yield _test_interface, name
 
 
 def _test_interface(name):
