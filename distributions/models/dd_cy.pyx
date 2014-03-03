@@ -131,12 +131,14 @@ cdef class Model_cy:
     #-------------------------------------------------------------------------
     # Examples
 
-    EXAMPLE = {
-        'values': [0, 1, 0, 2, 0, 1, 0],
-        'model': {
-            'alphas': [0.5, 0.5, 0.5, 0.5],
+    EXAMPLES = [
+        {
+            'model': {
+                'alphas': [0.5, 0.5, 0.5, 0.5],
+            },
+            'values': [0, 1, 0, 2, 0, 1, 0],
         },
-    }
+    ]
 
 
 class DirichletDiscrete(Model_cy, Serializable):
