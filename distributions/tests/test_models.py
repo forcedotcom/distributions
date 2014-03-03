@@ -1,6 +1,6 @@
 import os
 import glob
-from nose.tools import assert_true, assert_in
+from nose.tools import assert_true, assert_in, assert_is_instance
 import random
 from distributions.tests.util import assert_hasattr, assert_close, import_model
 
@@ -34,13 +34,17 @@ def _test_interface(name):
     module = MODULES[name]
     assert_hasattr(module, 'Model')
     Model = module.Model
+    assert_hasattr(Model, 'Value')
+    assert_hasattr(Model, 'Group')
 
     for EXAMPLE in iter_examples(Model):
         model = Model.load_model(EXAMPLE['model'])
         values = EXAMPLE['values']
+        for value in values:
+            assert_is_instance(value, Model.Value)
+
         group1 = model.Group()
         group2 = model.Group()
-
         model.group_init(group1)
         model.group_init(group2)
         for value in values:

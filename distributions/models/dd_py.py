@@ -21,6 +21,8 @@ class DirichletDiscrete(Serializable):
     #-------------------------------------------------------------------------
     # Datatypes
 
+    Value = int
+
     class Group(object):
         def __init__(self):
             self.counts = None

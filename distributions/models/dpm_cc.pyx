@@ -149,6 +149,7 @@ cdef class Model_cy:
 
 
 class DirichletProcessMixture(Model_cy, Serializable):
+    Value = int
     Group = Group
 
 

@@ -7,27 +7,26 @@ and which breaks API compatibility.
 
 This package implements a variety of conjugate component models for
 Bayesian MCMC inference.
-Each model tries to have three implementations:
+Each model may have up to three types of implementations:
 
-* a pure python implementation for correctness auditing
+*   `example_py` -
+    a pure python implementation for correctness auditing and debugging.
 
-* a cython implementation for faster inference in python
+*   `example_cy` -
+    cython implementation for faster inference in python and debugging.
 
-* a low-precision C++ implementation for fastest inference in C++
-
-although some models are missing some implementations.
+*   `example_cc` -
+    a low-precision C++ implementation for fastest inference in C++.
+    C++ models are available in the `include/` and `src/` directories,
+    while their python wrappers enable unit testing.
 
 
 ## Cython
 
 Distributions includes several optimized modules that require Cython
-0.15.1 or later. On Ubuntu 12.04, this can be installed as follows:
+0.20.1 or later, as available via
 
-    sudo apt-get install cython
-
-After making a change to a .pyx or .pxd file, rebuild the extension:
-
-    python setup.py build_ext --inplace
+    pip install cython
 
 To install without cython:
 
@@ -38,7 +37,10 @@ Or:
     pip install --global-option --without-cython .
 
 
-## Component Model Interface
+## Component Model API
+
+Component models are written as `Model` classes and `model.method` methods,
+since all operations depend on the model.
 
 Component models are written as free functions with all data passed in
 to emphasize their exact dependencies. The
@@ -47,32 +49,57 @@ all models so that they may be used conveniently elsewhere.
 
 Each component model API consist of:
 
-* datatypes
+*   Datatypes.
+    *   `ExampleModel` - global model state including fixed parameters
+        and hyperparameters
+    *   `ExampleModel.Value` - observation observation state
+    *   `ExampleModel.Group` - local component state including
+        sufficient statistics and possibly group parameters
+    *   `ExampleModel.Sampler` -
+        partially evaluated per-component sampling function
+        (optional in python)
+    *   `ExampleModel.Scorer` -
+        partially evaluated per-component scoring function
+        (optional in python)
 
-* state mutating functions
+*   State mutating functions.
+    These should be simple and fast.
 
-* sampling functions
+        model.group_init(group)
+        model.group_add_value(group, value)
+        model.group_remove_value(group, value)
+        model.group_merge(destin_group, source_group)
 
-* scoring functions
+*   Sampling functions. (optional in python)
+    These consume explicit entropy sources in C++ or `global_rng` in python.
 
-State change functions should be simple and fast.
-Sampling functions consume explicit entropy sources.
-Scoring functions may also consume entropy, when implemented with monte carlo.
+        model.sample_value(group) -> value
+        model.sample_group(group_size) -> value
 
-Throughout the interface we use three types of data:
+*   Scoring functions. (optional in python)
+    These may also consume entropy,
+    e.g. when implemented using monte carlo integration)
 
-* model: global model state including fixed parameters and hyperparameters
+        model.sample_value(group, value) -> float
+        model.sample_group(group) -> float
 
-* group: local component state including sufficient statistics and
-  possibly group parameters
+*   Serialization to JSON (python only).
 
-* value: individual observation state
+        model.load(json)
+        model.dump() -> json
+        group.load(json)
+        group.dump() -> json
+        ExampleModel.load_model(json) -> model
+        ExampleModel.dump_model(model) -> json
+        ExampleModel.load_group(json) -> group
+        ExampleModel.dump_group(group) -> json
 
-Faster inference requires two additional types of data:
 
-* samplers: partially evaluated per-component sampling functions
+## Source of Entropy
 
-* scorers: partially-evaluated per-component scoring functions
+The C++ models explicity require a random number generator `rng` everywhere
+entropy is consumed.
+In python models, a single `global_rng` source is shared.
 
 
 ## License
