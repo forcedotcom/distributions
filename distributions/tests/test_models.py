@@ -20,7 +20,7 @@ def iter_examples(Model):
     assert_is_instance(EXAMPLES, list)
     assert_true(EXAMPLES, 'no examples provided')
     for i, EXAMPLE in enumerate(EXAMPLES):
-        print 'testing example {}/{}'.format(1 + i, len(Model.EXAMPLES))
+        print 'example {}/{}'.format(1 + i, len(Model.EXAMPLES))
         assert_in('model', EXAMPLE)
         assert_in('values', EXAMPLE)
         values = EXAMPLE['values']
