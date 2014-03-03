@@ -17,11 +17,17 @@ for path in glob.glob(os.path.join(ROOT, 'models', '*.p*')):
 def iter_examples(Model):
     assert_hasattr(Model, 'EXAMPLES')
     EXAMPLES = Model.EXAMPLES
+    assert_is_instance(EXAMPLES, list)
     assert_true(EXAMPLES, 'no examples provided')
     for i, EXAMPLE in enumerate(EXAMPLES):
         print 'testing example {}/{}'.format(1 + i, len(Model.EXAMPLES))
         assert_in('model', EXAMPLE)
         assert_in('values', EXAMPLE)
+        values = EXAMPLE['values']
+        assert_is_instance(values, list)
+        assert_true(
+            len(values) >= 2,
+            'too few example values: {}'.format(len(values)))
         yield EXAMPLE
 
 
@@ -34,8 +40,10 @@ def _test_interface(name):
     module = MODULES[name]
     assert_hasattr(module, 'Model')
     Model = module.Model
-    assert_hasattr(Model, 'Value')
-    assert_hasattr(Model, 'Group')
+
+    for typename in ['Value', 'Group']:
+        assert_hasattr(Model, typename)
+        assert_is_instance(getattr(Model, typename), type)
 
     for EXAMPLE in iter_examples(Model):
         model = Model.load_model(EXAMPLE['model'])
@@ -66,6 +74,11 @@ def _test_interface(name):
         assert_close(model.dump(), EXAMPLE['model'])
         assert_close(model.dump(), Model.dump_model(model))
         assert_close(group1.dump(), Model.dump_group(group1))
+
+
+def test_add_remove_add():
+    for name in MODULES:
+        yield add_remove_add, name
 
 
 def add_remove_add(name):
@@ -118,6 +131,31 @@ def add_remove_add(name):
             err_msg='group - values + values != group')
 
 
-def test_add_remove_add():
+def test_add_merge():
     for name in MODULES:
         yield add_remove_add, name
+
+
+def _test_add_merge(name):
+    Model = MODULES[name].Model
+
+    for EXAMPLE in iter_examples(Model):
+        model = Model.load_model(EXAMPLE['model'])
+        values = model['values'][:]
+
+        def create_group(values):
+            group = model.Group()
+            model.group_init(group)
+            for value in values:
+                model.group_add_value(group, value)
+            return group
+
+        random.shuffle(values)
+        group = create_group(values)
+
+        for i in xrange(len(values) + 1):
+            random.shuffle(values)
+            group1 = create_group(values[:i])
+            group2 = create_group(values[i:])
+            model.group_merge(group1, group2)
+            assert_close(group.dump(), group1.dump())
