@@ -1,8 +1,14 @@
 import os
 import glob
 from nose.tools import assert_true, assert_in, assert_is_instance
+from nose.plugins.skip import SkipTest
 import random
-from distributions.tests.util import assert_hasattr, assert_close, import_model
+from distributions.tests.util import (
+    assert_hasattr,
+    assert_close,
+    assert_all_close,
+    import_model,
+)
 import distributions.random
 
 DATA_COUNT = 20
@@ -32,11 +38,6 @@ def iter_examples(Model):
             len(values) >= 2,
             'too few example values: {}'.format(len(values)))
         yield EXAMPLE
-
-
-def test_interface():
-    for name in MODULES:
-        yield _test_interface, name
 
 
 def _test_interface(name):
@@ -77,11 +78,6 @@ def _test_interface(name):
         assert_close(model.dump(), EXAMPLE['model'])
         assert_close(model.dump(), Model.dump_model(model))
         assert_close(group1.dump(), Model.dump_group(group1))
-
-
-def test_add_remove():
-    for name in MODULES:
-        yield _test_add_remove, name
 
 
 def _test_add_remove(name):
@@ -132,11 +128,6 @@ def _test_add_remove(name):
             err_msg='group - values + values != group')
 
 
-def test_add_merge():
-    for name in MODULES:
-        yield _test_add_merge, name
-
-
 def _test_add_merge(name):
     '''
     Test group_add_value, group_merge
@@ -156,11 +147,6 @@ def _test_add_merge(name):
             assert_close(group.dump(), group1.dump())
 
 
-def test_sample_seed():
-    for name in MODULES:
-        yield _test_sample_seed, name
-
-
 def _test_sample_seed(name):
     Model = MODULES[name].Model
     for EXAMPLE in iter_examples(Model):
@@ -175,3 +161,30 @@ def _test_sample_seed(name):
         values2 = [model.sample_value(group2) for _ in xrange(DATA_COUNT)]
 
         assert_close(values1, values2, 'values')
+
+
+def _test_scorer(name):
+    Model = MODULES[name].Model
+    if not hasattr(Model, 'scorer_create'):
+        raise SkipTest()
+    for EXAMPLE in iter_examples(Model):
+        model = Model.load_model(EXAMPLE['model'])
+        values = EXAMPLE['values']
+
+        group = model.group_create()
+        scorer1 = model.scorer_create()
+        scorer2 = model.scorer_create(group)
+        for value in values:
+            score1 = model.scorer_eval(scorer1, value)
+            score2 = model.scorer_eval(scorer2, value)
+            score3 = model.score_value(group, value)
+            assert_all_close([score1, score2, score3])
+
+
+def test_module():
+    for name in MODULES:
+        yield _test_interface, name
+        yield _test_add_remove, name
+        yield _test_add_merge, name
+        yield _test_sample_seed, name
+        yield _test_scorer, name

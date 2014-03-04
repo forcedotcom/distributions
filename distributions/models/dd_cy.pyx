@@ -66,13 +66,17 @@ cdef class Model_cy:
     #-------------------------------------------------------------------------
     # Sampling
 
-    cpdef sampler_init(self, Group group):
+    cpdef sampler_create(self, Group group=None):
         cdef numpy.ndarray[numpy.float64_t, ndim=1] \
             sampler = numpy.zeros(self.dim, dtype=numpy.float64)
         cdef double * ps = <double *> sampler.data
         cdef int i
-        for i in xrange(self.dim):
-            sampler[i] = group.counts[i] + self.alphas[i]
+        if group is None:
+            for i in xrange(self.dim):
+                sampler[i] = self.alphas[i]
+        else:
+            for i in xrange(self.dim):
+                sampler[i] = group.counts[i] + self.alphas[i]
         sample_dirichlet(self.dim, ps, ps)
         return sampler
 
@@ -82,14 +86,14 @@ cdef class Model_cy:
 
     def sample_value(self, Group group):
         cdef numpy.ndarray[numpy.float64_t, ndim=1] \
-            sampler = self.sampler_init(group)
+            sampler = self.sampler_create(group)
         return self.sampler_eval(sampler)
 
     def sample_group(self, int size):
         cdef Group group = Group()
         self.group_init(group)
         cdef numpy.ndarray[numpy.float64_t, ndim=1] \
-            sampler = self.sampler_init(group)
+            sampler = self.sampler_create(group)
         cdef list result = []
         cdef int i
         for i in xrange(size):

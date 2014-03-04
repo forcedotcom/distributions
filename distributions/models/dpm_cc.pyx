@@ -104,9 +104,6 @@ cdef class Model_cy:
     #-------------------------------------------------------------------------
     # Sampling
 
-    def realize(self):
-        raise NotImplementedError()
-
     def sample_value(self, Group group):
         cdef int value = self.ptr.sample_value(group.ptr[0], global_rng)
         return value

@@ -82,6 +82,7 @@ Each component model API consist of:
 *   State mutating functions.
     These should be simple and fast.
 
+        model.group_create(values=[]) -> group         # python only
         model.group_init(group)
         model.group_add_value(group, value)
         model.group_remove_value(group, value)
@@ -90,15 +91,21 @@ Each component model API consist of:
 *   Sampling functions. (optional in python)
     These consume explicit entropy sources in C++ or `global_rng` in python.
 
+        model.sampler_init(sampler, group)            # c++ only
+        model.sampler_create(group=empty) -> sampler  # python only, optional
+        model.sampler_eval(sampler) -> value          # python only, optional
         model.sample_value(group) -> value
-        model.sample_group(group_size) -> value
+        model.sample_group(group_size) -> group
 
 *   Scoring functions. (optional in python)
     These may also consume entropy,
     e.g. when implemented using monte carlo integration)
 
-        model.sample_value(group, value) -> float
-        model.sample_group(group) -> float
+        model.scorer_init(scorer, group)            # c++ only
+        model.scorer_create(group=empty) -> scorer  # python only, optional
+        model.scorer_eval(scorer, value) -> float   # python only, optional
+        model.score_value(group, value) -> float
+        model.score_group(group) -> float
 
 *   Serialization to JSON (python only).
 
