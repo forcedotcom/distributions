@@ -20,6 +20,6 @@ test: install
 	@echo 'PASSED ALL TESTS'
 
 clean: FORCE
-	git clean -dfx
+	git clean -dfX
 
 FORCE:

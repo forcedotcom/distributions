@@ -3,6 +3,9 @@ import glob
 from nose.tools import assert_true, assert_in, assert_is_instance
 import random
 from distributions.tests.util import assert_hasattr, assert_close, import_model
+import distributions.random
+
+DATA_COUNT = 20
 
 MODULES = {}
 ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
@@ -52,12 +55,12 @@ def _test_interface(name):
             assert_is_instance(value, Model.Value)
 
         group1 = model.Group()
-        group2 = model.Group()
         model.group_init(group1)
-        model.group_init(group2)
         for value in values:
             model.group_add_value(group1, value)
-            model.group_add_value(group2, value)
+        group2 = model.group_create(values)
+        assert_close(group1.dump(), group2.dump())
+
         for value in values:
             model.group_remove_value(group2, value)
         model.group_merge(group2, group1)
@@ -86,8 +89,6 @@ def _test_add_remove(name):
     Test group_add_value, group_remove_value, score_group, score_value
     '''
     Model = MODULES[name].Model
-    DATA_COUNT = 20
-
     for EXAMPLE in iter_examples(Model):
 
         model = Model.load_model(EXAMPLE['model'])
@@ -95,9 +96,10 @@ def _test_add_remove(name):
         #values = model['values'][:]
 
         values = []
-        group = model.Group()
-        model.group_init(group)
-        score = 0
+        group = model.group_create()
+        score = 0.0
+        assert_close(model.score_group(group), score, err_msg='p(empty) != 1')
+
         for _ in range(DATA_COUNT):
             value = model.sample_value(group)
             values.append(value)
@@ -115,8 +117,7 @@ def _test_add_remove(name):
         for value in values:
             model.group_remove_value(group, value)
 
-        group_empty = model.Group()
-        model.group_init(group_empty)
+        group_empty = model.group_create()
         assert_close(
             group.dump(),
             group_empty.dump(),
@@ -141,24 +142,36 @@ def _test_add_merge(name):
     Test group_add_value, group_merge
     '''
     Model = MODULES[name].Model
-
     for EXAMPLE in iter_examples(Model):
         model = Model.load_model(EXAMPLE['model'])
         values = EXAMPLE['values'][:]
-
-        def create_group(values):
-            group = model.Group()
-            model.group_init(group)
-            for value in values:
-                model.group_add_value(group, value)
-            return group
-
         random.shuffle(values)
-        group = create_group(values)
+        group = model.group_create(values)
 
         for i in xrange(len(values) + 1):
             random.shuffle(values)
-            group1 = create_group(values[:i])
-            group2 = create_group(values[i:])
+            group1 = model.group_create(values[:i])
+            group2 = model.group_create(values[i:])
             model.group_merge(group1, group2)
             assert_close(group.dump(), group1.dump())
+
+
+def test_sample_seed():
+    for name in MODULES:
+        yield _test_sample_seed, name
+
+
+def _test_sample_seed(name):
+    Model = MODULES[name].Model
+    for EXAMPLE in iter_examples(Model):
+        model = Model.load_model(EXAMPLE['model'])
+
+        distributions.random.seed(0)
+        group1 = model.group_create()
+        values1 = [model.sample_value(group1) for _ in xrange(DATA_COUNT)]
+
+        distributions.random.seed(0)
+        group2 = model.group_create()
+        values2 = [model.sample_value(group2) for _ in xrange(DATA_COUNT)]
+
+        assert_close(values1, values2, 'values')

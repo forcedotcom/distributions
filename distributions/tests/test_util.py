@@ -21,20 +21,23 @@ def test_scores_to_probs():
         assert_less_equal(prob, 1)
 
 
-def test_multinmoial_goodness_of_fit():
-    thresh = 1e-3
-    n = int(1e5)
-    ds = [3, 10, 20]
-    for d in ds:
-        for _ in range(5):
-            probs = numpy.random.dirichlet([1] * d)
-            counts = numpy.random.multinomial(n, probs)
-            p_good = multinomial_goodness_of_fit(probs, counts, n)
-            assert_greater(p_good, thresh)
+def test_multinomial_goodness_of_fit():
+    for dim in range(2, 20):
+        yield _test_multinomial_goodness_of_fit, dim
 
-        unif_counts = numpy.random.multinomial(n, [1. / d] * d)
-        p_bad = multinomial_goodness_of_fit(probs, unif_counts, n)
-        assert_less(p_bad, thresh)
+
+def _test_multinomial_goodness_of_fit(dim):
+    thresh = 1e-3
+    sample_count = int(1e5)
+    probs = numpy.random.dirichlet([1] * dim)
+
+    counts = numpy.random.multinomial(sample_count, probs)
+    p_good = multinomial_goodness_of_fit(probs, counts, sample_count)
+    assert_greater(p_good, thresh)
+
+    unif_counts = numpy.random.multinomial(sample_count, [1. / dim] * dim)
+    p_bad = multinomial_goodness_of_fit(probs, unif_counts, sample_count)
+    assert_less(p_bad, thresh)
 
 
 def test_bin_samples():

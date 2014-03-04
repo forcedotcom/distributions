@@ -7,7 +7,6 @@ namespace distributions
 {
 
 typedef std::mt19937 rng_t;
-extern rng_t global_rng;
 
 // HACK std::gamma_distribution<float> appears to be broken
 //typedef std::gamma_distribution<float> gamma_distribution_t;

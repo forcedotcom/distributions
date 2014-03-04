@@ -4,6 +4,7 @@ add_library(distributions
   common.cc
   special.cc
   random.cc
+  std_wrapper.cc
 )
 
 install(TARGETS distributions ARCHIVE DESTINATION lib)

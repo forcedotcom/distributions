@@ -23,6 +23,15 @@ def assert_close(x, y, sigma, stddevs=4.0):
     assert_less(y, x + sigma * stddevs)
 
 
+def test_seed():
+    global_rng = distributions.cRandom.random
+    distributions.cRandom.seed(0)
+    values1 = [global_rng() for _ in xrange(10)]
+    distributions.cRandom.seed(0)
+    values2 = [global_rng() for _ in xrange(10)]
+    assert_equal(values1, values2)
+
+
 def test_sample_discrete_log_underflow():
     sample_discrete_log([-1e3])
     sample_discrete_log([-1e3, -1e-3])

@@ -2,12 +2,10 @@ import numpy
 cimport numpy
 
 
-cdef extern from "distributions/random.hpp" namespace "distributions":
-    cppclass rng_t
-    cdef rng_t global_rng
-
-
 cdef extern from 'distributions/std_wrapper.hpp' namespace 'std_wrapper':
+    cppclass rng_t:
+        int sample "operator()" ()
+    cdef rng_t global_rng
     cdef void std_rng_seed(unsigned long seed)
     cdef double std_random_normal(double mu, double sigmasq)
     cdef double std_random_chisq(double nu)
@@ -18,6 +16,10 @@ cdef extern from 'distributions/std_wrapper.hpp' namespace 'std_wrapper':
             size_t dim,
             double alphas[],
             double thetas[])
+
+
+cpdef int random():
+    return global_rng.sample()
 
 
 cpdef seed(unsigned long s):

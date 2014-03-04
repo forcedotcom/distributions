@@ -16,6 +16,7 @@ def extension(name):
             'src/common.cc',
             'src/special.cc',
             'src/random.cc',
+            'src/std_wrapper.cc',
         ],
         language='c++',
         libraries=['m'],

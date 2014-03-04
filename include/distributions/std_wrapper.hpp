@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <random>
+#include <distributions/random.hpp>
 
 //----------------------------------------------------------------------------
 // WARNING We use the pattern
@@ -23,32 +24,33 @@
 namespace std_wrapper
 {
 
+typedef distributions::rng_t rng_t;
+extern rng_t global_rng;
+
+
 namespace detail
 {
 
-typedef std::mt19937 rng_t;
-static rng_t rng;
-
 typedef std::normal_distribution<double> normal_distribution_t;
-normal_distribution_t generate_normal;
+extern normal_distribution_t generate_normal;
 
 typedef std::chi_squared_distribution<double> chisq_distribution_t;
-static chisq_distribution_t generate_chisq;
+extern chisq_distribution_t generate_chisq;
 
 typedef std::gamma_distribution<double> gamma_distribution_t;
-static gamma_distribution_t generate_gamma;
+extern gamma_distribution_t generate_gamma;
 
 typedef std::poisson_distribution<int> poisson_distribution_t;
-static poisson_distribution_t generate_poisson;
+extern poisson_distribution_t generate_poisson;
 
-static std::uniform_real_distribution<double> generate_unif01(0.0, 1.0);
+extern std::uniform_real_distribution<double> generate_unif01;
 
 } // namespace detail
 
 
-void std_rng_seed(unsigned long s)
+inline void std_rng_seed(unsigned long s)
 {
-    detail::rng.seed(s);
+    global_rng.seed(s);
     detail::generate_normal.reset();
     detail::generate_chisq.reset();
     detail::generate_gamma.reset();
@@ -56,34 +58,34 @@ void std_rng_seed(unsigned long s)
     detail::generate_unif01.reset();
 }
 
-double std_random_normal(double mu, double sigmasq)
+inline double std_random_normal(double mu, double sigmasq)
 {
     typedef detail::normal_distribution_t::param_type param_type;
-    return detail::generate_normal(detail::rng, param_type(mu, sqrt(sigmasq)));
+    return detail::generate_normal(global_rng, param_type(mu, sqrt(sigmasq)));
 }
 
-double std_random_chisq(double nu)
+inline double std_random_chisq(double nu)
 {
     typedef detail::chisq_distribution_t::param_type param_type;
-    return detail::generate_chisq(detail::rng, param_type(nu));
+    return detail::generate_chisq(global_rng, param_type(nu));
 }
 
-double std_random_gamma(double alpha, double beta)
+inline double std_random_gamma(double alpha, double beta)
 {
     typedef detail::gamma_distribution_t::param_type param_type;
-    return detail::generate_gamma(detail::rng, param_type(alpha, beta));
+    return detail::generate_gamma(global_rng, param_type(alpha, beta));
 }
 
-int std_random_poisson(double mu)
+inline int std_random_poisson(double mu)
 {
     typedef detail::poisson_distribution_t::param_type param_type;
-    return detail::generate_poisson(detail::rng, param_type(mu));
+    return detail::generate_poisson(global_rng, param_type(mu));
 }
 
 template<class real_t>
-int std_random_categorical(size_t D, const real_t * ps)
+inline int std_random_categorical(size_t D, const real_t * ps)
 {
-    double t = detail::generate_unif01(detail::rng);
+    double t = detail::generate_unif01(global_rng);
     for (size_t d = 0; d < D - 1; ++d) {
         t -= ps[d];
         if (t < 0) {
@@ -94,7 +96,10 @@ int std_random_categorical(size_t D, const real_t * ps)
 }
 
 template<class real_t>
-void std_random_dirichlet(size_t D, const real_t * alphas, real_t * thetas)
+inline void std_random_dirichlet(
+        size_t D,
+        const real_t * alphas,
+        real_t * thetas)
 {
     double total = 0.0;
     for (size_t d = 0; d < D; ++d) {

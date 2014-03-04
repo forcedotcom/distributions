@@ -1,5 +1,5 @@
 from distributions.cRandom cimport global_rng
-from distributions.mixins import Serializable
+from distributions.mixins import ComponentModel, Serializable
 
 cpdef int MAX_DIM = 256
 
@@ -134,7 +134,7 @@ cdef class Model_cy:
     ]
 
 
-class DirichletDiscrete(Model_cy, Serializable):
+class DirichletDiscrete(Model_cy, ComponentModel, Serializable):
 
     #-------------------------------------------------------------------------
     # Datatypes

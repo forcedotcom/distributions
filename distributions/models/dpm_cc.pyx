@@ -2,7 +2,7 @@ from libcpp.vector cimport vector
 from cython.operator cimport dereference as deref, preincrement as inc
 from distributions.cRandom cimport global_rng
 from distributions.sparse_counter cimport SparseCounter
-from distributions.mixins import Serializable
+from distributions.mixins import ComponentModel, Serializable
 
 
 cdef extern from "distributions/models/dpm.hpp" namespace "distributions":
@@ -148,7 +148,7 @@ cdef class Model_cy:
     ]
 
 
-class DirichletProcessMixture(Model_cy, Serializable):
+class DirichletProcessMixture(Model_cy, ComponentModel, Serializable):
 
     #-------------------------------------------------------------------------
     # Datatypes

@@ -1,10 +1,10 @@
 import numpy
 from distributions.special import log, gammaln
 from distributions.random import sample_discrete, sample_dirichlet
-from distributions.mixins import Serializable
+from distributions.mixins import ComponentModel, Serializable
 
 
-class DirichletDiscrete(Serializable):
+class DirichletDiscrete(ComponentModel, Serializable):
     def __init__(self):
         self.alphas = None
 

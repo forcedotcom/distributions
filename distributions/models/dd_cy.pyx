@@ -3,7 +3,7 @@ cimport numpy
 numpy.import_array()
 from distributions.cSpecial cimport log, gammaln
 from distributions.cRandom cimport sample_dirichlet, sample_discrete
-from distributions.mixins import Serializable
+from distributions.mixins import ComponentModel, Serializable
 
 cpdef int MAX_DIM = 256
 
@@ -141,7 +141,7 @@ cdef class Model_cy:
     ]
 
 
-class DirichletDiscrete(Model_cy, Serializable):
+class DirichletDiscrete(Model_cy, ComponentModel, Serializable):
 
     #-------------------------------------------------------------------------
     # Datatypes

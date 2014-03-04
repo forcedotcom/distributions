@@ -37,10 +37,8 @@ def _test_group(name):
         values = EXAMPLE['values'][:]
         models = [Model.load_model(raw_model) for Model in MODELS]
 
-        groups = [model.Group() for model in models]
+        groups = [model.group_create() for model in models]
         models_groups = zip(models, groups)
-        for model, group in models_groups:
-            model.group_init(group)
 
         for value in values:
             for model, group in models_groups:
