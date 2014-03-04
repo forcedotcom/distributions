@@ -34,10 +34,18 @@ def extension(name):
             #'-Wno-sign-compare',
             #'-Wno-strict-aliasing',
             '-O3',
-            #'-march=native',
+            '-mfpmath=sse',
+            '-msse4.1',
+            #'-mavx',
             '-ffast-math',
             '-funsafe-math-optimizations',
-        ])
+            #'-fno-trapping-math',
+            #'-ffinite-math-only',
+            #'-fvect-cost-model',
+            #'-mrecip',
+            #'-march=native',
+        ],
+    )
 
 
 model_feature = Feature(
