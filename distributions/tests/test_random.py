@@ -1,8 +1,14 @@
 import itertools
 import numpy
 import scipy
-from nose.tools import assert_less
-from distributions import cRandom
+from nose.tools import (
+    assert_less,
+    assert_equal,
+    assert_almost_equal,
+    assert_raises,
+)
+import distributions.cRandom
+from distributions.random import sample_stick, sample_discrete_log
 
 
 SAMPLES = 1000
@@ -17,6 +23,28 @@ def assert_close(x, y, sigma, stddevs=4.0):
     assert_less(y, x + sigma * stddevs)
 
 
+def test_sample_discrete_log_underflow():
+    sample_discrete_log([-1e3])
+    sample_discrete_log([-1e3, -1e-3])
+
+
+def test_sample_discrete_log():
+    assert_equal(sample_discrete_log([-1.]), 0)
+    assert_equal(sample_discrete_log([-1e3]), 0)
+    assert_equal(sample_discrete_log([-1e-3]), 0)
+    assert_equal(sample_discrete_log([-1., -1e3]), 0)
+    assert_equal(sample_discrete_log([-1e3, -1.]), 1)
+    assert_raises(Exception, sample_discrete_log, [])
+
+
+def test_sample_stick():
+    gammas = [.1, 1., 5., 10.]
+    for gamma in gammas:
+        for _ in range(5):
+            betas = sample_stick(gamma).values()
+            assert_almost_equal(sum(betas), 1., places=5)
+
+
 def scipy_normal_draw(mean, variance):
     return scipy.stats.norm.rvs(mean, numpy.sqrt(variance))
 
@@ -27,7 +55,7 @@ def test_normal_draw():
     for mean, variance in itertools.product(means, variances):
         # Assume scipy.stats is correct
         #yield _test_normal_draw, scipy_normal_draw, mean, variance
-        _test_normal_draw(cRandom.sample_normal, mean, variance)
+        _test_normal_draw(distributions.cRandom.sample_normal, mean, variance)
 
 
 def _test_normal_draw(draw, mean, variance):
@@ -43,7 +71,7 @@ def test_chisq_draw():
     for nu in nus:
         # Assume scipy.stats is correct
         #yield _test_chisq_draw, scipy.stats.chi2.rvs, nu
-        _test_chisq_draw(cRandom.sample_chisq, nu)
+        _test_chisq_draw(distributions.cRandom.sample_chisq, nu)
 
 
 def _test_chisq_draw(draw, nu):

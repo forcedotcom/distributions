@@ -1,41 +1,15 @@
 import numpy
 from nose.tools import (
-    assert_equal,
-    assert_almost_equal,
     assert_less,
     assert_less_equal,
     assert_greater,
     assert_list_equal,
-    assert_raises,
 )
-from distributions.random import sample_stick, sample_discrete_log
 from distributions.util import (
     scores_to_probs,
     bin_samples,
     multinomial_goodness_of_fit,
 )
-
-
-def test_sample_discrete_log_underflow():
-    sample_discrete_log([-1e3])
-    sample_discrete_log([-1e3, -1e-3])
-
-
-def test_sample_discrete_log():
-    assert_equal(sample_discrete_log([-1.]), 0)
-    assert_equal(sample_discrete_log([-1e3]), 0)
-    assert_equal(sample_discrete_log([-1e-3]), 0)
-    assert_equal(sample_discrete_log([-1., -1e3]), 0)
-    assert_equal(sample_discrete_log([-1e3, -1.]), 1)
-    assert_raises(Exception, sample_discrete_log, [])
-
-
-def test_stick():
-    gammas = [.1, 1., 5., 10.]
-    for gamma in gammas:
-        for _ in range(5):
-            betas = sample_stick(gamma).values()
-            assert_almost_equal(sum(betas), 1., places=5)
 
 
 def test_scores_to_probs():

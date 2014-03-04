@@ -1,9 +1,11 @@
 # Distributions [![Build Status](https://travis-ci.org/forcedotcom/distributions.png)](https://travis-ci.org/forcedotcom/distributions)
 
+<p style="background-color:#ffaaaa;">
 <b>WARNING</b>
 This is the unstable 2.0 branch of distributions,
 which is a complete rewrite of the stable 1.0 master branch,
 and which breaks API compatibility.
+</p>
 
 This package implements a variety of conjugate component models for
 Bayesian MCMC inference.
