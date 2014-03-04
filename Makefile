@@ -1,7 +1,7 @@
 install: FORCE
 	pip install -e .
 	mkdir -p build
-	cd build && cmake .. &&  make
+	cd build && cmake .. &&  $(MAKE)
 
 protobuf: FORCE
 	protoc --cpp_out=include/ --python_out=. distributions/schema.proto
