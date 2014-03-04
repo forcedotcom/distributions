@@ -1,20 +1,16 @@
-CMAKE=
+all: test
 
-
-install: FORCE
+install_cc: FORCE
 	mkdir -p build
 	cd build &&\
 	  cmake -DCMAKE_INSTALL_PREFIX=$(VIRTUAL_ENV) .. &&\
 	  $(MAKE) install
+
+install_py: install_cc FORCE
 	pip install -r requirements.txt
 	pip install -e .
 
-protobuf: FORCE
-	protoc --cpp_out=include/ --python_out=. distributions/schema.proto
-	mv include/distributions/schema.pb.cc src/
-	@pyflakes distributions/schema_pb2.py ||\
-	  echo '...patching schema_pb2.py' ;\
-	  sed -i '/descriptor_pb2/d' distributions/schema_pb2.py  # HACK
+install: install_py install_cc
 
 test: install
 	pyflakes setup.py distributions
@@ -25,7 +21,14 @@ test: install
 	@echo '----------------'
 	@echo 'PASSED ALL TESTS'
 
+protobuf: FORCE
+	protoc --cpp_out=include/ --python_out=. distributions/schema.proto
+	mv include/distributions/schema.pb.cc src/
+	@pyflakes distributions/schema_pb2.py ||\
+	  echo '...patching schema_pb2.py' ;\
+	  sed -i '/descriptor_pb2/d' distributions/schema_pb2.py  # HACK
+
 clean: FORCE
-	git clean -dfX
+	git clean -Xdf
 
 FORCE:
