@@ -1,13 +1,13 @@
 include_directories(../include)
 
-add_library(distributions
+add_library(distributions SHARED
   common.cc
   special.cc
   random.cc
   std_wrapper.cc
 )
 
-install(TARGETS distributions ARCHIVE DESTINATION lib)
+install(TARGETS distributions LIBRARY DESTINATION lib)
 
 add_executable(test_models
   test_models.cc

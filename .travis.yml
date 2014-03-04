@@ -11,6 +11,6 @@ install:
   - make install
   - pip freeze
 script:
-  - make test
+  - LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$VIRTUAL_ENV/lib" make test
 cache:
   apt: true
