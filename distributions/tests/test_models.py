@@ -2,6 +2,7 @@ import os
 import glob
 from nose.tools import assert_true, assert_in, assert_is_instance
 from nose.plugins.skip import SkipTest
+from numpy.testing import assert_array_almost_equal
 import random
 from distributions.tests.util import (
     assert_hasattr,
@@ -181,6 +182,33 @@ def _test_scorer(name):
             assert_all_close([score1, score2, score3])
 
 
+def _test_vector_scorer(name):
+    Model = MODULES[name].Model
+    if not hasattr(Model, 'VectorScorer'):
+        raise SkipTest()
+
+    for EXAMPLE in iter_examples(Model):
+        model = Model.load_model(EXAMPLE['model'])
+        values = EXAMPLE['values']
+
+        groups = [
+            model.group_create(values[i:j])
+            for i in xrange(len(values))
+            for j in xrange(i, 1 + len(values))
+        ]
+        group_count = len(groups)
+
+        scorer = model.VectorScorer()
+        model.vector_scorer_init(scorer, group_count)
+        for index, group in enumerate(groups):
+            model.vector_scorer_update(scorer, index, group)
+
+        for value in values:
+            scores1 = model.vector_scorer_eval(scorer, value)
+            scores2 = [model.score_value(group, value) for group in groups]
+            assert_array_almost_equal(scores1, scores2)
+
+
 def test_module():
     for name in MODULES:
         yield _test_interface, name
@@ -188,3 +216,4 @@ def test_module():
         yield _test_add_merge, name
         yield _test_sample_seed, name
         yield _test_scorer, name
+        #yield _test_vector_scorer, name  # FIXME

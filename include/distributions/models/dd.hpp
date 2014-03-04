@@ -46,6 +46,11 @@ struct Scorer
     float alphas[max_dim];
 };
 
+struct VectorScorer
+{
+    std::vector<FloatVector> scores;
+};
+
 //----------------------------------------------------------------------------
 // Mutation
 
@@ -171,6 +176,45 @@ float score_group (
     score += fast_lgamma(alpha_sum) - fast_lgamma(alpha_sum + count_sum);
 
     return score;
+}
+
+void vector_scorer_init (
+        VectorScorer & scorer,
+        size_t group_count,
+        rng_t & rng) const
+{
+    scorer.scores.resize(dim);
+    for (int i = 0; i < dim; ++i) {
+        scorer.scores[i].resize(group_count);
+    }
+}
+
+void vector_scorer_update (
+        VectorScorer & scorer,
+        size_t group_index,
+        const Group & group,
+        rng_t &) const
+{
+    FloatVector & scores = scorer.scores[group_index];
+    float alpha_sum = 0;
+    for (int i = 0; i < dim; ++i) {
+        float alpha = hypers.alphas[i] + group.counts[i];
+        scores[i] = alpha;
+        alpha_sum += alpha;
+    }
+    float shift = -fast_log(alpha_sum);
+    vector_log(scores.size(), scores.data());
+    vector_shift(scores.size(), scores.data(), shift);
+}
+
+
+void vector_scorer_eval (
+        FloatVector & scores,
+        const VectorScorer & scorer,
+        const Value & value,
+        rng_t &) const
+{
+    scores = scorer.scores[value];
 }
 
 }; // struct DirichletDiscrete<max_dim>

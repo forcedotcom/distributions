@@ -1,7 +1,14 @@
+from libcpp.vector cimport vector
 from distributions.cRandom cimport global_rng
 from distributions.mixins import ComponentModel, Serializable
 
 cpdef int MAX_DIM = 256
+
+
+cdef extern from "distributions/vector.hpp" namespace "distributions":
+    cppclass FloatVector:
+        size_t size ()
+        float & at "operator[]" (size_t index)
 
 
 cdef extern from "distributions/models/dd.hpp" namespace "distributions":
@@ -20,6 +27,8 @@ cdef extern from "distributions/models/dd.hpp" namespace "distributions":
         cppclass Scorer:
             float alpha_sum
             float alphas[256]
+        cppclass VectorScorer:
+            vector[FloatVector] scores
         void group_init (Group &, rng_t &) nogil
         void group_add_value (Group &, Value &, rng_t &) nogil
         void group_remove_value (Group &, Value &, rng_t &) nogil
@@ -29,6 +38,13 @@ cdef extern from "distributions/models/dd.hpp" namespace "distributions":
         Value sample_value (Group &, rng_t &) nogil
         float score_value (Group &, Value &, rng_t &) nogil
         float score_group (Group &, rng_t &) nogil
+        void vector_scorer_init (VectorScorer &, size_t, rng_t &)
+        void vector_scorer_update (VectorScorer &, size_t, Group &, rng_t &)
+        void vector_scorer_eval (
+                FloatVector &,
+                VectorScorer &,
+                Value &,
+                rng_t &)
 
 
 cdef class Group:
@@ -53,6 +69,14 @@ cdef class Group:
         for i in xrange(self.dim):
             counts.append(self.ptr.counts[i])
         return {'counts': counts}
+
+
+cdef class VectorScorer:
+    cdef Model_cc.VectorScorer * ptr
+    def __cinit__(self):
+        self.ptr = new Model_cc.VectorScorer()
+    def __dealloc__(self):
+        del self.ptr
 
 
 cdef class Model_cy:
@@ -121,6 +145,31 @@ cdef class Model_cy:
     def score_group(self, Group group):
         return self.ptr.score_group(group.ptr[0], global_rng)
 
+    def vector_scorer_init(self, VectorScorer scorer, int group_count):
+        self.ptr.vector_scorer_init(scorer.ptr[0], group_count, global_rng)
+
+    def vector_scorer_update(
+            self,
+            VectorScorer scorer,
+            int group_index,
+            Group group):
+        self.ptr.vector_scorer_update(
+                scorer.ptr[0],
+                group_index,
+                group.ptr[0],
+                global_rng)
+
+    def vector_scorer_eval(self, VectorScorer scorer, int value):
+        cdef FloatVector scores
+        self.ptr.vector_scorer_eval(scores, scorer.ptr[0], value, global_rng)
+        cdef list result = []
+        cdef float score
+        cdef int i
+        for i in xrange(scores.size()):
+            score = scores.at(i)
+            result.append(score)
+        return result
+
     #-------------------------------------------------------------------------
     # Examples
 
@@ -142,6 +191,8 @@ class DirichletDiscrete(Model_cy, ComponentModel, Serializable):
     Value = int
 
     Group = Group
+
+    VectorScorer = VectorScorer
 
 
 Model = DirichletDiscrete

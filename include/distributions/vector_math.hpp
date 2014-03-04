@@ -32,6 +32,26 @@ inline float vector_sum (
     return res;
 }
 
+inline void vector_shift (
+        const size_t size,
+        float * __restrict__ x,
+        const float shift)
+{
+    for (size_t i = 0; i < size; ++i) {
+        x[i] += shift;
+    }
+}
+
+inline void vector_scale (
+        const size_t size,
+        float * __restrict__ x,
+        const float scale)
+{
+    for (size_t i = 0; i < size; ++i) {
+        x[i] *= scale;
+    }
+}
+
 
 inline void vector_exp (
         const size_t size,

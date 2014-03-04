@@ -6,6 +6,6 @@
 namespace distributions
 {
 
-typedef std::vector<float, aligned_allocator<float>> Vector;
+typedef std::vector<float, aligned_allocator<float>> FloatVector;
 
 } // namespace distributions
