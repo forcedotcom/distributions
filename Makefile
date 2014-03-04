@@ -1,7 +1,8 @@
 install: FORCE
-	pip install -e .
 	mkdir -p build
 	cd build && cmake .. &&  $(MAKE)
+	pip install -r requirements.txt
+	pip install -e .
 
 protobuf: FORCE
 	protoc --cpp_out=include/ --python_out=. distributions/schema.proto

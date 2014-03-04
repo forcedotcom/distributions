@@ -1,3 +1,5 @@
+import os
+import re
 from setuptools import setup, Extension, Feature
 try:
     from Cython.Distutils import build_ext
@@ -8,19 +10,22 @@ except ImportError:
     print 'not building cython extensions'
 
 
+VERSION = None
+with open(os.path.join('distributions', '__init__.py')) as f:
+    for line in f:
+        if re.match("__version__ = '\S+'$", line):
+            VERSION = line.split()[-1].strip("'")
+assert VERSION, 'could not determine version'
+
+
 def extension(name):
     return Extension(
         'distributions.{0}'.format(name.replace('/', '.')),
-        [
-            'distributions/{0}.pyx'.format(name),
-            'src/common.cc',
-            'src/special.cc',
-            'src/random.cc',
-            'src/std_wrapper.cc',
-        ],
+        sources=['distributions/{0}.pyx'.format(name)],
         language='c++',
-        libraries=['m'],
         include_dirs=['include'],
+        libraries=['m', 'distributions'],
+        library_dirs=['build/src'],
         extra_compile_args=[
             '-std=c++0x',
             '-Wall',
@@ -50,6 +55,7 @@ model_feature = Feature(
 
 
 config = {
+    'version': VERSION,
     'features': {'cython': model_feature},
     'name': 'distributions',
     'packages': [
