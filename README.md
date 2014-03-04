@@ -23,6 +23,21 @@ Each model may have up to three types of implementations:
     while their python wrappers enable unit testing.
 
 
+## Installing
+
+To build and install C++, Cython, and Python libraries into a virtualenv, simply
+
+    make install
+
+Then point `LD_LIBRARY_PATH` to find `libdistributions.so` in your virtualenv
+
+    echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$VIRTUAL_ENV/lib' >> $VIRTUAL_ENV/bin/postactivate
+
+Finally, test your installation with
+
+    make test
+
+
 ## Cython
 
 Distributions includes several optimized modules that require Cython
