@@ -160,7 +160,7 @@ float scorer_eval (
     size_t size = scores.size();
     DIST_ASSERT(value < size,
         "unknown DPM value: " << value << " >= " << size);
-    return fastlog(scores[value]);
+    return fast_log(scores[value]);
 }
 
 float score_value (
@@ -186,11 +186,11 @@ float score_group (
         DIST_ASSERT(value < size,
             "unknown DPM value: " << value << " >= " << size);
         float prior_i = hypers.betas[value] * hypers.alpha;
-        score += fastlgamma(prior_i + i.second)
-               - fastlgamma(prior_i);
+        score += fast_lgamma(prior_i + i.second)
+               - fast_lgamma(prior_i);
     }
-    score += fastlgamma(hypers.alpha)
-           - fastlgamma(hypers.alpha + total);
+    score += fast_lgamma(hypers.alpha)
+           - fast_lgamma(hypers.alpha + total);
 
     return score;
 }

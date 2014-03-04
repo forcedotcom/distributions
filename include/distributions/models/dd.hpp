@@ -3,6 +3,8 @@
 #include <distributions/common.hpp>
 #include <distributions/special.hpp>
 #include <distributions/random.hpp>
+#include <distributions/vector.hpp>
+#include <distributions/vector_math.hpp>
 
 namespace distributions
 {
@@ -11,35 +13,34 @@ template<int max_dim>
 struct DirichletDiscrete
 {
 
-//                          Comments are only temporary
 //----------------------------------------------------------------------------
 // Data
 
-int dim;                    // fixed paramter
+int dim;
 
 struct Hypers
 {
     float alphas[max_dim];
 };
 
-Hypers hypers;            // prior hyperparameter
+Hypers hypers;
 
 //----------------------------------------------------------------------------
 // Datatypes
 
-typedef int Value;        // per-row state
+typedef int Value;
 
-struct Group              // local per-component state
+struct Group
 {
-    int counts[max_dim];    // sufficient statistic
+    int counts[max_dim];
 };
 
-struct Sampler            // partially evaluated sample_value function
+struct Sampler
 {
     float ps[max_dim];
 };
 
-struct Scorer             // partially evaluated score_value function
+struct Scorer
 {
     float alpha_sum;
     float alphas[max_dim];
@@ -138,7 +139,7 @@ float scorer_eval (
         const Value & value,
         rng_t &) const
 {
-    return fastlog(scorer.alphas[value] / scorer.alpha_sum);
+    return fast_log(scorer.alphas[value] / scorer.alpha_sum);
 }
 
 float score_value (
@@ -164,10 +165,10 @@ float score_group (
         float alpha = hypers.alphas[i];
         count_sum += count;
         alpha_sum += alpha;
-        score += fastlgamma(alpha + count) - fastlgamma(alpha);
+        score += fast_lgamma(alpha + count) - fast_lgamma(alpha);
     }
 
-    score += fastlgamma(alpha_sum) - fastlgamma(alpha_sum + count_sum);
+    score += fast_lgamma(alpha_sum) - fast_lgamma(alpha_sum + count_sum);
 
     return score;
 }

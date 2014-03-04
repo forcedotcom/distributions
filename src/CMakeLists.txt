@@ -5,6 +5,7 @@ add_library(distributions SHARED
   special.cc
   random.cc
   std_wrapper.cc
+  vector_math.cc
 )
 
 install(TARGETS distributions LIBRARY DESTINATION lib)

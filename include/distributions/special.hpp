@@ -11,6 +11,18 @@
 namespace distributions
 {
 
+template<class T> T sqr (const T & t)
+{
+    return t * t;
+}
+
+
+//----------------------------------------------------------------------------
+// fast_log
+
+namespace detail
+{
+
 /// Implements the ICSI fast log algorithm, v2.
 class FastLog
 {
@@ -39,16 +51,26 @@ private:
 
 static FastLog GLOBAL_FAST_LOG_14(14);
 
-inline float fastlog (float x)
+} // namespace detail
+
+inline float fast_log (float x)
 {
-    return GLOBAL_FAST_LOG_14.log(x);
+    return detail::GLOBAL_FAST_LOG_14.log(x);
 }
 
+
+//----------------------------------------------------------------------------
+// fast_lgamma
+
+namespace detail
+{
 
 extern const char LogTable256[256];
 extern const float lgamma_approx_coeff5[];
 
-inline float fastlgamma (float y)
+} // namespace detail
+
+inline float fast_lgamma (float y)
 {
     // A piecewise fifth-order approximation of loggamma,
     // which bottoms out in libc gammaln for vals < 1.0
@@ -63,7 +85,7 @@ inline float fastlgamma (float y)
         return lgamma(y);
     }
 
-    // stolen from:
+    // adapted from:
     // http://www-graphics.stanford.edu/~seander/bithacks.html#IntegerLogLookup
     float v = y;                // find int(log2(v)), where v > 0.0 && finite(v)
     int c;                      // 32-bit int c gets the result;
@@ -76,19 +98,21 @@ inline float fastlgamma (float y)
     } else { // subnormal, so recompute using mantissa: c = intlog2(x) - 149;
         register unsigned int t; // temporary
         if ((t = x >> 16)) {
-            c = LogTable256[t] - 133;
+            c = detail::LogTable256[t] - 133;
         } else {
-            c = (t = x >> 8) ? LogTable256[t] - 141 : LogTable256[x] - 149;
+            c = (t = x >> 8)
+              ? detail::LogTable256[t] - 141
+              : detail::LogTable256[x] - 149;
         }
     }
 
     int pos = c *6;
-    float a5 = lgamma_approx_coeff5[pos];
-    float a4 = lgamma_approx_coeff5[pos + 1];
-    float a3 = lgamma_approx_coeff5[pos + 2];
-    float a2 = lgamma_approx_coeff5[pos + 3];
-    float a1 = lgamma_approx_coeff5[pos + 4];
-    float a0 = lgamma_approx_coeff5[pos + 5];
+    float a5 = detail::lgamma_approx_coeff5[pos];
+    float a4 = detail::lgamma_approx_coeff5[pos + 1];
+    float a3 = detail::lgamma_approx_coeff5[pos + 2];
+    float a2 = detail::lgamma_approx_coeff5[pos + 3];
+    float a1 = detail::lgamma_approx_coeff5[pos + 4];
+    float a0 = detail::lgamma_approx_coeff5[pos + 5];
 
     double yprod = y;
     double sum = a0;
@@ -108,5 +132,80 @@ inline float fastlgamma (float y)
 
     return sum;
 }
+
+
+//----------------------------------------------------------------------------
+// fast_lgamma_nu, logStudentT
+
+extern const float lgamma_nu_func_approx_coeff3[];
+
+inline float poly_eval_3(
+        const float * __restrict__ coeff,
+        float x)
+{
+    // evaluate the polynomial with the indicated
+    // coefficients
+    float a0 = coeff[3];
+    float a1 = coeff[2];
+    float a2 = coeff[1];
+    float a3 = coeff[0];
+
+    return a0 + x*a1 + x*x*a2 + x*x*x*a3;
+}
+
+inline float fast_lgamma_nu (float nu)
+{
+    // Approximation of the sensitive, time-consuming
+    // lgamma(nu / 2.0 + 0.5) - lgamma(nu/2.0)
+    // function inside log student t
+
+    // see loggamma.py:lstudent for coeff gen
+
+    DIST_ASSERT(
+        nu <= 4294967295.0f,
+        "loggamma nu approx : value " << nu << " outside of domain");
+
+    if (nu < 0.0625f) {
+        return lgammaf(nu * 0.5f + 0.5f) - lgammaf(nu * 0.5f);
+    }
+
+    // adapted from:
+    // http://www-graphics.stanford.edu/~seander/bithacks.html#IntegerLogLookup
+    float v = nu;               // find int(log2(v)), where v > 0.0 && finite(v)
+    int c;                      // 32-bit int c gets the result;
+    int x = *(const int *) &v;  // or portably:  memcpy(&x, &v, sizeof x);
+
+    c = x >> 23;
+
+    if (c) {
+        c -= 127;
+    } else { // subnormal, so recompute using mantissa: c = intlog2(x) - 149;
+        register unsigned int t; // temporary
+        if ((t = x >> 16)) {
+            c = detail::LogTable256[t] - 133;
+        } else {
+            c = (t = x >> 8)
+              ? detail::LogTable256[t] - 141
+              : detail::LogTable256[x] - 149;
+        }
+    }
+
+    int pos = ((c + 4) / 2) * 4 ; // remember the POT range is 2
+    return poly_eval_3(lgamma_nu_func_approx_coeff3 + pos, nu);
+}
+
+inline float logStudentT (
+        float x,
+        float v,
+        float mean,
+        float lambda)
+{
+    float p = 0.f;
+    p += fast_lgamma_nu(v);
+    p += 0.5f * fast_log(lambda / (M_PIf * v));
+    p += (-0.5f * v - 0.5f) * fast_log(1.f + (lambda * sqr(x - mean)) / v);
+    return p;
+}
+
 
 } // namespace distributions
