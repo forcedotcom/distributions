@@ -11,21 +11,21 @@ class ComponentModel(object):
 class Serializable(object):
 
     @classmethod
-    def load_model(cls, raw):
+    def model_load(cls, raw):
         model = cls()
         model.load(raw)
         return model
 
     @staticmethod
-    def dump_model(model):
+    def model_dump(model):
         return model.dump()
 
     @classmethod
-    def load_group(cls, raw):
+    def group_load(cls, raw):
         group = cls.Group()
         group.load(raw)
         return group
 
     @staticmethod
-    def dump_group(group):
+    def group_dump(group):
         return group.dump()

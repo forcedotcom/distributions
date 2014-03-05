@@ -1,11 +1,11 @@
 # Distributions [![Build Status](https://travis-ci.org/forcedotcom/distributions.png)](https://travis-ci.org/forcedotcom/distributions)
 
-<p style="background-color:#ffaaaa;">
 <b>WARNING</b>
 This is the unstable 2.0 branch of distributions,
 which is a complete rewrite of the stable 1.0 master branch,
 and which breaks API compatibility.
-</p>
+
+![Mascot](fox.png)
 
 This package implements a variety of conjugate component models for
 Bayesian MCMC inference.
@@ -114,10 +114,10 @@ Each component model API consist of:
         model.dump() -> json
         group.load(json)
         group.dump() -> json
-        ExampleModel.load_model(json) -> model
-        ExampleModel.dump_model(model) -> json
-        ExampleModel.load_group(json) -> group
-        ExampleModel.dump_group(group) -> json
+        ExampleModel.model_load(json) -> model
+        ExampleModel.model_dump(model) -> json
+        ExampleModel.group_load(json) -> group
+        ExampleModel.group_dump(group) -> json
 
 
 ## Source of Entropy
@@ -129,5 +129,6 @@ In python models, a single `global_rng` source is shared.
 
 ## License
 
+Copyright 2014 Salesforce.com.<br>
 This code is released under the Revised BSD License.
 See [LICENSE.txt](LICENSE.txt) for details.
