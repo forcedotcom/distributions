@@ -6,7 +6,10 @@
 namespace distributions
 {
 
-typedef std::mt19937 rng_t;
+//typedef std::default_random_engine rng_t;
+//typedef std::mt19937 rng_t;
+typedef std::ranlux48 rng_t;
+
 
 // HACK std::gamma_distribution<float> appears to be broken
 //typedef std::gamma_distribution<float> gamma_distribution_t;

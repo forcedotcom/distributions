@@ -137,7 +137,7 @@ cdef class Model_cy:
             'model': {
                 'gamma': 0.5,
                 'alpha': 0.5,
-                'beta0': 0.1,
+                'beta0': 0.0,  # must be zero for unit tests
                 'betas': [0.5, 0.5, 0.5],
             },
             'values': [0, 1, 0, 2, 0, 1, 0],

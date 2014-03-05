@@ -29,7 +29,8 @@ To build and install C++, Cython, and Python libraries into a virtualenv, simply
 
     make install
 
-Then point `LD_LIBRARY_PATH` to find `libdistributions.so` in your virtualenv
+Then point `LD_LIBRARY_PATH` to find `libdistributions_shared.so`
+in your virtualenv
 
     echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$VIRTUAL_ENV/lib' >> $VIRTUAL_ENV/bin/postactivate
 
