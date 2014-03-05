@@ -18,7 +18,7 @@ template<class T> T sqr (const T & t)
 
 
 //----------------------------------------------------------------------------
-// fast_log
+// fast_log, fast_log_sum_exp, log_sum_exp
 
 namespace detail
 {
@@ -58,6 +58,20 @@ inline float fast_log (float x)
     return detail::GLOBAL_FAST_LOG_14.log(x);
 }
 
+inline float fast_log_sum_exp (float x, float y)
+{
+    float min = x < y ? x : y;
+    float max = x < y ? y : x;
+
+    return max + fast_log(1.0f + expf(min - max));
+}
+
+inline float log_sum_exp (float x, float y)
+{
+    float min = x < y ? x : y;
+    float max = x < y ? y : x;
+    return max + logf(1.0f + expf(min - max));
+}
 
 //----------------------------------------------------------------------------
 // fast_lgamma
@@ -135,6 +149,26 @@ inline float fast_lgamma (float y)
 
 
 //----------------------------------------------------------------------------
+// fast_log_factorial
+
+namespace detail
+{
+
+extern const float log_factorial_table[64];
+
+} // namespace detail
+
+inline float fast_log_factorial(const uint32_t & n)
+{
+    if (n < 64) {
+        return detail::log_factorial_table[n];
+    } else {
+        return fast_lgamma(n + 1);
+    }
+}
+
+
+//----------------------------------------------------------------------------
 // fast_lgamma_nu, logStudentT
 
 namespace detail
@@ -199,18 +233,15 @@ inline float fast_lgamma_nu (float nu)
     return detail::poly_eval_3(detail::lgamma_nu_func_approx_coeff3 + pos, nu);
 }
 
-inline float logStudentT (
-        float x,
-        float v,
-        float mean,
-        float lambda)
-{
-    float p = 0.f;
-    p += fast_lgamma_nu(v);
-    p += 0.5f * fast_log(lambda / (M_PIf * v));
-    p += (-0.5f * v - 0.5f) * fast_log(1.f + (lambda * sqr(x - mean)) / v);
-    return p;
-}
+
+//----------------------------------------------------------------------------
+// misc
+
+// Compute stirling numbers of first kind S(n,k), one row at a time
+// return [log(S(n,0), ..., log(S(n,n))]
+// http://en.wikipedia.org/wiki/Stirling_numbers_of_the_first_kind
+std::vector<float> log_stirling1_row(int n);
+
 
 
 } // namespace distributions

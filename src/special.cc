@@ -1,4 +1,5 @@
 #include <distributions/special.hpp>
+#include <mutex>
 
 namespace distributions
 {
@@ -23,6 +24,93 @@ const char LogTable256[256] =
     LT(7), LT(7), LT(7), LT(7), LT(7), LT(7), LT(7), LT(7)
 #undef LT
 };
+
+
+static std::vector<std::vector<float>> log_stirling1_rows;
+
+inline void log_stirling1_rows_add()
+{
+    size_t n = log_stirling1_rows.size();
+    log_stirling1_rows.push_back(std::vector<float>());
+    std::vector<float> & row = log_stirling1_rows.back();
+    row.resize(n + 1);
+    row[0] = -INFINITY;
+    row[n] = 0;
+    if (n > 1) {
+        const std::vector<float> & prev = log_stirling1_rows[n - 1];
+        const float log_n_minus_1 = logf(n - 1);
+        for (size_t k = 1; k < n; ++k) {
+            row[k] = log_sum_exp(log_n_minus_1 + prev[k], prev[k - 1]);
+        }
+    }
+}
+
+inline std::vector<float> log_stirling1_row_exact(int n)
+{
+    static std::mutex mutex;
+    std::unique_lock<std::mutex> lock(mutex);
+
+    while (n >= log_stirling1_rows.size()) {
+        log_stirling1_rows_add();
+    }
+
+    return log_stirling1_rows[n];
+}
+
+inline std::vector<float> log_stirling1_row_approx(const int n)
+{
+    // Approximation #1 is taken from Eqn 26.8.40 of [1],
+    // whose unsigned version is
+    //
+    //                 n!
+    //   s(n+1, k+1) = -- (gamma + log(n))^k            (approx1)
+    //                 k!
+    //
+    // where gamma is the Euler-Mascheroni constant.
+    // Approximation #2 is taken from pp. 6 of [2]
+    //
+    //            (n^2 / 2)^(n-r)
+    //   s(n,r) = ---------------                       (approx2)
+    //               n! (n-r)!
+    //
+    // where Gruenberg's r is our k and Gruenberg's S_{r,1,n} is our s(n,k).
+    // Approximation #1 is accurate for small k, and approximation #2 is
+    // accurate for large k; both are overestimates.
+    // We use a softmin of these two approximations,
+    // with an ad hoc softness that depends on n.
+    //
+    // [1] "Digital Library of Mathematical Functions"
+    //   http://dlmf.nist.gov/26.8
+    // [2] "On asymptotics, Stirling numbers, Gamma function and polylogs"
+    //   -Daniel B. Gruenberg
+    //   http://arxiv.org/abs/math/0607514
+
+    const float log_factorial_n_minus_1 = fast_log_factorial(n - 1);
+    const float log_n_squared_over_two = logf(n * n / 2.0f);
+    const float euler_gamma = 0.57721566490153286060f;
+    const float log_stuff = logf(euler_gamma + logf(n - 1));
+    const float softness = n / 3.0; // ad hoc
+
+    std::vector<float> row(n + 1, 0);
+
+    // endpoints
+    row[0] = -INFINITY;
+    row[n] = 0;
+
+    // internal points
+    for (int k = 1; k < n; ++k) {
+        float approx1 = log_factorial_n_minus_1
+                      - fast_log_factorial(k - 1)
+                      + (k - 1) * log_stuff;
+        float approx2 = (n - k) * log_n_squared_over_two
+                      - fast_log_factorial(n - k);
+        row[k] = -softness * fast_log_sum_exp(
+            -1.0f / softness * approx1,
+            -1.0f / softness * approx2);
+    }
+
+    return row;
+}
 
 const float lgamma_approx_coeff5[] =
 {
@@ -94,7 +182,28 @@ const float lgamma_approx_coeff5[] =
 3.22763094029455e-10, 2.04583301544189e+01, -1.22548096000000e+09
 };
 
-const float lgamma_nu_func_approx_coeff3[] = {
+const float log_factorial_table[64] =
+{
+0.0, 0.0, 0.6931471805599453, 1.791759469228055,
+3.1780538303479458, 4.787491742782046, 6.579251212010101, 8.525161361065415,
+10.60460290274525, 12.801827480081469, 15.104412573075516, 17.502307845873887,
+19.987214495661885, 22.552163853123425, 25.19122118273868, 27.89927138384089,
+30.671860106080672, 33.50507345013689, 36.39544520803305, 39.339884187199495,
+42.335616460753485, 45.3801388984769, 48.47118135183522, 51.60667556776437,
+54.78472939811232, 58.00360522298052, 61.261701761001994, 64.55753862700634,
+67.88974313718154, 71.257038967168, 74.65823634883017, 78.0922235533153,
+81.55795945611503, 85.05446701758152, 88.58082754219768, 92.13617560368708,
+95.7196945421432, 99.33061245478743, 102.96819861451381, 106.63176026064346,
+110.32063971475739, 114.03421178146169, 117.77188139974506, 121.53308151543864,
+125.3172711493569, 129.12393363912722, 132.9525750356163, 136.80272263732635,
+140.67392364823428, 144.56574394634487, 148.47776695177305, 152.40959258449735,
+156.36083630307877, 160.3311282166309, 164.32011226319517, 168.32744544842765,
+172.3527971391628, 176.39584840699735, 180.45629141754378, 184.53382886144948,
+188.6281734236716, 192.73904728784487, 196.86618167288998, 201.00931639928152
+};
+
+const float lgamma_nu_func_approx_coeff3[] =
+{
 1.15215471170606e+02, -7.81833294806814e+01,
 2.17521294416039e+01, -4.00207969046817e+00,
 1.73651454936872e+00, -4.64103368554928e+00,
@@ -134,4 +243,14 @@ const float lgamma_nu_func_approx_coeff3[] = {
 };
 
 } // namespace detail
+
+std::vector<float> log_stirling1_row(int n)
+{
+    if (n < 32) {
+        return detail::log_stirling1_row_exact(n);
+    } else {
+        return detail::log_stirling1_row_approx(n);
+    }
+}
+
 } // namespace distributions

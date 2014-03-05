@@ -2,6 +2,7 @@
 
 #include <random>
 #include <distributions/common.hpp>
+#include <distributions/special.hpp>
 
 namespace distributions
 {
@@ -41,5 +42,18 @@ int sample_discrete (
         size_t dim,
         const float * ps,
         rng_t & rng);
+
+inline float score_student_t (
+        float x,
+        float v,
+        float mean,
+        float lambda)
+{
+    float p = 0.f;
+    p += fast_lgamma_nu(v);
+    p += 0.5f * fast_log(lambda / (M_PIf * v));
+    p += (-0.5f * v - 0.5f) * fast_log(1.f + (lambda * sqr(x - mean)) / v);
+    return p;
+}
 
 } // namespace distributions
