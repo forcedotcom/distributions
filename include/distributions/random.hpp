@@ -12,15 +12,21 @@ namespace distributions
 typedef std::ranlux48 rng_t;
 
 
-// HACK std::gamma_distribution<float> appears to be broken
-//typedef std::gamma_distribution<float> gamma_distribution_t;
-typedef std::gamma_distribution<double> gamma_distribution_t;
+inline int sample_int (int low, int high, rng_t & rng)
+{
+    std::uniform_int_distribution<> sampler(low, high);
+    return sampler(rng);
+}
 
 inline float sample_unif01 (rng_t & rng)
 {
     std::uniform_real_distribution<float> sampler(0.0, 1.0);
     return sampler(rng);
 }
+
+// HACK std::gamma_distribution<float> appears to be broken
+//typedef std::gamma_distribution<float> gamma_distribution_t;
+typedef std::gamma_distribution<double> gamma_distribution_t;
 
 inline float sample_gamma (
         float alpha,

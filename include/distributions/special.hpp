@@ -199,7 +199,7 @@ inline float fast_log_factorial(const uint32_t & n)
 
 
 //----------------------------------------------------------------------------
-// fast_lgamma_nu, logStudentT
+// fast_lgamma_nu
 
 namespace detail
 {
