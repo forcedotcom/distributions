@@ -19,9 +19,9 @@ def _test_model(name):
     EXAMPLES = [e for m in MODELS for e in m.EXAMPLES]
     for EXAMPLE in EXAMPLES:
         raw_model = EXAMPLE['model']
-        models = [Model.load_model(raw_model) for Model in MODELS]
+        models = [Model.model_load(raw_model) for Model in MODELS]
         dumped = [m.dump() for m in models]
-        assert_all_close(dumped, err_msg='dump_model')
+        assert_all_close(dumped, err_msg='model_dump')
 
 
 def test_group():
@@ -35,7 +35,7 @@ def _test_group(name):
     for EXAMPLE in EXAMPLES:
         raw_model = EXAMPLE['model']
         values = EXAMPLE['values'][:]
-        models = [Model.load_model(raw_model) for Model in MODELS]
+        models = [Model.model_load(raw_model) for Model in MODELS]
 
         groups = [model.group_create() for model in models]
         models_groups = zip(models, groups)
@@ -44,7 +44,7 @@ def _test_group(name):
             for model, group in models_groups:
                 model.group_add_value(group, value)
             dumped = [g.dump() for g in groups]
-            assert_all_close(dumped, err_msg='dump_group')
+            assert_all_close(dumped, err_msg='group_dump')
 
         for model, group in models_groups:
             values.append(model.sample_value(group))

@@ -51,7 +51,7 @@ def _test_interface(name):
         assert_is_instance(getattr(Model, typename), type)
 
     for EXAMPLE in iter_examples(Model):
-        model = Model.load_model(EXAMPLE['model'])
+        model = Model.model_load(EXAMPLE['model'])
         values = EXAMPLE['values']
         for value in values:
             assert_is_instance(value, Model.Value)
@@ -77,8 +77,8 @@ def _test_interface(name):
         model.score_group(group2)
 
         assert_close(model.dump(), EXAMPLE['model'])
-        assert_close(model.dump(), Model.dump_model(model))
-        assert_close(group1.dump(), Model.dump_group(group1))
+        assert_close(model.dump(), Model.model_dump(model))
+        assert_close(group1.dump(), Model.group_dump(group1))
 
 
 def _test_add_remove(name):
@@ -88,7 +88,7 @@ def _test_add_remove(name):
     Model = MODULES[name].Model
     for EXAMPLE in iter_examples(Model):
 
-        model = Model.load_model(EXAMPLE['model'])
+        model = Model.model_load(EXAMPLE['model'])
         #model.realize()
         #values = model['values'][:]
 
@@ -103,7 +103,7 @@ def _test_add_remove(name):
             score += model.score_value(group, value)
             model.group_add_value(group, value)
 
-        group_all = model.load_group(model.dump_group(group))
+        group_all = model.group_load(model.group_dump(group))
         assert_close(
             score,
             model.score_group(group),
@@ -135,7 +135,7 @@ def _test_add_merge(name):
     '''
     Model = MODULES[name].Model
     for EXAMPLE in iter_examples(Model):
-        model = Model.load_model(EXAMPLE['model'])
+        model = Model.model_load(EXAMPLE['model'])
         values = EXAMPLE['values'][:]
         random.shuffle(values)
         group = model.group_create(values)
@@ -151,7 +151,7 @@ def _test_add_merge(name):
 def _test_sample_seed(name):
     Model = MODULES[name].Model
     for EXAMPLE in iter_examples(Model):
-        model = Model.load_model(EXAMPLE['model'])
+        model = Model.model_load(EXAMPLE['model'])
 
         distributions.random.seed(0)
         group1 = model.group_create()
@@ -169,7 +169,7 @@ def _test_scorer(name):
     if not hasattr(Model, 'scorer_create'):
         raise SkipTest()
     for EXAMPLE in iter_examples(Model):
-        model = Model.load_model(EXAMPLE['model'])
+        model = Model.model_load(EXAMPLE['model'])
         values = EXAMPLE['values']
 
         group = model.group_create()
@@ -188,7 +188,7 @@ def _test_vector_scorer(name):
         raise SkipTest()
 
     for EXAMPLE in iter_examples(Model):
-        model = Model.load_model(EXAMPLE['model'])
+        model = Model.model_load(EXAMPLE['model'])
         values = EXAMPLE['values']
 
         groups = [

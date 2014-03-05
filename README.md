@@ -114,10 +114,10 @@ Each component model API consist of:
         model.dump() -> json
         group.load(json)
         group.dump() -> json
-        ExampleModel.load_model(json) -> model
-        ExampleModel.dump_model(model) -> json
-        ExampleModel.load_group(json) -> group
-        ExampleModel.dump_group(group) -> json
+        ExampleModel.model_load(json) -> model
+        ExampleModel.model_dump(model) -> json
+        ExampleModel.group_load(json) -> group
+        ExampleModel.group_dump(group) -> json
 
 
 ## Source of Entropy
@@ -129,5 +129,6 @@ In python models, a single `global_rng` source is shared.
 
 ## License
 
+Copyright 2014 Salesforce.com.<br>
 This code is released under the Revised BSD License.
 See [LICENSE.txt](LICENSE.txt) for details.
