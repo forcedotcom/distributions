@@ -1,5 +1,5 @@
 #include <cstdio>
-#include "distributions/common.hpp"
+#include <distributions/common.hpp>
 
 
 int main() {

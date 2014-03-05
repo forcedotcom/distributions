@@ -137,9 +137,12 @@ inline float fast_lgamma (float y)
 //----------------------------------------------------------------------------
 // fast_lgamma_nu, logStudentT
 
+namespace detail
+{
+
 extern const float lgamma_nu_func_approx_coeff3[];
 
-inline float poly_eval_3(
+inline float poly_eval_3 (
         const float * __restrict__ coeff,
         float x)
 {
@@ -152,6 +155,8 @@ inline float poly_eval_3(
 
     return a0 + x*a1 + x*x*a2 + x*x*x*a3;
 }
+
+} // namespace detail
 
 inline float fast_lgamma_nu (float nu)
 {
@@ -191,7 +196,7 @@ inline float fast_lgamma_nu (float nu)
     }
 
     int pos = ((c + 4) / 2) * 4 ; // remember the POT range is 2
-    return poly_eval_3(lgamma_nu_func_approx_coeff3 + pos, nu);
+    return detail::poly_eval_3(detail::lgamma_nu_func_approx_coeff3 + pos, nu);
 }
 
 inline float logStudentT (
