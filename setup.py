@@ -24,7 +24,7 @@ def extension(name):
         sources=['distributions/{0}.pyx'.format(name)],
         language='c++',
         include_dirs=['include'],
-        libraries=['m', 'distributions-shared'],
+        libraries=['m', 'distributions_shared'],
         library_dirs=['build/src'],
         extra_compile_args=[
             '-std=c++0x',
