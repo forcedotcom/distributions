@@ -17,6 +17,7 @@ def test_model():
 
 def _test_model(name):
     MODELS = [m.Model for m in MODULES[name]]
+    assert_all_close([m.__name__ for m in MODELS], err_msg='Model.__name__')
     EXAMPLES = [e for m in MODELS for e in m.EXAMPLES]
     for EXAMPLE in EXAMPLES:
         raw_model = EXAMPLE['model']
