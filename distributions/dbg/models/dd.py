@@ -1,6 +1,6 @@
 import numpy
-from distributions.special import log, gammaln
-from distributions.random import sample_discrete, sample_dirichlet
+from distributions.dbg.special import log, gammaln
+from distributions.dbg.random import sample_discrete, sample_dirichlet
 from distributions.mixins import ComponentModel, Serializable
 
 

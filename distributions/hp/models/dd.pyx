@@ -1,8 +1,8 @@
 import numpy
 cimport numpy
 numpy.import_array()
-from distributions.cSpecial cimport log, gammaln
-from distributions.cRandom cimport sample_dirichlet, sample_discrete
+from distributions.hp.special cimport log, gammaln
+from distributions.hp.random cimport sample_dirichlet, sample_discrete
 from distributions.mixins import ComponentModel, Serializable
 
 cpdef int MAX_DIM = 256

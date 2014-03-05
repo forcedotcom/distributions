@@ -53,11 +53,11 @@ model_feature = Feature(
     standard=True,
     optional=True,
     ext_modules=[
-        extension('cSpecial'),
-        extension('cRandom'),
-        extension('models/dd_cy'),
-        extension('models/dd_cc'),
-        extension('models/dpm_cc'),
+        extension('hp/special'),
+        extension('hp/random'),
+        extension('hp/models/dd'),
+        extension('lp/models/dd'),
+        extension('lp/models/dpm'),
     ]
 )
 
@@ -68,7 +68,13 @@ config = {
     'name': 'distributions',
     'packages': [
         'distributions',
-        'distributions.models',
+        'distributions.dbg',
+        'distributions.dbg.models',
+        'distributions.hp',
+        'distributions.hp.models',
+        'distributions.lp',
+        'distributions.lp.models',
+        'distributions.tests',
     ],
 }
 

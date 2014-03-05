@@ -1,5 +1,3 @@
-import os
-import glob
 from nose.tools import assert_true, assert_in, assert_is_instance
 from nose.plugins.skip import SkipTest
 from numpy.testing import assert_array_almost_equal
@@ -8,20 +6,17 @@ from distributions.tests.util import (
     assert_hasattr,
     assert_close,
     assert_all_close,
+    list_models,
     import_model,
+    seed_all,
 )
-import distributions.random
 
 DATA_COUNT = 20
 
-MODULES = {}
-ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
-for path in glob.glob(os.path.join(ROOT, 'models', '*.p*')):
-    filename = os.path.split(path)[-1]
-    name = os.path.splitext(filename)[0]
-    if not name.startswith('__'):
-        module = import_model(name)
-        MODULES[name] = module
+MODULES = {
+    '{flavor}.models.{name}'.format(**spec): import_model(spec)
+    for spec in list_models()
+}
 
 
 def iter_examples(Model):
@@ -153,11 +148,11 @@ def _test_sample_seed(name):
     for EXAMPLE in iter_examples(Model):
         model = Model.load_model(EXAMPLE['model'])
 
-        distributions.random.seed(0)
+        seed_all(0)
         group1 = model.group_create()
         values1 = [model.sample_value(group1) for _ in xrange(DATA_COUNT)]
 
-        distributions.random.seed(0)
+        seed_all(0)
         group2 = model.group_create()
         values2 = [model.sample_value(group2) for _ in xrange(DATA_COUNT)]
 

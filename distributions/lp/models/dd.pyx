@@ -1,27 +1,34 @@
 from libcpp.vector cimport vector
-from cython.operator cimport dereference as deref, preincrement as inc
-from distributions.cRandom cimport global_rng
-from distributions.sparse_counter cimport SparseCounter
+from distributions.hp.random cimport global_rng
 from distributions.mixins import ComponentModel, Serializable
 
+cpdef int MAX_DIM = 256
 
-cdef extern from "distributions/models/dpm.hpp" namespace "distributions":
+
+cdef extern from "distributions/vector.hpp" namespace "distributions":
+    cppclass FloatVector:
+        size_t size ()
+        float & at "operator[]" (size_t index)
+
+
+cdef extern from "distributions/models/dd.hpp" namespace "distributions":
     cppclass rng_t
-    ctypedef unsigned Value
-    cdef cppclass Model_cc "distributions::DirichletProcessMixture":
+    ctypedef int Value
+    cdef cppclass Model_cc "distributions::DirichletDiscrete<256>":
+        int dim
         cppclass Hypers:
-            float gamma
-            float alpha
-            float beta0
-            vector[float] betas
+            float alphas[256]
         Hypers hypers
         #cppclass Value
         cppclass Group:
-            SparseCounter counts
+            int counts[]
         cppclass Sampler:
-            vector[float] probs
+            float ps[256]
         cppclass Scorer:
-            vector[float] scores
+            float alpha_sum
+            float alphas[256]
+        cppclass VectorScorer:
+            vector[FloatVector] scores
         void group_init (Group &, rng_t &) nogil
         void group_add_value (Group &, Value &, rng_t &) nogil
         void group_remove_value (Group &, Value &, rng_t &) nogil
@@ -31,29 +38,45 @@ cdef extern from "distributions/models/dpm.hpp" namespace "distributions":
         Value sample_value (Group &, rng_t &) nogil
         float score_value (Group &, Value &, rng_t &) nogil
         float score_group (Group &, rng_t &) nogil
+        void vector_scorer_init (VectorScorer &, size_t, rng_t &)
+        void vector_scorer_update (VectorScorer &, size_t, Group &, rng_t &)
+        void vector_scorer_eval (
+                FloatVector &,
+                VectorScorer &,
+                Value &,
+                rng_t &)
 
 
 cdef class Group:
     cdef Model_cc.Group * ptr
+    cdef int dim  # only required for dumping
     def __cinit__(self):
         self.ptr = new Model_cc.Group()
+        self.dim = 0
     def __dealloc__(self):
         del self.ptr
 
     def load(self, raw):
-        cdef SparseCounter * counts = & self.ptr.counts
-        counts.clear()
-        for i, count in raw['counts'].iteritems():
-            counts.init_count(int(i), count)
+        counts = raw['counts']
+        self.dim = len(counts)
+        cdef int i
+        for i in xrange(self.dim):
+            self.ptr.counts[i] = counts[i]
 
     def dump(self):
-        counts = {}
-        cdef SparseCounter.iterator it = self.ptr.counts.begin()
-        cdef SparseCounter.iterator end = self.ptr.counts.end()
-        while it != end:
-            counts[str(deref(it).first)] = deref(it).second
-            inc(it)
+        counts = []
+        cdef int i
+        for i in xrange(self.dim):
+            counts.append(self.ptr.counts[i])
         return {'counts': counts}
+
+
+cdef class VectorScorer:
+    cdef Model_cc.VectorScorer * ptr
+    def __cinit__(self):
+        self.ptr = new Model_cc.VectorScorer()
+    def __dealloc__(self):
+        del self.ptr
 
 
 cdef class Model_cy:
@@ -64,32 +87,25 @@ cdef class Model_cy:
         del self.ptr
 
     def load(self, raw):
-        cdef Model_cc.Hypers * hypers = & self.ptr.hypers
-        hypers.gamma = float(raw['gamma'])
-        hypers.alpha = float(raw['alpha'])
-        hypers.beta0 = float(raw['beta0'])
-        hypers.betas.clear()
-        for beta in raw['betas']:
-            hypers.betas.push_back(float(beta))
+        alphas = raw['alphas']
+        cdef int dim = len(alphas)
+        self.ptr.dim = dim
+        cdef int i
+        for i in xrange(dim):
+            self.ptr.hypers.alphas[i] = float(alphas[i])
 
     def dump(self):
-        cdef Model_cc.Hypers * hypers = & self.ptr.hypers
-        betas = []
+        alphas = []
         cdef int i
-        cdef int size = hypers.betas.size()
-        for i in xrange(size):
-            betas.append(float(hypers.betas[i]))
-        return {
-            'gamma': float(hypers.gamma),
-            'alpha': float(hypers.alpha),
-            'beta0': float(hypers.beta0),
-            'betas': betas,
-        }
+        for i in xrange(self.ptr.dim):
+            alphas.append(float(self.ptr.hypers.alphas[i]))
+        return {'alphas': alphas}
 
     #-------------------------------------------------------------------------
     # Mutation
 
     def group_init(self, Group group):
+        group.dim = self.ptr.dim
         self.ptr.group_init(group.ptr[0], global_rng)
 
     def group_add_value(self, Group group, int value):
@@ -129,23 +145,45 @@ cdef class Model_cy:
     def score_group(self, Group group):
         return self.ptr.score_group(group.ptr[0], global_rng)
 
+    def vector_scorer_init(self, VectorScorer scorer, int group_count):
+        self.ptr.vector_scorer_init(scorer.ptr[0], group_count, global_rng)
+
+    def vector_scorer_update(
+            self,
+            VectorScorer scorer,
+            int group_index,
+            Group group):
+        self.ptr.vector_scorer_update(
+                scorer.ptr[0],
+                group_index,
+                group.ptr[0],
+                global_rng)
+
+    def vector_scorer_eval(self, VectorScorer scorer, int value):
+        cdef FloatVector scores
+        self.ptr.vector_scorer_eval(scores, scorer.ptr[0], value, global_rng)
+        cdef list result = []
+        cdef float score
+        cdef int i
+        for i in xrange(scores.size()):
+            score = scores.at(i)
+            result.append(score)
+        return result
+
     #-------------------------------------------------------------------------
     # Examples
 
     EXAMPLES = [
         {
             'model': {
-                'gamma': 0.5,
-                'alpha': 0.5,
-                'beta0': 0.0,  # must be zero for unit tests
-                'betas': [0.5, 0.5, 0.5],
+                'alphas': [0.5, 0.5, 0.5, 0.5],
             },
             'values': [0, 1, 0, 2, 0, 1, 0],
         },
     ]
 
 
-class DirichletProcessMixture(Model_cy, ComponentModel, Serializable):
+class DirichletDiscrete(Model_cy, ComponentModel, Serializable):
 
     #-------------------------------------------------------------------------
     # Datatypes
@@ -154,5 +192,7 @@ class DirichletProcessMixture(Model_cy, ComponentModel, Serializable):
 
     Group = Group
 
+    VectorScorer = VectorScorer
 
-Model = DirichletProcessMixture
+
+Model = DirichletDiscrete

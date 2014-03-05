@@ -1,12 +1,13 @@
-from distributions.tests.util import assert_all_close, import_model
+from distributions.tests.util import (
+    assert_all_close,
+    list_models,
+    import_model,
+)
 
 
-MODULES = {
-    'dd': ['dd_py', 'dd_cy', 'dd_cc'],
-    'dpm': ['dpm_cc'],
-}
-for key, val in MODULES.iteritems():
-    MODULES[key] = [import_model(m) for m in val]
+MODULES = {}
+for spec in list_models():
+    MODULES.setdefault(spec['name'], []).append(import_model(spec))
 
 
 def test_model():

@@ -1,11 +1,33 @@
+import os
+import glob
 from nose.tools import assert_true, assert_less, assert_equal
 import numpy
 from numpy.testing import assert_array_almost_equal
 import importlib
+import distributions.dbg.random
+import distributions.hp.random
+#import distributions.lp.random
+
+ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 
-def import_model(name):
-    module_name = 'distributions.models.{}'.format(name)
+def seed_all(s):
+    distributions.dbg.random.seed(s)
+    distributions.hp.random.seed(s)
+    #distributions.lp.random.seed(s)
+
+
+def list_models():
+    for path in glob.glob(os.path.join(ROOT, '*', 'models', '*.p*')):
+        dirname, filename = os.path.split(path)
+        flavor = os.path.split(os.path.dirname(dirname))[-1]
+        name = os.path.splitext(filename)[0]
+        if not name.startswith('__'):
+            yield {'flavor': flavor, 'name': name}
+
+
+def import_model(spec):
+    module_name = 'distributions.{flavor}.models.{name}'.format(**spec)
     return importlib.import_module(module_name)
 
 

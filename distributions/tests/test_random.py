@@ -7,8 +7,8 @@ from nose.tools import (
     assert_almost_equal,
     assert_raises,
 )
-import distributions.cRandom
-from distributions.random import sample_stick, sample_discrete_log
+import distributions.hp.random
+from distributions.dbg.random import sample_stick, sample_discrete_log
 
 
 SAMPLES = 1000
@@ -24,10 +24,10 @@ def assert_close(x, y, sigma, stddevs=4.0):
 
 
 def test_seed():
-    global_rng = distributions.cRandom.random
-    distributions.cRandom.seed(0)
+    global_rng = distributions.hp.random.random
+    distributions.hp.random.seed(0)
     values1 = [global_rng() for _ in xrange(10)]
-    distributions.cRandom.seed(0)
+    distributions.hp.random.seed(0)
     values2 = [global_rng() for _ in xrange(10)]
     assert_equal(values1, values2)
 
@@ -64,7 +64,10 @@ def test_normal_draw():
     for mean, variance in itertools.product(means, variances):
         # Assume scipy.stats is correct
         #yield _test_normal_draw, scipy_normal_draw, mean, variance
-        _test_normal_draw(distributions.cRandom.sample_normal, mean, variance)
+        _test_normal_draw(
+            distributions.hp.random.sample_normal,
+            mean,
+            variance)
 
 
 def _test_normal_draw(draw, mean, variance):
@@ -80,7 +83,7 @@ def test_chisq_draw():
     for nu in nus:
         # Assume scipy.stats is correct
         #yield _test_chisq_draw, scipy.stats.chi2.rvs, nu
-        _test_chisq_draw(distributions.cRandom.sample_chisq, nu)
+        _test_chisq_draw(distributions.hp.random.sample_chisq, nu)
 
 
 def _test_chisq_draw(draw, nu):
