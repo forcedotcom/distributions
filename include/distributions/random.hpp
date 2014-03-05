@@ -43,7 +43,7 @@ int sample_discrete (
         const float * ps,
         rng_t & rng);
 
-inline float score_student_t (
+inline float fast_score_student_t (
         float x,
         float v,
         float mean,
@@ -53,6 +53,19 @@ inline float score_student_t (
     p += fast_lgamma_nu(v);
     p += 0.5f * fast_log(lambda / (M_PIf * v));
     p += (-0.5f * v - 0.5f) * fast_log(1.f + (lambda * sqr(x - mean)) / v);
+    return p;
+}
+
+inline float score_student_t (
+        float x,
+        float v,
+        float mean,
+        float lambda)
+{
+    float p = 0.f;
+    p += lgammaf(v * 0.5f + 0.5f) - lgammaf(v * 0.5f);
+    p += 0.5f * logf(lambda / (M_PIf * v));
+    p += (-0.5f * v - 0.5f) * logf(1.f + (lambda * sqr(x - mean)) / v);
     return p;
 }
 

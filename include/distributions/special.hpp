@@ -4,6 +4,7 @@
 #include <vector>
 #include <cstring>
 #include <iostream>
+#include <limits>
 #include <distributions/common.hpp>
 
 #define M_PIf (3.14159265358979f)
@@ -74,7 +75,7 @@ inline float log_sum_exp (float x, float y)
 }
 
 //----------------------------------------------------------------------------
-// fast_lgamma
+// fast_lgamma, fast_log_beta, log_beta, log_binom, fast_log_binom
 
 namespace detail
 {
@@ -147,6 +148,35 @@ inline float fast_lgamma (float y)
     return sum;
 }
 
+inline float log_beta (float alpha, float beta)
+{
+    if (alpha <= 0.f or beta <= 0.f) {
+        return - std::numeric_limits<float>::infinity();
+    } else {
+        return lgamma(alpha) + lgamma(beta) - lgamma(alpha + beta);
+    }
+}
+
+inline float fast_log_beta (float alpha, float beta)
+{
+    if (alpha <= 0.f or beta <= 0.f) {
+        return - std::numeric_limits<float>::infinity();
+    } else {
+        return fast_lgamma(alpha)
+             + fast_lgamma(beta)
+             - fast_lgamma(alpha + beta);
+    }
+}
+
+inline float log_binom (float N, float k)
+{
+    return lgamma(N + 1) - (lgamma(k + 1) + lgamma(N - k + 1));
+}
+
+inline float fast_log_binom (float N, float k)
+{
+    return fast_lgamma(N + 1) - (fast_lgamma(k + 1) + fast_lgamma(N - k + 1));
+}
 
 //----------------------------------------------------------------------------
 // fast_log_factorial
