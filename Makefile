@@ -1,10 +1,14 @@
 all: test
 
-install_cc: FORCE
-	mkdir -p build
+build_cc: FORCE
+	mkdir -p build lib
 	cd build &&\
-	  cmake -DCMAKE_INSTALL_PREFIX=$(VIRTUAL_ENV) .. &&\
+	  cmake -DCMAKE_INSTALL_PREFIX=.. .. &&\
 	  $(MAKE) install
+
+install_cc: build_cc FORCE
+	test -e $(VIRTUAL_ENV) &&\
+	  cp lib/* $(VIRTUAL_ENV)/lib/
 
 install_py: install_cc FORCE
 	pip install -r requirements.txt
