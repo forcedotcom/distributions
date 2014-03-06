@@ -8,6 +8,7 @@ from nose.tools import (
     assert_raises,
 )
 import distributions.hp.random
+import distributions.lp.random
 from distributions.dbg.random import sample_stick, sample_discrete_log
 
 
@@ -89,3 +90,40 @@ def test_chisq_draw():
 def _test_chisq_draw(draw, nu):
     samples = [draw(nu) for _ in range(SAMPLES)]
     assert_normal(numpy.mean(samples), nu, numpy.sqrt(2 * nu / SAMPLES))
+
+
+def test_sample_pair_from_urn():
+    TEST_FAIL_PROB = 1e-5
+    ITEM_COUNT = 10
+
+    items = range(ITEM_COUNT)
+    counts = {(i, j): 0 for i in items for j in items if i != j}
+    pair_count = len(counts)
+
+    def test_fail_prob(sample_count):
+        '''
+        Let X1,...,XK ~iid uniform({1, ..., N = pair_count})
+        and for n in {1,..,N} let Cn = sum_k (1 if Xk = n else 0).
+        Then for each n,
+
+            P(Cn = 0) = ((N-1) / N)^K
+            P(Cn > 0) = 1 - ((N-1) / N)^K
+            P(test fails) = 1 - P(for all n, Cn > 0)
+                          ~ 1 - (1 - ((N-1) / N)^K)^N
+        '''
+        item_fail_prob = ((pair_count - 1.0) / pair_count) ** sample_count
+        test_fail_prob = 1 - (1 - item_fail_prob) ** pair_count
+        return test_fail_prob
+
+    sample_count = 1
+    while test_fail_prob(sample_count) > TEST_FAIL_PROB:
+        sample_count *= 2
+    print 'pair_count = {}'.format(pair_count)
+    print 'sample_count = {}'.format(sample_count)
+
+    for _ in xrange(sample_count):
+        i, j = distributions.lp.random.sample_pair_from_urn(items)
+        assert i != j
+        counts[i, j] += 1
+
+    assert_less(0, min(counts.itervalues()))

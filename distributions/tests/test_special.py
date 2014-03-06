@@ -10,7 +10,7 @@ def test_log_stirling1_row():
     rows = [[1]]
     for n in range(1, MAX_N + 1):
         prev = rows[-1]
-        row = [0] + [(n-1) * prev[k] + prev[k-1] for k in range(1,n)] + [1]
+        row = [0] + [(n-1) * prev[k] + prev[k-1] for k in range(1, n)] + [1]
         rows.append(row)
 
     for n in range(1, MAX_N + 1):

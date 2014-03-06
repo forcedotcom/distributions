@@ -8,6 +8,11 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare")
 
 #-----------------------------------------------------------------------------
 # BEGIN generic section
+#
+# To build with local copy of distributions, first build distributions, and
+# then set the environment variable
+# export DISTRIBUTIONS_PATH=/path/to/distributions
+# for example in ~/.bashrc or $VIRTUAL_ENV/bin/postactivate
 
 include(ExternalProject)
 if(DEFINED ENV{DISTRIBUTIONS_PATH})
