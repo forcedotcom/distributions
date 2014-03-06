@@ -25,6 +25,12 @@ inline float sample_unif01 (rng_t & rng)
     return sampler(rng);
 }
 
+inline bool sample_bernoulli (float p, rng_t & rng)
+{
+    std::uniform_real_distribution<float> sampler(0.0, 1.0);
+    return sampler(rng) < p;
+}
+
 // HACK std::gamma_distribution<float> appears to be broken
 //typedef std::gamma_distribution<float> gamma_distribution_t;
 typedef std::gamma_distribution<double> gamma_distribution_t;
