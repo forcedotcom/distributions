@@ -13,7 +13,7 @@ namespace distributions
 typedef std::ranlux48 rng_t;
 
 
-inline int sample_int (int low, int high, rng_t & rng)
+inline int sample_int (rng_t & rng, int low, int high)
 {
     std::uniform_int_distribution<> sampler(low, high);
     return sampler(rng);
@@ -25,7 +25,7 @@ inline float sample_unif01 (rng_t & rng)
     return sampler(rng);
 }
 
-inline bool sample_bernoulli (float p, rng_t & rng)
+inline bool sample_bernoulli (rng_t & rng, float p)
 {
     std::uniform_real_distribution<float> sampler(0.0, 1.0);
     return sampler(rng) < p;
@@ -36,9 +36,9 @@ inline bool sample_bernoulli (float p, rng_t & rng)
 typedef std::gamma_distribution<double> gamma_distribution_t;
 
 inline float sample_gamma (
+        rng_t & rng,
         float alpha,
-        float beta,
-        rng_t & rng)
+        float beta = 1.f)
 {
     gamma_distribution_t sampler;
     gamma_distribution_t::param_type param(alpha, beta);
@@ -46,15 +46,16 @@ inline float sample_gamma (
 }
 
 void sample_dirichlet (
+        rng_t & rng,
         size_t dim,
         const float * alphas,
-        float * ps,
-        rng_t & rng);
+        float * probs,
+        float min_value = 0.f);
 
 int sample_discrete (
+        rng_t & rng,
         size_t dim,
-        const float * ps,
-        rng_t & rng);
+        const float * probs);
 
 inline float fast_score_student_t (
         float x,
@@ -84,23 +85,23 @@ inline float score_student_t (
 
 template<class T>
 inline T sample_from_urn (
-        const std::vector<T> & urn,
-        rng_t & rng)
+        rng_t & rng,
+        const std::vector<T> & urn)
 {
     DIST_ASSERT(urn.size() >= 1, "urn is too small to sample from");
-    size_t f = sample_int(0, urn.size() - 1, rng);
+    size_t f = sample_int(rng, 0, urn.size() - 1);
     DIST_ASSERT(0 <= f and f < urn.size(), "bad value: " << f);
     return urn[f];
 }
 
 template<class T>
 inline std::pair<T, T> sample_pair_from_urn (
-        const std::vector<T> & urn,
-        rng_t & rng)
+        rng_t & rng,
+        const std::vector<T> & urn)
 {
     DIST_ASSERT(urn.size() >= 2, "urn is too small to sample pair from");
-    size_t f1 = sample_int(0, urn.size() - 1, rng);
-    size_t f2 = sample_int(0, urn.size() - 2, rng);
+    size_t f1 = sample_int(rng, 0, urn.size() - 1);
+    size_t f2 = sample_int(rng, 0, urn.size() - 2);
     if (f2 >= f1) {
         f2 += 1;
     }

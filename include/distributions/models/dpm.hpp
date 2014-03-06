@@ -105,14 +105,15 @@ void sampler_init (
     }
     probs.push_back(hypers.beta0 * hypers.alpha);
 
-    sample_dirichlet(probs.size(), probs.data(), probs.data(), rng);
+    float min_alpha = 1e-4f;
+    sample_dirichlet(rng, probs.size(), probs.data(), probs.data(), min_alpha);
 }
 
 Value sampler_eval (
         const Sampler & sampler,
         rng_t & rng) const
 {
-    return sample_discrete(sampler.probs.size(), sampler.probs.data(), rng);
+    return sample_discrete(rng, sampler.probs.size(), sampler.probs.data());
 }
 
 Value sample_value (

@@ -101,14 +101,14 @@ void sampler_init (
         sampler.ps[i] = hypers.alphas[i] + group.counts[i];
     }
 
-    sample_dirichlet(dim, sampler.ps, sampler.ps, rng);
+    sample_dirichlet(rng, dim, sampler.ps, sampler.ps);
 }
 
 Value sampler_eval (
         const Sampler & sampler,
         rng_t & rng) const
 {
-    return sample_discrete(dim, sampler.ps, rng);
+    return sample_discrete(rng, dim, sampler.ps);
 }
 
 Value sample_value (

@@ -6,33 +6,35 @@ namespace distributions
 rng_t global_rng;
 
 void sample_dirichlet (
+        rng_t & rng,
         size_t dim,
         const float * alphas,
-        float * ps,
-        rng_t & rng)
+        float * probs,
+        float min_value)
 {
-    typedef gamma_distribution_t::param_type param_t;
-    gamma_distribution_t sampler;
+    DIST_ASSERT(min_value >= 0, "bad bound: " << min_value);
 
-    double total = 0.0;
+    float total = 0.f;
     for (size_t i = 0; i < dim; ++i) {
-        total += ps[i] = sample_gamma(alphas[i], 1.0, rng);
+        float alpha = alphas[i] + min_value;
+        DIST_ASSERT(alpha > 0, "bad alphas[" << i << "] = " << alpha);
+        total += probs[i] = sample_gamma(rng, alpha, 1.f) + min_value;
     }
 
-    double scale = 1.0 / total;
+    float scale = 1.f / total;
     for (size_t i = 0; i < dim; ++i) {
-        ps[i] *= scale;
+        probs[i] *= scale;
     }
 }
 
 int sample_discrete (
+        rng_t & rng,
         size_t dim,
-        const float * ps,
-        rng_t & rng)
+        const float * probs)
 {
     float t = sample_unif01(rng);
     for (size_t i = 0; i < dim - 1; ++i) {
-        t -= ps[i];
+        t -= probs[i];
         if (t < 0) {
             return i;
         }
