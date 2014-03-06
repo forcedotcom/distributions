@@ -142,8 +142,8 @@ float Clustering<count_t>::PitmanYor::score_counts (
 //----------------------------------------------------------------------------
 // Explicit template instantiation
 
-template
-std::vector<int> Clustering<int>::count_assignments (
+template std::vector<int> Clustering<int>::count_assignments (
         const Assignments &);
+template struct Clustering<int>::PitmanYor;
 
 } // namespace distributions
