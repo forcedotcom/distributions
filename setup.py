@@ -54,6 +54,7 @@ model_feature = Feature(
     optional=True,
     ext_modules=[
         extension('hp/special'),
+        extension('lp/special'),
         extension('hp/random'),
         extension('hp/models/dd'),
         extension('lp/models/dd'),

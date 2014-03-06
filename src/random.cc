@@ -50,7 +50,7 @@ int sample_discrete (
         size_t dim,
         const float * probs)
 {
-    float t = sample_unif01(rng);
+    double t = sample_unif01(rng);
     for (size_t i = 0; i < dim - 1; ++i) {
         t -= probs[i];
         if (t < 0) {
