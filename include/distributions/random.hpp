@@ -51,7 +51,7 @@ void sample_dirichlet (
         const float * alphas,
         float * probs);
 
-void sample_dirichlet (
+void sample_dirichlet_safe (
         rng_t & rng,
         size_t dim,
         const float * alphas,
