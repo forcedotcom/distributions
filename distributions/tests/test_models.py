@@ -1,5 +1,4 @@
 from nose.tools import assert_true, assert_in, assert_is_instance
-from nose.plugins.skip import SkipTest
 from numpy.testing import assert_array_almost_equal
 import random
 from distributions.tests.util import (
@@ -161,8 +160,6 @@ def _test_sample_seed(name):
 
 def _test_scorer(name):
     Model = MODULES[name].Model
-    if not hasattr(Model, 'scorer_create'):
-        raise SkipTest()
     for EXAMPLE in iter_examples(Model):
         model = Model.model_load(EXAMPLE['model'])
         values = EXAMPLE['values']
@@ -179,9 +176,6 @@ def _test_scorer(name):
 
 def _test_vector_scorer(name):
     Model = MODULES[name].Model
-    if not hasattr(Model, 'VectorScorer'):
-        raise SkipTest()
-
     for EXAMPLE in iter_examples(Model):
         model = Model.model_load(EXAMPLE['model'])
         values = EXAMPLE['values']
@@ -206,9 +200,12 @@ def _test_vector_scorer(name):
 
 def test_module():
     for name in MODULES:
+        Model = MODULES[name].Model
         yield _test_interface, name
         yield _test_add_remove, name
         yield _test_add_merge, name
         yield _test_sample_seed, name
-        yield _test_scorer, name
-        #yield _test_vector_scorer, name  # FIXME
+        if hasattr(Model, 'scorer_create'):
+            yield _test_scorer, name
+        #if hasattr(Model, 'VectorScorer'):
+        #    yield _test_vector_scorer, name  # FIXME
