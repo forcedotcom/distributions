@@ -105,8 +105,7 @@ void sampler_init (
     }
     probs.push_back(hypers.beta0 * hypers.alpha);
 
-    float min_alpha = 1e-4f;
-    sample_dirichlet(rng, probs.size(), probs.data(), probs.data(), min_alpha);
+    sample_dirichlet(rng, probs.size(), probs.data(), probs.data());
 }
 
 Value sampler_eval (

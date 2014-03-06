@@ -14,7 +14,7 @@ from distributions.dbg.random import sample_stick, sample_discrete_log
 SAMPLES = 1000
 
 
-def assert_close(x, y, sigma, stddevs=4.0):
+def assert_normal(x, y, sigma, stddevs=4.0):
     '''
     Assert that the difference between two values is within a few standard
     deviations of the predicted [normally distributed] error of zero.
@@ -72,10 +72,10 @@ def test_normal_draw():
 
 def _test_normal_draw(draw, mean, variance):
     samples = [draw(mean, variance) for _ in range(SAMPLES)]
-    assert_close(numpy.mean(samples), mean, numpy.sqrt(variance / SAMPLES))
+    assert_normal(numpy.mean(samples), mean, numpy.sqrt(variance / SAMPLES))
     error = numpy.array(samples) - mean
     chisq = numpy.dot(error, error) / variance
-    assert_close(chisq, SAMPLES, 2 * SAMPLES)
+    assert_normal(chisq, SAMPLES, 2 * SAMPLES)
 
 
 def test_chisq_draw():
@@ -88,4 +88,4 @@ def test_chisq_draw():
 
 def _test_chisq_draw(draw, nu):
     samples = [draw(nu) for _ in range(SAMPLES)]
-    assert_close(numpy.mean(samples), nu, numpy.sqrt(2 * nu / SAMPLES))
+    assert_normal(numpy.mean(samples), nu, numpy.sqrt(2 * nu / SAMPLES))

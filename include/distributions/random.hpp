@@ -49,8 +49,14 @@ void sample_dirichlet (
         rng_t & rng,
         size_t dim,
         const float * alphas,
+        float * probs);
+
+void sample_dirichlet_safe (
+        rng_t & rng,
+        size_t dim,
+        const float * alphas,
         float * probs,
-        float min_value = 0.f);
+        float min_value);
 
 int sample_discrete (
         rng_t & rng,
