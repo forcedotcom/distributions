@@ -1,5 +1,6 @@
 #pragma once
 
+#include <utility>
 #include <random>
 #include <distributions/common.hpp>
 #include <distributions/special.hpp>
@@ -73,6 +74,34 @@ inline float score_student_t (
     p += 0.5f * logf(lambda / (M_PIf * v));
     p += (-0.5f * v - 0.5f) * logf(1.f + (lambda * sqr(x - mean)) / v);
     return p;
+}
+
+template<class T>
+inline T sample_from_urn (
+        const std::vector<T> & urn,
+        rng_t & rng)
+{
+    DIST_ASSERT(urn.size() >= 1, "urn is too small to sample from");
+    size_t f = sample_int(0, urn.size() - 1, rng);
+    DIST_ASSERT(0 <= f and f < urn.size(), "bad value: " << f);
+    return urn[f];
+}
+
+template<class T>
+inline std::pair<T, T> sample_pair_from_urn (
+        const std::vector<T> & urn,
+        rng_t & rng)
+{
+    DIST_ASSERT(urn.size() >= 2, "urn is too small to sample pair from");
+    size_t f1 = sample_int(0, urn.size() - 1, rng);
+    size_t f2 = sample_int(0, urn.size() - 2, rng);
+    if (f2 >= f1) {
+        f2 += 1;
+    }
+    DIST_ASSERT(0 <= f1 and f1 < urn.size(), "bad value: " << f1);
+    DIST_ASSERT(0 <= f2 and f2 < urn.size(), "bad value: " << f2);
+    DIST_ASSERT(f1 != f2, "bad pair: " << f1 << ", " << f2);
+    return std::make_pair(urn[f1], urn[f2]);
 }
 
 } // namespace distributions
