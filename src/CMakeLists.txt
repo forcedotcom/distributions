@@ -6,6 +6,7 @@ add_library(distributions_shared SHARED
   random.cc
   std_wrapper.cc
   vector_math.cc
+  clustering.cc
 )
 install(TARGETS distributions_shared LIBRARY DESTINATION lib)
 
