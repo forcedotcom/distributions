@@ -4,6 +4,7 @@
 #include <random>
 #include <distributions/common.hpp>
 #include <distributions/special.hpp>
+#include <distributions/vector_math.hpp>
 
 namespace distributions
 {
@@ -58,11 +59,6 @@ void sample_dirichlet_safe (
         float * probs,
         float min_value);
 
-int sample_discrete (
-        rng_t & rng,
-        size_t dim,
-        const float * probs);
-
 inline float fast_score_student_t (
         float x,
         float v,
@@ -115,6 +111,77 @@ inline std::pair<T, T> sample_pair_from_urn (
     DIST_ASSERT(0 <= f2 and f2 < urn.size(), "bad value: " << f2);
     DIST_ASSERT(f1 != f2, "bad pair: " << f1 << ", " << f2);
     return std::make_pair(urn[f1], urn[f2]);
+}
+
+
+//----------------------------------------------------------------------------
+// Discrete Distribution
+//
+// Terminology:
+//
+//         prob = probability
+//   likelihood = non-normalized probability
+//        score = non-normalized log probability
+
+size_t sample_discrete (
+        rng_t & rng,
+        size_t dim,
+        const float * probs);
+
+size_t sample_from_likelihoods (
+        rng_t & rng,
+        const std::vector<float> & likelihoods,
+        float total_likelihood);
+
+inline size_t sample_from_likelihoods (
+        rng_t & rng,
+        const std::vector<float> & likelihoods)
+{
+    float total = vector_sum(likelihoods.size(), likelihoods.data());
+    return sample_from_likelihoods(rng, likelihoods, total);
+}
+
+inline size_t sample_from_probs (
+        rng_t & rng,
+        const std::vector<float> & probs)
+{
+    return sample_from_likelihoods(rng, probs, 1.f);
+}
+
+// returns total likelihood
+float scores_to_likelihoods (std::vector<float> & scores);
+
+inline size_t sample_from_scores_overwrite (
+        rng_t & rng,
+        std::vector<float> & scores)
+{
+    float total = scores_to_likelihoods(scores);
+    return sample_from_likelihoods(rng, scores, total);
+}
+
+inline std::pair<size_t, float> sample_prob_from_scores_overwrite (
+        rng_t & rng,
+        std::vector<float> & scores)
+{
+    float total = scores_to_likelihoods(scores);
+    size_t sample = sample_from_likelihoods(rng, scores, total);
+    float prob = scores[sample] / total;
+    return std::make_pair(sample, prob);
+}
+
+// score_from_scores_overwrite(...) = log(prob_from_scores_overwrite(...)),
+// this is less succeptible to overflow than prob_from_scores_overwrite
+inline float score_from_scores_overwrite (
+        rng_t & rng,
+        size_t sample,
+        std::vector<float> & scores);
+
+inline size_t sample_from_scores (
+        rng_t & rng,
+        const std::vector<float> & scores)
+{
+    std::vector<float> scores_copy(scores);
+    return sample_from_scores_overwrite(rng, scores_copy);
 }
 
 } // namespace distributions

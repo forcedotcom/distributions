@@ -27,9 +27,10 @@ struct trivial_hash
     }
 };
 
-typedef std::unordered_map<count_t, count_t, trivial_hash> assignments_t;
+typedef std::unordered_map<count_t, count_t, trivial_hash> Assignments;
 
-static std::vector<int> count_assignments (const assignments_t & assignments);
+static std::vector<count_t> count_assignments (
+        const Assignments & assignments);
 
 
 //----------------------------------------------------------------------------
@@ -41,10 +42,10 @@ struct PitmanYor
     float d;
 
     std::vector<count_t> sample_assignments (
-            size_t size,
+            count_t size,
             rng_t & rng) const;
 
-    void score_counts (
+    float score_counts (
             const std::vector<count_t> & counts) const;
 
     float score_add_value (

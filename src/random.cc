@@ -45,12 +45,15 @@ void sample_dirichlet_safe (
     }
 }
 
-int sample_discrete (
+//----------------------------------------------------------------------------
+// Discrete distribution
+
+size_t sample_discrete (
         rng_t & rng,
         size_t dim,
         const float * probs)
 {
-    double t = sample_unif01(rng);
+    float t = sample_unif01(rng);
     for (size_t i = 0; i < dim - 1; ++i) {
         t -= probs[i];
         if (t < 0) {
@@ -58,6 +61,61 @@ int sample_discrete (
         }
     }
     return dim - 1;
+}
+
+size_t sample_from_likelihoods (
+        rng_t & rng,
+        const std::vector<float> & likelihoods,
+        float total_likelihood)
+{
+    const size_t size = likelihoods.size();
+
+    float t = total_likelihood * sample_unif01(rng);
+
+    for (size_t i = 0; i < size; ++i) {
+        t -= likelihoods[i];
+        if (t < 0) {
+            return i;
+        }
+    }
+
+    return size - 1;
+}
+
+float scores_to_likelihoods (std::vector<float> & scores)
+{
+    const size_t size = scores.size();
+    float * __restrict__ scores_data = scores.data();
+    float max_score = vector_max(size, scores_data);
+
+    float total = 0;
+    for (size_t i = 0; i < size; ++i) {
+        total += scores_data[i] = expf(scores_data[i] - max_score);
+    }
+
+    return total;
+}
+
+float score_from_scores_overwrite (
+        rng_t & rng,
+        size_t sample,
+        std::vector<float> & scores)
+{
+    const size_t size = scores.size();
+    float * __restrict__ scores_data = scores.data();
+    float max_score = vector_max(size, scores_data);
+
+    float total = 0;
+    for (size_t i = 0; i < size; ++i) {
+        total += expf(scores_data[i] -= max_score);
+    }
+
+    if (SYNCHRONIZE_ENTROPY_FOR_UNIT_TESTING) {
+        sample_unif01(rng);  // consume entropy to match sampler
+    }
+
+    float score = scores_data[sample] - log(total);
+    return score;
 }
 
 } // namespace distributions
