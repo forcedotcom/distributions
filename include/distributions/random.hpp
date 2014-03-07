@@ -171,7 +171,7 @@ inline std::pair<size_t, float> sample_prob_from_scores_overwrite (
 
 // score_from_scores_overwrite(...) = log(prob_from_scores_overwrite(...)),
 // this is less succeptible to overflow than prob_from_scores_overwrite
-inline float score_from_scores_overwrite (
+float score_from_scores_overwrite (
         rng_t & rng,
         size_t sample,
         std::vector<float> & scores);
