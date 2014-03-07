@@ -16,14 +16,8 @@ struct DirichletDiscrete
 //----------------------------------------------------------------------------
 // Data
 
-int dim;
-
-struct Hypers
-{
-    float alphas[max_dim];
-};
-
-Hypers hypers;
+int dim;  // fixed parameter
+float alphas[max_dim];  // hyperparamter
 
 //----------------------------------------------------------------------------
 // Datatypes
@@ -32,7 +26,7 @@ typedef int Value;
 
 struct Group
 {
-    int counts[max_dim];
+    uint32_t counts[max_dim];
 };
 
 struct Sampler
@@ -98,7 +92,7 @@ void sampler_init (
         rng_t & rng) const
 {
     for (int i = 0; i < dim; ++i) {
-        sampler.ps[i] = hypers.alphas[i] + group.counts[i];
+        sampler.ps[i] = alphas[i] + group.counts[i];
     }
 
     sample_dirichlet(rng, dim, sampler.ps, sampler.ps);
@@ -131,7 +125,7 @@ void scorer_init (
     float alpha_sum = 0;
 
     for (int i = 0; i < dim; ++i) {
-        float alpha = hypers.alphas[i] + group.counts[i];
+        float alpha = alphas[i] + group.counts[i];
         scorer.alphas[i] = alpha;
         alpha_sum += alpha;
     }
@@ -161,13 +155,13 @@ float score_group (
         const Group & group,
         rng_t &) const
 {
-    int count_sum = 0;
+    uint32_t count_sum = 0;
     float alpha_sum = 0;
     float score = 0;
 
     for (int i = 0; i < dim; ++i) {
-        int count = group.counts[i];
-        float alpha = hypers.alphas[i];
+        uint32_t count = group.counts[i];
+        float alpha = alphas[i];
         count_sum += count;
         alpha_sum += alpha;
         score += fast_lgamma(alpha + count) - fast_lgamma(alpha);
@@ -198,7 +192,7 @@ void vector_scorer_update (
     FloatVector & scores = scorer.scores[group_index];
     float alpha_sum = 0;
     for (int i = 0; i < dim; ++i) {
-        float alpha = hypers.alphas[i] + group.counts[i];
+        float alpha = alphas[i] + group.counts[i];
         scores[i] = alpha;
         alpha_sum += alpha;
     }

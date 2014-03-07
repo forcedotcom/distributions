@@ -16,12 +16,10 @@ cdef extern from "distributions/models/dd.hpp" namespace "distributions":
     ctypedef int Value
     cdef cppclass Model_cc "distributions::DirichletDiscrete<256>":
         int dim
-        cppclass Hypers:
-            float alphas[256]
-        Hypers hypers
+        float alphas[256]
         #cppclass Value
         cppclass Group:
-            int counts[]
+            unsigned counts[]
         cppclass Sampler:
             float ps[256]
         cppclass Scorer:
@@ -92,13 +90,13 @@ cdef class Model_cy:
         self.ptr.dim = dim
         cdef int i
         for i in xrange(dim):
-            self.ptr.hypers.alphas[i] = float(alphas[i])
+            self.ptr.alphas[i] = float(alphas[i])
 
     def dump(self):
         alphas = []
         cdef int i
         for i in xrange(self.ptr.dim):
-            alphas.append(float(self.ptr.hypers.alphas[i]))
+            alphas.append(float(self.ptr.alphas[i]))
         return {'alphas': alphas}
 
     #-------------------------------------------------------------------------
