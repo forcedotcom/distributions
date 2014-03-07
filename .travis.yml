@@ -10,10 +10,5 @@ before_install:
 install:
   - make install
   - pip freeze
-before_script:
-  - ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-  - cat ~/.ssh/known_hosts  # DEBUG
 script:
   - LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$VIRTUAL_ENV/lib" make test
-cache:
-  apt: true
