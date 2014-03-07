@@ -5,14 +5,10 @@
 #include <distributions/common.hpp>
 #include <distributions/special.hpp>
 #include <distributions/vector_math.hpp>
+#include <distributions/random_fwd.hpp>
 
 namespace distributions
 {
-
-//typedef std::default_random_engine rng_t;
-//typedef std::mt19937 rng_t;
-typedef std::ranlux48 rng_t;
-
 
 inline int sample_int (rng_t & rng, int low, int high)
 {
