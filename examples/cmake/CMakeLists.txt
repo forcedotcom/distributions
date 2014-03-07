@@ -28,7 +28,7 @@ if(DEFINED ENV{DISTRIBUTIONS_PATH})
 else()
   ExternalProject_Add(distributions
     PREFIX distributions
-    GIT_REPOSITORY git@github.com:forcedotcom/distributions.git
+    GIT_REPOSITORY https://github.com/forcedotcom/distributions.git
     GIT_TAG 2.0
     INSTALL_COMMAND ""
   )
