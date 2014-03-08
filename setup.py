@@ -34,14 +34,14 @@ def extension(name):
             '-Wno-sign-compare',
             '-Wno-strict-aliasing',
             '-O3',
-            '-mfpmath=sse',
-            '-msse4.1',
-            #'-mavx',
             '-ffast-math',
             '-funsafe-math-optimizations',
             #'-fno-trapping-math',
             #'-ffinite-math-only',
             #'-fvect-cost-model',
+            '-mfpmath=sse',
+            '-msse4.1',
+            #'-mavx',
             #'-mrecip',
             #'-march=native',
         ],
@@ -60,6 +60,7 @@ model_feature = Feature(
         extension('hp/models/dd'),
         extension('lp/models/dd'),
         extension('lp/models/dpm'),
+        extension('lp/clustering'),
     ]
 )
 
