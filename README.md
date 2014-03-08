@@ -1,26 +1,37 @@
 # Distributions [![Build Status](https://travis-ci.org/forcedotcom/distributions.png)](https://travis-ci.org/forcedotcom/distributions)
 
+<font background-color='#faa'>
 <b>WARNING</b>
 This is the unstable 2.0 branch of distributions,
 which is a complete rewrite of the stable 1.0 master branch,
 and which breaks API compatibility.
+</font>
 
-![Mascot](fox.png)
+This package implements basic building blocks for Bayesian MCMC inference
+in Python and C++ including:
+* special numerical functions,
+* samplers and density functions from a variety of distributions,
+* clustering models (e.g. CRP and Pitman-Yor), and
+* conjugate component models (e.g. gamma-Poisson, Normal-inverse-chi-squared).
 
-This package implements a variety of conjugate component models for
-Bayesian MCMC inference.
-Each model may have up to three types of implementations:
+Python implementations are provided in up to three flavors:
 
-*   `example_py` -
-    a pure python implementation for correctness auditing and debugging.
+*   Debug `distributions.dbg`
+    are pure-python implementations for correctness auditing and
+    error checking, and allowing debugging via pdb.
 
-*   `example_cy` -
-    cython implementation for faster inference in python and debugging.
+*   High-Precision `distributions.hp`
+    are cython implementations for fast inference in python
+    and numerical reference.
 
-*   `example_cc` -
-    a low-precision C++ implementation for fastest inference in C++.
-    C++ models are available in the `include/` and `src/` directories,
-    while their python wrappers enable unit testing.
+*   Low-Precision `distributions.lp`
+    are inefficent wrappers of blazingly fast C++ implementations,
+    intended mostly as wrappers to check that C++ implementations are correct.
+
+Our typical workflow is to first prototype models in python,
+then prototype faster inference applications using cython models,
+and finally implement optimized scalable inference products in C++,
+while testing all implementations for correctness.
 
 
 ## Installing
@@ -39,7 +50,7 @@ Finally, test your installation with
     make test
 
 
-## Cython
+### Cython
 
 Distributions includes several optimized modules that require Cython
 0.20.1 or later, as available via
@@ -119,16 +130,37 @@ Each component model API consist of:
         ExampleModel.group_load(json) -> group
         ExampleModel.group_dump(group) -> json
 
+*   Testing metadata (python only).
+    Example model parameters and datasets are automatically discovered by
+    unit test infrastructures, minimizing per-model test-writing cost.
+
+        ExampleModel.EXAMPLES = [
+            {'model': ..., 'values': [...]},
+            ...
+        ]
+
 
 ## Source of Entropy
 
-The C++ models explicity require a random number generator `rng` everywhere
-entropy is consumed.
-In python models, a single `global_rng` source is shared.
+The C++ methods explicity require a random number generator `rng` everywhere
+entropy may be consumed.
+The python models try to maintain compatibility with `numpy.random`
+by hiding this source either as the global `numpy.random` generator,
+or as single `global_rng` in wrapped C++.
+
+
+## Authors (alphabetically)
+
+* Beau Cronin <https://twitter.com/beaucronin>
+* Jonathan Glidden <https://twitter.com/jhglidden>
+* Eric Jonas <https://twitter.com/stochastician>
+* Fritz Obermeyer <https://github.com/fritzo>
+* Cap Petschulat <https://github.com/cap>
 
 
 ## License
 
-Copyright 2014 Salesforce.com.<br>
-This code is released under the Revised BSD License.
+Copyright 2014 Salesforce.com.
+
+Licensed under the Revised BSD License.
 See [LICENSE.txt](LICENSE.txt) for details.
