@@ -104,6 +104,7 @@ struct LowEntropy
 
     float score_add_value (
             count_t group_size,
+            count_t group_count,
             count_t sample_size) const
     {
         // see `python derivations/clustering.py fast_log`
@@ -127,10 +128,11 @@ struct LowEntropy
 
     float score_remove_value (
             count_t group_size,
+            count_t group_count,
             count_t sample_size) const
     {
         group_size -= 1;
-        return -score_add_value(group_size, sample_size);
+        return -score_add_value(group_size, group_count, sample_size);
     }
 
 private:
