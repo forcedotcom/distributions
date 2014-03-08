@@ -1,5 +1,5 @@
 from libcpp.vector cimport vector
-from distributions.hp.random cimport global_rng
+from distributions.lp.random cimport rng_t, global_rng
 from distributions.mixins import ComponentModel, Serializable
 
 cpdef int MAX_DIM = 256
@@ -12,7 +12,6 @@ cdef extern from "distributions/vector.hpp" namespace "distributions":
 
 
 cdef extern from "distributions/models/dd.hpp" namespace "distributions":
-    cppclass rng_t
     ctypedef int Value
     cdef cppclass Model_cc "distributions::DirichletDiscrete<256>":
         int dim

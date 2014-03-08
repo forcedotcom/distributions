@@ -1,14 +1,9 @@
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from python cimport PyObject
+from distributions.lp.random cimport rng_t, global_rng
 
 ctypedef PyObject* O
-
-
-cdef extern from 'distributions/std_wrapper.hpp' namespace 'std_wrapper':
-    cppclass rng_t:
-        int sample "operator()" () nogil
-    cdef rng_t global_rng
 
 
 cdef extern from "distributions/random.hpp" namespace "distributions":

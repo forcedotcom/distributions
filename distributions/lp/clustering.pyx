@@ -1,21 +1,23 @@
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from cython.operator cimport dereference as deref, preincrement as inc
+from distributions.lp.random cimport rng_t, global_rng
 
 cdef extern from 'distributions/clustering.hpp':
-    cppclass rng_t
 
-    cppclass Assignments_cc "distributions::Clustering<int>::Assignments":
-        Assignments_cc() nogil except +
+    cppclass Assignments "distributions::Clustering<int>::Assignments":
+        Assignments() nogil except +
         cppclass iterator:
             pair[int, int] & operator*() nogil
             iterator operator++() nogil
             bint operator!=(iterator) nogil
         int & operator[](int) nogil
+        iterator begin() nogil
+        iterator end() nogil
 
     cdef vector[int] count_assignments_cc \
             "distributions::Clustering<int>::count_assignments" \
-            (Assignments_cc & assignments) nogil
+            (Assignments & assignments) nogil
 
     cppclass PitmanYor_cc "distributions::Clustering<int>::PitmanYor":
         float alpha
@@ -46,14 +48,22 @@ cdef extern from 'distributions/clustering.hpp':
 
 
 cpdef list count_assignments(dict assignments):
-    cdef Assignments_cc assignments_cc
+    cdef Assignments assignments_cc
     cdef int value_id
     cdef int group_id
     for value_id, group_id in assignments.iteritems():
         assignments_cc[value_id] = group_id
-    cdef vector[int] counts_cc = count_assignments_cc(assignments_cc)
-    cdef list counts = counts_cc
+    cdef list counts = count_assignments_cc(assignments_cc)
     return counts
+
+
+cdef dict dump_assignments(Assignments & assignments):
+    cdef dict raw = {}
+    cdef Assignments.iterator i = assignments.begin()
+    while i != assignments.end():
+        assignments[deref(i).first] = deref(i).second
+        inc(i)
+    return raw
 
 
 cdef class PitmanYor:
@@ -80,6 +90,10 @@ cdef class PitmanYor:
         def __set__(self, float d):
             assert 0 <= d and d < 1
             self.ptr.d = d
+
+    def sample_assignments(self, int size):
+        cdef list assignments = self.ptr.sample_assignments(size, global_rng)
+        return assignments
 
     def score_counts(self, list counts):
         cdef vector[int] counts_cc = counts
@@ -120,6 +134,10 @@ cdef class LowEntropy:
         def __set__(self, int dataset_size):
             assert dataset_size >= 0
             self.ptr.dataset_size = dataset_size
+
+    def sample_assignments(self, int size):
+        cdef list assignments = self.ptr.sample_assignments(size, global_rng)
+        return assignments
 
     def score_counts(self, list counts):
         cdef vector[int] counts_cc = counts

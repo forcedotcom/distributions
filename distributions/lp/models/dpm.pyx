@@ -1,12 +1,11 @@
 from libcpp.vector cimport vector
 from cython.operator cimport dereference as deref, preincrement as inc
-from distributions.hp.random cimport global_rng
+from distributions.lp.random cimport rng_t, global_rng
 from distributions.sparse_counter cimport SparseCounter
 from distributions.mixins import ComponentModel, Serializable
 
 
 cdef extern from "distributions/models/dpm.hpp" namespace "distributions":
-    cppclass rng_t
     ctypedef unsigned Value
     cdef cppclass Model_cc "distributions::DirichletProcessMixture":
         cppclass Hypers:
