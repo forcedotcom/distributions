@@ -103,7 +103,7 @@ Each component model API consist of:
         model.group_remove_value(group, value)
         model.group_merge(destin_group, source_group)
 
-*   Sampling functions. (optional in python)
+*   Sampling functions (optional in python).
     These consume explicit entropy sources in C++ or `global_rng` in python.
 
         model.sampler_init(sampler, group)            # c++ only
@@ -112,7 +112,7 @@ Each component model API consist of:
         model.sample_value(group) -> value
         model.sample_group(group_size) -> group
 
-*   Scoring functions. (optional in python)
+*   Scoring functions (optional in python).
     These may also consume entropy,
     e.g. when implemented using monte carlo integration)
 
@@ -135,7 +135,7 @@ Each component model API consist of:
 
 *   Testing metadata (python only).
     Example model parameters and datasets are automatically discovered by
-    unit test infrastructures, minimizing per-model test-writing cost.
+    unit test infrastructures, reducing the cost of per-model test-writing.
 
         ExampleModel.EXAMPLES = [
             {'model': ..., 'values': [...]},

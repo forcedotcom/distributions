@@ -5,9 +5,9 @@ from distributions.sparse_counter cimport SparseCounter
 from distributions.mixins import ComponentModel, Serializable
 
 
-cdef extern from "distributions/models/dpm.hpp" namespace "distributions":
+cdef extern from "distributions/models/dpd.hpp" namespace "distributions":
     ctypedef unsigned Value
-    cdef cppclass Model_cc "distributions::DirichletProcessMixture":
+    cdef cppclass Model_cc "distributions::DirichletProcessDiscrete":
         cppclass Hypers:
             float gamma
             float alpha
@@ -144,7 +144,7 @@ cdef class Model_cy:
     ]
 
 
-class DirichletProcessMixture(Model_cy, ComponentModel, Serializable):
+class DirichletProcessDiscrete(Model_cy, ComponentModel, Serializable):
 
     #-------------------------------------------------------------------------
     # Datatypes
@@ -154,4 +154,4 @@ class DirichletProcessMixture(Model_cy, ComponentModel, Serializable):
     Group = Group
 
 
-Model = DirichletProcessMixture
+Model = DirichletProcessDiscrete

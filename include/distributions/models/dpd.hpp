@@ -8,7 +8,7 @@
 namespace distributions
 {
 
-struct DirichletProcessMixture
+struct DirichletProcessDiscrete
 {
 
 //----------------------------------------------------------------------------
