@@ -17,8 +17,8 @@ install_py: install_cc FORCE
 install: install_py install_cc
 
 test: install
-	pyflakes setup.py distributions
-	pep8 --repeat --exclude=*_pb2.py setup.py distributions
+	pyflakes setup.py distributions derivations
+	pep8 --repeat --exclude=*_pb2.py setup.py distributions derivations
 	nosetests -v
 	cd build && ctest
 	./test_cmake.sh
