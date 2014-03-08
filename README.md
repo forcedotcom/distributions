@@ -9,10 +9,13 @@ and which breaks API compatibility.
 
 This package implements basic building blocks for Bayesian MCMC inference
 in Python and C++ including:
-* special numerical functions,
-* samplers and density functions from a variety of distributions,
-* clustering models (e.g. CRP and Pitman-Yor), and
-* conjugate component models (e.g. gamma-Poisson, Normal-inverse-chi-squared).
+*   special numerical functions `distributions.<flavor>.special`,
+*   samplers and density functions from a variety of distributions,
+    `distributions.<flavor>.random`
+*   conjugate component models (e.g., gamma-Poisson, normal-inverse-chi-squared)
+    `distributions.<flavor>.models`, and.
+*   clustering models (e.g., CRP, Pitman-Yor)
+    `distributions.<flavor>.clustering`.
 
 Python implementations are provided in up to three flavors:
 
@@ -140,7 +143,7 @@ Each component model API consist of:
         ]
 
 
-## Source of Entropy
+### Source of Entropy
 
 The C++ methods explicity require a random number generator `rng` everywhere
 entropy may be consumed.
