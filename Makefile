@@ -1,6 +1,14 @@
 all: test
 
-build_cc: FORCE
+src/test_headers.cc: FORCE
+	find include \
+	  | grep '\.hpp' \
+	  | sort \
+	  | sed 's/include\/\(.*\)/#include <\1>/g' \
+	  > src/test_headers.cc
+	echo 'int main () { return 0; }' >> src/test_headers.cc
+
+build_cc: src/test_headers.cc FORCE
 	mkdir -p build lib
 	cd build &&\
 	  cmake -DCMAKE_INSTALL_PREFIX=.. .. &&\
