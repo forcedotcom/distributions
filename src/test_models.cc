@@ -4,6 +4,7 @@
 #include <distributions/clustering.hpp>
 #include <distributions/models/dd.hpp>
 #include <distributions/models/dpd.hpp>
+#include <distributions/models/nich.hpp>
 
 int main ()
 {
