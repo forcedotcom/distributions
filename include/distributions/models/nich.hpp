@@ -6,6 +6,7 @@
 
 namespace distributions
 {
+
 struct NormalInverseChiSq
 {
 
@@ -46,7 +47,7 @@ struct Scorer
 //----------------------------------------------------------------------------
 // Mutation
 
-void group_init(
+void group_init (
         Group & group,
         rng_t &) const
 {
@@ -55,7 +56,7 @@ void group_init(
     group.allsampvar = 0.f;
 }
 
-void group_add_value(
+void group_add_value (
         Group & group,
         const Value & value,
         rng_t &) const
@@ -66,7 +67,7 @@ void group_add_value(
     group.allsampvar += delta * (value - group.sampmean);
 }
 
-void group_remove_value(
+void group_remove_value (
         Group & group,
         const Value & value,
         rng_t &) const
@@ -81,14 +82,14 @@ void group_remove_value(
     } else {
         group.sampmean = (total - value) / group.dpcount;
     }
-    if(group.dpcount <= 1) {
+    if (group.dpcount <= 1) {
         group.allsampvar = 0.f;
     } else {
         group.allsampvar -= delta * (value - group.sampmean);
     }
 }
 
-void group_merge(
+void group_merge (
         Group & destin,
         const Group & source,
         rng_t &) const
@@ -108,7 +109,7 @@ void group_merge(
 //----------------------------------------------------------------------------
 // Scoring
 
-void scorer_init(
+void scorer_init (
         Scorer & scorer,
         const Group & group,
         rng_t &) const
@@ -133,16 +134,17 @@ void scorer_init(
     scorer.mean = mu_n;
 }
 
-float scorer_eval(
+float scorer_eval (
         const Scorer & scorer,
         const Value & value,
         rng_t &) const
 {
-    return scorer.score + scorer.log_coeff * fast_log(
-         1.f + scorer.precision * sqr(value - scorer.mean));
+    return scorer.score
+         + scorer.log_coeff * fast_log(
+             1.f + scorer.precision * sqr(value - scorer.mean));
 }
 
-float score_value(
+float score_value (
         const Group & group,
         const Value & value,
         rng_t & rng) const
@@ -152,7 +154,7 @@ float score_value(
     return scorer_eval(scorer, value, rng);
 }
 
-float score_group(
+float score_group (
         const Group & group,
         rng_t &) const
 {
@@ -163,17 +165,18 @@ float score_group(
     float kappa_n = kappa + n;
 
     float nu_n = nu + n;
-    float sigmasq_n = 1.f / (nu_n) * ( sigmasq * nu + allsampvar +
-                                       kappa * n / (kappa + n) *
-                                       (sampmean - mu) * (sampmean - mu));
+    float sigmasq_n = 1.f / nu_n * (
+        sigmasq * nu +
+        allsampvar +
+        kappa * n / (kappa + n) * sqr(sampmean - mu));
+
     float log_pi = 1.1447298858493991f;
 
-    float score = 0.f;
-    score += fast_lgamma(nu_n / 2.f) - fast_lgamma(nu / 2.f);
+    float score = fast_lgamma(0.5f * nu_n) - fast_lgamma(0.5f * nu);
     score += 0.5f * fast_log(kappa / kappa_n);
-    score += nu / 2.f * (fast_log(nu * sigmasq))
-           - nu_n / 2.f * fast_log(nu_n * sigmasq_n);
-    score += -n / 2.f * log_pi;
+    score += 0.5f * nu * (fast_log(nu * sigmasq))
+           - 0.5f * nu_n * fast_log(nu_n * sigmasq_n);
+    score += -0.5f * n * log_pi;
     return score;
 }
 
