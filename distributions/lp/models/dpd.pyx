@@ -8,12 +8,10 @@ from distributions.mixins import ComponentModel, Serializable
 cdef extern from "distributions/models/dpd.hpp" namespace "distributions":
     ctypedef unsigned Value
     cdef cppclass Model_cc "distributions::DirichletProcessDiscrete":
-        cppclass Hypers:
-            float gamma
-            float alpha
-            float beta0
-            vector[float] betas
-        Hypers hypers
+        float gamma
+        float alpha
+        float beta0
+        vector[float] betas
         #cppclass Value
         cppclass Group:
             SparseCounter counts
@@ -63,25 +61,23 @@ cdef class Model_cy:
         del self.ptr
 
     def load(self, raw):
-        cdef Model_cc.Hypers * hypers = & self.ptr.hypers
-        hypers.gamma = float(raw['gamma'])
-        hypers.alpha = float(raw['alpha'])
-        hypers.beta0 = float(raw['beta0'])
-        hypers.betas.clear()
+        self.ptr.gamma = float(raw['gamma'])
+        self.ptr.alpha = float(raw['alpha'])
+        self.ptr.beta0 = float(raw['beta0'])
+        self.ptr.betas.clear()
         for beta in raw['betas']:
-            hypers.betas.push_back(float(beta))
+            self.ptr.betas.push_back(float(beta))
 
     def dump(self):
-        cdef Model_cc.Hypers * hypers = & self.ptr.hypers
         betas = []
         cdef int i
-        cdef int size = hypers.betas.size()
+        cdef int size = self.ptr.betas.size()
         for i in xrange(size):
-            betas.append(float(hypers.betas[i]))
+            betas.append(float(self.ptr.betas[i]))
         return {
-            'gamma': float(hypers.gamma),
-            'alpha': float(hypers.alpha),
-            'beta0': float(hypers.beta0),
+            'gamma': float(self.ptr.gamma),
+            'alpha': float(self.ptr.alpha),
+            'beta0': float(self.ptr.beta0),
             'betas': betas,
         }
 

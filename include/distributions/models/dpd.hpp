@@ -16,15 +16,10 @@ struct DirichletProcessDiscrete
 
 typedef std::vector<float> betas_t;  // dense
 
-struct Hypers
-{
-    float gamma;
-    float alpha;
-    float beta0;
-    betas_t betas;
-};
-
-Hypers hypers;
+float gamma;
+float alpha;
+float beta0;
+betas_t betas;
 
 //----------------------------------------------------------------------------
 // Datatypes
@@ -96,14 +91,14 @@ void sampler_init (
 {
     std::vector<float> & probs = sampler.probs;
     probs.clear();
-    probs.reserve(hypers.betas.size() + 1);
-    for (float beta : hypers.betas) {
-        probs.push_back(beta * hypers.alpha);
+    probs.reserve(betas.size() + 1);
+    for (float beta : betas) {
+        probs.push_back(beta * alpha);
     }
     for (auto i : group.counts) {
         probs[i.first] += i.second;
     }
-    probs.push_back(hypers.beta0 * hypers.alpha);
+    probs.push_back(beta0 * alpha);
 
     sample_dirichlet(rng, probs.size(), probs.data(), probs.data());
 }
@@ -132,17 +127,17 @@ void scorer_init (
         const Group & group,
         rng_t &) const
 {
-    const size_t size = hypers.betas.size();
+    const size_t size = betas.size();
     const size_t total = group.counts.get_total();
     auto & scores = scorer.scores;
     scores.resize(size);
 
-    const float betas_scale = hypers.alpha / (hypers.alpha + total);
+    const float betas_scale = alpha / (alpha + total);
     for (size_t i = 0; i < size; ++i) {
-        scores[i] = betas_scale * hypers.betas[i];
+        scores[i] = betas_scale * betas[i];
     }
 
-    const float counts_scale = 1.0f / (hypers.alpha + total);
+    const float counts_scale = 1.0f / (alpha + total);
     for (auto i : group.counts) {
         Value value = i.first;
         DIST_ASSERT(value < size,
@@ -177,7 +172,7 @@ float score_group (
         const Group & group,
         rng_t &) const
 {
-    const size_t size = hypers.betas.size();
+    const size_t size = betas.size();
     const size_t total = group.counts.get_total();
 
     float score = 0;
@@ -185,12 +180,12 @@ float score_group (
         Value value = i.first;
         DIST_ASSERT(value < size,
             "unknown DPM value: " << value << " >= " << size);
-        float prior_i = hypers.betas[value] * hypers.alpha;
+        float prior_i = betas[value] * alpha;
         score += fast_lgamma(prior_i + i.second)
                - fast_lgamma(prior_i);
     }
-    score += fast_lgamma(hypers.alpha)
-           - fast_lgamma(hypers.alpha + total);
+    score += fast_lgamma(alpha)
+           - fast_lgamma(alpha + total);
 
     return score;
 }
