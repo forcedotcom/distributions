@@ -57,27 +57,28 @@ void sample_dirichlet_safe (
 
 inline float fast_score_student_t (
         float x,
-        float v,
-        float mean,
+        float nu,
+        float mu,
         float lambda)
 {
+    // \cite{murphy2007conjugate}, Eq. 304
     float p = 0.f;
-    p += fast_lgamma_nu(v);
-    p += 0.5f * fast_log(lambda / (M_PIf * v));
-    p += (-0.5f * v - 0.5f) * fast_log(1.f + (lambda * sqr(x - mean)) / v);
+    p += fast_lgamma_nu(nu);
+    p += 0.5f * fast_log(lambda / (M_PIf * nu));
+    p += (-0.5f * nu - 0.5f) * fast_log(1.f + (lambda * sqr(x - mu)) / nu);
     return p;
 }
 
 inline float score_student_t (
         float x,
-        float v,
-        float mean,
+        float nu,
+        float mu,
         float lambda)
 {
-    float p = 0.f;
-    p += lgammaf(v * 0.5f + 0.5f) - lgammaf(v * 0.5f);
-    p += 0.5f * logf(lambda / (M_PIf * v));
-    p += (-0.5f * v - 0.5f) * logf(1.f + (lambda * sqr(x - mean)) / v);
+    // \cite{murphy2007conjugate}, Eq. 304
+    float p = lgammaf(nu * 0.5f + 0.5f) - lgammaf(nu * 0.5f);
+    p += 0.5f * logf(lambda / (M_PIf * nu));
+    p += (-0.5f * nu - 0.5f) * logf(1.f + (lambda * sqr(x - mu)) / nu);
     return p;
 }
 

@@ -25,9 +25,9 @@ typedef float Value;
 
 struct Group
 {
-    uint32_t dpcount;   // = data point count
+    uint32_t count;   // = data point count
     float sampmean;     // = sample mean
-    float allsampvar;   // = dpcount * sample variance
+    float allsampvar;   // = count * sample variance
 };
 
 struct Sampler
@@ -51,7 +51,7 @@ void group_init (
         Group & group,
         rng_t &) const
 {
-    group.dpcount = 0;
+    group.count = 0;
     group.sampmean = 0.f;
     group.allsampvar = 0.f;
 }
@@ -61,9 +61,9 @@ void group_add_value (
         const Value & value,
         rng_t &) const
 {
-    ++group.dpcount;
+    ++group.count;
     float delta = value - group.sampmean;
-    group.sampmean += delta / group.dpcount;
+    group.sampmean += delta / group.count;
     group.allsampvar += delta * (value - group.sampmean);
 }
 
@@ -72,17 +72,17 @@ void group_remove_value (
         const Value & value,
         rng_t &) const
 {
-    float total = group.sampmean * group.dpcount;
+    float total = group.sampmean * group.count;
     float delta = value - group.sampmean;
-    DIST_ASSERT(group.dpcount == 0, "Can't remove empty group");
+    DIST_ASSERT(group.count == 0, "Can't remove empty group");
 
-    --group.dpcount;
-    if (group.dpcount == 0) {
+    --group.count;
+    if (group.count == 0) {
         group.sampmean = 0.f;
     } else {
-        group.sampmean = (total - value) / group.dpcount;
+        group.sampmean = (total - value) / group.count;
     }
-    if (group.dpcount <= 1) {
+    if (group.count <= 1) {
         group.allsampvar = 0.f;
     } else {
         group.allsampvar -= delta * (value - group.sampmean);
@@ -94,11 +94,11 @@ void group_merge (
         const Group & source,
         rng_t &) const
 {
-    uint32_t dpcount = destin.dpcount + source.dpcount;
+    uint32_t count = destin.count + source.count;
     float delta = source.sampmean - destin.sampmean;
-    float source_part = float(source.dpcount) / dpcount;
-    float cross_part = destin.dpcount * source_part;
-    destin.dpcount = dpcount;
+    float source_part = float(source.count) / count;
+    float cross_part = destin.count * source_part;
+    destin.count = count;
     destin.sampmean += source_part * delta;
     destin.allsampvar += source.allsampvar + cross_part * sqr(delta);
 }
@@ -114,7 +114,7 @@ void scorer_init (
         const Group & group,
         rng_t &) const
 {
-    float n = group.dpcount;
+    float n = group.count;
     float sampmean = group.sampmean;
     float allsampvar = group.allsampvar;
 
@@ -158,7 +158,7 @@ float score_group (
         const Group & group,
         rng_t &) const
 {
-    float n = group.dpcount;
+    float n = group.count;
     float sampmean = group.sampmean;
     float allsampvar = group.allsampvar;
 

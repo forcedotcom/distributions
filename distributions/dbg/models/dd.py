@@ -73,7 +73,8 @@ class DirichletDiscrete(ComponentModel, Serializable):
 
     def score_value(self, group, value):
         """
-        McCallum, et. al, 'Rething LDA: Why Priors Matter' eqn 4
+        \cite{wallach2009rethinking} Eqn 4.
+        McCallum, et. al, 'Rething LDA: Why Priors Matter'
         """
         numer = group.counts[value] + self.alphas[value]
         denom = group.counts.sum() + self.alphas.sum()
@@ -81,7 +82,8 @@ class DirichletDiscrete(ComponentModel, Serializable):
 
     def score_group(self, group):
         """
-        From equation 22 of Michael Jordan's CS281B/Stat241B
+        \cite{jordan2001more} Eqn 22.
+        Michael Jordan's CS281B/Stat241B
         Advanced Topics in Learning and Decision Making course,
         'More on Marginal Likelihood'
         """
@@ -100,9 +102,7 @@ class DirichletDiscrete(ComponentModel, Serializable):
 
     EXAMPLES = [
         {
-            'model': {
-                'alphas': [0.5, 0.5, 0.5, 0.5],
-            },
+            'model': {'alphas': [0.5, 0.5, 0.5, 0.5]},
             'values': [0, 1, 0, 2, 0, 1, 0],
         },
     ]

@@ -1,6 +1,10 @@
-from nose.tools import assert_true, assert_in, assert_is_instance
-from numpy.testing import assert_array_almost_equal
 import random
+from nose.tools import (
+    assert_true,
+    assert_in,
+    assert_is_instance,
+    assert_not_equal,
+)
 from distributions.tests.util import (
     assert_hasattr,
     assert_close,
@@ -59,6 +63,7 @@ def _test_interface(name):
 
         for value in values:
             model.group_remove_value(group2, value)
+        assert_not_equal(group1, group2)
         model.group_merge(group2, group1)
 
         for value in values:
@@ -195,7 +200,7 @@ def _test_vector_scorer(name):
         for value in values:
             scores1 = model.vector_scorer_eval(scorer, value)
             scores2 = [model.score_value(group, value) for group in groups]
-            assert_array_almost_equal(scores1, scores2)
+            assert_close(scores1, scores2)
 
 
 def test_module():

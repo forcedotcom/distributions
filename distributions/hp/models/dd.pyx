@@ -90,10 +90,8 @@ cdef class Model_cy:
         return self.sampler_eval(sampler)
 
     def sample_group(self, int size):
-        cdef Group group = Group()
-        self.group_init(group)
         cdef numpy.ndarray[numpy.float64_t, ndim=1] \
-            sampler = self.sampler_create(group)
+            sampler = self.sampler_create()
         cdef list result = []
         cdef int i
         for i in xrange(size):
@@ -137,9 +135,7 @@ cdef class Model_cy:
 
     EXAMPLES = [
         {
-            'model': {
-                'alphas': [0.5, 0.5, 0.5, 0.5],
-            },
+            'model': {'alphas': [0.5, 0.5, 0.5, 0.5]},
             'values': [0, 1, 0, 2, 0, 1, 0],
         },
     ]

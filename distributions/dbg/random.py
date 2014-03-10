@@ -4,7 +4,7 @@ from numpy.random.mtrand import dirichlet as sample_dirichlet
 from numpy import dot, inner
 from numpy.linalg import cholesky, det, inv
 from numpy.random import multivariate_normal, beta
-from scipy.stats import chi2
+from scipy.stats import norm, chi2
 from scipy.special import gammaln
 from distributions.util import scores_to_probs
 import logging
@@ -50,6 +50,14 @@ def sample_discrete(probs, total=None):
         'imprecision in sample_discrete',
         dict(total=total, dart=dart, probs=probs))
     raise ValueError('imprecision in sample_discrete')
+
+
+def sample_normal(mu, sigmasq):
+    return norm.rvs(mu, sigmasq)
+
+
+def sample_chi2(nu):
+    return chi2.rvs(nu)
 
 
 def sample_student_t(dof, mu, Sigma):
