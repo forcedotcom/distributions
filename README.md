@@ -1,11 +1,9 @@
 # Distributions [![Build Status](https://travis-ci.org/forcedotcom/distributions.png)](https://travis-ci.org/forcedotcom/distributions)
 
-<font background-color='#faa'>
 <b>WARNING</b>
 This is the unstable 2.0 branch of distributions,
 which is a complete rewrite of the stable 1.0 master branch,
 and which breaks API compatibility.
-</font>
 
 This package implements basic building blocks for Bayesian MCMC inference
 in Python and C++ including:
@@ -56,15 +54,13 @@ Finally, test your installation with
 ### Cython
 
 Distributions includes several optimized modules that require Cython
-0.20.1 or later, as available via
-
-    pip install cython
+0.20.1 or later, as will automatically be installed by pip
 
 To install without cython:
 
     python setup.py --without-cython install
 
-Or:
+or via pip:
 
     pip install --global-option --without-cython .
 
