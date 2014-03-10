@@ -8,6 +8,9 @@ from distributions.mixins import ComponentModel, Serializable
 cpdef int MAX_DIM = 256
 
 
+ctypedef int Value
+
+
 cdef class Group:
     cdef int counts[256]
     cdef int dim  # only required for dumping
@@ -24,6 +27,11 @@ cdef class Group:
 
     def dump(self):
         return {'counts': [self.counts[i] for i in xrange(self.dim)]}
+
+
+# Buffer types only allowed as function local variables
+#ctypedef numpy.ndarray[numpy.float64_t, ndim=1] Sampler
+ctypedef numpy.ndarray Sampler
 
 
 cdef class Model_cy:
@@ -66,9 +74,8 @@ cdef class Model_cy:
     #-------------------------------------------------------------------------
     # Sampling
 
-    cpdef sampler_create(self, Group group=None):
-        cdef numpy.ndarray[numpy.float64_t, ndim=1] \
-            sampler = numpy.zeros(self.dim, dtype=numpy.float64)
+    cpdef Sampler sampler_create(self, Group group=None):
+        cdef Sampler sampler = numpy.zeros(self.dim, dtype=numpy.float64)
         cdef double * ps = <double *> sampler.data
         cdef int i
         if group is None:
@@ -80,18 +87,16 @@ cdef class Model_cy:
         sample_dirichlet(self.dim, ps, ps)
         return sampler
 
-    cpdef sampler_eval(self, numpy.ndarray[numpy.float64_t, ndim=1] sampler):
+    cpdef Value sampler_eval(self, Sampler sampler):
         cdef double * ps = <double *> sampler.data
         return sample_discrete(self.dim, ps)
 
     def sample_value(self, Group group):
-        cdef numpy.ndarray[numpy.float64_t, ndim=1] \
-            sampler = self.sampler_create(group)
+        cdef Sampler sampler = self.sampler_create(group)
         return self.sampler_eval(sampler)
 
     def sample_group(self, int size):
-        cdef numpy.ndarray[numpy.float64_t, ndim=1] \
-            sampler = self.sampler_create()
+        cdef Sampler sampler = self.sampler_create()
         cdef list result = []
         cdef int i
         for i in xrange(size):
@@ -101,7 +106,7 @@ cdef class Model_cy:
     #-------------------------------------------------------------------------
     # Scoring
 
-    def score_value(self, Group group, int value):
+    def score_value(self, Group group, Value value):
         """
         McCallum, et. al, 'Rethinking LDA: Why Priors Matter' eqn 4
         """

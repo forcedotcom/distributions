@@ -21,6 +21,8 @@ float nu;
 //----------------------------------------------------------------------------
 // Datatypes
 
+typedef NormalInverseChiSq Model;
+
 typedef float Value;
 
 struct Group
@@ -33,7 +35,7 @@ struct Group
 struct Sampler
 {
     float mu;
-    float sigma;
+    float sigmasq;
 };
 
 struct Scorer
@@ -74,7 +76,7 @@ void group_remove_value (
 {
     float total = group.mean * group.count;
     float delta = value - group.mean;
-    DIST_ASSERT(group.count == 0, "Can't remove empty group");
+    DIST_ASSERT(group.count > 0, "Can't remove empty group");
 
     --group.count;
     if (group.count == 0) {
@@ -100,11 +102,52 @@ void group_merge (
     float cross_part = destin.count * source_part;
     destin.count = count;
     destin.mean += source_part * delta;
-    destin.count_times_variance += source.count_times_variance + cross_part * sqr(delta);
+    destin.count_times_variance +=
+        source.count_times_variance + cross_part * sqr(delta);
+}
+
+Model plus_group (const Group & group) const
+{
+    Model post;
+    float mu_1 = mu - group.mean;
+    post.kappa = kappa + group.count;
+    post.mu = (kappa * mu + group.mean * group.count) / post.kappa;
+    post.nu = nu + group.count;
+    post.sigmasq = 1.f / post.nu * (
+        nu * sigmasq
+        + group.count_times_variance
+        + (group.count * kappa * mu_1 * mu_1) / post.kappa);
+    return post;
 }
 
 //----------------------------------------------------------------------------
 // Sampling
+
+void sampler_init (
+        Sampler & sampler,
+        const Group & group,
+        rng_t & rng) const
+{
+    Model z = plus_group(group);
+    sampler.sigmasq = z.nu * z.sigmasq / sample_chisq(rng, z.nu);
+    sampler.mu = sample_normal(rng, z.mu, sampler.sigmasq / z.kappa);
+}
+
+Value sampler_eval (
+        const Sampler & sampler,
+        rng_t & rng) const
+{
+    return sample_normal(rng, sampler.mu, sampler.sigmasq);
+}
+
+Value sample_value (
+        const Group & group,
+        rng_t & rng) const
+{
+    Sampler sampler;
+    sampler_init(sampler, group, rng);
+    return sampler_eval(sampler, rng);
+}
 
 //----------------------------------------------------------------------------
 // Scoring
@@ -114,24 +157,13 @@ void scorer_init (
         const Group & group,
         rng_t &) const
 {
-    float n = group.count;
-    float mean = group.mean;
-    float count_times_variance = group.count_times_variance;
-
-    float kappa_n = kappa + n;
-    float mu_n = (kappa * mu + n * mean) / kappa_n;
-    float nu_n = nu + n;
-    float sigmasq_n = 1.f / nu_n * (sigmasq * nu + count_times_variance +
-                                    kappa * n / kappa_n *
-                                    (mean - mu) * (mean - mu));
-
-    float lambda = kappa_n / ((kappa_n + 1.f) * sigmasq_n);
-
-    scorer.score = fast_lgamma_nu(nu_n)
-                 + 0.5f * fast_log(lambda / (M_PIf * nu_n));
-    scorer.log_coeff = -0.5f * nu_n - 0.5f;
-    scorer.precision = lambda / nu_n;
-    scorer.mean = mu_n;
+    Model post = plus_group(group);
+    float lambda = post.kappa / ((post.kappa + 1.f) * post.sigmasq);
+    scorer.score =
+        fast_lgamma_nu(post.nu) + 0.5f * fast_log(lambda / (M_PIf * post.nu));
+    scorer.log_coeff = -0.5f * post.nu - 0.5f;
+    scorer.precision = lambda / post.nu;
+    scorer.mean = post.mu;
 }
 
 float scorer_eval (
@@ -158,25 +190,13 @@ float score_group (
         const Group & group,
         rng_t &) const
 {
-    float n = group.count;
-    float mean = group.mean;
-    float count_times_variance = group.count_times_variance;
-
-    float kappa_n = kappa + n;
-
-    float nu_n = nu + n;
-    float sigmasq_n = 1.f / nu_n * (
-        sigmasq * nu +
-        count_times_variance +
-        kappa * n / (kappa + n) * sqr(mean - mu));
-
+    Model post = plus_group(group);
     float log_pi = 1.1447298858493991f;
-
-    float score = fast_lgamma(0.5f * nu_n) - fast_lgamma(0.5f * nu);
-    score += 0.5f * fast_log(kappa / kappa_n);
+    float score = fast_lgamma(0.5f * post.nu) - fast_lgamma(0.5f * nu);
+    score += 0.5f * fast_log(kappa / post.kappa);
     score += 0.5f * nu * (fast_log(nu * sigmasq))
-           - 0.5f * nu_n * fast_log(nu_n * sigmasq_n);
-    score += -0.5f * n * log_pi;
+           - 0.5f * post.nu * fast_log(post.nu * post.sigmasq);
+    score += -0.5f * group.count * log_pi;
     return score;
 }
 

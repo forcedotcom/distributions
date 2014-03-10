@@ -28,18 +28,40 @@ inline bool sample_bernoulli (rng_t & rng, float p)
     return sampler(rng) < p;
 }
 
-// HACK std::gamma_distribution<float> appears to be broken
-//typedef std::gamma_distribution<float> gamma_distribution_t;
-typedef std::gamma_distribution<double> gamma_distribution_t;
+inline float sample_std_normal (rng_t & rng)
+{
+    std::normal_distribution<float> sampler(0.f, 1.f);
+    return sampler(rng);
+}
+
+inline float sample_normal (rng_t & rng, float mean, float variance)
+{
+    float stddev = sqrtf(variance);
+    std::normal_distribution<float> sampler(mean, stddev);
+    return sampler(rng);
+}
+
+inline float sample_chisq (rng_t & rng, float nu)
+{
+    // HACK <float> appears to be broken in libstdc++ 4.6
+    //typedef std::chi_squared_distribution<float> chi_squared_distribution_t;
+    typedef std::chi_squared_distribution<double> chi_squared_distribution_t;
+
+    chi_squared_distribution_t sampler(nu);
+    return sampler(rng);
+}
 
 inline float sample_gamma (
         rng_t & rng,
         float alpha,
         float beta = 1.f)
 {
-    gamma_distribution_t sampler;
-    gamma_distribution_t::param_type param(alpha, beta);
-    return sampler(rng, param);
+    // HACK <float> appears to be broken in libstdc++ 4.6
+    //typedef std::gamma_distribution<float> gamma_distribution_t;
+    typedef std::gamma_distribution<double> gamma_distribution_t;
+
+    gamma_distribution_t sampler(alpha, beta);
+    return sampler(rng);
 }
 
 void sample_dirichlet (

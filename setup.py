@@ -19,9 +19,10 @@ assert VERSION, 'could not determine version'
 
 
 def extension(name):
+    name_pyx = '{}.pyx'.format(name.replace('.', '/'))
     return Extension(
-        'distributions.{0}'.format(name.replace('/', '.')),
-        sources=['distributions/{0}.pyx'.format(name)],
+        name,
+        sources=[name_pyx],
         language='c++',
         include_dirs=['include'],
         libraries=['m', 'distributions_shared'],
@@ -53,16 +54,17 @@ model_feature = Feature(
     standard=True,
     optional=True,
     ext_modules=[
-        extension('hp/special'),
-        extension('lp/special'),
-        extension('hp/random'),
-        extension('lp/random'),
-        extension('hp/models/dd'),
-        extension('hp/models/nich'),
-        extension('hp/models/gp'),
-        extension('lp/models/dd'),
-        extension('lp/models/dpd'),
-        extension('lp/clustering'),
+        extension('distributions.hp.special'),
+        extension('distributions.hp.random'),
+        extension('distributions.hp.models.dd'),
+        extension('distributions.hp.models.nich'),
+        extension('distributions.hp.models.gp'),
+        extension('distributions.lp.special'),
+        extension('distributions.lp.random'),
+        extension('distributions.lp.models.dd'),
+        extension('distributions.lp.models.nich'),
+        extension('distributions.lp.models.dpd'),
+        extension('distributions.lp.clustering'),
     ]
 )
 

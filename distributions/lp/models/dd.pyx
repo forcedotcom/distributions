@@ -1,3 +1,4 @@
+from libc.stdint cimport uint32_t
 from libcpp.vector cimport vector
 from distributions.lp.random cimport rng_t, global_rng
 from distributions.mixins import ComponentModel, Serializable
@@ -11,14 +12,16 @@ cdef extern from "distributions/vector.hpp" namespace "distributions":
         float & at "operator[]" (size_t index)
 
 
+ctypedef int Value
+
+
 cdef extern from "distributions/models/dd.hpp" namespace "distributions":
-    ctypedef int Value
     cdef cppclass Model_cc "distributions::DirichletDiscrete<256>":
         int dim
         float alphas[256]
         #cppclass Value
         cppclass Group:
-            unsigned counts[]
+            uint32_t counts[]
         cppclass Sampler:
             float ps[256]
         cppclass Scorer:
@@ -53,7 +56,7 @@ cdef class Group:
     def __dealloc__(self):
         del self.ptr
 
-    def load(self, raw):
+    def load(self, dict raw):
         counts = raw['counts']
         self.dim = len(counts)
         cdef int i
@@ -105,10 +108,10 @@ cdef class Model_cy:
         group.dim = self.ptr.dim
         self.ptr.group_init(group.ptr[0], global_rng)
 
-    def group_add_value(self, Group group, int value):
+    def group_add_value(self, Group group, Value value):
         self.ptr.group_add_value(group.ptr[0], value, global_rng)
 
-    def group_remove_value(self, Group group, int value):
+    def group_remove_value(self, Group group, Value value):
         self.ptr.group_remove_value(group.ptr[0], value, global_rng)
 
     def group_merge(self, Group destin, Group source):
@@ -118,7 +121,7 @@ cdef class Model_cy:
     # Sampling
 
     def sample_value(self, Group group):
-        cdef int value = self.ptr.sample_value(group.ptr[0], global_rng)
+        cdef Value value = self.ptr.sample_value(group.ptr[0], global_rng)
         return value
 
     def sample_group(self, int size):
@@ -127,7 +130,7 @@ cdef class Model_cy:
         self.ptr.sampler_init(sampler, group.ptr[0], global_rng)
         cdef list result = []
         cdef int i
-        cdef int value
+        cdef Value value
         for i in xrange(size):
             value = self.ptr.sampler_eval(sampler, global_rng)
             result.append(value)
@@ -136,7 +139,7 @@ cdef class Model_cy:
     #-------------------------------------------------------------------------
     # Scoring
 
-    def score_value(self, Group group, int value):
+    def score_value(self, Group group, Value value):
         return self.ptr.score_value(group.ptr[0], value, global_rng)
 
     def score_group(self, Group group):
@@ -156,7 +159,7 @@ cdef class Model_cy:
                 group.ptr[0],
                 global_rng)
 
-    def vector_scorer_eval(self, VectorScorer scorer, int value):
+    def vector_scorer_eval(self, VectorScorer scorer, Value value):
         cdef FloatVector scores
         self.ptr.vector_scorer_eval(scores, scorer.ptr[0], value, global_rng)
         cdef list result = []
