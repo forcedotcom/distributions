@@ -6,11 +6,11 @@ from distributions.mixins import ComponentModel, Serializable
 class GammaPoisson(ComponentModel, Serializable):
     def __init__(self):
         self.alpha = None
-        self.beta = None
+        self.inv_beta = None
 
     def load(self, raw):
         self.alpha = float(raw['alpha'])
-        self.beta = float(raw['beta'])
+        self.inv_beta = float(raw['inv_beta'])
 
     def dump(self):
         return vars(self)
@@ -60,15 +60,15 @@ class GammaPoisson(ComponentModel, Serializable):
     def plus_group(self, group):
         post = self.__class__()
         post.alpha = self.alpha + group.sum
-        post.beta = 1. / (group.count + 1. / self.beta)
+        post.inv_beta = self.inv_beta + group.count
         return post
 
     #-------------------------------------------------------------------------
     # Sampling
 
     def sampler_create(self, group=None):
-        z = self if group is None else self.plus_group(group)
-        return sample_gamma(z.alpha, z.beta)
+        post = self if group is None else self.plus_group(group)
+        return sample_gamma(post.alpha, 1.0 / post.inv_beta)
 
     def sampler_eval(self, sampler):
         return sample_poisson(sampler)
@@ -85,24 +85,25 @@ class GammaPoisson(ComponentModel, Serializable):
     # Scoring
 
     def score_value(self, group, value):
-        z = self.plus_group(group)
-        return gammaln(z.alpha + value) - gammaln(z.alpha) - \
-            z.alpha * log(z.beta) + \
-            (z.alpha + value) * log(1. / (1. + 1. / z.beta)) - \
-            log(factorial(value))
+        post = self.plus_group(group)
+        return gammaln(post.alpha + value) - gammaln(post.alpha) \
+            + post.alpha * log(post.inv_beta) \
+            - (post.alpha + value) * log(1. + post.inv_beta) \
+            - log(factorial(value))
 
     def score_group(self, group):
-        z = self.plus_group(group)
-        return gammaln(z.alpha) - gammaln(self.alpha) + \
-            z.alpha * log(z.beta) - self.alpha * log(self.beta) - \
-            group.log_prod
+        post = self.plus_group(group)
+        return gammaln(post.alpha) - gammaln(self.alpha) \
+            - post.alpha * log(post.inv_beta) \
+            + self.alpha * log(self.inv_beta) \
+            - group.log_prod
 
     #-------------------------------------------------------------------------
     # Examples
 
     EXAMPLES = [
         {
-            'model': {'alpha': 1., 'beta': 1.},
+            'model': {'alpha': 1., 'inv_beta': 1.},
             'values': [0, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 2, 3],
         }
     ]

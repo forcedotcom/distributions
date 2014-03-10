@@ -142,9 +142,9 @@ cdef class Model_cy:
 
         \cite{murphy2007conjugate}, Eqs. 156 & 167
         """
-        cdef Model_cy z = self if group is None else self.plus_group(group)
-        cdef double sigmasq_star = z.nu * z.sigmasq / sample_chisq(z.nu)
-        cdef double mu_star = sample_normal(z.mu, sigmasq_star / z.kappa)
+        cdef Model_cy post = self if group is None else self.plus_group(group)
+        cdef double sigmasq_star = post.nu * post.sigmasq / sample_chisq(post.nu)
+        cdef double mu_star = sample_normal(post.mu, sigmasq_star / post.kappa)
         return (mu_star, sigmasq_star)
 
     cpdef Value sampler_eval(self, Sampler sampler):
@@ -171,22 +171,22 @@ cdef class Model_cy:
         """
         \cite{murphy2007conjugate}, Eq. 176
         """
-        cdef Model_cy z = self.plus_group(group)
+        cdef Model_cy post = self.plus_group(group)
         return score_student_t(
             value,
-            z.nu,
-            z.mu,
-            ((1 + z.kappa) * z.sigmasq) / z.kappa)
+            post.nu,
+            post.mu,
+            ((1 + post.kappa) * post.sigmasq) / post.kappa)
 
     def score_group(self, Group group):
         """
         \cite{murphy2007conjugate}, Eq. 171
         """
-        cdef Model_cy z = self.plus_group(group)
-        return gammaln(z.nu / 2.) - gammaln(self.nu / 2.) + \
-            0.5 * log(self.kappa / z.kappa) + \
+        cdef Model_cy post = self.plus_group(group)
+        return gammaln(post.nu / 2.) - gammaln(self.nu / 2.) + \
+            0.5 * log(self.kappa / post.kappa) + \
             (0.5 * self.nu) * log(self.nu * self.sigmasq) - \
-            (0.5 * z.nu) * log(z.nu * z.sigmasq) - \
+            (0.5 * post.nu) * log(post.nu * post.sigmasq) - \
             group.count / 2. * 1.1447298858493991
 
     #-------------------------------------------------------------------------

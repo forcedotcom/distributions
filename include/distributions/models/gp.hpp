@@ -14,24 +14,31 @@ struct GammaPoisson
 // Data
 
 float alpha;
-float beta;
+float inv_beta;
 
 //----------------------------------------------------------------------------
 // Datatypes
+
+typedef GammaPoisson Model;
 
 typedef uint32_t Value;
 
 struct Group
 {
+    uint32_t count;
     uint32_t sum;
     float log_prod;
-    uint32_t n;
+};
+
+struct Sampler
+{
+    float mean;
 };
 
 struct Scorer
 {
     float score;
-    float alpha_n;
+    float post_alpha;
     float score_coeff;
 };
 
@@ -40,9 +47,9 @@ struct Scorer
 
 void group_init (Group & group, rng_t &) const
 {
+    group.count = 0;
     group.sum = 0;
     group.log_prod = 0.f;
-    group.n = 0;
 }
 
 void group_add_value (
@@ -50,7 +57,7 @@ void group_add_value (
         const Value & value,
         rng_t &) const
 {
-    ++group.n;
+    ++group.count;
     group.sum += value;
     group.log_prod += fast_log_factorial(value);
 }
@@ -60,7 +67,7 @@ void group_remove_value (
         const Value & value,
         rng_t &) const
 {
-    ++group.n;
+    --group.count;
     group.sum -= value;
     group.log_prod -= fast_log_factorial(value);
 }
@@ -70,13 +77,46 @@ void group_merge (
         const Group & source,
         rng_t &) const
 {
-    destin.n += source.n;
+    destin.count += source.count;
     destin.sum += source.sum;
     destin.log_prod += source.log_prod;
 }
 
+Model plus_group (const Group & group) const
+{
+    Model post;
+    post.alpha = alpha + group.sum;
+    post.inv_beta = inv_beta + group.count;
+    return post;
+}
+
 //----------------------------------------------------------------------------
 // Sampling
+
+void sampler_init (
+        Sampler & sampler,
+        const Group & group,
+        rng_t & rng) const
+{
+    Model post = plus_group(group);
+    sampler.mean = sample_gamma(rng, post.alpha, 1.f / post.inv_beta);
+}
+
+Value sampler_eval (
+        const Sampler & sampler,
+        rng_t & rng) const
+{
+    return sample_poisson(rng, sampler.mean);
+}
+
+Value sample_value (
+        const Group & group,
+        rng_t & rng) const
+{
+    Sampler sampler;
+    sampler_init(sampler, group, rng);
+    return sampler_eval(sampler, rng);
+}
 
 //----------------------------------------------------------------------------
 // Scoring
@@ -86,13 +126,11 @@ void scorer_init (
         const Group & group,
         rng_t &) const
 {
-    float alpha_n = alpha + group.sum;
-    float inv_beta_n = group.n + 1.f / beta;
-    float score_coeff = -fast_log(1.f + inv_beta_n);
-
-    scorer.score = -fast_lgamma(alpha_n)
-                 + alpha_n * (fast_log(inv_beta_n) + score_coeff);
-    scorer.alpha_n = alpha_n;
+    Model post = plus_group(group);
+    float score_coeff = -fast_log(1.f + post.inv_beta);
+    scorer.score = -fast_lgamma(post.alpha)
+                 + post.alpha * (fast_log(post.inv_beta) + score_coeff);
+    scorer.post_alpha = post.alpha;
     scorer.score_coeff = score_coeff;
 }
 
@@ -102,7 +140,7 @@ float scorer_eval (
         rng_t &) const
 {
     return scorer.score
-         + fast_lgamma(scorer.alpha_n + value)
+         + fast_lgamma(scorer.post_alpha + value)
          - fast_log_factorial(value)
          + scorer.score_coeff * value;
 }
@@ -111,11 +149,10 @@ float score_group (
         const Group & group,
         rng_t &) const
 {
-    float alpha_n = alpha + group.sum;
-    float beta_n = 1.f / (group.n + 1.f / beta);
+    Model post = plus_group(group);
 
-    float score = fast_lgamma(alpha_n) - fast_lgamma(alpha);
-    score += alpha_n * fast_log(beta_n) - alpha * fast_log(beta);
+    float score = fast_lgamma(post.alpha) - fast_lgamma(alpha);
+    score += alpha * fast_log(inv_beta) - post.alpha * fast_log(post.inv_beta);
     score += -group.log_prod;
     return score;
 

@@ -1,0 +1,136 @@
+from libc.stdint cimport uint32_t
+from distributions.lp.random cimport rng_t, global_rng
+from distributions.mixins import ComponentModel, Serializable
+
+
+ctypedef int Value
+
+
+cdef extern from "distributions/models/gp.hpp" namespace "distributions":
+    cdef cppclass Model_cc "distributions::GammaPoisson":
+        float alpha
+        float inv_beta
+        #cppclass Value
+        cppclass Group:
+            uint32_t count
+            uint32_t sum
+            float log_prod
+        cppclass Sampler:
+            float mean
+        cppclass Scorer:
+            float score
+            float post_alpha
+            float score_coeff
+        void group_init (Group &, rng_t &) nogil
+        void group_add_value (Group &, Value &, rng_t &) nogil
+        void group_remove_value (Group &, Value &, rng_t &) nogil
+        void group_merge (Group &, Group &, rng_t &) nogil
+        void sampler_init (Sampler &, Group &, rng_t &) nogil
+        Value sampler_eval (Sampler &, rng_t &) nogil
+        Value sample_value (Group &, rng_t &) nogil
+        float score_value (Group &, Value &, rng_t &) nogil
+        float score_group (Group &, rng_t &) nogil
+
+
+cdef class Group:
+    cdef Model_cc.Group * ptr
+    def __cinit__(self):
+        self.ptr = new Model_cc.Group()
+    def __dealloc__(self):
+        del self.ptr
+
+    def load(self, dict raw):
+        self.ptr.count = raw['count']
+        self.ptr.sum = raw['sum']
+        self.ptr.log_prod = raw['log_prod']
+
+    def dump(self):
+        return {
+            'count': self.ptr.count,
+            'sum': self.ptr.sum,
+            'log_prod': self.ptr.log_prod,
+        }
+
+
+cdef class Model_cy:
+    cdef Model_cc * ptr
+    def __cinit__(self):
+        self.ptr = new Model_cc()
+    def __dealloc__(self):
+        del self.ptr
+
+    def load(self, dict raw):
+        self.ptr.alpha = raw['alpha']
+        self.ptr.inv_beta = raw['inv_beta']
+
+    def dump(self):
+        return {
+            'alpha': self.ptr.alpha,
+            'inv_beta': self.ptr.inv_beta,
+        }
+
+    #-------------------------------------------------------------------------
+    # Mutation
+
+    def group_init(self, Group group):
+        self.ptr.group_init(group.ptr[0], global_rng)
+
+    def group_add_value(self, Group group, Value value):
+        self.ptr.group_add_value(group.ptr[0], value, global_rng)
+
+    def group_remove_value(self, Group group, Value value):
+        self.ptr.group_remove_value(group.ptr[0], value, global_rng)
+
+    def group_merge(self, Group destin, Group source):
+        self.ptr.group_merge(destin.ptr[0], source.ptr[0], global_rng)
+
+    #-------------------------------------------------------------------------
+    # Sampling
+
+    def sample_value(self, Group group):
+        cdef Value value = self.ptr.sample_value(group.ptr[0], global_rng)
+        return value
+
+    def sample_group(self, int size):
+        cdef Group group = Group()
+        cdef Model_cc.Sampler sampler
+        self.ptr.sampler_init(sampler, group.ptr[0], global_rng)
+        cdef list result = []
+        cdef int i
+        cdef Value value
+        for i in xrange(size):
+            value = self.ptr.sampler_eval(sampler, global_rng)
+            result.append(value)
+        return result
+
+    #-------------------------------------------------------------------------
+    # Scoring
+
+    def score_value(self, Group group, Value value):
+        return self.ptr.score_value(group.ptr[0], value, global_rng)
+
+    def score_group(self, Group group):
+        return self.ptr.score_group(group.ptr[0], global_rng)
+
+    #-------------------------------------------------------------------------
+    # Examples
+
+    EXAMPLES = [
+        {
+            'model': {'alpha': 1., 'inv_beta': 1.},
+            'values': [0, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 2, 3],
+        },
+    ]
+
+
+class GammaPoisson(Model_cy, ComponentModel, Serializable):
+
+    #-------------------------------------------------------------------------
+    # Datatypes
+
+    Value = int
+
+    Group = Group
+
+
+Model = GammaPoisson

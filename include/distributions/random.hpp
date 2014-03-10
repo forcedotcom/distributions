@@ -51,6 +51,12 @@ inline float sample_chisq (rng_t & rng, float nu)
     return sampler(rng);
 }
 
+inline int sample_poisson (rng_t & rng, float mean)
+{
+    std::poisson_distribution<int> sampler(mean);
+    return sampler(rng);
+}
+
 inline float sample_gamma (
         rng_t & rng,
         float alpha,

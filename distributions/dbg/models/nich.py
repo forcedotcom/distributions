@@ -128,10 +128,10 @@ class NormalInverseChiSq(ComponentModel, Serializable):
 
         \cite{murphy2007conjugate}, Eqs. 156 & 167
         """
-        z = self if group is None else self.plus_group(group)
+        post = self if group is None else self.plus_group(group)
         # Sample from the inverse-chi^2 using the transform from the chi^2
-        sigmasq_star = z.nu * z.sigmasq / sample_chi2(z.nu)
-        mu_star = sample_normal(z.mu, sqrt(sigmasq_star / z.kappa))
+        sigmasq_star = post.nu * post.sigmasq / sample_chi2(post.nu)
+        mu_star = sample_normal(post.mu, sqrt(sigmasq_star / post.kappa))
         return (mu_star, sigmasq_star)
 
     def sampler_eval(self, sampler):
@@ -153,22 +153,22 @@ class NormalInverseChiSq(ComponentModel, Serializable):
         """
         \cite{murphy2007conjugate}, Eq. 176
         """
-        z = self.plus_group(group)
+        post = self.plus_group(group)
         return score_student_t(
             value,
-            z.nu,
-            z.mu,
-            ((1 + z.kappa) * z.sigmasq) / z.kappa)
+            post.nu,
+            post.mu,
+            ((1 + post.kappa) * post.sigmasq) / post.kappa)
 
     def score_group(self, group):
         """
         \cite{murphy2007conjugate}, Eq. 171
         """
-        z = self.plus_group(group)
-        return gammaln(z.nu / 2.) - gammaln(self.nu / 2.) \
-            + 0.5 * log(self.kappa / z.kappa) \
+        post = self.plus_group(group)
+        return gammaln(post.nu / 2.) - gammaln(self.nu / 2.) \
+            + 0.5 * log(self.kappa / post.kappa) \
             + (0.5 * self.nu) * log(self.nu * self.sigmasq) \
-            - (0.5 * z.nu) * log(z.nu * z.sigmasq) \
+            - (0.5 * post.nu) * log(post.nu * post.sigmasq) \
             - group.count / 2. * 1.1447298858493991
 
     #-------------------------------------------------------------------------

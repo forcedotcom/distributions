@@ -98,6 +98,7 @@ Each component model API consist of:
         model.group_add_value(group, value)
         model.group_remove_value(group, value)
         model.group_merge(destin_group, source_group)
+        model.plus_group(group) -> model               # optional
 
 *   Sampling functions (optional in python).
     These consume explicit entropy sources in C++ or `global_rng` in python.

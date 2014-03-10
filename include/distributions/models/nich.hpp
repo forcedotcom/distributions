@@ -128,9 +128,9 @@ void sampler_init (
         const Group & group,
         rng_t & rng) const
 {
-    Model z = plus_group(group);
-    sampler.sigmasq = z.nu * z.sigmasq / sample_chisq(rng, z.nu);
-    sampler.mu = sample_normal(rng, z.mu, sampler.sigmasq / z.kappa);
+    Model post = plus_group(group);
+    sampler.sigmasq = post.nu * post.sigmasq / sample_chisq(rng, post.nu);
+    sampler.mu = sample_normal(rng, post.mu, sampler.sigmasq / post.kappa);
 }
 
 Value sampler_eval (
