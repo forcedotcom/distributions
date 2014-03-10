@@ -1,9 +1,12 @@
-from math import log, pi, sqrt
+from math import log, pi, sqrt, factorial
 import numpy.random
 from numpy.random.mtrand import dirichlet as sample_dirichlet
 from numpy import dot, inner
 from numpy.linalg import cholesky, det, inv
-from numpy.random import multivariate_normal, beta
+from numpy.random import multivariate_normal
+from numpy.random import beta as sample_beta
+from numpy.random import poisson as sample_poisson
+from numpy.random import gamma as sample_gamma
 from scipy.stats import norm, chi2
 from scipy.special import gammaln
 from distributions.util import scores_to_probs
@@ -14,7 +17,7 @@ LOG = logging.getLogger(__name__)
 
 
 # pacify pyflakes
-assert sample_dirichlet
+assert sample_dirichlet and factorial and sample_poisson and sample_gamma
 
 
 def seed(x):
@@ -141,7 +144,7 @@ def sample_stick(gamma, tol=1e-3):
     betas = []
     Z = 0.
     while 1 - Z > tol:
-        new_beta = (1 - Z) * beta(1., gamma)
+        new_beta = (1 - Z) * sample_beta(1., gamma)
         betas.append(new_beta)
         Z += new_beta
     return {i: b / Z for i, b in enumerate(betas)}

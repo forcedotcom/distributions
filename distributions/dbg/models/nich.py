@@ -50,13 +50,13 @@ class NormalInverseChiSq(ComponentModel, Serializable):
     class Group(object):
         def __init__(self):
             self.count = None
-            self.sampmean = None
-            self.allsampvar = None  # = count * variance
+            self.mean = None
+            self.count_times_variance = None  # = count * variance
 
         def load(self, raw):
             self.count = int(raw['count'])
-            self.sampmean = float(raw['sampmean'])
-            self.allsampvar = float(raw['allsampvar'])
+            self.mean = float(raw['mean'])
+            self.count_times_variance = float(raw['count_times_variance'])
 
         def dump(self):
             return vars(self)
@@ -66,49 +66,50 @@ class NormalInverseChiSq(ComponentModel, Serializable):
 
     def group_init(self, group):
         group.count = 0
-        group.sampmean = 0.
-        group.allsampvar = 0.
+        group.mean = 0.
+        group.count_times_variance = 0.
 
     def group_add_value(self, group, value):
         group.count += 1
-        delta = value - group.sampmean
-        group.sampmean += delta / group.count
-        group.allsampvar += delta * (value - group.sampmean)
+        delta = value - group.mean
+        group.mean += delta / group.count
+        group.count_times_variance += delta * (value - group.mean)
 
     def group_remove_value(self, group, value):
-        total = group.sampmean * group.count
-        delta = value - group.sampmean
+        total = group.mean * group.count
+        delta = value - group.mean
         group.count -= 1
         if group.count == 0:
-            group.sampmean = 0.
+            group.mean = 0.
         else:
-            group.sampmean = (total - value) / group.count
+            group.mean = (total - value) / group.count
         if group.count <= 1:
-            group.allsampvar = 0.
+            group.count_times_variance = 0.
         else:
-            group.allsampvar -= delta * (value - group.sampmean)
+            group.count_times_variance -= delta * (value - group.mean)
 
     def group_merge(self, destin, source):
         count = destin.count + source.count
-        delta = source.sampmean - destin.sampmean
+        delta = source.mean - destin.mean
         source_part = float(source.count) / count
         cross_part = destin.count * source_part
         destin.count = count
-        destin.sampmean += source_part * delta
-        destin.allsampvar += source.allsampvar + cross_part * delta * delta
+        destin.mean += source_part * delta
+        destin.count_times_variance += \
+            source.count_times_variance + cross_part * delta * delta
 
     def plus_group(self, group):
         """
         \cite{murphy2007conjugate}, Eqs.141-144
         """
-        total = group.sampmean * group.count
-        mu_1 = self.mu - group.sampmean
+        total = group.mean * group.count
+        mu_1 = self.mu - group.mean
         kappa_n = self.kappa + group.count
         mu_n = (self.kappa * self.mu + total) / kappa_n
         nu_n = self.nu + group.count
         sigmasq_n = 1. / nu_n * (
             self.nu * self.sigmasq
-            + group.allsampvar
+            + group.count_times_variance
             + (group.count * self.kappa * mu_1 * mu_1) / kappa_n)
 
         post = self.__class__()

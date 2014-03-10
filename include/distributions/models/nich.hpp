@@ -25,9 +25,9 @@ typedef float Value;
 
 struct Group
 {
-    uint32_t count;   // = data point count
-    float sampmean;     // = sample mean
-    float allsampvar;   // = count * sample variance
+    uint32_t count;
+    float mean;
+    float count_times_variance;
 };
 
 struct Sampler
@@ -52,8 +52,8 @@ void group_init (
         rng_t &) const
 {
     group.count = 0;
-    group.sampmean = 0.f;
-    group.allsampvar = 0.f;
+    group.mean = 0.f;
+    group.count_times_variance = 0.f;
 }
 
 void group_add_value (
@@ -62,9 +62,9 @@ void group_add_value (
         rng_t &) const
 {
     ++group.count;
-    float delta = value - group.sampmean;
-    group.sampmean += delta / group.count;
-    group.allsampvar += delta * (value - group.sampmean);
+    float delta = value - group.mean;
+    group.mean += delta / group.count;
+    group.count_times_variance += delta * (value - group.mean);
 }
 
 void group_remove_value (
@@ -72,20 +72,20 @@ void group_remove_value (
         const Value & value,
         rng_t &) const
 {
-    float total = group.sampmean * group.count;
-    float delta = value - group.sampmean;
+    float total = group.mean * group.count;
+    float delta = value - group.mean;
     DIST_ASSERT(group.count == 0, "Can't remove empty group");
 
     --group.count;
     if (group.count == 0) {
-        group.sampmean = 0.f;
+        group.mean = 0.f;
     } else {
-        group.sampmean = (total - value) / group.count;
+        group.mean = (total - value) / group.count;
     }
     if (group.count <= 1) {
-        group.allsampvar = 0.f;
+        group.count_times_variance = 0.f;
     } else {
-        group.allsampvar -= delta * (value - group.sampmean);
+        group.count_times_variance -= delta * (value - group.mean);
     }
 }
 
@@ -95,12 +95,12 @@ void group_merge (
         rng_t &) const
 {
     uint32_t count = destin.count + source.count;
-    float delta = source.sampmean - destin.sampmean;
+    float delta = source.mean - destin.mean;
     float source_part = float(source.count) / count;
     float cross_part = destin.count * source_part;
     destin.count = count;
-    destin.sampmean += source_part * delta;
-    destin.allsampvar += source.allsampvar + cross_part * sqr(delta);
+    destin.mean += source_part * delta;
+    destin.count_times_variance += source.count_times_variance + cross_part * sqr(delta);
 }
 
 //----------------------------------------------------------------------------
@@ -115,15 +115,15 @@ void scorer_init (
         rng_t &) const
 {
     float n = group.count;
-    float sampmean = group.sampmean;
-    float allsampvar = group.allsampvar;
+    float mean = group.mean;
+    float count_times_variance = group.count_times_variance;
 
     float kappa_n = kappa + n;
-    float mu_n = (kappa * mu + n * sampmean) / kappa_n;
+    float mu_n = (kappa * mu + n * mean) / kappa_n;
     float nu_n = nu + n;
-    float sigmasq_n = 1.f / nu_n * (sigmasq * nu + allsampvar +
+    float sigmasq_n = 1.f / nu_n * (sigmasq * nu + count_times_variance +
                                     kappa * n / kappa_n *
-                                    (sampmean - mu) * (sampmean - mu));
+                                    (mean - mu) * (mean - mu));
 
     float lambda = kappa_n / ((kappa_n + 1.f) * sigmasq_n);
 
@@ -159,16 +159,16 @@ float score_group (
         rng_t &) const
 {
     float n = group.count;
-    float sampmean = group.sampmean;
-    float allsampvar = group.allsampvar;
+    float mean = group.mean;
+    float count_times_variance = group.count_times_variance;
 
     float kappa_n = kappa + n;
 
     float nu_n = nu + n;
     float sigmasq_n = 1.f / nu_n * (
         sigmasq * nu +
-        allsampvar +
-        kappa * n / (kappa + n) * sqr(sampmean - mu));
+        count_times_variance +
+        kappa * n / (kappa + n) * sqr(mean - mu));
 
     float log_pi = 1.1447298858493991f;
 

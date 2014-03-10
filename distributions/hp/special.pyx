@@ -1,7 +1,7 @@
 from libc.math cimport log, sqrt, lgamma
 
 
-cdef double logfactorial(unsigned n):
+cdef double log_factorial(unsigned n):
     return lgamma(n + 1)
 
 

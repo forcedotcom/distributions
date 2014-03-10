@@ -59,6 +59,7 @@ model_feature = Feature(
         extension('lp/random'),
         extension('hp/models/dd'),
         extension('hp/models/nich'),
+        extension('hp/models/gp'),
         extension('lp/models/dd'),
         extension('lp/models/dpd'),
         extension('lp/clustering'),

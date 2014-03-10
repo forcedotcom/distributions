@@ -29,22 +29,28 @@ cdef double score_student_t(double x, double nu, double mu, double sigmasq):
     return c + d
 
 
+ctypedef double Value
+
+
 cdef class Group:
     cdef size_t count
-    cdef double sampmean
-    cdef double allsampvar
+    cdef double mean
+    cdef double count_times_variance
 
     def load(self, dict raw):
         self.count = raw['count']
-        self.sampmean = raw['sampmean']
-        self.allsampvar = raw['allsampvar']
+        self.mean = raw['mean']
+        self.count_times_variance = raw['count_times_variance']
 
     def dump(self):
         return {
             'count': self.count,
-            'sampmean': self.sampmean,
-            'allsampvar': self.allsampvar,
+            'mean': self.mean,
+            'count_times_variance': self.count_times_variance,
         }
+
+
+ctypedef tuple Sampler
 
 
 cdef class Model_cy:
@@ -73,50 +79,51 @@ cdef class Model_cy:
 
     def group_init(self, Group group):
         group.count = 0
-        group.sampmean = 0.
-        group.allsampvar = 0.
+        group.mean = 0.
+        group.count_times_variance = 0.
 
     def group_add_value(self, Group group, double value):
         group.count += 1
-        cdef double delta = value - group.sampmean
-        group.sampmean += delta / group.count
-        group.allsampvar += delta * (value - group.sampmean)
+        cdef double delta = value - group.mean
+        group.mean += delta / group.count
+        group.count_times_variance += delta * (value - group.mean)
 
 
     def group_remove_value(self, Group group, double value):
-        cdef double total = group.sampmean * group.count
-        cdef double delta = value - group.sampmean
+        cdef double total = group.mean * group.count
+        cdef double delta = value - group.mean
         group.count -= 1
         if group.count == 0:
-            group.sampmean = 0.
+            group.mean = 0.
         else:
-            group.sampmean = (total - value) / group.count
+            group.mean = (total - value) / group.count
         if group.count <= 1:
-            group.allsampvar = 0.
+            group.count_times_variance = 0.
         else:
-            group.allsampvar -= delta * (value - group.sampmean)
+            group.count_times_variance -= delta * (value - group.mean)
 
     def group_merge(self, Group destin, Group source):
         cdef size_t count = destin.count + source.count
-        cdef double delta = source.sampmean - destin.sampmean
+        cdef double delta = source.mean - destin.mean
         cdef double source_part = <double> source.count / count
         cdef double cross_part = destin.count * source_part
         destin.count = count
-        destin.sampmean += source_part * delta
-        destin.allsampvar += source.allsampvar + cross_part * delta * delta
+        destin.mean += source_part * delta
+        destin.count_times_variance += \
+            source.count_times_variance + cross_part * delta * delta
 
     cdef Model_cy plus_group(self, Group group):
         """
         \cite{murphy2007conjugate}, Eqs.141-144
         """
-        cdef double mu_1 = self.mu - group.sampmean
+        cdef double mu_1 = self.mu - group.mean
         cdef double kappa_n = self.kappa + group.count
         cdef double mu_n = (
-            self.kappa * self.mu + group.sampmean * group.count) / kappa_n
+            self.kappa * self.mu + group.mean * group.count) / kappa_n
         cdef double nu_n = self.nu + group.count
         cdef double sigmasq_n = 1. / nu_n * (
             self.nu * self.sigmasq
-            + group.allsampvar
+            + group.count_times_variance
             + (group.count * self.kappa * mu_1 * mu_1) / kappa_n)
 
         cdef Model_cy post = Model_cy()
@@ -129,7 +136,7 @@ cdef class Model_cy:
     #-------------------------------------------------------------------------
     # Sampling
 
-    def sampler_create(self, Group group=None):
+    cpdef Sampler sampler_create(self, Group group=None):
         """
         Draw samples from the marginal posteriors of mu and sigmasq
 
@@ -140,17 +147,17 @@ cdef class Model_cy:
         cdef double mu_star = sample_normal(z.mu, sigmasq_star / z.kappa)
         return (mu_star, sigmasq_star)
 
-    def sampler_eval(self, tuple sampler):
-        cdef float mu = sampler[0]
-        cdef float sigmasq = sampler[1]
+    cpdef Value sampler_eval(self, Sampler sampler):
+        cdef double mu = sampler[0]
+        cdef double sigmasq = sampler[1]
         return sample_normal(mu, sigmasq)
 
     def sample_value(self, Group group):
-        cdef tuple sampler = self.sampler_create(group)
+        cdef Sampler sampler = self.sampler_create(group)
         return self.sampler_eval(sampler)
 
     def sample_group(self, int size):
-        cdef tuple sampler = self.sampler_create()
+        cdef Sampler sampler = self.sampler_create()
         cdef list result = []
         cdef int i
         for i in xrange(size):
@@ -160,7 +167,7 @@ cdef class Model_cy:
     #-------------------------------------------------------------------------
     # Scoring
 
-    cpdef double score_value(self, Group group, double value):
+    cpdef double score_value(self, Group group, Value value):
         """
         \cite{murphy2007conjugate}, Eq. 176
         """
