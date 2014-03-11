@@ -7,6 +7,8 @@ from distributions.mixins import ComponentModel, Serializable
 
 cpdef int MAX_DIM = 256
 
+#-------------------------------------------------------------------------
+# Datatypes
 
 ctypedef int Value
 

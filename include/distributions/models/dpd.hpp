@@ -26,6 +26,8 @@ betas_t betas;
 
 typedef uint32_t Value;
 
+static constexpr Value OTHER () { return -1; }
+
 struct Group
 {
     typedef SparseCounter<Value, uint32_t> counts_t;  // sparse

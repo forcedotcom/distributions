@@ -16,6 +16,7 @@ cdef extern from "distributions/sparse_counter.hpp":
         int get_total() nogil
         void add(int) nogil
         void remove(int) nogil
+        void merge(SparseCounter&) nogil
         #SparseCounter& operator=(SparseCounter&)
         iterator begin() nogil
         iterator end() nogil

@@ -5,8 +5,10 @@ from distributions.sparse_counter cimport SparseCounter
 from distributions.mixins import ComponentModel, Serializable
 
 
+ctypedef unsigned Value
+
+
 cdef extern from "distributions/models/dpd.hpp" namespace "distributions":
-    ctypedef unsigned Value
     cdef cppclass Model_cc "distributions::DirichletProcessDiscrete":
         float gamma
         float alpha
@@ -37,14 +39,17 @@ cdef class Group:
     def __dealloc__(self):
         del self.ptr
 
-    def load(self, raw):
+    def load(self, dict raw):
         cdef SparseCounter * counts = & self.ptr.counts
         counts.clear()
-        for i, count in raw['counts'].iteritems():
+        cdef dict raw_counts = raw['counts']
+        cdef str i
+        cdef int count
+        for i, count in raw_counts.iteritems():
             counts.init_count(int(i), count)
 
     def dump(self):
-        counts = {}
+        cdef dict counts = {}
         cdef SparseCounter.iterator it = self.ptr.counts.begin()
         cdef SparseCounter.iterator end = self.ptr.counts.end()
         while it != end:
@@ -60,20 +65,23 @@ cdef class Model_cy:
     def __dealloc__(self):
         del self.ptr
 
-    def load(self, raw):
-        self.ptr.gamma = float(raw['gamma'])
-        self.ptr.alpha = float(raw['alpha'])
-        self.ptr.beta0 = float(raw['beta0'])
+    def load(self, dict raw):
+        self.ptr.gamma = raw['gamma']
+        self.ptr.alpha = raw['alpha']
+        self.ptr.beta0 = raw['beta0']
         self.ptr.betas.clear()
-        for beta in raw['betas']:
-            self.ptr.betas.push_back(float(beta))
+        cdef dict raw_betas = raw['betas']
+        self.ptr.betas.resize(len(raw_betas))
+        cdef str i
+        cdef float beta
+        for i, beta in raw_betas.iteritems():
+            self.ptr.betas[int(i)] = beta
 
     def dump(self):
-        betas = []
+        cdef dict betas = {}
         cdef int i
-        cdef int size = self.ptr.betas.size()
-        for i in xrange(size):
-            betas.append(float(self.ptr.betas[i]))
+        for i in xrange(self.ptr.betas.size()):
+            betas[str(i)] = self.ptr.betas[i]
         return {
             'gamma': float(self.ptr.gamma),
             'alpha': float(self.ptr.alpha),
@@ -87,10 +95,10 @@ cdef class Model_cy:
     def group_init(self, Group group):
         self.ptr.group_init(group.ptr[0], global_rng)
 
-    def group_add_value(self, Group group, int value):
+    def group_add_value(self, Group group, Value value):
         self.ptr.group_add_value(group.ptr[0], value, global_rng)
 
-    def group_remove_value(self, Group group, int value):
+    def group_remove_value(self, Group group, Value value):
         self.ptr.group_remove_value(group.ptr[0], value, global_rng)
 
     def group_merge(self, Group destin, Group source):
@@ -100,7 +108,7 @@ cdef class Model_cy:
     # Sampling
 
     def sample_value(self, Group group):
-        cdef int value = self.ptr.sample_value(group.ptr[0], global_rng)
+        cdef Value value = self.ptr.sample_value(group.ptr[0], global_rng)
         return value
 
     def sample_group(self, int size):
@@ -109,7 +117,7 @@ cdef class Model_cy:
         self.ptr.sampler_init(sampler, group.ptr[0], global_rng)
         cdef list result = []
         cdef int i
-        cdef int value
+        cdef Value value
         for i in xrange(size):
             value = self.ptr.sampler_eval(sampler, global_rng)
             result.append(value)
@@ -118,7 +126,7 @@ cdef class Model_cy:
     #-------------------------------------------------------------------------
     # Scoring
 
-    def score_value(self, Group group, int value):
+    def score_value(self, Group group, Value value):
         return self.ptr.score_value(group.ptr[0], value, global_rng)
 
     def score_group(self, Group group):
@@ -133,7 +141,11 @@ cdef class Model_cy:
                 'gamma': 0.5,
                 'alpha': 0.5,
                 'beta0': 0.0,  # must be zero for unit tests
-                'betas': [0.5, 0.5, 0.5],
+                'betas': {
+                    '0': 0.5,
+                    '1': 0.5,
+                    '2': 0.5,
+                },
             },
             'values': [0, 1, 0, 2, 0, 1, 0],
         },

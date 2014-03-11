@@ -28,6 +28,8 @@ cdef double score_student_t(double x, double nu, double mu, double sigmasq):
     cdef double d = -(.5 * (nu + 1.)) * log(1. + s / nu)
     return c + d
 
+#-------------------------------------------------------------------------
+# Datatypes
 
 ctypedef double Value
 

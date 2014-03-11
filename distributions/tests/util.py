@@ -39,17 +39,25 @@ def assert_hasattr(thing, attr):
 
 def assert_close(lhs, rhs, percent=0.1, tol=1e-3, err_msg=None):
     if isinstance(lhs, dict):
+        assert_true(
+            isinstance(rhs, dict),
+            'type mismatch: {} vs {}'.format(type(lhs), type(rhs)))
         assert_equal(set(lhs.keys()), set(rhs.keys()))
         for key, val in lhs.iteritems():
             msg = '{}[{}]'.format(err_msg or '', key)
             assert_close(val, rhs[key], percent, tol, msg)
     elif isinstance(lhs, float) or isinstance(lhs, numpy.float64):
-        assert isinstance(rhs, float)
+        assert_true(
+            isinstance(rhs, float) or isinstance(rhs, numpy.float64),
+            'type mismatch: {} vs {}'.format(type(lhs), type(rhs)))
         diff = abs(lhs - rhs)
         norm = (abs(lhs) + abs(rhs)) * (percent / 100) + tol
         msg = '{} off by {}% = {}'.format(err_msg, 100 * diff / norm, diff)
         assert_less(diff, norm, msg)
     elif isinstance(lhs, numpy.ndarray) or isinstance(lhs, list):
+        assert_true(
+            isinstance(rhs, numpy.ndarray) or isinstance(rhs, list),
+            'type mismatch: {} vs {}'.format(type(lhs), type(rhs)))
         assert_array_almost_equal(lhs, rhs, err_msg=(err_msg or ''))
     else:
         assert_equal(lhs, rhs, err_msg)
