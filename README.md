@@ -151,7 +151,6 @@ or as single `global_rng` in wrapped C++.
 
 ## Authors (alphabetically)
 
-* Beau Cronin <https://twitter.com/beaucronin>
 * Jonathan Glidden <https://twitter.com/jhglidden>
 * Eric Jonas <https://twitter.com/stochastician>
 * Fritz Obermeyer <https://github.com/fritzo>
@@ -160,7 +159,8 @@ or as single `global_rng` in wrapped C++.
 
 ## License
 
-Copyright 2014 Salesforce.com.
+Copyright (c) 2014 Salesforce.com, Inc.
+All rights reserved.
 
 Licensed under the Revised BSD License.
 See [LICENSE.txt](LICENSE.txt) for details.

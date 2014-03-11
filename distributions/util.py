@@ -1,10 +1,6 @@
-import scipy
-import scipy.stats
-import logging
 import numpy
-
-
-LOG = logging.getLogger(__name__)
+import scipy.stats
+from collections import defaultdict
 
 
 def scores_to_probs(scores):
@@ -26,9 +22,11 @@ def score_to_empirical_kl(score, count):
 
 def multinomial_goodness_of_fit(probs, counts, total_count, truncated=False):
     """
-    Returns p-value of truncated multinomial sample,
-    using a pearson chi^2 test
+    Pearson's chi^2 test.
     http://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test
+
+    Returns:
+        p-value of truncated multinomial sample.
     """
     chi_squared = 0
     dof = 0
@@ -54,6 +52,63 @@ def multinomial_goodness_of_fit(probs, counts, total_count, truncated=False):
 
     survival = scipy.stats.chi2.sf(chi_squared, dof)
     return survival
+
+
+def unif01_goodness_of_fit(samples):
+    """
+    Bin uniformly distributed samples and apply Pearson's chi^2 test.
+    """
+    samples = numpy.array(samples, dtype=float)
+    assert samples.min() >= 0.0
+    assert samples.max() <= 1.0
+    bin_count = int(round(len(samples) ** 0.333))
+    assert bin_count >= 7, 'WARNING imprecise test, use more samples'
+    probs = numpy.ones(bin_count, dtype=numpy.float) / bin_count
+    counts = numpy.zeros(bin_count, dtype=numpy.int)
+    for sample in samples:
+        counts[int(bin_count * sample)] += 1
+    return multinomial_goodness_of_fit(probs, counts, len(samples))
+
+
+def density_goodness_of_fit(samples, probs):
+    """
+    Transform arbitrary continuous samples to unif01 distribution
+    and assess goodness of fit via Pearson's chi^2 test.
+
+    Inputs:
+        samples - a list of real-valued samples from a distribution
+        probs - a list of probability densities evaluated at those samples
+    """
+    assert len(samples) == len(probs)
+    assert len(samples) > 100, 'WARNING imprecision; use more samples'
+    pairs = zip(samples, probs)
+    pairs.sort()
+    samples = numpy.array([x for x, p in pairs])
+    probs = numpy.array([p for x, p in pairs])
+    density = 0.5 * (probs[1:] + probs[:-1])
+    gaps = samples[1:] - samples[:-1]
+    unif01_samples = numpy.exp(-len(samples) * gaps * density)
+    return unif01_goodness_of_fit(unif01_samples)
+
+
+def discrete_goodness_of_fit(samples, probs_dict, truncate_beyond=8):
+    """
+    Transform arbitrary discrete data to multinomial
+    and assess goodness of fit via Pearson's chi^2 test.
+    """
+    assert len(samples) > 100, 'WARNING imprecision; use more samples'
+    counts = defaultdict(lambda: 0)
+    for sample in samples:
+        assert sample in probs_dict
+        counts[sample] += 1
+    items = [(prob, counts.get(i, 0)) for i, prob in probs_dict.iteritems()]
+    items.sort(reverse=True)
+    truncated = (truncate_beyond and truncate_beyond < len(items))
+    if truncated:
+        items = items[:truncate_beyond]
+    probs = [prob for prob, count in items]
+    counts = [count for prob, count in items]
+    return multinomial_goodness_of_fit(probs, counts, len(samples), truncated)
 
 
 def bin_samples(samples, k=10, support=[]):

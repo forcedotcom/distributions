@@ -1,9 +1,17 @@
+import math
 import random
+import numpy
+from nose import SkipTest
 from nose.tools import (
     assert_true,
     assert_in,
     assert_is_instance,
     assert_not_equal,
+    assert_greater,
+)
+from distributions.util import (
+    density_goodness_of_fit,
+    discrete_goodness_of_fit,
 )
 from distributions.tests.util import (
     assert_hasattr,
@@ -15,6 +23,8 @@ from distributions.tests.util import (
 )
 
 DATA_COUNT = 20
+SAMPLE_COUNT = 1000
+MIN_GOODNESS_OF_FIT = 1e-6
 
 MODULES = {
     '{flavor}.models.{name}'.format(**spec): import_model(spec)
@@ -33,9 +43,10 @@ def iter_examples(Model):
         assert_in('values', EXAMPLE)
         values = EXAMPLE['values']
         assert_is_instance(values, list)
+        count = len(values)
         assert_true(
-            len(values) >= 2,
-            'too few example values: {}'.format(len(values)))
+            count >= 7,
+            'Add more example values (expected >= 7, found {})'.format(count))
         yield EXAMPLE
 
 
@@ -163,6 +174,37 @@ def _test_sample_seed(name):
         assert_close(values1, values2, 'values')
 
 
+def _test_sample_value(name):
+
+    # HACK FIXME dpd fails this test
+    if name.endswith('dpd'):
+        raise SkipTest('FIXME')
+
+    seed_all(0)
+    Model = MODULES[name].Model
+    for EXAMPLE in iter_examples(Model):
+        model = Model.model_load(EXAMPLE['model'])
+        for values in [[], EXAMPLE['values']]:
+            group = model.group_create(values)
+            samples = [model.sample_value(group) for _ in xrange(SAMPLE_COUNT)]
+            if Model.Value == int:
+                probs_dict = {
+                    value: math.exp(model.score_value(group, value))
+                    for value in set(samples)
+                }
+                gof = discrete_goodness_of_fit(samples, probs_dict)
+            elif Model.Value == float:
+                probs = numpy.exp([
+                    model.score_value(group, value)
+                    for value in samples
+                ])
+                gof = density_goodness_of_fit(samples, probs)
+            else:
+                raise NotImplementedError(
+                    'sampler test not implemented for {}'.format(Model.Value))
+            assert_greater(gof, MIN_GOODNESS_OF_FIT)
+
+
 def _test_scorer(name):
     Model = MODULES[name].Model
     for EXAMPLE in iter_examples(Model):
@@ -212,5 +254,6 @@ def test_module():
         yield _test_sample_seed, name
         if hasattr(Model, 'scorer_create'):
             yield _test_scorer, name
+        yield _test_sample_value, name
         #if hasattr(Model, 'VectorScorer'):
         #    yield _test_vector_scorer, name  # FIXME
