@@ -102,9 +102,17 @@ class DirichletDiscrete(ComponentModel, Serializable):
 
     EXAMPLES = [
         {
-            'model': {'alphas': [0.5, 0.5, 0.5, 0.5]},
+            'model': {'alphas': [1.0, 4.0]},
+            'values': [0, 1, 1, 1, 1, 0, 1],
+        },
+        {
+            'model': {'alphas': [0.5] * 4},
             'values': [0, 1, 0, 2, 0, 1, 0],
         },
+        #{
+        #    'model': {'alphas': [0.5] * 256},
+        #    'values': [0, 1, 3, 7, 15, 31, 63, 127, 255],
+        #},
     ]
 
 

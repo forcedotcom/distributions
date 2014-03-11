@@ -142,6 +142,10 @@ cdef class Model_cy:
 
     EXAMPLES = [
         {
+            'model': {'alphas': [1.0, 4.0]},
+            'values': [0, 1, 1, 1, 1, 0, 1],
+        },
+        {
             'model': {'alphas': [0.5, 0.5, 0.5, 0.5]},
             'values': [0, 1, 0, 2, 0, 1, 0],
         },
