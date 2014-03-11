@@ -213,13 +213,12 @@ def test_sample_value(Model):
                 ])
                 gof = density_goodness_of_fit(samples, probs, plot=True)
             else:
-                raise NotImplementedError(
-                    'sampler test not implemented for {}'.format(Model.Value))
+                raise SkipTest('Not implemented for {}'.format(Model.Value))
             print '{} gof = {:0.3g}'.format(Model.__name__, gof)
             assert_greater(gof, MIN_GOODNESS_OF_FIT)
 
 
-@for_each_model(lambda Model: Model.Value in [int])
+@for_each_model()
 def test_sample_group(Model):
     seed_all(0)
     SIZE = 3
@@ -237,8 +236,7 @@ def test_sample_group(Model):
                     probs_dict[sample] = math.exp(model.score_group(group))
                 gof = discrete_goodness_of_fit(samples, probs_dict, plot=True)
             else:
-                raise SkipTest(
-                    'sampler test not implemented for {}'.format(Model.Value))
+                raise SkipTest('Not implemented for {}'.format(Model.Value))
             print '{} gof = {:0.3g}'.format(Model.__name__, gof)
             assert_greater(gof, MIN_GOODNESS_OF_FIT)
 
