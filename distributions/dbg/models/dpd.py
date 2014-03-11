@@ -11,22 +11,25 @@ class DirichletProcessDiscrete(ComponentModel, Serializable):
     def __init__(self):
         self.gamma = None
         self.alpha = None
-        self.beta0 = None
         self.betas = None
+        self.beta0 = None
 
     def load(self, raw):
         self.gamma = float(raw['gamma'])
         self.alpha = float(raw['alpha'])
-        self.beta0 = float(raw['beta0'])
         raw_betas = raw['betas']
         betas = [raw_betas[str(i)] for i in xrange(len(raw_betas))]
         self.betas = numpy.array(betas, dtype=numpy.float)  # dense
+        self.beta0 = 1 - self.betas.sum()
+        if not (0 <= self.betas.min() and self.betas.max() <= 1):
+            raise ValueError('betas out of bounds: {}'.format(self.betas))
+        if not (0 <= self.beta0 and self.beta0 <= 1):
+            raise ValueError('beta0 out of bounds: {}'.format(self.beta0))
 
     def dump(self):
         return {
             'gamma': self.gamma,
             'alpha': self.alpha,
-            'beta0': self.beta0,
             'betas': {str(i): beta for i, beta in enumerate(self.betas)},
         }
 
@@ -89,12 +92,12 @@ class DirichletProcessDiscrete(ComponentModel, Serializable):
     # Sampling
 
     def sampler_create(self, group=None):
-        values = (self.betas * self.alpha).tolist()
+        probs = (self.betas * self.alpha).tolist()
         if group is not None:
             for i, count in group.counts.iteritems():
-                values[i] += count
-        values.append(self.beta0 * self.alpha)
-        return sample_dirichlet(values)
+                probs[i] += count
+        probs.append(self.beta0 * self.alpha)
+        return sample_dirichlet(probs)
 
     def sampler_eval(self, sampler):
         index = sample_discrete(sampler)
@@ -146,11 +149,10 @@ class DirichletProcessDiscrete(ComponentModel, Serializable):
             'model': {
                 'gamma': 0.5,
                 'alpha': 0.5,
-                'beta0': 0.0,  # must be zero for unit tests
-                'betas': {
-                    '0': 0.5,
+                'betas': {  # beta0 must be zero for unit tests
+                    '0': 0.25,
                     '1': 0.5,
-                    '2': 0.5,
+                    '2': 0.25,
                 },
             },
             'values': [0, 1, 0, 2, 0, 1, 0],

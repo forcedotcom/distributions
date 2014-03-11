@@ -55,17 +55,16 @@ cdef class Model_cy:
     def load(self, dict raw):
         self.gamma = raw['gamma']
         self.alpha = raw['alpha']
-        self.beta0 = raw['beta0']
         cdef dict raw_betas = raw['betas']
         cdef int i
         cdef list betas = [raw_betas[str(i)] for i in xrange(len(raw_betas))]
         self.betas = numpy.array(betas, dtype=numpy.float)  # dense
+        self.betas0 = 1.0 - self.betas.sum()
 
     def dump(self):
         return {
             'gamma': self.gamma,
             'alpha': self.alpha,
-            'beta0': self.beta0,
             'betas': {str(i): beta for i, beta in enumerate(self.betas)},
         }
 
@@ -91,10 +90,10 @@ cdef class Model_cy:
 
     cpdef Sampler sampler_create(self, Group group=None):
         cdef int size = self.betas.shape[0]
-        cdef numpy.ndarray[double, ndim=1] values = \
+        cdef numpy.ndarray[double, ndim=1] probs = \
             numpy.zeros(size + 1, dtype=numpy.double)
-        values[:-1] = self.betas * self.alpha
-        values[-1] = self.beta0 * self.alpha
+        probs[:-1] = self.betas * self.alpha
+        probs[-1] = self.beta0 * self.alpha
         cdef SparseCounter.iterator it
         cdef SparseCounter.iterator end
         if group is not None:
@@ -102,13 +101,13 @@ cdef class Model_cy:
             it = group.counts.begin()
             end = group.counts.end()
             while it != end:
-                values[deref(it).first] += deref(it).second
+                probs[deref(it).first] += deref(it).second
                 inc(it)
         cdef numpy.ndarray[double, ndim=1] sampler = \
             numpy.zeros(size + 1, dtype=numpy.double)
         sample_dirichlet(
             size + 1,
-            <double *> values.data,
+            <double *> probs.data,
             <double *> sampler.data)
         return sampler
 
@@ -172,11 +171,10 @@ cdef class Model_cy:
             'model': {
                 'gamma': 0.5,
                 'alpha': 0.5,
-                'beta0': 0.0,  # must be zero for unit tests
-                'betas': {
-                    '0': 0.5,
+                'betas': {  # beta0 must be zero for unit tests
+                    '0': 0.25,
                     '1': 0.5,
-                    '2': 0.5,
+                    '2': 0.25,
                 },
             },
             'values': [0, 1, 0, 2, 0, 1, 0],

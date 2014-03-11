@@ -68,14 +68,16 @@ cdef class Model_cy:
     def load(self, dict raw):
         self.ptr.gamma = raw['gamma']
         self.ptr.alpha = raw['alpha']
-        self.ptr.beta0 = raw['beta0']
         self.ptr.betas.clear()
         cdef dict raw_betas = raw['betas']
         self.ptr.betas.resize(len(raw_betas))
         cdef str i
         cdef float beta
+        cdef double beta0 = 1.0
         for i, beta in raw_betas.iteritems():
             self.ptr.betas[int(i)] = beta
+            beta0 -= beta
+        self.ptr.beta0 = beta0
 
     def dump(self):
         cdef dict betas = {}
@@ -85,7 +87,6 @@ cdef class Model_cy:
         return {
             'gamma': float(self.ptr.gamma),
             'alpha': float(self.ptr.alpha),
-            'beta0': float(self.ptr.beta0),
             'betas': betas,
         }
 
@@ -140,11 +141,10 @@ cdef class Model_cy:
             'model': {
                 'gamma': 0.5,
                 'alpha': 0.5,
-                'beta0': 0.0,  # must be zero for unit tests
-                'betas': {
-                    '0': 0.5,
+                'betas': {  # beta0 must be zero for unit tests
+                    '0': 0.25,
                     '1': 0.5,
-                    '2': 0.5,
+                    '2': 0.25,
                 },
             },
             'values': [0, 1, 0, 2, 0, 1, 0],

@@ -53,9 +53,9 @@ class DirichletDiscrete(ComponentModel, Serializable):
 
     def sampler_create(self, group=None):
         if group is None:
-            group = self.Group()
-            self.group_init(group)
-        return sample_dirichlet(group.counts + self.alphas)
+            return sample_dirichlet(self.alphas)
+        else:
+            return sample_dirichlet(group.counts + self.alphas)
 
     def sampler_eval(self, sampler):
         return sample_discrete(sampler)

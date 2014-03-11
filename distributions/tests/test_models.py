@@ -1,7 +1,6 @@
 import math
 import random
 import numpy
-from nose import SkipTest
 from nose.tools import (
     assert_true,
     assert_in,
@@ -23,8 +22,8 @@ from distributions.tests.util import (
 )
 
 DATA_COUNT = 20
-SAMPLE_COUNT = 1000
-MIN_GOODNESS_OF_FIT = 1e-6
+SAMPLE_COUNT = 2000
+MIN_GOODNESS_OF_FIT = 1e-3
 
 MODULES = {
     '{flavor}.models.{name}'.format(**spec): import_model(spec)
@@ -175,12 +174,7 @@ def _test_sample_seed(name):
 
 
 def _test_sample_value(name):
-
-    # HACK FIXME dpd fails this test
-    if name.endswith('dpd'):
-        raise SkipTest('FIXME')
-
-    seed_all(0)
+    seed_all(1)
     Model = MODULES[name].Model
     for EXAMPLE in iter_examples(Model):
         model = Model.model_load(EXAMPLE['model'])
@@ -192,16 +186,17 @@ def _test_sample_value(name):
                     value: math.exp(model.score_value(group, value))
                     for value in set(samples)
                 }
-                gof = discrete_goodness_of_fit(samples, probs_dict)
+                gof = discrete_goodness_of_fit(samples, probs_dict, plot=True)
             elif Model.Value == float:
                 probs = numpy.exp([
                     model.score_value(group, value)
                     for value in samples
                 ])
-                gof = density_goodness_of_fit(samples, probs)
+                gof = density_goodness_of_fit(samples, probs, plot=True)
             else:
                 raise NotImplementedError(
                     'sampler test not implemented for {}'.format(Model.Value))
+            print '{} gof = {:0.3g}'.format(name, gof)
             assert_greater(gof, MIN_GOODNESS_OF_FIT)
 
 
