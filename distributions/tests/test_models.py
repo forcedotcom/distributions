@@ -1,6 +1,8 @@
 import math
 import random
 import numpy
+import functools
+from nose import SkipTest
 from nose.tools import (
     assert_true,
     assert_in,
@@ -49,11 +51,32 @@ def iter_examples(Model):
         yield EXAMPLE
 
 
-def _test_interface(name):
-    module = MODULES[name]
-    assert_hasattr(module, 'Model')
-    Model = module.Model
+def for_each_model(*filters):
+    '''
+    Run one test per Model, filtering out inappropriate Models for test.
+    '''
+    def filtered(test_fun):
 
+        @functools.wraps(test_fun)
+        def test_one_model(name):
+            module = MODULES[name]
+            assert_hasattr(module, 'Model')
+            Model = module.Model
+            test_fun(Model)
+
+        @functools.wraps(test_fun)
+        def test_all_models():
+            for name in MODULES:
+                Model = MODULES[name].Model
+                if all(f(Model) for f in filters):
+                    yield test_one_model, name
+
+        return test_all_models
+    return filtered
+
+
+@for_each_model()
+def test_interface(Model):
     for typename in ['Value', 'Group']:
         assert_hasattr(Model, typename)
         assert_is_instance(getattr(Model, typename), type)
@@ -90,11 +113,9 @@ def _test_interface(name):
         assert_close(group1.dump(), Model.group_dump(group1))
 
 
-def _test_add_remove(name):
-    '''
-    Test group_add_value, group_remove_value, score_group, score_value
-    '''
-    Model = MODULES[name].Model
+@for_each_model()
+def test_add_remove(Model):
+    # Test group_add_value, group_remove_value, score_group, score_value
     for EXAMPLE in iter_examples(Model):
 
         model = Model.model_load(EXAMPLE['model'])
@@ -138,11 +159,9 @@ def _test_add_remove(name):
             err_msg='group - values + values != group')
 
 
-def _test_add_merge(name):
-    '''
-    Test group_add_value, group_merge
-    '''
-    Model = MODULES[name].Model
+@for_each_model()
+def test_add_merge(Model):
+    # Test group_add_value, group_merge
     for EXAMPLE in iter_examples(Model):
         model = Model.model_load(EXAMPLE['model'])
         values = EXAMPLE['values'][:]
@@ -157,8 +176,8 @@ def _test_add_merge(name):
             assert_close(group.dump(), group1.dump())
 
 
-def _test_sample_seed(name):
-    Model = MODULES[name].Model
+@for_each_model()
+def test_sample_seed(Model):
     for EXAMPLE in iter_examples(Model):
         model = Model.model_load(EXAMPLE['model'])
 
@@ -173,9 +192,9 @@ def _test_sample_seed(name):
         assert_close(values1, values2, 'values')
 
 
-def _test_sample_value(name):
+@for_each_model()
+def test_sample_value(Model):
     seed_all(1)
-    Model = MODULES[name].Model
     for EXAMPLE in iter_examples(Model):
         model = Model.model_load(EXAMPLE['model'])
         for values in [[], EXAMPLE['values']]:
@@ -196,12 +215,36 @@ def _test_sample_value(name):
             else:
                 raise NotImplementedError(
                     'sampler test not implemented for {}'.format(Model.Value))
-            print '{} gof = {:0.3g}'.format(name, gof)
+            print '{} gof = {:0.3g}'.format(Model.__name__, gof)
             assert_greater(gof, MIN_GOODNESS_OF_FIT)
 
 
-def _test_scorer(name):
-    Model = MODULES[name].Model
+@for_each_model(lambda Model: Model.Value in [int])
+def test_sample_group(Model):
+    seed_all(0)
+    SIZE = 3
+    for EXAMPLE in iter_examples(Model):
+        model = Model.model_load(EXAMPLE['model'])
+        for values in [[], EXAMPLE['values']]:
+            if Model.Value == int:
+                samples = []
+                probs_dict = {}
+                for _ in xrange(SAMPLE_COUNT):
+                    values = model.sample_group(SIZE)
+                    sample = tuple(values)
+                    samples.append(sample)
+                    group = model.group_create(values)
+                    probs_dict[sample] = math.exp(model.score_group(group))
+                gof = discrete_goodness_of_fit(samples, probs_dict, plot=True)
+            else:
+                raise SkipTest(
+                    'sampler test not implemented for {}'.format(Model.Value))
+            print '{} gof = {:0.3g}'.format(Model.__name__, gof)
+            assert_greater(gof, MIN_GOODNESS_OF_FIT)
+
+
+@for_each_model(lambda Model: hasattr(Model, 'scorer_create'))
+def test_scorer(Model):
     for EXAMPLE in iter_examples(Model):
         model = Model.model_load(EXAMPLE['model'])
         values = EXAMPLE['values']
@@ -216,8 +259,8 @@ def _test_scorer(name):
             assert_all_close([score1, score2, score3])
 
 
-def _test_vector_scorer(name):
-    Model = MODULES[name].Model
+@for_each_model(lambda Model: False)
+def test_vector_scorer(Model):
     for EXAMPLE in iter_examples(Model):
         model = Model.model_load(EXAMPLE['model'])
         values = EXAMPLE['values']
@@ -238,17 +281,3 @@ def _test_vector_scorer(name):
             scores1 = model.vector_scorer_eval(scorer, value)
             scores2 = [model.score_value(group, value) for group in groups]
             assert_close(scores1, scores2)
-
-
-def test_module():
-    for name in MODULES:
-        Model = MODULES[name].Model
-        yield _test_interface, name
-        yield _test_add_remove, name
-        yield _test_add_merge, name
-        yield _test_sample_seed, name
-        if hasattr(Model, 'scorer_create'):
-            yield _test_scorer, name
-        yield _test_sample_value, name
-        #if hasattr(Model, 'VectorScorer'):
-        #    yield _test_vector_scorer, name  # FIXME
