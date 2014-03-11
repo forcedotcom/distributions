@@ -177,6 +177,28 @@ def test_add_merge(Model):
 
 
 @for_each_model()
+def test_group_merge(Model):
+    for EXAMPLE in iter_examples(Model):
+        model = Model.model_load(EXAMPLE['model'])
+        group1 = model.group_create()
+        group2 = model.group_create()
+        expected = model.group_create()
+        actual = model.group_create()
+        for _ in xrange(100):
+            value = model.sample_value(expected)
+            model.group_add_value(expected, value)
+            model.group_add_value(group1, value)
+
+            value = model.sample_value(expected)
+            model.group_add_value(expected, value)
+            model.group_add_value(group2, value)
+
+            actual.load(group1.dump())
+            model.group_merge(actual, group2)
+            assert_close(actual.dump(), expected.dump())
+
+
+@for_each_model()
 def test_sample_seed(Model):
     for EXAMPLE in iter_examples(Model):
         model = Model.model_load(EXAMPLE['model'])
