@@ -3,6 +3,10 @@
 namespace distributions
 {
 
+void vector_zero (
+        const size_t size,
+        float * __restrict__ out);
+
 float vector_min (
         const size_t size,
         const float * __restrict__ in);
@@ -29,6 +33,19 @@ void vector_scale (
         const size_t size,
         float * __restrict__ io,
         const float scale);
+
+// io += in
+void vector_add (
+        const size_t size,
+        float * __restrict__ io,
+        const float * __restrict__ in);
+
+// io += in1 * in2
+void vector_multiply_add (
+        const size_t size,
+        float * __restrict__ io,
+        const float * __restrict__ in1,
+        const float * __restrict__ in2);
 
 void vector_exp (
         const size_t size,

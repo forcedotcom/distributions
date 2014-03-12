@@ -21,12 +21,15 @@ def seed_all(s):
 
 
 def list_models():
+    result = set()
     for path in glob.glob(os.path.join(ROOT, '*', 'models', '*.p*')):
         dirname, filename = os.path.split(path)
         flavor = os.path.split(os.path.dirname(dirname))[-1]
         name = os.path.splitext(filename)[0]
         if not name.startswith('__'):
-            yield {'flavor': flavor, 'name': name}
+            result.add((name, flavor))
+    for name, flavor in sorted(result):
+        yield {'flavor': flavor, 'name': name}
 
 
 def import_model(spec):

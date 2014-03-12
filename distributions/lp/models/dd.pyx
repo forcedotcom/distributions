@@ -1,15 +1,10 @@
 from libc.stdint cimport uint32_t
 from libcpp.vector cimport vector
+from distributions.lp.vector cimport VectorFloat, vector_float_to_list
 from distributions.lp.random cimport rng_t, global_rng
 from distributions.mixins import ComponentModel, Serializable
 
 cpdef int MAX_DIM = 256
-
-
-cdef extern from "distributions/vector.hpp" namespace "distributions":
-    cppclass FloatVector:
-        size_t size ()
-        float & at "operator[]" (size_t index)
 
 
 ctypedef int Value
@@ -28,7 +23,7 @@ cdef extern from "distributions/models/dd.hpp" namespace "distributions":
             float alpha_sum
             float alphas[256]
         cppclass VectorScorer:
-            vector[FloatVector] scores
+            vector[VectorFloat] scores
         void group_init (Group &, rng_t &) nogil
         void group_add_value (Group &, Value &, rng_t &) nogil
         void group_remove_value (Group &, Value &, rng_t &) nogil
@@ -41,7 +36,7 @@ cdef extern from "distributions/models/dd.hpp" namespace "distributions":
         void vector_scorer_init (VectorScorer &, size_t, rng_t &)
         void vector_scorer_update (VectorScorer &, size_t, Group &, rng_t &)
         void vector_scorer_eval (
-                FloatVector &,
+                VectorFloat &,
                 VectorScorer &,
                 Value &,
                 rng_t &)
@@ -160,7 +155,7 @@ cdef class Model_cy:
                 global_rng)
 
     def vector_scorer_eval(self, VectorScorer scorer, Value value):
-        cdef FloatVector scores
+        cdef VectorFloat scores
         self.ptr.vector_scorer_eval(scores, scorer.ptr[0], value, global_rng)
         cdef list result = []
         cdef float score

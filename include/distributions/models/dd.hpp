@@ -42,7 +42,7 @@ struct Scorer
 
 struct VectorScorer
 {
-    std::vector<FloatVector> scores;
+    std::vector<VectorFloat> scores;
 };
 
 //----------------------------------------------------------------------------
@@ -189,7 +189,7 @@ void vector_scorer_update (
         const Group & group,
         rng_t &) const
 {
-    FloatVector & scores = scorer.scores[group_index];
+    VectorFloat & scores = scorer.scores[group_index];
     float alpha_sum = 0;
     for (int i = 0; i < dim; ++i) {
         float alpha = alphas[i] + group.counts[i];
@@ -203,7 +203,7 @@ void vector_scorer_update (
 
 
 void vector_scorer_eval (
-        FloatVector & scores,
+        VectorFloat & scores,
         const VectorScorer & scorer,
         const Value & value,
         rng_t &) const

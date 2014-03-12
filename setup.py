@@ -62,6 +62,7 @@ model_feature = Feature(
         extension('distributions.hp.models.dpd'),
         extension('distributions.lp.special'),
         extension('distributions.lp.random'),
+        extension('distributions.lp.vector'),
         extension('distributions.lp.models.dd'),
         extension('distributions.lp.models.gp'),
         extension('distributions.lp.models.nich'),

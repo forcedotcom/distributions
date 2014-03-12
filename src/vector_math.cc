@@ -22,6 +22,15 @@ InitializeMKL initialize_mkl;
 namespace distributions
 {
 
+void vector_zero (
+        const size_t size,
+        float * __restrict__ out)
+{
+    for (size_t i = 0; i < size; ++i) {
+        out[i] = 0;
+    }
+}
+
 float vector_min (
         const size_t size,
         const float * __restrict__ in)
@@ -89,6 +98,26 @@ void vector_scale (
     }
 }
 
+void vector_add (
+        const size_t size,
+        float * __restrict__ io,
+        const float * __restrict__ in)
+{
+    for (size_t i = 0; i < size; ++i) {
+        io[i] += in[i];
+    }
+}
+
+void vector_multiply_add (
+        const size_t size,
+        float * __restrict__ io,
+        const float * __restrict__ in1,
+        const float * __restrict__ in2)
+{
+    for (size_t i = 0; i < size; ++i) {
+        io[i] += in1[i] * in2[i];
+    }
+}
 
 void vector_exp (
         const size_t size,
