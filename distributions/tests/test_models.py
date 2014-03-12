@@ -277,27 +277,3 @@ def test_scorer(Model):
             score2 = model.scorer_eval(scorer2, value)
             score3 = model.score_value(group, value)
             assert_all_close([score1, score2, score3])
-
-
-@for_each_model(lambda Model: False)
-def test_vector_scorer(Model):
-    for EXAMPLE in iter_examples(Model):
-        model = Model.model_load(EXAMPLE['model'])
-        values = EXAMPLE['values']
-
-        groups = [
-            model.group_create(values[i:j])
-            for i in xrange(len(values))
-            for j in xrange(i, 1 + len(values))
-        ]
-        group_count = len(groups)
-
-        scorer = model.VectorScorer()
-        model.vector_scorer_init(scorer, group_count)
-        for index, group in enumerate(groups):
-            model.vector_scorer_update(scorer, index, group)
-
-        for value in values:
-            scores1 = model.vector_scorer_eval(scorer, value)
-            scores2 = [model.score_value(group, value) for group in groups]
-            assert_close(scores1, scores2)

@@ -40,6 +40,20 @@ void vector_add (
         float * __restrict__ io,
         const float * __restrict__ in);
 
+// io += in1 + in2
+void vector_add_add (
+        const size_t size,
+        float * __restrict__ io,
+        const float * __restrict__ in1,
+        const float * __restrict__ in2);
+
+// io += in1 - in2
+void vector_add_subtract (
+        const size_t size,
+        float * __restrict__ io,
+        const float * __restrict__ in1,
+        const float * __restrict__ in2);
+
 // io += in1 * in2
 void vector_multiply_add (
         const size_t size,
