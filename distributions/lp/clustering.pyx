@@ -73,23 +73,26 @@ cdef class PitmanYor:
     def __dealloc__(self):
         del self.ptr
 
-    def __init__(self, float alpha=0.5, float d=0.0):
-        self.alpha = alpha
-        self.d = d
+    def __init__(self, **kwargs):
+        if kwargs:
+            self.load(kwargs)
+        else:
+            self.ptr.alpha = 1.0
+            self.ptr.d = 0.0
 
-    property alpha:
-        def __get__(self):
-            return self.ptr.alpha
-        def __set__(self, float alpha):
-            assert 0 < alpha
-            self.ptr.alpha = alpha
+    def load(self, dict raw):
+        cdef float alpha = raw['alpha']
+        cdef float d = raw['d']
+        assert 0 < alpha
+        assert 0 <= d and d < 1
+        self.ptr.alpha = alpha
+        self.ptr.d = d
 
-    property d:
-        def __get__(self):
-            return self.ptr.d
-        def __set__(self, float d):
-            assert 0 <= d and d < 1
-            self.ptr.d = d
+    def dump(self):
+        return {
+            'alpha': self.alpha,
+            'd': self.d,
+        }
 
     def sample_assignments(self, int size):
         cdef list assignments = self.ptr.sample_assignments(size, global_rng)
@@ -116,6 +119,14 @@ cdef class PitmanYor:
             group_size,
             group_count,
             sample_size)
+
+    EXAMPLES = [
+        {'alpha': 1., 'd': 0.},
+        {'alpha': 1., 'd': 0.1},
+        {'alpha': 1., 'd': 0.9},
+        {'alpha': 10., 'd': 0.1},
+        {'alpha': 0.1, 'd': 0.1},
+    ]
 
 
 cdef class LowEntropy:
@@ -125,15 +136,19 @@ cdef class LowEntropy:
     def __dealloc__(self):
         del self.ptr
 
-    def __init__(self, int dataset_size=0):
-        self.dataset_size = dataset_size
+    def __init__(self, **kwargs):
+        if kwargs:
+            self.load(kwargs)
+        else:
+            self.ptr.dataset_size = 0
 
-    property dataset_size:
-        def __get__(self):
-            return self.ptr.dataset_size
-        def __set__(self, int dataset_size):
-            assert dataset_size >= 0
-            self.ptr.dataset_size = dataset_size
+    def load(self, dict raw):
+        cdef int dataset_size = raw['dataset_size']
+        assert dataset_size >= 0
+        self.ptr.dataset_size = dataset_size
+
+    def dump(self):
+        return {'dataset_size': self.ptr.dataset_size}
 
     def sample_assignments(self, int size):
         cdef list assignments = self.ptr.sample_assignments(size, global_rng)
@@ -160,3 +175,10 @@ cdef class LowEntropy:
             group_size,
             group_count,
             sample_size)
+
+    EXAMPLES = [
+        {'dataset_size': 5},
+        {'dataset_size': 10},
+        {'dataset_size': 100},
+        {'dataset_size': 1000},
+    ]

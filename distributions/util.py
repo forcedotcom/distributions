@@ -21,7 +21,7 @@ def score_to_empirical_kl(score, count):
 
 
 def print_histogram(probs, counts):
-    WIDTH = 50.0
+    WIDTH = 60.0
     max_count = max(counts)
     print '{: >8} {: >8}'.format('Prob', 'Count')
     for prob, count in sorted(zip(probs, counts), reverse=True):

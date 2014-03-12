@@ -24,7 +24,7 @@ from distributions.tests.util import (
 )
 
 DATA_COUNT = 20
-SAMPLE_COUNT = 2000
+SAMPLE_COUNT = 1000
 MIN_GOODNESS_OF_FIT = 1e-3
 
 MODULES = {
