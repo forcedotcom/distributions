@@ -1,6 +1,7 @@
 build/
 lib/
 src/test_headers.cc
+temp.*
 *.egg-info
 *.pyc
 *.cpp
