@@ -5,3 +5,4 @@ cython>=0.20.1
 pyflakes
 pep8
 nose
+simplejson
