@@ -7,6 +7,7 @@ from nose.tools import (
     assert_almost_equal,
     assert_raises,
 )
+from distributions.tests.util import assert_close, assert_samples_match_scores
 import distributions.hp.random
 import distributions.lp.random
 from distributions.dbg.random import sample_stick, sample_discrete_log
@@ -127,3 +128,34 @@ def test_sample_pair_from_urn():
         counts[i, j] += 1
 
     assert_less(0, min(counts.itervalues()))
+
+
+def test_prob_from_scores():
+    rng1 = distributions.lp.random.RNG(0)
+    rng2 = distributions.lp.random.RNG(0)
+    for size in range(1, 100):
+        scores = numpy.random.normal(size=size).tolist()
+        for _ in xrange(size):
+            sample, prob1 = distributions.lp.random.sample_prob_from_scores(
+                rng1,
+                scores)
+            assert 0 <= sample and sample < size
+            prob2 = distributions.lp.random.prob_from_scores(
+                rng2,
+                sample,
+                scores)
+            assert_close(
+                prob1,
+                prob2,
+                err_msg='sample_prob_from_scores != prob_from_scores')
+
+
+def test_sample_prob_from_scores():
+    rng = distributions.lp.random.RNG(0)
+    for size in range(1, 10):
+        scores = numpy.random.normal(size=size).tolist()
+
+        def sampler():
+            return distributions.lp.random.sample_prob_from_scores(rng, scores)
+
+        assert_samples_match_scores(sampler)
