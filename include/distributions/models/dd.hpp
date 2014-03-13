@@ -51,6 +51,13 @@ struct Classifier
     bool is_stale;
 };
 
+class Fitter
+{
+    std::vector<Group> groups;
+    VectorFloat scores;
+    bool is_stale;
+};
+
 //----------------------------------------------------------------------------
 // Mutation
 
@@ -329,13 +336,6 @@ void classifier_score_value (
 //----------------------------------------------------------------------------
 // Fitting
 
-class Fitter
-{
-    std::vector<Group> groups;
-    VectorFloat scores;
-    bool is_stale;
-};
-
 void fitter_init (
         Fitter & fitter,
         size_t group_count,
@@ -367,12 +367,7 @@ void fitter_refresh (
     rng_t & rng) const
 {
     const size_t group_count = fitter.groups.size();
-
-    float alpha_sum = 0;
-    for (Value value = 0; value < dim; ++value) {
-        alpha_sum += alphas[value];
-    }
-
+    const float alpha_sum = vector_sum(dim, alphas);
     for (Value value = 0; value < dim; ++value) {
         vector_zero(fitter.scores[value].size(), fitter.scores[value].data());
     }
@@ -398,14 +393,11 @@ void fitter_set_param_alpha (
 {
     DIST_ASSERT1(not fitter.is_stale, "fitter is stale");
     DIST_ASSERT1(value < dim, "value out of bounds");
-    const size_t group_count = fitter.groups.size();
 
     alphas[value] = alpha;
-    float alpha_sum = 0;
-    for (Value value = 0; value < dim; ++value) {
-        alpha_sum += alphas[value];
-    }
 
+    const size_t group_count = fitter.groups.size();
+    const float alpha_sum = vector_sum(dim, alphas);
     float score = 0;
     float score_shift = 0;
     for (size_t groupid = 0; groupid < group_count; ++groupid) {
