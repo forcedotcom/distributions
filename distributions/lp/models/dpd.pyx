@@ -1,6 +1,9 @@
 from libcpp.vector cimport vector
+cimport numpy
+numpy.import_array()
 from cython.operator cimport dereference as deref, preincrement as inc
 from distributions.lp.random cimport rng_t, global_rng
+from distributions.lp.vector cimport VectorFloat
 from distributions.sparse_counter cimport SparseCounter
 from distributions.mixins import ComponentModel, Serializable
 
@@ -21,6 +24,10 @@ cdef extern from "distributions/models/dpd.hpp" namespace "distributions":
             vector[float] probs
         cppclass Scorer:
             vector[float] scores
+        cppclass Classifier:
+            vector[Group] groups
+            vector[VectorFloat] scores
+            VectorFloat scores_shift
         void group_init (Group &, rng_t &) nogil
         void group_add_value (Group &, Value &, rng_t &) nogil
         void group_remove_value (Group &, Value &, rng_t &) nogil
@@ -30,6 +37,14 @@ cdef extern from "distributions/models/dpd.hpp" namespace "distributions":
         Value sample_value (Group &, rng_t &) nogil
         float score_value (Group &, Value &, rng_t &) nogil
         float score_group (Group &, rng_t &) nogil
+        void classifier_init (Classifier &, rng_t &) nogil
+        void classifier_add_group (Classifier &, rng_t &) nogil
+        void classifier_remove_group (Classifier &, size_t) nogil
+        void classifier_add_value \
+            (Classifier &, size_t, Value &, rng_t &) nogil
+        void classifier_remove_value \
+            (Classifier &, size_t, Value &, rng_t &) nogil
+        void classifier_score (Classifier &, Value &, float *, rng_t &) nogil
 
 
 cdef class Group:
@@ -56,6 +71,23 @@ cdef class Group:
             counts[str(deref(it).first)] = deref(it).second
             inc(it)
         return {'counts': counts}
+
+
+cdef class Classifier:
+    cdef Model_cc.Classifier * ptr
+    def __cinit__(self):
+        self.ptr = new Model_cc.Classifier()
+    def __dealloc__(self):
+        del self.ptr
+
+    def __len__(self):
+        return self.ptr.groups.size()
+
+    def append(self, Group group):
+        self.ptr.groups.push_back(group.ptr[0])
+
+    def clear(self):
+        self.ptr.groups.clear()
 
 
 cdef class Model_cy:
@@ -134,6 +166,54 @@ cdef class Model_cy:
         return self.ptr.score_group(group.ptr[0], global_rng)
 
     #-------------------------------------------------------------------------
+    # Classification
+
+    def classifier_init(self, Classifier classifier):
+        self.ptr.classifier_init(classifier.ptr[0], global_rng)
+
+    def classifier_add_group(self, Classifier classifier):
+        self.ptr.classifier_add_group(classifier.ptr[0], global_rng)
+
+    def classifier_remove_group(self, Classifier classifier, int groupid):
+        self.ptr.classifier_remove_group(classifier.ptr[0], groupid)
+
+    def classifier_add_value(
+            self,
+            Classifier classifier,
+            int groupid,
+            Value value):
+        self.ptr.classifier_add_value(
+            classifier.ptr[0],
+            groupid,
+            value,
+            global_rng)
+
+    def classifier_remove_value(
+            self,
+            Classifier classifier,
+            int groupid,
+            Value value):
+        self.ptr.classifier_remove_value(
+            classifier.ptr[0],
+            groupid,
+            value,
+            global_rng)
+
+    def classifier_score(
+            self,
+            Classifier classifier,
+            Value value,
+            numpy.ndarray[numpy.float32_t, ndim=1] scores_accum):
+        assert len(scores_accum) == classifier.ptr.groups.size(), \
+            "scores_accum != len(classifier)"
+        cdef float * data = <float *> scores_accum.data
+        self.ptr.classifier_score(
+            classifier.ptr[0],
+            value,
+            data,
+            global_rng)
+
+    #-------------------------------------------------------------------------
     # Examples
 
     EXAMPLES = [
@@ -160,6 +240,8 @@ class DirichletProcessDiscrete(Model_cy, ComponentModel, Serializable):
     Value = int
 
     Group = Group
+
+    Classifier = Classifier
 
 
 Model = DirichletProcessDiscrete
