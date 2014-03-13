@@ -46,27 +46,29 @@ public:
 
     value_t get_total () const { return total_; }
 
-    void add (const key_t & key, const value_t & value = 1)
+    value_t add (const key_t & key, const value_t & value = 1)
     {
         // assumes value > 0
+        total_ += value;
         auto i = map_.find(key);
         if (i != map_.end()) {
-            i->second += value;
+            return i->second += value;
         } else {
             map_.insert(std::make_pair(key, value));
+            return 1;
         }
-        total_ += value;
     }
 
-    void remove (const key_t & key)
+    value_t remove (const key_t & key)
     {
         // assumes value > 0
+        total_ -= 1;
         auto i = map_.find(key);
         value_t new_value = i->second -= 1;
         if (new_value == 0) {
             map_.erase(i);
         }
-        total_ -= 1;
+        return new_value;
     }
 
     void merge (const SparseCounter<key_t, value_t> & other)
