@@ -213,7 +213,7 @@ void classifier_init (
         const Group & group = classifier.groups[groupid];
         for (Value value = 0; value < dim; ++value) {
             classifier.scores[value][groupid] =
-                betas[value] + group.counts.get_count(value);
+                alpha * betas[value] + group.counts.get_count(value);
         }
         classifier.scores_shift[groupid] = alpha + group.counts.get_total();
     }
@@ -269,7 +269,7 @@ void classifier_add_value (
     Group & group = classifier.groups[groupid];
     count_t count = group.counts.add(value);
     count_t count_sum = group.counts.get_total();
-    classifier.scores[value][groupid] = fast_log(betas[value] + count);
+    classifier.scores[value][groupid] = fast_log(alpha * betas[value] + count);
     classifier.scores_shift[groupid] = fast_log(alpha + count_sum);
 }
 
@@ -284,7 +284,7 @@ void classifier_remove_value (
     Group & group = classifier.groups[groupid];
     count_t count = group.counts.remove(value);
     count_t count_sum = group.counts.get_total();
-    classifier.scores[value][groupid] = fast_log(betas[value] + count);
+    classifier.scores[value][groupid] = fast_log(alpha * betas[value] + count);
     classifier.scores_shift[groupid] = fast_log(alpha + count_sum);
 }
 

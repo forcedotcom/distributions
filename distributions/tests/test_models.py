@@ -215,7 +215,7 @@ def test_sample_seed(Model, EXAMPLE):
     group2 = model.group_create()
     values2 = [model.sample_value(group2) for _ in xrange(DATA_COUNT)]
 
-    assert_close(values1, values2, 'values')
+    assert_close(values1, values2, err_msg='values')
 
 
 @for_each_model()
@@ -316,3 +316,42 @@ def test_classifier_runs(Model, EXAMPLE):
         probs = scores_to_probs(scores)
         groupid = sample_discrete(probs)
         model.classifier_add_value(classifier, groupid, value)
+
+
+@for_each_model(lambda Model: hasattr(Model, 'Classifier'))
+def test_classifier_score(Model, EXAMPLE):
+    model = Model.model_load(EXAMPLE['model'])
+    values = EXAMPLE['values']
+
+    groups = [model.group_create([value]) for value in values]
+    classifier = Model.Classifier()
+    for group in groups:
+        classifier.append(group)
+    model.classifier_init(classifier)
+
+    def check_scores():
+        expected = [model.score_value(group, value) for group in groups]
+        actual = numpy.zeros(len(classifier), dtype=numpy.float32)
+        model.classifier_score(classifier, value, actual)
+        assert_close(actual, expected, err_msg='scores')
+        return actual
+
+    print 'init'
+    for value in values:
+        check_scores()
+
+    print 'adding'
+    groupids = []
+    for value in values:
+        scores = check_scores()
+        probs = scores_to_probs(scores)
+        groupid = sample_discrete(probs)
+        model.group_add_value(groups[groupid], value)
+        model.classifier_add_value(classifier, groupid, value)
+        groupids.append(groupid)
+
+    print 'removing'
+    for value, groupid in zip(values, groupids):
+        model.group_remove_value(groups[groupid], value)
+        model.classifier_remove_value(classifier, groupid, value)
+        scores = check_scores()
