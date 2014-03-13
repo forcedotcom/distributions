@@ -259,10 +259,10 @@ void classifier_add_group (
         Classifier & classifier,
         rng_t & rng) const
 {
-    const size_t group_count = classifier.groups.size() + 1;
+    const size_t groupid = classifier.groups.size();
+    const size_t group_count = groupid + 1;
     _classifier_resize(classifier, group_count);
     group_init(classifier.groups.back(), rng);
-    const size_t groupid = group_count;
     _classifier_update_group(classifier, groupid, rng);
 }
 

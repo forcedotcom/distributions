@@ -20,13 +20,13 @@ void GammaPoisson::classifier_score (
 
     const float log_factorial_value = fast_log_factorial(value);
     for (size_t i = 0; i < size; ++i) {
-        temp[i] = fast_lgamma(post_alpha[i] + value);
+        temp[i] = fast_lgamma(post_alpha[i] + value_noalias);
     }
     for (size_t i = 0; i < size; ++i) {
         scores_accum[i] += score[i]
             + temp[i]
             - log_factorial_value
-            + score_coeff[i] * value;
+            + score_coeff[i] * value_noalias;
     }
 }
 
