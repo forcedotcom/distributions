@@ -8,18 +8,19 @@ from numpy.testing import assert_array_almost_equal
 from nose.tools import assert_true, assert_less, assert_equal
 import importlib
 from distributions.util import multinomial_goodness_of_fit
-import distributions.dbg.random
-import distributions.hp.random
-#import distributions.lp.random
 
 ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 TOL = 1e-3
 
 
 def seed_all(s):
+    import distributions.dbg.random
     distributions.dbg.random.seed(s)
-    distributions.hp.random.seed(s)
-    #distributions.lp.random.seed(s)
+    try:
+        import distributions.hp.random
+        distributions.hp.random.seed(s)
+    except ImportError:
+        pass
 
 
 def list_models():
@@ -31,7 +32,13 @@ def list_models():
         if not name.startswith('__'):
             result.add((name, flavor))
     for name, flavor in sorted(result):
-        yield {'flavor': flavor, 'name': name}
+        spec = {'flavor': flavor, 'name': name}
+        try:
+            import_model(spec)
+            yield spec
+        except ImportError:
+            module_name = 'distributions.{flavor}.models.{name}'.format(**spec)
+            print 'failed to import {}'.format(module_name)
 
 
 def import_model(spec):

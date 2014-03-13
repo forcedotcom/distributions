@@ -80,10 +80,6 @@ config = {
         'distributions',
         'distributions.dbg',
         'distributions.dbg.models',
-        'distributions.hp',
-        'distributions.hp.models',
-        'distributions.lp',
-        'distributions.lp.models',
         'distributions.tests',
     ],
 }
@@ -91,6 +87,12 @@ config = {
 
 if cython:
     config['cmdclass'] = {'build_ext': build_ext}
+    config['packages'] += [
+        'distributions.hp',
+        'distributions.hp.models',
+        'distributions.lp',
+        'distributions.lp.models',
+    ]
 
 
 setup(**config)

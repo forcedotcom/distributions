@@ -4,11 +4,14 @@ from nose import SkipTest
 from nose.tools import assert_less, assert_greater
 from distributions.util import discrete_goodness_of_fit
 from distributions.tests.util import seed_all
-from distributions.lp.clustering import (
-    count_assignments,
-    PitmanYor,
-    LowEntropy,
-)
+try:
+    from distributions.lp.clustering import (
+        count_assignments,
+        PitmanYor,
+        LowEntropy,
+    )
+except ImportError:
+    raise SkipTest('no cython support')
 
 
 MODELS = [

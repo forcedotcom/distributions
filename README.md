@@ -9,9 +9,9 @@ This package implements low-level primitives for Bayesian MCMC inference
 in Python and C++ including:
 *   special numerical functions `distributions.<flavor>.special`,
 *   samplers and density functions from a variety of distributions,
-    `distributions.<flavor>.random`
+    `distributions.<flavor>.random`,
 *   conjugate component models (e.g., gamma-Poisson, normal-inverse-chi-squared)
-    `distributions.<flavor>.models`, and.
+    `distributions.<flavor>.models`, and
 *   clustering models (e.g., CRP, Pitman-Yor)
     `distributions.<flavor>.clustering`.
 
@@ -37,6 +37,8 @@ while testing all implementations for correctness.
 
 ## Installing
 
+### Installing Everything
+
 To build and install C++, Cython, and Python libraries into a virtualenv, simply
 
     make install
@@ -51,10 +53,10 @@ Finally, test your installation with
     make test
 
 
-### Cython
+### Installing Python Only
 
 Distributions includes several optimized modules that require Cython
-0.20.1 or later, as will automatically be installed by pip
+0.20.1 or later, as will automatically be installed by pip.
 
 To install without cython:
 
@@ -63,6 +65,16 @@ To install without cython:
 or via pip:
 
     pip install --global-option --without-cython .
+
+
+### Installing C++ Only
+
+To build only the C++ library, simply
+
+    make install_cc
+
+This also tries to copy shared libraries into `$VIRTUAL_ENV/lib/`,
+so that distributions can be used in other python-wrapped C++ code.
 
 
 ## Component Model API
@@ -121,7 +133,7 @@ Each component model API consist of:
         model.score_value(group, value) -> float
         model.score_group(group) -> float
 
-*   Classification functions (optional in python)
+*   Classification functions (optional in python).
     These provide batch evaluation of `score_value` on a collection of groups.
 
         classifier.groups.push_back(group)          # c++ only

@@ -18,11 +18,15 @@ install_cc: build_cc FORCE
 	test -e $(VIRTUAL_ENV) \
 	  && cp lib/* $(VIRTUAL_ENV)/lib/
 
-install_py: install_cc FORCE
+install_cy: install_cc FORCE
 	pip install -r requirements.txt
 	pip install -e .
 
-install: install_py install_cc
+install_py: FORCE
+	pip install -r requirements.txt
+	pip install --global-option --without-cython .
+
+install: install_cy install_cc
 
 test: install
 	pyflakes setup.py distributions derivations
