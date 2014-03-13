@@ -58,18 +58,21 @@ def _test_group(name):
             ]
             assert_all_close(scores, err_msg='score_value')
 
-        scores = [
-            model.score_group(group)
-            for model, group in models_groups
-        ]
+        scores = [model.score_group(group) for model, group in models_groups]
+        assert_all_close(scores, err_msg='score_group')
+
+        for model, group in models_groups:
+            dumped = group.dump()
+            model.group_init(group)
+            group.load(dumped)
+
+        scores = [model.score_group(group) for model, group in models_groups]
         assert_all_close(scores, err_msg='score_group')
 
 
 def test_plus_group():
     for name in MODULES:
-        count = sum(1 for m in MODULES[name] if hasattr(m.Model, 'plus_group'))
-        if count > 1:
-            yield _test_plus_group, name
+        yield _test_plus_group, name
 
 
 def _test_plus_group(name):

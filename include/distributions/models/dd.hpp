@@ -26,6 +26,7 @@ typedef int Value;
 
 struct Group
 {
+    count_t count_sum;
     count_t counts[max_dim];
 };
 
@@ -57,6 +58,7 @@ void group_init (
         Group & group,
         rng_t &) const
 {
+    group.count_sum = 0;
     for (Value value = 0; value < dim; ++value) {
         group.counts[value] = 0;
     }
@@ -68,6 +70,7 @@ void group_add_value (
         rng_t &) const
 {
     DIST_ASSERT1(value < dim, "value out of bounds");
+    group.count_sum += 1;
     group.counts[value] += 1;
 }
 
@@ -77,6 +80,7 @@ void group_remove_value (
         rng_t &) const
 {
     DIST_ASSERT1(value < dim, "value out of bounds");
+    group.count_sum -= 1;
     group.counts[value] -= 1;
 }
 
@@ -131,13 +135,11 @@ void scorer_init (
         rng_t &) const
 {
     float alpha_sum = 0;
-
     for (Value value = 0; value < dim; ++value) {
         float alpha = alphas[value] + group.counts[value];
         scorer.alphas[value] = alpha;
         alpha_sum += alpha;
     }
-
     scorer.alpha_sum = alpha_sum;
 }
 
@@ -165,19 +167,16 @@ float score_group (
         const Group & group,
         rng_t &) const
 {
-    count_t count_sum = 0;
     float alpha_sum = 0;
     float score = 0;
 
     for (Value value = 0; value < dim; ++value) {
-        count_t count = group.counts[value];
         float alpha = alphas[value];
-        count_sum += count;
         alpha_sum += alpha;
-        score += fast_lgamma(alpha + count) - fast_lgamma(alpha);
+        score += fast_lgamma(alpha + group.counts[value]) - fast_lgamma(alpha);
     }
 
-    score += fast_lgamma(alpha_sum) - fast_lgamma(alpha_sum + count_sum);
+    score += fast_lgamma(alpha_sum) - fast_lgamma(alpha_sum + group.count_sum);
 
     return score;
 }
@@ -192,10 +191,8 @@ void classifier_init (
 {
     classifier.alpha_sum = 0;
     classifier.groups.resize(group_count);
-    classifier.count_sums.resize(group_count);
     for (size_t groupid = 0; groupid < group_count; ++groupid) {
         group_init(classifier.groups[groupid], rng);
-        classifier.count_sums[groupid] = 0;
     }
     classifier.scores_shift.resize(group_count);
     vector_zero(group_count, classifier.scores_shift.data());
@@ -233,14 +230,12 @@ void classifier_refresh (
     }
     for (size_t groupid = 0; groupid < group_count; ++groupid) {
         const Group & group = classifier.groups[groupid];
-        count_t count_sum = 0;
         for (Value value = 0; value < dim; ++value) {
-            count_t count = group.counts[value];
-            count_sum += count;
-            classifier.scores[value][groupid] = alphas[value] + count;
+            classifier.scores[value][groupid] =
+                alphas[value] + group.counts[value];
         }
-        classifier.count_sums[groupid] = count_sum;
-        classifier.scores_shift[groupid] = classifier.alpha_sum + count_sum;
+        classifier.scores_shift[groupid] =
+            classifier.alpha_sum + group.count_sum;
     }
     vector_log(group_count, classifier.scores_shift.data());
     for (Value value = 0; value < dim; ++value) {
@@ -256,7 +251,6 @@ void classifier_add_group (
     const size_t group_count = classifier.groups.size() + 1;
     classifier.groups.resize(group_count);
     group_init(classifier.groups.back(), rng);
-    classifier.count_sums.resize(group_count, 0);
     classifier.scores_shift.resize(group_count, 0);
     for (Value value = 0; value < dim; ++value) {
         classifier.scores[value].resize(group_count, 0);
@@ -271,7 +265,6 @@ void classifier_remove_group (
     const size_t group_count = classifier.groups.size() - 1;
     if (groupid != group_count) {
         std::swap(classifier.groups[groupid], classifier.groups.back());
-        classifier.count_sums[groupid] = classifier.count_sums.back();
         classifier.scores_shift[groupid] = classifier.scores_shift.back();
         for (Value value = 0; value < dim; ++value) {
             VectorFloat & scores = classifier.scores[value];
@@ -279,7 +272,6 @@ void classifier_remove_group (
         }
     }
     classifier.groups.resize(group_count);
-    classifier.count_sums.resize(group_count);
     classifier.scores_shift.resize(group_count);
     for (Value value = 0; value < dim; ++value) {
         classifier.scores[value].resize(group_count);
@@ -294,8 +286,9 @@ void classifier_add_value (
 {
     DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
     DIST_ASSERT1(value < dim, "value out of bounds");
-    count_t count = classifier.groups[groupid].counts[value] += 1;
-    count_t count_sum = classifier.count_sum[groupid] += 1;
+    Group & group = classifier.groups[groupid];
+    count_t count_sum = group.count_sum += 1;
+    count_t count = group.counts[value] += 1;
     classifier.scores[value][groupid] = fast_log(alphas[value] + count);
     classifier.scores_shift[groupid] =
         fast_log(classifier.alpha_sum + count_sum);
@@ -309,8 +302,9 @@ void classifier_remove_value (
 {
     DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
     DIST_ASSERT1(value < dim, "value out of bounds");
-    count_t count = classifier.groups[groupid].counts[value] -= 1;
-    count_t count_sum = classifier.count_sum[groupid] -= 1;
+    Group & group = classifier.groups[groupid];
+    count_t count_sum = group.count_sum -= 1;
+    count_t count = group.counts[value] -= 1;
     classifier.scores[value][groupid] = fast_log(alphas[value] + count);
     classifier.scores_shift[groupid] =
         fast_log(classifier.alpha_sum + count_sum);

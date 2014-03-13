@@ -40,7 +40,12 @@ class NormalInverseChiSq(ComponentModel, Serializable):
         self.nu = float(raw['nu'])
 
     def dump(self):
-        return vars(self)
+        return {
+            'mu': self.mu,
+            'kappa': self.kappa,
+            'sigmasq': self.sigmasq,
+            'nu': self.nu,
+        }
 
     #-------------------------------------------------------------------------
     # Datatypes
@@ -59,7 +64,11 @@ class NormalInverseChiSq(ComponentModel, Serializable):
             self.count_times_variance = float(raw['count_times_variance'])
 
         def dump(self):
-            return vars(self)
+            return {
+                'count': self.count,
+                'mean': self.mean,
+                'count_times_variance': self.count_times_variance,
+            }
 
     #-------------------------------------------------------------------------
     # Mutation

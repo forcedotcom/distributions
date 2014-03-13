@@ -94,6 +94,12 @@ def test_interface(Model):
         group2 = model.group_create(values)
         assert_close(group1.dump(), group2.dump())
 
+        group = model.group_create(values)
+        dumped = group.dump()
+        model.group_init(group)
+        group.load(dumped)
+        assert_close(group.dump(), dumped)
+
         for value in values:
             model.group_remove_value(group2, value)
         assert_not_equal(group1, group2)

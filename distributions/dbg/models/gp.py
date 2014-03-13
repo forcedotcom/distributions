@@ -13,7 +13,10 @@ class GammaPoisson(ComponentModel, Serializable):
         self.inv_beta = float(raw['inv_beta'])
 
     def dump(self):
-        return vars(self)
+        return {
+            'alpha': self.alpha,
+            'inv_beta': self.inv_beta,
+        }
 
     #-------------------------------------------------------------------------
     # Datatypes
@@ -32,7 +35,11 @@ class GammaPoisson(ComponentModel, Serializable):
             self.log_prod = float(raw['log_prod'])
 
         def dump(self):
-            return vars(self)
+            return {
+                'count': self.count,
+                'sum': self.sum,
+                'log_prod': self.log_prod,
+            }
 
     #-------------------------------------------------------------------------
     # Mutation

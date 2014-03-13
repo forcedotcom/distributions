@@ -15,6 +15,7 @@ cdef extern from "distributions/models/dd.hpp" namespace "distributions":
         float alphas[256]
         #cppclass Value
         cppclass Group:
+            uint32_t count_sum
             uint32_t counts[]
         cppclass Sampler:
             float ps[256]
@@ -44,8 +45,10 @@ cdef class Group:
     def load(self, dict raw):
         counts = raw['counts']
         self.dim = len(counts)
+        self.ptr.count_sum = 0
         cdef int i
         for i in xrange(self.dim):
+            self.ptr.count_sum += counts[i]
             self.ptr.counts[i] = counts[i]
 
     def dump(self):
