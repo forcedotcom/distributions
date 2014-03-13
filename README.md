@@ -5,7 +5,7 @@ This is the unstable 2.0 branch of distributions,
 which is a complete rewrite of the stable 1.0 master branch,
 and which breaks API compatibility.
 
-This package implements basic building blocks for Bayesian MCMC inference
+This package implements low-level primitives for Bayesian MCMC inference
 in Python and C++ including:
 *   special numerical functions `distributions.<flavor>.special`,
 *   samplers and density functions from a variety of distributions,
@@ -90,7 +90,7 @@ Each component model API consist of:
         partially evaluated per-component scoring function
         (optional in python)
     *   `ExampleModel.Classifier` - vectorized scoring functions
-        (optional, experimental)
+        (optional)
 
 *   State mutating functions.
     These should be simple and fast.
@@ -121,8 +121,8 @@ Each component model API consist of:
         model.score_value(group, value) -> float
         model.score_group(group) -> float
 
-*   Classification functions (optional, experimental)
-    These provide batch scoring over a collection of groups.
+*   Classification functions (optional)
+    These provide batch evaluation of `score_value` on a collection of groups.
 
         classifier.groups.push_back(group)          # c++ only
         classifier.append(group)                    # python only

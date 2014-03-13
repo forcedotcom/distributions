@@ -3,6 +3,7 @@
 #include <distributions/common.hpp>
 #include <distributions/special.hpp>
 #include <distributions/random.hpp>
+#include <distributions/vector.hpp>
 
 namespace distributions
 {
@@ -40,6 +41,15 @@ struct Scorer
     float score;
     float post_alpha;
     float score_coeff;
+};
+
+struct Classifier
+{
+    std::vector<Group> groups;
+    VectorFloat score;
+    VectorFloat post_alpha;
+    VectorFloat score_coeff;
+    mutable VectorFloat temp;
 };
 
 //----------------------------------------------------------------------------
@@ -167,6 +177,103 @@ float score_value (
     scorer_init(scorer, group, rng);
     return scorer_eval(scorer, value, rng);
 }
+
+//----------------------------------------------------------------------------
+// Classification
+
+private:
+
+void _classifier_update_group (
+        Classifier & classifier,
+        size_t groupid,
+        rng_t & rng) const
+{
+    const Group & group = classifier.groups[groupid];
+    Scorer scorer;
+    scorer_init(scorer, group, rng);
+    classifier.score[groupid] = scorer.score;
+    classifier.post_alpha[groupid] = scorer.post_alpha;
+    classifier.score_coeff[groupid] = scorer.score_coeff;
+}
+
+void _classifier_resize (
+        Classifier & classifier,
+        size_t group_count) const
+{
+    classifier.groups.resize(group_count);
+    classifier.score.resize(group_count);
+    classifier.post_alpha.resize(group_count);
+    classifier.score_coeff.resize(group_count);
+    classifier.temp.resize(group_count);
+}
+
+public:
+
+void classifier_init (
+        Classifier & classifier,
+        rng_t & rng) const
+{
+    const size_t group_count = classifier.groups.size();
+    _classifier_resize(classifier, group_count);
+    for (size_t groupid = 0; groupid < group_count; ++groupid) {
+        _classifier_update_group(classifier, groupid, rng);
+    }
+}
+
+void classifier_add_group (
+        Classifier & classifier,
+        rng_t & rng) const
+{
+    const size_t group_count = classifier.groups.size() + 1;
+    _classifier_resize(classifier, group_count);
+    group_init(classifier.groups.back(), rng);
+    const size_t groupid = group_count;
+    _classifier_update_group(classifier, groupid, rng);
+}
+
+void classifier_remove_group (
+        Classifier & classifier,
+        size_t groupid) const
+{
+    const size_t group_count = classifier.groups.size() - 1;
+    if (groupid != group_count) {
+        std::swap(classifier.groups[groupid], classifier.groups.back());
+        classifier.score[groupid] = classifier.score.back();
+        classifier.post_alpha[groupid] = classifier.post_alpha.back();
+        classifier.score_coeff[groupid] = classifier.score_coeff.back();
+    }
+    _classifier_resize(classifier, group_count);
+}
+
+void classifier_add_value (
+        Classifier & classifier,
+        size_t groupid,
+        const Value & value,
+        rng_t & rng) const
+{
+    DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
+    Group & group = classifier.groups[groupid];
+    group_add_value(group, value, rng);
+    _classifier_update_group(classifier, groupid, rng);
+}
+
+void classifier_remove_value (
+        Classifier & classifier,
+        size_t groupid,
+        const Value & value,
+        rng_t & rng) const
+{
+    DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
+    Group & group = classifier.groups[groupid];
+    group_remove_value(group, value, rng);
+    _classifier_update_group(classifier, groupid, rng);
+}
+
+void classifier_score (
+        const Classifier & classifier,
+        const Value & value,
+        float * scores_accum,
+        rng_t &) const;
 
 }; // struct GammaPoisson
 
