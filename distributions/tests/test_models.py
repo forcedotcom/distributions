@@ -64,7 +64,8 @@ def for_each_model(*filters):
             module = MODULES[name]
             assert_hasattr(module, 'Model')
             Model = module.Model
-            test_fun(Model)
+            for EXAMPLE in iter_examples(Model):
+                test_fun(Model, EXAMPLE)
 
         @functools.wraps(test_fun)
         def test_all_models():
@@ -78,249 +79,240 @@ def for_each_model(*filters):
 
 
 @for_each_model()
-def test_interface(Model):
+def test_interface(Model, EXAMPLE):
     for typename in ['Value', 'Group']:
         assert_hasattr(Model, typename)
         assert_is_instance(getattr(Model, typename), type)
 
-    for EXAMPLE in iter_examples(Model):
-        model = Model.model_load(EXAMPLE['model'])
-        values = EXAMPLE['values']
-        for value in values:
-            assert_is_instance(value, Model.Value)
+    model = Model.model_load(EXAMPLE['model'])
+    values = EXAMPLE['values']
+    for value in values:
+        assert_is_instance(value, Model.Value)
 
-        group1 = model.Group()
-        model.group_init(group1)
-        for value in values:
-            model.group_add_value(group1, value)
-        group2 = model.group_create(values)
-        assert_close(group1.dump(), group2.dump())
+    group1 = model.Group()
+    model.group_init(group1)
+    for value in values:
+        model.group_add_value(group1, value)
+    group2 = model.group_create(values)
+    assert_close(group1.dump(), group2.dump())
 
-        group = model.group_create(values)
-        dumped = group.dump()
-        model.group_init(group)
-        group.load(dumped)
-        assert_close(group.dump(), dumped)
+    group = model.group_create(values)
+    dumped = group.dump()
+    model.group_init(group)
+    group.load(dumped)
+    assert_close(group.dump(), dumped)
 
-        for value in values:
-            model.group_remove_value(group2, value)
-        assert_not_equal(group1, group2)
-        model.group_merge(group2, group1)
+    for value in values:
+        model.group_remove_value(group2, value)
+    assert_not_equal(group1, group2)
+    model.group_merge(group2, group1)
 
-        for value in values:
-            model.score_value(group1, value)
-        for _ in xrange(10):
-            value = model.sample_value(group1)
-            model.score_value(group1, value)
-            model.sample_group(10)
-        model.score_group(group1)
-        model.score_group(group2)
+    for value in values:
+        model.score_value(group1, value)
+    for _ in xrange(10):
+        value = model.sample_value(group1)
+        model.score_value(group1, value)
+        model.sample_group(10)
+    model.score_group(group1)
+    model.score_group(group2)
 
-        assert_close(model.dump(), EXAMPLE['model'])
-        assert_close(model.dump(), Model.model_dump(model))
-        assert_close(group1.dump(), Model.group_dump(group1))
+    assert_close(model.dump(), EXAMPLE['model'])
+    assert_close(model.dump(), Model.model_dump(model))
+    assert_close(group1.dump(), Model.group_dump(group1))
 
 
 @for_each_model()
-def test_add_remove(Model):
+def test_add_remove(Model, EXAMPLE):
     # Test group_add_value, group_remove_value, score_group, score_value
-    for EXAMPLE in iter_examples(Model):
 
-        model = Model.model_load(EXAMPLE['model'])
-        #model.realize()
-        #values = model['values'][:]
+    model = Model.model_load(EXAMPLE['model'])
+    #model.realize()
+    #values = model['values'][:]
 
-        values = []
-        group = model.group_create()
-        score = 0.0
-        assert_close(model.score_group(group), score, err_msg='p(empty) != 1')
+    values = []
+    group = model.group_create()
+    score = 0.0
+    assert_close(model.score_group(group), score, err_msg='p(empty) != 1')
 
-        for _ in range(DATA_COUNT):
-            value = model.sample_value(group)
-            values.append(value)
-            score += model.score_value(group, value)
-            model.group_add_value(group, value)
+    for _ in range(DATA_COUNT):
+        value = model.sample_value(group)
+        values.append(value)
+        score += model.score_value(group, value)
+        model.group_add_value(group, value)
 
-        group_all = model.group_load(model.group_dump(group))
-        assert_close(
-            score,
-            model.score_group(group),
-            err_msg='p(x1,...,xn) != p(x1) p(x2|x1) p(xn|...)')
+    group_all = model.group_load(model.group_dump(group))
+    assert_close(
+        score,
+        model.score_group(group),
+        err_msg='p(x1,...,xn) != p(x1) p(x2|x1) p(xn|...)')
 
-        random.shuffle(values)
+    random.shuffle(values)
 
-        for value in values:
-            model.group_remove_value(group, value)
+    for value in values:
+        model.group_remove_value(group, value)
 
-        group_empty = model.group_create()
-        assert_close(
-            group.dump(),
-            group_empty.dump(),
-            err_msg='group + values - values != group')
+    group_empty = model.group_create()
+    assert_close(
+        group.dump(),
+        group_empty.dump(),
+        err_msg='group + values - values != group')
 
-        random.shuffle(values)
-        for value in values:
-            model.group_add_value(group, value)
-        assert_close(
-            group.dump(),
-            group_all.dump(),
-            err_msg='group - values + values != group')
+    random.shuffle(values)
+    for value in values:
+        model.group_add_value(group, value)
+    assert_close(
+        group.dump(),
+        group_all.dump(),
+        err_msg='group - values + values != group')
 
 
 @for_each_model()
-def test_add_merge(Model):
+def test_add_merge(Model, EXAMPLE):
     # Test group_add_value, group_merge
-    for EXAMPLE in iter_examples(Model):
-        model = Model.model_load(EXAMPLE['model'])
-        values = EXAMPLE['values'][:]
+    model = Model.model_load(EXAMPLE['model'])
+    values = EXAMPLE['values'][:]
+    random.shuffle(values)
+    group = model.group_create(values)
+
+    for i in xrange(len(values) + 1):
         random.shuffle(values)
-        group = model.group_create(values)
-
-        for i in xrange(len(values) + 1):
-            random.shuffle(values)
-            group1 = model.group_create(values[:i])
-            group2 = model.group_create(values[i:])
-            model.group_merge(group1, group2)
-            assert_close(group.dump(), group1.dump())
+        group1 = model.group_create(values[:i])
+        group2 = model.group_create(values[i:])
+        model.group_merge(group1, group2)
+        assert_close(group.dump(), group1.dump())
 
 
 @for_each_model()
-def test_group_merge(Model):
-    for EXAMPLE in iter_examples(Model):
-        model = Model.model_load(EXAMPLE['model'])
-        group1 = model.group_create()
-        group2 = model.group_create()
-        expected = model.group_create()
-        actual = model.group_create()
-        for _ in xrange(100):
-            value = model.sample_value(expected)
-            model.group_add_value(expected, value)
-            model.group_add_value(group1, value)
+def test_group_merge(Model, EXAMPLE):
+    model = Model.model_load(EXAMPLE['model'])
+    group1 = model.group_create()
+    group2 = model.group_create()
+    expected = model.group_create()
+    actual = model.group_create()
+    for _ in xrange(100):
+        value = model.sample_value(expected)
+        model.group_add_value(expected, value)
+        model.group_add_value(group1, value)
 
-            value = model.sample_value(expected)
-            model.group_add_value(expected, value)
-            model.group_add_value(group2, value)
+        value = model.sample_value(expected)
+        model.group_add_value(expected, value)
+        model.group_add_value(group2, value)
 
-            actual.load(group1.dump())
-            model.group_merge(actual, group2)
-            assert_close(actual.dump(), expected.dump())
-
-
-@for_each_model()
-def test_sample_seed(Model):
-    for EXAMPLE in iter_examples(Model):
-        model = Model.model_load(EXAMPLE['model'])
-
-        seed_all(0)
-        group1 = model.group_create()
-        values1 = [model.sample_value(group1) for _ in xrange(DATA_COUNT)]
-
-        seed_all(0)
-        group2 = model.group_create()
-        values2 = [model.sample_value(group2) for _ in xrange(DATA_COUNT)]
-
-        assert_close(values1, values2, 'values')
+        actual.load(group1.dump())
+        model.group_merge(actual, group2)
+        assert_close(actual.dump(), expected.dump())
 
 
 @for_each_model()
-def test_sample_value(Model):
+def test_sample_seed(Model, EXAMPLE):
+    model = Model.model_load(EXAMPLE['model'])
+
+    seed_all(0)
+    group1 = model.group_create()
+    values1 = [model.sample_value(group1) for _ in xrange(DATA_COUNT)]
+
+    seed_all(0)
+    group2 = model.group_create()
+    values2 = [model.sample_value(group2) for _ in xrange(DATA_COUNT)]
+
+    assert_close(values1, values2, 'values')
+
+
+@for_each_model()
+def test_sample_value(Model, EXAMPLE):
     seed_all(1)
-    for EXAMPLE in iter_examples(Model):
-        model = Model.model_load(EXAMPLE['model'])
-        for values in [[], EXAMPLE['values']]:
-            group = model.group_create(values)
-            samples = [model.sample_value(group) for _ in xrange(SAMPLE_COUNT)]
-            if Model.Value == int:
-                probs_dict = {
-                    value: math.exp(model.score_value(group, value))
-                    for value in set(samples)
-                }
-                gof = discrete_goodness_of_fit(samples, probs_dict, plot=True)
-            elif Model.Value == float:
-                probs = numpy.exp([
-                    model.score_value(group, value)
-                    for value in samples
-                ])
-                gof = density_goodness_of_fit(samples, probs, plot=True)
-            else:
-                raise SkipTest('Not implemented for {}'.format(Model.Value))
-            print '{} gof = {:0.3g}'.format(Model.__name__, gof)
-            assert_greater(gof, MIN_GOODNESS_OF_FIT)
+    model = Model.model_load(EXAMPLE['model'])
+    for values in [[], EXAMPLE['values']]:
+        group = model.group_create(values)
+        samples = [model.sample_value(group) for _ in xrange(SAMPLE_COUNT)]
+        if Model.Value == int:
+            probs_dict = {
+                value: math.exp(model.score_value(group, value))
+                for value in set(samples)
+            }
+            gof = discrete_goodness_of_fit(samples, probs_dict, plot=True)
+        elif Model.Value == float:
+            probs = numpy.exp([
+                model.score_value(group, value)
+                for value in samples
+            ])
+            gof = density_goodness_of_fit(samples, probs, plot=True)
+        else:
+            raise SkipTest('Not implemented for {}'.format(Model.Value))
+        print '{} gof = {:0.3g}'.format(Model.__name__, gof)
+        assert_greater(gof, MIN_GOODNESS_OF_FIT)
 
 
 @for_each_model()
-def test_sample_group(Model):
+def test_sample_group(Model, EXAMPLE):
     seed_all(0)
     SIZE = 3
-    for EXAMPLE in iter_examples(Model):
-        model = Model.model_load(EXAMPLE['model'])
-        for values in [[], EXAMPLE['values']]:
-            if Model.Value == int:
-                samples = []
-                probs_dict = {}
-                for _ in xrange(SAMPLE_COUNT):
-                    values = model.sample_group(SIZE)
-                    sample = tuple(values)
-                    samples.append(sample)
-                    group = model.group_create(values)
-                    probs_dict[sample] = math.exp(model.score_group(group))
-                gof = discrete_goodness_of_fit(samples, probs_dict, plot=True)
-            else:
-                raise SkipTest('Not implemented for {}'.format(Model.Value))
-            print '{} gof = {:0.3g}'.format(Model.__name__, gof)
-            assert_greater(gof, MIN_GOODNESS_OF_FIT)
+    model = Model.model_load(EXAMPLE['model'])
+    for values in [[], EXAMPLE['values']]:
+        if Model.Value == int:
+            samples = []
+            probs_dict = {}
+            for _ in xrange(SAMPLE_COUNT):
+                values = model.sample_group(SIZE)
+                sample = tuple(values)
+                samples.append(sample)
+                group = model.group_create(values)
+                probs_dict[sample] = math.exp(model.score_group(group))
+            gof = discrete_goodness_of_fit(samples, probs_dict, plot=True)
+        else:
+            raise SkipTest('Not implemented for {}'.format(Model.Value))
+        print '{} gof = {:0.3g}'.format(Model.__name__, gof)
+        assert_greater(gof, MIN_GOODNESS_OF_FIT)
 
 
 @for_each_model(lambda Model: hasattr(Model, 'scorer_create'))
-def test_scorer(Model):
-    for EXAMPLE in iter_examples(Model):
-        model = Model.model_load(EXAMPLE['model'])
-        values = EXAMPLE['values']
+def test_scorer(Model, EXAMPLE):
+    model = Model.model_load(EXAMPLE['model'])
+    values = EXAMPLE['values']
 
-        group = model.group_create()
-        scorer1 = model.scorer_create()
-        scorer2 = model.scorer_create(group)
-        for value in values:
-            score1 = model.scorer_eval(scorer1, value)
-            score2 = model.scorer_eval(scorer2, value)
-            score3 = model.score_value(group, value)
-            assert_all_close([score1, score2, score3])
+    group = model.group_create()
+    scorer1 = model.scorer_create()
+    scorer2 = model.scorer_create(group)
+    for value in values:
+        score1 = model.scorer_eval(scorer1, value)
+        score2 = model.scorer_eval(scorer2, value)
+        score3 = model.score_value(group, value)
+        assert_all_close([score1, score2, score3])
 
 
 @for_each_model(lambda Model: hasattr(Model, 'Classifier'))
-def test_classifier(Model):
-    for EXAMPLE in iter_examples(Model):
-        model = Model.model_load(EXAMPLE['model'])
-        values = EXAMPLE['values']
+def test_classifier_runs(Model, EXAMPLE):
+    model = Model.model_load(EXAMPLE['model'])
+    values = EXAMPLE['values']
 
-        classifier = Model.Classifier()
-        for value in values:
-            classifier.append(model.group_create([value]))
-        model.classifier_init(classifier)
+    classifier = Model.Classifier()
+    for value in values:
+        classifier.append(model.group_create([value]))
+    model.classifier_init(classifier)
 
-        groupids = []
-        for value in values:
-            scores = numpy.zeros(len(classifier), dtype=numpy.float32)
-            model.classifier_score(classifier, value, scores)
-            probs = scores_to_probs(scores)
-            groupid = sample_discrete(probs)
-            model.classifier_add_value(classifier, groupid, value)
-            groupids.append(groupid)
-
-        model.classifier_add_group(classifier)
-        assert len(classifier) == len(values) + 1
+    groupids = []
+    for value in values:
         scores = numpy.zeros(len(classifier), dtype=numpy.float32)
+        model.classifier_score(classifier, value, scores)
+        probs = scores_to_probs(scores)
+        groupid = sample_discrete(probs)
+        model.classifier_add_value(classifier, groupid, value)
+        groupids.append(groupid)
 
-        for value, groupid in zip(values, groupids):
-            model.classifier_remove_value(classifier, groupid, value)
+    model.classifier_add_group(classifier)
+    assert len(classifier) == len(values) + 1
+    scores = numpy.zeros(len(classifier), dtype=numpy.float32)
 
-        model.classifier_remove_group(classifier, 0)
-        model.classifier_remove_group(classifier, len(classifier) - 1)
-        assert len(classifier) == len(values) - 1
+    for value, groupid in zip(values, groupids):
+        model.classifier_remove_value(classifier, groupid, value)
 
-        for value in values:
-            scores = numpy.zeros(len(classifier), dtype=numpy.float32)
-            model.classifier_score(classifier, value, scores)
-            probs = scores_to_probs(scores)
-            groupid = sample_discrete(probs)
-            model.classifier_add_value(classifier, groupid, value)
+    model.classifier_remove_group(classifier, 0)
+    model.classifier_remove_group(classifier, len(classifier) - 1)
+    assert len(classifier) == len(values) - 1
+
+    for value in values:
+        scores = numpy.zeros(len(classifier), dtype=numpy.float32)
+        model.classifier_score(classifier, value, scores)
+        probs = scores_to_probs(scores)
+        groupid = sample_discrete(probs)
+        model.classifier_add_value(classifier, groupid, value)

@@ -90,7 +90,7 @@ Each component model API consist of:
         partially evaluated per-component scoring function
         (optional in python)
     *   `ExampleModel.Classifier` - vectorized scoring functions
-        (optional)
+        (optional in python)
 
 *   State mutating functions.
     These should be simple and fast.
@@ -121,7 +121,7 @@ Each component model API consist of:
         model.score_value(group, value) -> float
         model.score_group(group) -> float
 
-*   Classification functions (optional)
+*   Classification functions (optional in python)
     These provide batch evaluation of `score_value` on a collection of groups.
 
         classifier.groups.push_back(group)          # c++ only
