@@ -191,7 +191,8 @@ float score_group (
 // Classification
 
 void classifier_init (
-        Classifier & classifier) const
+        Classifier & classifier,
+        rng_t &) const
 {
     const size_t group_count = classifier.groups.size();
     classifier.scores_shift.resize(group_count);
@@ -217,8 +218,8 @@ void classifier_init (
 }
 
 void classifier_add_group (
-    Classifier & classifier,
-    rng_t & rng) const
+        Classifier & classifier,
+        rng_t & rng) const
 {
     const size_t group_count = classifier.groups.size() + 1;
     classifier.groups.resize(group_count);
@@ -230,8 +231,8 @@ void classifier_add_group (
 }
 
 void classifier_remove_group (
-    Classifier & classifier,
-    size_t groupid) const
+        Classifier & classifier,
+        size_t groupid) const
 {
     const size_t group_count = classifier.groups.size() - 1;
     if (groupid != group_count) {
@@ -252,7 +253,8 @@ void classifier_remove_group (
 void classifier_add_value (
         Classifier & classifier,
         size_t groupid,
-        const Value & value) const
+        const Value & value,
+        rng_t &) const
 {
     DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
     DIST_ASSERT1(value < dim, "value out of bounds");
@@ -267,7 +269,8 @@ void classifier_add_value (
 void classifier_remove_value (
         Classifier & classifier,
         size_t groupid,
-        const Value & value) const
+        const Value & value,
+        rng_t &) const
 {
     DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
     DIST_ASSERT1(value < dim, "value out of bounds");
@@ -282,7 +285,8 @@ void classifier_remove_value (
 void classifier_score (
         const Classifier & classifier,
         const Value & value,
-        float * scores_accum) const
+        float * scores_accum,
+        rng_t &) const
 {
     DIST_ASSERT1(value < dim, "value out of bounds");
     const size_t group_count = classifier.groups.size();

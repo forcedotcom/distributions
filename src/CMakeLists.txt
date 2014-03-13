@@ -7,6 +7,7 @@ set(DISTRIBUTIONS_SOURCE_FILES
   std_wrapper.cc
   vector_math.cc
   clustering.cc
+  models/nich.cc
 )
 
 add_library(distributions_shared SHARED ${DISTRIBUTIONS_SOURCE_FILES})
