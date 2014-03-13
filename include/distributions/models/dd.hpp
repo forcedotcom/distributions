@@ -9,7 +9,7 @@
 namespace distributions
 {
 
-template<int max_dim, class count_t = uint32_t>
+template<int max_dim>
 struct DirichletDiscrete
 {
 
@@ -21,6 +21,8 @@ float alphas[max_dim];  // hyperparamter
 
 //----------------------------------------------------------------------------
 // Datatypes
+
+typedef uint32_t count_t;
 
 typedef int Value;
 
