@@ -45,19 +45,16 @@ struct Scorer
 
 struct Classifier
 {
-    float alpha_sum;
     std::vector<Group> groups;
-    std::vector<count_t> count_sums;
-    VectorFloat scores[max_dim];
+    float alpha_sum;
+    std::vector<VectorFloat> scores;
     VectorFloat scores_shift;
-    bool is_stale;
 };
 
 class Fitter
 {
     std::vector<Group> groups;
     VectorFloat scores;
-    bool is_stale;
 };
 
 //----------------------------------------------------------------------------
@@ -194,45 +191,12 @@ float score_group (
 // Classification
 
 void classifier_init (
-        Classifier & classifier,
-        size_t group_count,
-        rng_t & rng) const
-{
-    classifier.alpha_sum = 0;
-    classifier.groups.resize(group_count);
-    for (size_t groupid = 0; groupid < group_count; ++groupid) {
-        group_init(classifier.groups[groupid], rng);
-    }
-    classifier.scores_shift.resize(group_count);
-    vector_zero(group_count, classifier.scores_shift.data());
-    for (Value value = 0; value < dim; ++value) {
-        classifier.alpha_sum += alphas[value];
-        classifier.scores[value].resize(group_count);
-        vector_zero(group_count, classifier.scores[value].data());
-    }
-    classifier.is_stale = false;
-}
-
-void classifier_lazy_add_value (
-        Classifier & classifier,
-        size_t groupid,
-        const Value & value,
-        rng_t & rng) const
-{
-    DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
-    DIST_ASSERT1(value < dim, "value out of bounds");
-    Group & group = classifier.groups[groupid];
-    group_add_value(group, value, rng);
-    classifier.is_stale = true;
-}
-
-void classifier_refresh (
-        Classifier & classifier,
-        rng_t &) const
+        Classifier & classifier) const
 {
     const size_t group_count = classifier.groups.size();
     classifier.scores_shift.resize(group_count);
     classifier.alpha_sum = 0;
+    classifier.scores.resize(dim);
     for (Value value = 0; value < dim; ++value) {
         classifier.alpha_sum += alphas[value];
         classifier.scores[value].resize(group_count);
@@ -250,7 +214,6 @@ void classifier_refresh (
     for (Value value = 0; value < dim; ++value) {
         vector_log(group_count, classifier.scores[value].data());
     }
-    classifier.is_stale = false;
 }
 
 void classifier_add_group (
@@ -268,8 +231,7 @@ void classifier_add_group (
 
 void classifier_remove_group (
     Classifier & classifier,
-    size_t groupid,
-    rng_t & rng) const
+    size_t groupid) const
 {
     const size_t group_count = classifier.groups.size() - 1;
     if (groupid != group_count) {
@@ -290,8 +252,7 @@ void classifier_remove_group (
 void classifier_add_value (
         Classifier & classifier,
         size_t groupid,
-        const Value & value,
-        rng_t &) const
+        const Value & value) const
 {
     DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
     DIST_ASSERT1(value < dim, "value out of bounds");
@@ -306,8 +267,7 @@ void classifier_add_value (
 void classifier_remove_value (
         Classifier & classifier,
         size_t groupid,
-        const Value & value,
-        rng_t &) const
+        const Value & value) const
 {
     DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
     DIST_ASSERT1(value < dim, "value out of bounds");
@@ -320,12 +280,10 @@ void classifier_remove_value (
 }
 
 void classifier_score_value (
-        float * scores_accum,
         const Classifier & classifier,
         const Value & value,
-        rng_t &) const
+        float * scores_accum) const
 {
-    DIST_ASSERT1(not classifier.is_stale, "classifier is stale");
     DIST_ASSERT1(value < dim, "value out of bounds");
     const size_t group_count = classifier.groups.size();
     vector_add_subtract(
@@ -339,37 +297,11 @@ void classifier_score_value (
 // Fitting
 
 void fitter_init (
-        Fitter & fitter,
-        size_t group_count,
-        rng_t & rng) const
-{
-    fitter.groups.resize(group_count);
-    for (size_t groupid = 0; groupid < group_count; ++groupid) {
-        init_group(fitter.groups[groupid], rng);
-    }
-    fitter.scores.resize(dim + 1);
-    fitter.is_stale = true;
-}
-
-void fitter_lazy_add_value (
-        Fitter & fitter,
-        size_t groupid,
-        const Value & value,
-        rng_t & rng) const
-{
-    DIST_ASSERT1(groupid < fitter.groups.size(), "groupid out of bounds");
-    DIST_ASSERT1(value < dim, "value out of bounds");
-    Group & group = fitter.groups[groupid];
-    group_add_value(group, value, rng);
-    fitter.is_stale = true;
-}
-
-void fitter_refresh (
-    Fitter & fitter,
-    rng_t & rng) const
+    Fitter & fitter) const
 {
     const size_t group_count = fitter.groups.size();
     const float alpha_sum = vector_sum(dim, alphas);
+    fitter.scores.resize(dim + 1);
     for (Value value = 0; value < dim; ++value) {
         vector_zero(fitter.scores[value].size(), fitter.scores[value].data());
     }
@@ -385,7 +317,6 @@ void fitter_refresh (
             fast_lgamma(alpha_sum) - fast_lgamma(alpha_sum + group.count_sum);
     }
     fitter.scores.back() = score_shift;
-    fitter.is_stale = false;
 }
 
 void fitter_set_param_alpha (
@@ -393,7 +324,6 @@ void fitter_set_param_alpha (
     Value value,
     float alpha)
 {
-    DIST_ASSERT1(not fitter.is_stale, "fitter is stale");
     DIST_ASSERT1(value < dim, "value out of bounds");
 
     alphas[value] = alpha;
@@ -413,10 +343,8 @@ void fitter_set_param_alpha (
 }
 
 float fitter_score (
-        Fitter & fitter,
-        rng_t &) const
+        Fitter & fitter) const
 {
-    DIST_ASSERT1(not fitter.is_stale, "fitter is stale");
     return vector_sum(fitter.scores.size(), fitter.scores.data());
 }
 
