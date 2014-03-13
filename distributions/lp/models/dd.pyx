@@ -1,7 +1,7 @@
-cimport numpy
-numpy.import_array()
 from libc.stdint cimport uint32_t
 from libcpp.vector cimport vector
+cimport numpy
+numpy.import_array()
 from distributions.lp.random cimport rng_t, global_rng
 from distributions.lp.vector cimport VectorFloat
 from distributions.mixins import ComponentModel, Serializable
