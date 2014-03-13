@@ -23,7 +23,7 @@ void GammaPoisson::classifier_score (
         temp[i] = fast_lgamma(post_alpha[i] + value_noalias);
     }
     for (size_t i = 0; i < size; ++i) {
-        scores_accum[i] += score[i]
+        scores_accum_noalias[i] += score[i]
             + temp[i]
             - log_factorial_value
             + score_coeff[i] * value_noalias;
