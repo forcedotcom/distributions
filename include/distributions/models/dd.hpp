@@ -326,6 +326,106 @@ void classifier_score_value (
         classifier.scores_shift.data());
 }
 
+//----------------------------------------------------------------------------
+// Fitting
+
+class Fitter
+{
+    std::vector<Group> groups;
+    VectorFloat scores;
+    bool is_stale;
+};
+
+void fitter_init (
+        Fitter & fitter,
+        size_t group_count,
+        rng_t & rng) const
+{
+    fitter.groups.resize(group_count);
+    for (size_t groupid = 0; groupid < group_count; ++groupid) {
+        init_group(fitter.groups[groupid], rng);
+    }
+    fitter.scores.resize(dim + 1);
+    fitter.is_stale = true;
+}
+
+void fitter_lazy_add_value (
+        Fitter & fitter,
+        size_t groupid,
+        const Value & value,
+        rng_t & rng) const
+{
+    DIST_ASSERT1(groupid < fitter.groups.size(), "groupid out of bounds");
+    DIST_ASSERT1(value < dim, "value out of bounds");
+    Group & group = fitter.groups[groupid];
+    group_add_value(group, value, rng);
+    fitter.is_stale = true;
+}
+
+void fitter_refresh (
+    Fitter & fitter,
+    rng_t & rng) const
+{
+    const size_t group_count = fitter.groups.size();
+
+    float alpha_sum = 0;
+    for (Value value = 0; value < dim; ++value) {
+        alpha_sum += alphas[value];
+    }
+
+    for (Value value = 0; value < dim; ++value) {
+        vector_zero(fitter.scores[value].size(), fitter.scores[value].data());
+    }
+    float score_shift = 0;
+    for (size_t groupid = 0; groupid < group_count; ++groupid) {
+        const Group & group = fitter.groups[groupid];
+        for (Value value = 0; value < dim; ++value) {
+            float alpha = alphas[value];
+            fitter.scores[value] +=
+                fast_lgamma(alpha + group.counts[value]) - fast_lgamma(alpha);
+        }
+        score_shift +=
+            fast_lgamma(alpha_sum) - fast_lgamma(alpha_sum + group.count_sum);
+    }
+    fitter.scores.back() = score_shift;
+    fitter.is_stale = false;
+}
+
+void fitter_set_param_alpha (
+    Fitter & fitter,
+    Value value,
+    float alpha)
+{
+    DIST_ASSERT1(not fitter.is_stale, "fitter is stale");
+    DIST_ASSERT1(value < dim, "value out of bounds");
+    const size_t group_count = fitter.groups.size();
+
+    alphas[value] = alpha;
+    float alpha_sum = 0;
+    for (Value value = 0; value < dim; ++value) {
+        alpha_sum += alphas[value];
+    }
+
+    float score = 0;
+    float score_shift = 0;
+    for (size_t groupid = 0; groupid < group_count; ++groupid) {
+        const Group & group = fitter.groups[groupid];
+        score += fast_lgamma(alpha + group.counts[value]) - fast_lgamma(alpha);
+        score_shift +=
+            fast_lgamma(alpha_sum) - fast_lgamma(alpha_sum + group.count_sum);
+    }
+    fitter.scores[value] = score;
+    fitter.scores.back() = score_shift;
+}
+
+float fitter_score (
+        Fitter & fitter,
+        rng_t &) const
+{
+    DIST_ASSERT1(not fitter.is_stale, "fitter is stale");
+    return vector_sum(fitter.scores.size(), fitter.scores.data());
+}
+
 }; // struct DirichletDiscrete<max_dim>
 
 } // namespace distributions
