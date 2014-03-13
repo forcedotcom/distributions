@@ -45,7 +45,7 @@ cdef extern from "distributions/models/dd.hpp" namespace "distributions":
         void classifier_remove_group (Classifier &, size_t) nogil
         void classifier_add_value (Classifier &, size_t, Value &) nogil
         void classifier_remove_value (Classifier &, size_t, Value &) nogil
-        void classifier_score_value (Classifier &, Value &, float *) nogil
+        void classifier_score (Classifier &, Value &, float *) nogil
 
 cdef class Group:
     cdef Model_cc.Group * ptr
@@ -80,11 +80,14 @@ cdef class Classifier:
     def __dealloc__(self):
         del self.ptr
 
-    def clear(self):
-        self.ptr.groups.clear()
+    def __len__(self):
+        return self.ptr.groups.size()
 
     def append(self, Group group):
         self.ptr.groups.push_back(group.ptr[0])
+
+    def clear(self):
+        self.ptr.groups.clear()
 
 
 cdef class Model_cy:
@@ -179,7 +182,7 @@ cdef class Model_cy:
             Value value):
         self.ptr.classifier_remove_value(classifier.ptr[0], groupid, value)
 
-    def classifier_score_value(
+    def classifier_score(
             self,
             Classifier classifier,
             Value value,
@@ -187,7 +190,7 @@ cdef class Model_cy:
         assert len(scores_accum) == classifier.ptr.groups.size(), \
             "scores_accum != len(classifier)"
         cdef float * data = <float *> scores_accum.data
-        self.ptr.classifier_score_value(classifier.ptr[0], value, data)
+        self.ptr.classifier_score(classifier.ptr[0], value, data)
 
     #-------------------------------------------------------------------------
     # Examples
@@ -212,6 +215,8 @@ class DirichletDiscrete(Model_cy, ComponentModel, Serializable):
     Value = int
 
     Group = Group
+
+    Classifier = Classifier
 
 
 Model = DirichletDiscrete

@@ -10,7 +10,9 @@ from nose.tools import (
     assert_not_equal,
     assert_greater,
 )
+from distributions.dbg.random import sample_discrete
 from distributions.util import (
+    scores_to_probs,
     density_goodness_of_fit,
     discrete_goodness_of_fit,
 )
@@ -283,3 +285,42 @@ def test_scorer(Model):
             score2 = model.scorer_eval(scorer2, value)
             score3 = model.score_value(group, value)
             assert_all_close([score1, score2, score3])
+
+
+@for_each_model(lambda Model: hasattr(Model, 'Classifier'))
+def test_classifier(Model):
+    for EXAMPLE in iter_examples(Model):
+        model = Model.model_load(EXAMPLE['model'])
+        values = EXAMPLE['values']
+
+        classifier = Model.Classifier()
+        for value in values:
+            classifier.append(model.group_create([value]))
+        model.classifier_init(classifier)
+
+        groupids = []
+        for value in values:
+            scores = numpy.zeros(len(classifier), dtype=numpy.float32)
+            model.classifier_score(classifier, value, scores)
+            probs = scores_to_probs(scores)
+            groupid = sample_discrete(probs)
+            model.classifier_add_value(classifier, groupid, value)
+            groupids.append(groupid)
+
+        model.classifier_add_group(classifier)
+        assert len(classifier) == len(values) + 1
+        scores = numpy.zeros(len(classifier), dtype=numpy.float32)
+
+        for value, groupid in zip(values, groupids):
+            model.classifier_remove_value(classifier, groupid, value)
+
+        model.classifier_remove_group(classifier, 0)
+        model.classifier_remove_group(classifier, len(classifier) - 1)
+        assert len(classifier) == len(values) - 1
+
+        for value in values:
+            scores = numpy.zeros(len(classifier), dtype=numpy.float32)
+            model.classifier_score(classifier, value, scores)
+            probs = scores_to_probs(scores)
+            groupid = sample_discrete(probs)
+            model.classifier_add_value(classifier, groupid, value)

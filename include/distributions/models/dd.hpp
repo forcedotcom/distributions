@@ -279,7 +279,7 @@ void classifier_remove_value (
         fast_log(classifier.alpha_sum + count_sum);
 }
 
-void classifier_score_value (
+void classifier_score (
         const Classifier & classifier,
         const Value & value,
         float * scores_accum) const
