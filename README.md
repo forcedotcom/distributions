@@ -124,6 +124,8 @@ Each component model API consist of:
 *   Classification functions (optional, experimental)
     These provide batch scoring over a collection of groups.
 
+        classifier.groups.push_back(group)          # c++ only
+        classifier.append(group)                    # python only
         model.classifier_init(classifier)
         model.classifier_add_group(classifier)
         model.classifier_remove_group(classifier, groupid)
