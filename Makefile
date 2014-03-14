@@ -45,6 +45,6 @@ protobuf: FORCE
 	    ; sed -i '/descriptor_pb2/d' distributions/schema_pb2.py)  # HACK
 
 clean: FORCE
-	git clean -Xdf
+	git clean -df
 
 FORCE:

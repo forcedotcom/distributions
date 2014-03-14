@@ -1,5 +1,3 @@
-
-
 cdef extern from "distributions/vector.hpp" namespace "distributions":
     cppclass VectorFloat:
         VectorFloat() nogil except +
