@@ -49,13 +49,9 @@ def show():
         print(filename)
 
 
-def determin_symbol(filename):
-    extension = re.search('\.[^.]*$', filename).group()
-    return SYMBOL_OF[extension]
-
-
 def read_and_strip_lines(filename):
-    symbol = determin_symbol(filename)
+    extension = re.search('\.[^.]*$', filename).group()
+    symbol = SYMBOL_OF[extension]
     lines = []
     with open(filename) as i:
         writing = False
@@ -90,9 +86,13 @@ def update():
     Update headers on all files to match LICNESE.txt.
     '''
     for filename in FILES:
-        symbol = determin_symbol(filename)
+        extension = re.search('\.[^.]*$', filename).group()
+        symbol = SYMBOL_OF[extension]
         lines = read_and_strip_lines(filename)
-        write_lines(HEADERS[symbol] + [''] +  lines, filename)
+        if lines and lines[0]:
+            if extension == '.py' and lines[0].startswith('class '):
+                lines = [''] + lines  # pep8 compliance
+            write_lines(HEADERS[symbol] + [''] + lines, filename)
 
 
 if __name__ == '__main__':
