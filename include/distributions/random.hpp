@@ -148,15 +148,39 @@ inline std::pair<T, T> sample_pair_from_urn (
 //   likelihood = non-normalized probability
 //        score = non-normalized log probability
 
-size_t sample_discrete (
+inline size_t sample_discrete (
         rng_t & rng,
         size_t dim,
-        const float * probs);
+        const float * probs)
+{
+    float t = sample_unif01(rng);
+    for (size_t i = 0; i < dim - 1; ++i) {
+        t -= probs[i];
+        if (t < 0) {
+            return i;
+        }
+    }
+    return dim - 1;
+}
 
-size_t sample_from_likelihoods (
+inline size_t sample_from_likelihoods (
         rng_t & rng,
         const std::vector<float> & likelihoods,
-        float total_likelihood);
+        float total_likelihood)
+{
+    const size_t size = likelihoods.size();
+
+    float t = total_likelihood * sample_unif01(rng);
+
+    for (size_t i = 0; i < size; ++i) {
+        t -= likelihoods[i];
+        if (t < 0) {
+            return i;
+        }
+    }
+
+    return size - 1;
+}
 
 inline size_t sample_from_likelihoods (
         rng_t & rng,

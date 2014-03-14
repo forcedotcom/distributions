@@ -220,7 +220,7 @@ def test_sample_seed(Model, EXAMPLE):
 
 @for_each_model()
 def test_sample_value(Model, EXAMPLE):
-    seed_all(1)
+    seed_all(0)
     model = Model.model_load(EXAMPLE['model'])
     for values in [[], EXAMPLE['values']]:
         group = model.group_create(values)
@@ -246,7 +246,7 @@ def test_sample_value(Model, EXAMPLE):
 @for_each_model()
 def test_sample_group(Model, EXAMPLE):
     seed_all(0)
-    SIZE = 3
+    SIZE = 2
     model = Model.model_load(EXAMPLE['model'])
     for values in [[], EXAMPLE['values']]:
         if Model.Value == int:
