@@ -25,4 +25,11 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__version__ = '2.0.0'
+cdef extern from 'distributions/std_wrapper.hpp' namespace 'std_wrapper':
+    cppclass rng_t:
+        rng_t() nogil except +
+        rng_t(int) nogil except +
+        rng_t(rng_t & rng) nogil except +
+        int sample "operator()" () nogil
+        void seed(int) nogil
+    cdef rng_t global_rng

@@ -25,4 +25,15 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__version__ = '2.0.0'
+cdef extern from "distributions/vector.hpp" namespace "distributions":
+    cppclass VectorFloat:
+        VectorFloat() nogil except +
+        size_t size () nogil
+        float & at "operator[]" (size_t index) nogil
+
+
+cdef extern from "distributions/vector_math.hpp" namespace "distributions":
+    cdef vector_add(size_t size, float * io, float * in1) nogil
+
+
+cdef list vector_float_to_list(VectorFloat & vector)

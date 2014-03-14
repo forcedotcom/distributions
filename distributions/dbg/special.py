@@ -25,4 +25,9 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__version__ = '2.0.0'
+from math import exp, log, pi, sqrt, factorial
+from scipy.special import gammaln
+
+
+# pacify pyflakes
+assert exp and log and pi and sqrt and gammaln and factorial

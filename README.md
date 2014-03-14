@@ -1,84 +1,190 @@
-# Distributions
+# Distributions [![Build Status](https://travis-ci.org/forcedotcom/distributions.png)](https://travis-ci.org/forcedotcom/distributions)
 
-Code in this package is meant to be understandable and auditable for
-correctness. It is not meant to perform especially well.
+<b>WARNING</b>
+This 2.0 branch of distributions breaks API compatibility with the 1.0 branch.
+
+This package implements low-level primitives for Bayesian MCMC inference
+in Python and C++ including:
+*   special numerical functions `distributions.<flavor>.special`,
+*   samplers and density functions from a variety of distributions,
+    `distributions.<flavor>.random`,
+*   conjugate component models (e.g., gamma-Poisson, normal-inverse-chi-squared)
+    `distributions.<flavor>.models`, and
+*   clustering models (e.g., CRP, Pitman-Yor)
+    `distributions.<flavor>.clustering`.
+
+Python implementations are provided in up to three flavors:
+
+*   Debug `distributions.dbg`
+    are pure-python implementations for correctness auditing and
+    error checking, and allowing debugging via pdb.
+
+*   High-Precision `distributions.hp`
+    are cython implementations for fast inference in python
+    and numerical reference.
+
+*   Low-Precision `distributions.lp`
+    are inefficent wrappers of blazingly fast C++ implementations,
+    intended mostly as wrappers to check that C++ implementations are correct.
+
+Our typical workflow is to first prototype models in python,
+then prototype faster inference applications using cython models,
+and finally implement optimized scalable inference products in C++,
+while testing all implementations for correctness.
 
 
-## Cython
+## Installing
+
+### Installing Everything
+
+To build and install C++, Cython, and Python libraries into a virtualenv, simply
+
+    make install
+
+Then point `LD_LIBRARY_PATH` to find `libdistributions_shared.so`
+in your virtualenv
+
+    echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$VIRTUAL_ENV/lib' >> $VIRTUAL_ENV/bin/postactivate
+
+Finally, test your installation with
+
+    make test
+
+
+### Installing Python Only
 
 Distributions includes several optimized modules that require Cython
-0.15.1 or later. On Ubuntu 12.04, this can be installed as follows:
-
-    sudo apt-get install cython
-
-After making a change to a .pyx or .pxd file, rebuild the extension:
-
-    python setup.py build_ext --inplace
+0.20.1 or later, as will automatically be installed by pip.
 
 To install without cython:
-    
+
     python setup.py --without-cython install
 
-Or:
-    
+or via pip:
+
     pip install --global-option --without-cython .
 
 
+### Installing C++ Only
 
-## Component Model Interface
+To build only the C++ library, simply
+
+    make install_cc
+
+This also tries to copy shared libraries into `$VIRTUAL_ENV/lib/`,
+so that distributions can be used in other python-wrapped C++ code.
+
+
+## Component Model API
+
+Component models are written as `Model` classes and `model.method` methods,
+since all operations depend on the model.
 
 Component models are written as free functions with all data passed in
 to emphasize their exact dependencies. The
 distributions.ComponentModel interface class wraps these functions for
 all models so that they may be used conveniently elsewhere.
 
-The component model functions are strictly divided in to two sets,
-those which change state and those which do interesting math. State
-change functions should be simple and fast.
+Each component model API consist of:
 
-Throughout the interface we use several short variable names:
+*   Datatypes.
+    *   `ExampleModel` - global model state including fixed parameters
+        and hyperparameters
+    *   `ExampleModel.Value` - observation observation state
+    *   `ExampleModel.Group` - local component state including
+        sufficient statistics and possibly group parameters
+    *   `ExampleModel.Sampler` -
+        partially evaluated per-component sampling function
+        (optional in python)
+    *   `ExampleModel.Scorer` -
+        partially evaluated per-component scoring function
+        (optional in python)
+    *   `ExampleModel.Classifier` - vectorized scoring functions
+        (optional in python)
 
-* ss: sufficient statistics
+*   State mutating functions.
+    These should be simple and fast.
 
-* hp: hyperparameters
+        model.group_create(values=[]) -> group         # python only
+        model.group_init(group)
+        model.group_add_value(group, value)
+        model.group_remove_value(group, value)
+        model.group_merge(destin_group, source_group)
+        model.plus_group(group) -> model               # optional
 
-* p: parameters
+*   Sampling functions (optional in python).
+    These consume explicit entropy sources in C++ or `global_rng` in python.
 
-* y: data value
+        model.sampler_init(sampler, group)            # c++ only
+        model.sampler_create(group=empty) -> sampler  # python only, optional
+        model.sampler_eval(sampler) -> value          # python only, optional
+        model.sample_value(group) -> value
+        model.sample_group(group_size) -> group
 
-The functions are as follows:
+*   Scoring functions (optional in python).
+    These may also consume entropy,
+    e.g. when implemented using monte carlo integration)
 
-* `create_ss(ss=None, p=None)` Create a valid suff stats dict,
-  optionally incorporating the suff stats and parameters provided in
-  the arguments.
+        model.scorer_init(scorer, group)            # c++ only
+        model.scorer_create(group=empty) -> scorer  # python only, optional
+        model.scorer_eval(scorer, value) -> float   # python only, optional
+        model.score_value(group, value) -> float
+        model.score_group(group) -> float
 
-* `dump_ss(ss)` Return a serializable version of the sufficient
-  statistics contained in the argument.
+*   Classification functions (optional in python).
+    These provide batch evaluation of `score_value` on a collection of groups.
 
-* `create_hp(hp=None, p=None)` Create a valid hyperparameters dict,
-  optionally incorporating the hps and parameters provided in the
-  argument.
+        classifier.groups.push_back(group)          # c++ only
+        classifier.append(group)                    # python only
+        model.classifier_init(classifier)
+        model.classifier_add_group(classifier)
+        model.classifier_remove_group(classifier, groupid)
+        model.classifier_add_value(classifier, groupid, value)
+        model.classifier_remove_value(classifier, groupid, value)
+        model.classifier_score(classifier, value, scores_accum)
 
-* `dump_hp(hp)` Return a serializable version of the hyperparameters
-  contained in the argument.
+*   Serialization to JSON (python only).
 
-* `add_data(ss, y)` Add the datapoint to the suff stats. Does not
-  explicitly check that the datapoint is valid. Returns None.
+        model.load(json)
+        model.dump() -> json
+        group.load(json)
+        group.dump() -> json
+        ExampleModel.model_load(json) -> model
+        ExampleModel.model_dump(model) -> json
+        ExampleModel.group_load(json) -> group
+        ExampleModel.group_dump(group) -> json
 
-* `remove_data(ss, y)` Removethe datapoint from the suff stats. Does
-  not explicitly check that the datapoint is valid, or that it was
-  added previously. Returns None.
+*   Testing metadata (python only).
+    Example model parameters and datasets are automatically discovered by
+    unit test infrastructures, reducing the cost of per-model test-writing.
 
-* `sample_data(hp, ss)` Sample a datapoint from the distribution
-  described by the hyperparameters and suff stats.
+        ExampleModel.EXAMPLES = [
+            {'model': ..., 'values': [...]},
+            ...
+        ]
 
-* `sample_post(hp, ss)` Sample the model parameters from the posterior
-  distribution described by the hyperparameters and suff stats.
 
-* `pred_prob(hp, ss, y)` Compute the posterior predictive probability
-  of the datapoint, given the hyperparameters and suff stats (and
-  integrating over the model parameters).
+### Source of Entropy
 
-* `data_prob(hp, ss)` Compute the marginal probability of all of the
-  data summarized by the suff stats, given the hyperparameters (and
-  integrating over the model parameters).
+The C++ methods explicity require a random number generator `rng` everywhere
+entropy may be consumed.
+The python models try to maintain compatibility with `numpy.random`
+by hiding this source either as the global `numpy.random` generator,
+or as single `global_rng` in wrapped C++.
+
+
+## Authors (alphabetically)
+
+* Jonathan Glidden <https://twitter.com/jhglidden>
+* Eric Jonas <https://twitter.com/stochastician>
+* Fritz Obermeyer <https://github.com/fritzo>
+* Cap Petschulat <https://github.com/cap>
+
+
+## License
+
+Copyright (c) 2014 Salesforce.com, Inc.
+All rights reserved.
+
+Licensed under the Revised BSD License.
+See [LICENSE.txt](LICENSE.txt) for details.

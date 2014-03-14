@@ -25,4 +25,12 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__version__ = '2.0.0'
+from libc.math cimport log, sqrt, lgamma
+
+
+cdef double log_factorial(unsigned n):
+    return lgamma(n + 1)
+
+
+cdef double gammaln(double x):
+    return lgamma(x)

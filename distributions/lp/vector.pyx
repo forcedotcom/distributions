@@ -25,4 +25,12 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__version__ = '2.0.0'
+from distributions.lp.vector cimport VectorFloat
+
+
+cdef list vector_float_to_list(VectorFloat & vector):
+    cdef list result = []
+    cdef int i
+    for i in xrange(vector.size()):
+        result.append(vector.at(i))
+    return result
