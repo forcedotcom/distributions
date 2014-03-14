@@ -45,12 +45,11 @@ protobuf: FORCE
 	    ; sed -i '/descriptor_pb2/d' distributions/schema_pb2.py)  # HACK
 
 profile: install_cc FORCE
-	@echo -----------------------------------
 	build/benchmarks/sample_from_scores
-	@echo ------------------------------------------
 	build/benchmarks/sample_assignment_from_py
+	build/benchmarks/special
 
 clean: FORCE
-	git clean -df
+	git clean -Xdf
 
 FORCE:

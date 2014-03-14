@@ -18,6 +18,28 @@ with open(os.path.join('distributions', '__init__.py')) as f:
 assert VERSION, 'could not determine version'
 
 
+CXX_FLAGS = [
+    '-std=c++0x',
+    '-Wall',
+    '-Werror',
+    '-Wno-unused-function',
+    '-Wno-sign-compare',
+    '-Wno-strict-aliasing',
+    '-O3',
+    '-ffast-math',
+    '-funsafe-math-optimizations',
+    #'-fno-trapping-math',
+    #'-ffinite-math-only',
+    #'-fvect-cost-model',
+    '-mfpmath=sse',
+    '-msse4.1',
+    #'-mavx',
+    #'-mrecip',
+]
+if 'USE_MARCH_NATIVE' in os.environ:
+    CXX_FLAGS.append('-march=native')
+
+
 def extension(name):
     name_pyx = '{}.pyx'.format(name.replace('.', '/'))
     return Extension(
@@ -27,25 +49,7 @@ def extension(name):
         include_dirs=['include'],
         libraries=['m', 'distributions_shared'],
         library_dirs=['build/src'],
-        extra_compile_args=[
-            '-std=c++0x',
-            '-Wall',
-            '-Werror',
-            '-Wno-unused-function',
-            '-Wno-sign-compare',
-            '-Wno-strict-aliasing',
-            '-O3',
-            '-ffast-math',
-            '-funsafe-math-optimizations',
-            #'-fno-trapping-math',
-            #'-ffinite-math-only',
-            #'-fvect-cost-model',
-            '-mfpmath=sse',
-            '-msse4.1',
-            #'-mavx',
-            #'-mrecip',
-            #'-march=native',
-        ],
+        extra_compile_args=CXX_FLAGS,
     )
 
 
