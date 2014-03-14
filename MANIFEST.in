@@ -1,0 +1,7 @@
+recursive-include * *
+prune .git*
+prune build
+prune distributions.egg-info
+prune examples/*/build
+prune lib
+prune dist
