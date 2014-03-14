@@ -45,26 +45,8 @@ with open(os.path.join('distributions', '__init__.py')) as f:
 assert VERSION, 'could not determine version'
 
 
-CXX_FLAGS = [
-    '-std=c++0x',
-    '-Wall',
-    '-Werror',
-    '-Wno-unused-function',
-    '-Wno-sign-compare',
-    '-Wno-strict-aliasing',
-    '-O3',
-    '-ffast-math',
-    '-funsafe-math-optimizations',
-    #'-fno-trapping-math',
-    #'-ffinite-math-only',
-    #'-fvect-cost-model',
-    '-mfpmath=sse',
-    '-msse4.1',
-    #'-mavx',
-    #'-mrecip',
-]
-if 'USE_MARCH_NATIVE' in os.environ:
-    CXX_FLAGS.append('-march=native')
+with open('README.md') as f:
+    long_description = f.read()
 
 
 def extension(name):
@@ -76,7 +58,25 @@ def extension(name):
         include_dirs=['include'],
         libraries=['m', 'distributions_shared'],
         library_dirs=['build/src'],
-        extra_compile_args=CXX_FLAGS,
+        extra_compile_args=[
+            '-std=c++0x',
+            '-Wall',
+            '-Werror',
+            '-Wno-unused-function',
+            '-Wno-sign-compare',
+            '-Wno-strict-aliasing',
+            '-O3',
+            '-ffast-math',
+            '-funsafe-math-optimizations',
+            #'-fno-trapping-math',
+            #'-ffinite-math-only',
+            #'-fvect-cost-model',
+            '-mfpmath=sse',
+            '-msse4.1',
+            #'-mavx',
+            #'-mrecip',
+            #'-march=native',
+        ],
     )
 
 
@@ -105,8 +105,15 @@ model_feature = Feature(
 
 config = {
     'version': VERSION,
-    'features': {'cython': model_feature},
     'name': 'distributions',
+    'description': 'Primitives for Bayesian MCMC inference',
+    'long_description': long_description,
+    'url': 'https://github.com/forcedotcom/distributions',
+    'author': 'Jonathan Glidden, Eric Jonas, Fritz Obermeyer, Cap Petschulat',
+    'maintainer': 'Fritz Obermeyer',
+    'maintainer_email': 'fobermeyer@salesforce.com',
+    'license': 'Revised BSD',
+    'features': {'cython': model_feature},
     'packages': [
         'distributions',
         'distributions.dbg',
@@ -114,8 +121,6 @@ config = {
         'distributions.tests',
     ],
 }
-
-
 if cython:
     config['cmdclass'] = {'build_ext': build_ext}
     config['packages'] += [
