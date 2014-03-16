@@ -28,21 +28,18 @@
 #include <distributions/models/nich.hpp>
 #include <distributions/vector_math.hpp>
 
-#define VectorFloat_data(vf) (float *)__builtin_assume_aligned((vf).data(), 32)
-
 namespace distributions
 {
 
 void NormalInverseChiSq::classifier_score (
         const Classifier & classifier,
         const Value & value,
-        float * scores_accum,
+        VectorFloat & scores_accum,
         rng_t &) const
 {
     const size_t size = classifier.groups.size();
     const float value_noalias = value;
-    float * __restrict__ scores_accum_noalias =
-        (float *)__builtin_assume_aligned(scores_accum, 32);
+    float * __restrict__ scores_accum_noalias = VectorFloat_data(scores_accum);
     const float * __restrict__ score =
         VectorFloat_data(classifier.score);
     const float * __restrict__ log_coeff =

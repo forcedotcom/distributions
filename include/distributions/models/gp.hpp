@@ -299,7 +299,7 @@ void classifier_remove_value (
 void classifier_score (
         const Classifier & classifier,
         const Value & value,
-        float * scores_accum,
+        VectorFloat & scores_accum,
         rng_t &) const;
 
 }; // struct GammaPoisson

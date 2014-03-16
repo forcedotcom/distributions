@@ -318,14 +318,14 @@ void classifier_remove_value (
 void classifier_score (
         const Classifier & classifier,
         const Value & value,
-        float * scores_accum,
+        VectorFloat & scores_accum,
         rng_t &) const
 {
     DIST_ASSERT1(value < betas.size(), "value out of bounds");
     const size_t group_count = classifier.groups.size();
     vector_add_subtract(
         group_count,
-        scores_accum,
+        scores_accum.data(),
         classifier.scores[value].data(),
         classifier.scores_shift.data());
 }

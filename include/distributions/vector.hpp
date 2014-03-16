@@ -30,9 +30,11 @@
 #include <distributions/aligned_allocator.hpp>
 #include <vector>
 
+#define VectorFloat_data(vf) (float *)__builtin_assume_aligned((vf).data(), 32)
+
 namespace distributions
 {
 
-typedef std::vector<float, aligned_allocator<float>> VectorFloat;
+typedef std::vector<float, aligned_allocator<float, 32>> VectorFloat;
 
 } // namespace distributions

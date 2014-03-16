@@ -76,7 +76,7 @@ void speedtest (
         vector_zero(scores.size(), scores.data());
         for (size_t j = 0; j < 8; ++j) {
             typename Model::Value value = values[(8 * i + j) % values.size()];
-            model.classifier_score(classifier, value, scores.data(), rng);
+            model.classifier_score(classifier, value, scores, rng);
         }
     }
     time += current_time_us();
