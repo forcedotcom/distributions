@@ -1,6 +1,9 @@
 #include <iostream>
 #include <iomanip>
 #include <distributions/vector.hpp>
+#include <distributions/models/dd.hpp>
+#include <distributions/models/dpd.hpp>
+#include <distributions/models/gp.hpp>
 #include <distributions/models/nich.hpp>
 #include <distributions/timers.hpp>
 
@@ -80,7 +83,7 @@ void speedtest (
         }
     }
     time += current_time_us();
-    double classifier_rows_per_sec = iters * 1e3 / time;
+    double classifier_rate = iters * 1e3 / time;
 
     time = -current_time_us();
     for (size_t i = 0; i < iters / 8; ++i) {
@@ -91,14 +94,23 @@ void speedtest (
         }
     }
     time += current_time_us();
-    double scorers_rows_per_sec = iters * 1e3 / time;
+    double scorers_rate = iters * 1e3  / time;
 
 
     std::cout <<
         Model::short_name() << '\t' <<
         group_count << '\t' <<
-        scorers_rows_per_sec << '\t' <<
-        classifier_rows_per_sec << '\n';
+        scorers_rate << '\t' <<
+        classifier_rate << '\n';
+}
+
+template<class Model>
+void speedtests (const Model & model)
+{
+    for (int group_count = 1; group_count <= 1000; group_count *= 10) {
+        int iters = 100000 / group_count;
+        speedtest(model, group_count, iters);
+    }
 }
 
 int main()
@@ -106,18 +118,13 @@ int main()
     std::cout <<
         "model" << '\t' <<
         "groups" << '\t' <<
-        "scorers" << '\t' << '\t' <<
-        "classifier (features/ms)" << '\n';
+        "scorers" << '\t' <<
+        "classifier (rows/ms)" << '\n';
 
-    int min_exponent = 3;
-    int max_exponent = 10;
-    for (int i = min_exponent; i <= max_exponent; ++i) {
-        int group_count = 1 << i;
-        int iters = 10000 << (max_exponent - i);
-
-        NormalInverseChiSq model = {0.0, 1.0, 1.0, 1.0};
-        speedtest(model, group_count, iters);
-    }
+    speedtests(DirichletDiscrete<4>::EXAMPLE());
+    speedtests(DirichletProcessDiscrete::EXAMPLE());
+    speedtests(NormalInverseChiSq::EXAMPLE());
+    speedtests(GammaPoisson::EXAMPLE());
 
     return 0;
 }

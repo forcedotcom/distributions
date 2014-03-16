@@ -341,6 +341,21 @@ void classifier_score (
         VectorFloat & scores_accum,
         rng_t &) const;
 
+//----------------------------------------------------------------------------
+// Examples
+
+static NormalInverseChiSq EXAMPLE ();
+
 }; // struct NormalInverseChiSq
+
+inline NormalInverseChiSq NormalInverseChiSq::EXAMPLE ()
+{
+    NormalInverseChiSq model;
+    model.mu = 0.0;
+    model.kappa = 1.0;
+    model.sigmasq = 1.0;
+    model.nu = 1.0;
+    return model;
+}
 
 } // namespace distributions

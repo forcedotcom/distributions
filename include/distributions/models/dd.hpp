@@ -40,6 +40,9 @@ template<int max_dim>
 struct DirichletDiscrete
 {
 
+static const char * name () { return "DirichletDiscrete"; }
+static const char * short_name () { return "dd"; }
+
 //----------------------------------------------------------------------------
 // Data
 
@@ -379,6 +382,22 @@ float fitter_score (
     return vector_sum(fitter.scores.size(), fitter.scores.data());
 }
 
+//----------------------------------------------------------------------------
+// Examples
+
+static DirichletDiscrete<max_dim> EXAMPLE ();
+
 }; // struct DirichletDiscrete<max_dim>
+
+template<int max_dim>
+inline DirichletDiscrete<max_dim> DirichletDiscrete<max_dim>::EXAMPLE ()
+{
+    DirichletDiscrete<max_dim> model;
+    model.dim = max_dim;
+    for (int i = 0; i < max_dim; ++i) {
+        model.alphas[i] = 0.5;
+    }
+    return model;
+}
 
 } // namespace distributions

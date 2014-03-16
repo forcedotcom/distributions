@@ -40,6 +40,9 @@ namespace distributions
 struct DirichletProcessDiscrete
 {
 
+static const char * name () { return "DirichletProcessDiscrete"; }
+static const char * short_name () { return "dpd"; }
+
 //----------------------------------------------------------------------------
 // Data
 
@@ -330,6 +333,22 @@ void classifier_score (
         classifier.scores_shift.data());
 }
 
-}; // struct DirichletDiscrete<max_dim>
+//----------------------------------------------------------------------------
+// Examples
+
+static DirichletProcessDiscrete EXAMPLE ();
+
+}; // struct DirichletProcessDiscrete<max_dim>
+
+inline DirichletProcessDiscrete DirichletProcessDiscrete::EXAMPLE ()
+{
+    DirichletProcessDiscrete model;
+    size_t dim = 100;
+    model.gamma = 0.5;
+    model.alpha = 0.5;
+    model.beta0 = 0.0;  // must be zero for testing
+    model.betas.resize(dim, 1.0 / dim);
+    return model;
+}
 
 } // namespace distributions

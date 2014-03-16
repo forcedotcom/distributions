@@ -38,6 +38,9 @@ namespace distributions
 struct GammaPoisson
 {
 
+static const char * name () { return "GammaPoisson"; }
+static const char * short_name () { return "gp"; }
+
 //----------------------------------------------------------------------------
 // Data
 
@@ -302,6 +305,19 @@ void classifier_score (
         VectorFloat & scores_accum,
         rng_t &) const;
 
+//----------------------------------------------------------------------------
+// Examples
+
+static GammaPoisson EXAMPLE ();
+
 }; // struct GammaPoisson
+
+inline GammaPoisson GammaPoisson::EXAMPLE ()
+{
+    GammaPoisson model;
+    model.alpha = 1.0;
+    model.inv_beta = 1.0;
+    return model;
+}
 
 } // namespace distributions
