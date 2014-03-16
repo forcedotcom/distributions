@@ -17,3 +17,9 @@ target_link_libraries(special
   ${MKL_LIBRARIES}
   distributions_shared
 )
+
+add_executable(classifier classifier.cc)
+target_link_libraries(classifier
+  ${MKL_LIBRARIES}
+  distributions_shared
+)

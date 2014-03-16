@@ -38,6 +38,9 @@ namespace distributions
 struct NormalInverseChiSq
 {
 
+static const char * name () { return "NormalInverseChiSq"; }
+static const char * short_name () { return "nich"; }
+
 //----------------------------------------------------------------------------
 // Data
 

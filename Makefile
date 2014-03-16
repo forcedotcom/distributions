@@ -48,6 +48,7 @@ profile: install_cc FORCE
 	build/benchmarks/sample_from_scores
 	build/benchmarks/sample_assignment_from_py
 	build/benchmarks/special
+	build/benchmarks/classifier
 
 clean: FORCE
 	git clean -Xdf
