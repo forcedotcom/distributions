@@ -27,6 +27,7 @@
 
 import os
 import re
+import numpy as np
 from setuptools import setup, Extension, Feature
 try:
     from Cython.Distutils import build_ext
@@ -55,13 +56,13 @@ def extension(name):
         name,
         sources=[name_pyx],
         language='c++',
-        include_dirs=['include'],
+        include_dirs=['include', np.get_include()],
         libraries=['m', 'distributions_shared'],
         library_dirs=['build/src'],
         extra_compile_args=[
             '-std=c++0x',
             '-Wall',
-            '-Werror',
+            #'-Werror',
             '-Wno-unused-function',
             '-Wno-sign-compare',
             '-Wno-strict-aliasing',
