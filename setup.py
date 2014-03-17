@@ -71,7 +71,7 @@ def extension(name):
             #'-fno-trapping-math',
             #'-ffinite-math-only',
             #'-fvect-cost-model',
-            '-mfpmath=sse',
+            #'-mfpmath=sse',
             '-msse4.1',
             #'-mavx',
             #'-mrecip',
