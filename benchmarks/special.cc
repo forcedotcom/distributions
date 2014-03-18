@@ -31,6 +31,10 @@
 #include <distributions/timers.hpp>
 #include <distributions/aligned_allocator.hpp>
 
+#ifdef USE_YEPPP
+#include <yepBuiltin.h>
+#endif // USE_YEPPP
+
 #ifdef USE_INTEL_MKL
 #include <mkl_vml.h>
 #endif // USE_INTEL_MKL
@@ -54,6 +58,23 @@ struct glibc_exp
         }
     }
 };
+
+#ifdef USE_YEPPP
+struct yeppp_exp
+{
+    static const char * name () { return "yeppp"; }
+    static const char * fun () { return "exp"; }
+
+    static void inplace (Vector & values)
+    {
+        const size_t size = values.size();
+        float * __restrict__ data = & values[0];
+        for (int i = 0; i < size; ++i) {
+            data[i] = yepBuiltin_Exp_32f_32f(data[i]);
+        }
+    }
+};
+#endif // USE_YEPPP
 
 #ifdef USE_INTEL_MKL
 struct mkl_exp
@@ -100,6 +121,23 @@ struct eric_log
         }
     }
 };
+
+#ifdef USE_YEPPP
+struct yeppp_log
+{
+    static const char * name () { return "yeppp"; }
+    static const char * fun () { return "log"; }
+
+    static void inplace (Vector & values)
+    {
+        const size_t size = values.size();
+        float * __restrict__ data = & values[0];
+        for (int i = 0; i < size; ++i) {
+            data[i] = yepBuiltin_Log_32f_32f(data[i]);
+        }
+    }
+};
+#endif // USE_YEPPP
 
 #ifdef USE_INTEL_MKL
 struct mkl_log
@@ -277,6 +315,9 @@ int main ()
     std::cout << "--------------------------\n";
 
     speedtest<glibc_exp>(size, iters);
+#ifdef USE_YEPPP
+    speedtest<yeppp_exp>(size, iters);
+#endif // USE_YEPPP
 #ifdef USE_INTEL_MKL
     speedtest<mkl_exp>(size, iters);
 #endif // USE_INTEL_MKL
@@ -284,26 +325,29 @@ int main ()
     std::cout << std::endl;
 
     speedtest<glibc_log>(size, iters);
-    speedtest<eric_log>(size, iters);
+#ifdef USE_YEPPP
+    speedtest<yeppp_log>(size, iters);
+#endif // USE_YEPPP
 #ifdef USE_INTEL_MKL
     speedtest<mkl_log>(size, iters);
 #endif // USE_INTEL_MKL
+    speedtest<eric_log>(size, iters);
 
     std::cout << std::endl;
 
     speedtest<glibc_lgamma>(size, iters);
-    speedtest<eric_lgamma>(size, iters);
 #ifdef USE_INTEL_MKL
     speedtest<mkl_lgamma>(size, iters);
 #endif // USE_INTEL_MKL
+    speedtest<eric_lgamma>(size, iters);
 
     std::cout << std::endl;
 
     speedtest<glibc_lgamma_nu>(size, iters);
-    speedtest<eric_lgamma_nu>(size, iters);
 #ifdef USE_INTEL_MKL
     speedtest<mkl_lgamma_nu>(size, iters);
 #endif // USE_INTEL_MKL
+    speedtest<eric_lgamma_nu>(size, iters);
 
     return 0;
 }

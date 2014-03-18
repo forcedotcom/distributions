@@ -182,6 +182,10 @@ void vector_exp (
 {
 #if defined USE_INTEL_MKL
     vsExp(size, in, out);
+#elif defined USE_YEPPP
+    for (size_t i = 0; i < size; ++i) {
+        out[i] = yepBuiltin_Exp_32f_32f(in[i]);
+    }
 #else // defined USE_YEPPP || defined USE_INTEL_MKL
     for (size_t i = 0; i < size; ++i) {
         out[i] = expf(in[i]);
@@ -195,6 +199,10 @@ void vector_exp (
 {
 #if defined USE_INTEL_MKL
     vsExp(size, io, io);
+#elif defined USE_YEPPP
+    for (size_t i = 0; i < size; ++i) {
+        io[i] = yepBuiltin_Exp_32f_32f(io[i]);
+    }
 #else // defined USE_YEPPP || defined USE_INTEL_MKL
     for (size_t i = 0; i < size; ++i) {
         io[i] = expf(io[i]);
@@ -208,12 +216,12 @@ void vector_log (
         const float * __restrict__ in,
         float * __restrict__ out)
 {
-#if defined USE_YEPPP
-    for (size_t i = 0; i < size; ++i) {
-        out[i] = yepBuiltin_Log_32f_32f(in[i]);
-    }
-#elif defined USE_INTEL_MKL
+#if defined USE_INTEL_MKL
     vsLn(size, in, out);
+//#elif defined USE_YEPPP
+//    for (size_t i = 0; i < size; ++i) {
+//        out[i] = yepBuiltin_Log_32f_32f(in[i]);
+//    }
 #else // defined USE_YEPPP || defined USE_INTEL_MKL
     for (size_t i = 0; i < size; ++i) {
         out[i] = fast_log(in[i]);
@@ -227,6 +235,10 @@ void vector_log (
 {
 #if defined USE_INTEL_MKL
     vsLn(size, io, io);
+//#elif defined USE_YEPPP
+//    for (size_t i = 0; i < size; ++i) {
+//        io[i] = yepBuiltin_Log_32f_32f(io[i]);
+//    }
 #else // defined USE_YEPPP || defined USE_INTEL_MKL
     for (size_t i = 0; i < size; ++i) {
         io[i] = fast_log(io[i]);
