@@ -30,7 +30,11 @@
 #include <distributions/aligned_allocator.hpp>
 #include <vector>
 
+#if __GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 7
 #define VectorFloat_data(vf) (float *)__builtin_assume_aligned((vf).data(), 32)
+#else
+#define VectorFloat_data(vf) ((vf).data())
+#endif
 
 namespace distributions
 {
