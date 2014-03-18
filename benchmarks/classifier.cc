@@ -85,43 +85,55 @@ void speedtest (
     typename Model::Classifier classifier;
     classifier.groups.resize(group_count);
     std::vector<typename Model::Value> values;
+    std::vector<size_t> assignments;
     for (size_t groupid = 0; groupid < group_count; ++groupid) {
         typename Model::Group & group = classifier.groups[groupid];
         model.group_init(group, rng);
-        typename Model::Sampler sampler;
-        model.sampler_init(sampler, group, rng);
-        for (size_t i = 0; i < 4; ++i) {
-            typename Model::Value value = model.sampler_eval(sampler, rng);
-            model.group_add_value(group, value, rng);
-            values.push_back(value);
-        }
+    }
+    for (size_t i = 0; i < 4 * group_count; ++i) {
+        size_t groupid = sample_int(rng, 0, group_count - 1);
+        typename Model::Group & group = classifier.groups[groupid];
+        typename Model::Value value = model.sample_value(group, rng);
+        model.group_add_value(group, value, rng);
+        values.push_back(value);
+        assignments.push_back(groupid);
     }
     model.classifier_init(classifier, rng);
     Scorers<Model> scorers(model, classifier);
-    //std::shuffle(values.begin(), values.end(), rng);  // FIXME
     VectorFloat scores(group_count);
 
     int64_t time = -current_time_us();
     for (size_t i = 0; i < iters / 8; ++i) {
         vector_zero(scores.size(), scores.data());
         for (size_t j = 0; j < 8; ++j) {
-            typename Model::Value value = values[(8 * i + j) % values.size()];
+            size_t k = (8 * i + j) % values.size();
+            typename Model::Value value = values[k];
+            size_t groupid = assignments[k];
+            model.classifier_remove_value(classifier, groupid, value, rng);
             model.classifier_score(classifier, value, scores, rng);
+            model.classifier_add_value(classifier, groupid, value, rng);
         }
     }
     time += current_time_us();
-    double classifier_rate = iters * 1e3 / time;
+    double classifier_rate = iters * 1e0 / time;
 
     time = -current_time_us();
     for (size_t i = 0; i < iters / 8; ++i) {
         vector_zero(scores.size(), scores.data());
         for (size_t j = 0; j < 8; ++j) {
-            typename Model::Value value = values[(8 * i + j) % values.size()];
+            size_t k = (8 * i + j) % values.size();
+            typename Model::Value value = values[k];
+            size_t groupid = assignments[k];
+            typename Scorers<Model>::Group & group = scorers.groups[groupid];
+            model.group_remove_value(group.group, value, rng);
+            model.scorer_init(group.scorer, group.group, rng);
             scorers.score(model, value, scores);
+            model.group_add_value(group.group, value, rng);
+            model.scorer_init(group.scorer, group.group, rng);
         }
     }
     time += current_time_us();
-    double scorers_rate = iters * 1e3  / time;
+    double scorers_rate = iters * 1e0  / time;
 
 
     std::cout <<
@@ -135,7 +147,7 @@ template<class Model>
 void speedtests (const Model & model)
 {
     for (int group_count = 1; group_count <= 1000; group_count *= 10) {
-        int iters = 100000 / group_count;
+        int iters = 500000 / group_count;
         speedtest(model, group_count, iters);
     }
 }
@@ -143,10 +155,10 @@ void speedtests (const Model & model)
 int main()
 {
     std::cout <<
-        "model" << '\t' <<
-        "groups" << '\t' <<
-        "scorers" << '\t' <<
-        "classifier (rows/ms)" << '\n';
+        "Model" << '\t' <<
+        "Groups" << '\t' <<
+        "Scorers" << '\t' <<
+        "Classifier (cells/us)" << '\n';
 
     speedtests(DirichletDiscrete<4>::EXAMPLE());
     speedtests(DirichletProcessDiscrete::EXAMPLE());

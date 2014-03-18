@@ -359,7 +359,7 @@ void speedtest (size_t size, size_t iters)
     std::cout
         << std::left << std::setw(8) << impl::name()
         << std::left << std::setw(10) << impl::fun()
-        << std::right << std::setw(7) << int(ops_per_sec / 1e6)
+        << std::left << std::setw(7) << float(ops_per_sec / 1e6)
         << std::endl;
 }
 
@@ -369,15 +369,14 @@ int main ()
     vmlSetMode(VML_EP | VML_FTZDAZ_ON | VML_ERRMODE_IGNORE);
 #endif // USE_INTEL_MKL
 
-    const size_t size = 1 << 12;
+    const size_t size = 1 << 10;
     const size_t iters = 1 << 13;
 
     std::cout
         << std::left << std::setw(8) << "Version"
         << std::left << std::setw(10) << "Function"
-        << std::right << std::setw(8) << "M ops/s"
+        << std::right << std::setw(8) << "ops/us"
         << std::endl;
-    std::cout << "--------------------------\n";
 
     speedtest<glibc_exp>(size, iters);
     speedtest<fmath_exp>(size, iters);
