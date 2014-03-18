@@ -33,6 +33,7 @@
 #include <iostream>
 #include <limits>
 #include <distributions/common.hpp>
+#include <distributions/vendor/fmath.hpp>
 
 #define M_PIf (3.14159265358979f)
 
@@ -46,7 +47,7 @@ template<class T> T sqr (const T & t)
 
 
 //----------------------------------------------------------------------------
-// fast_log, fast_log_sum_exp, log_sum_exp
+// fast_log, fast_exp, fast_log_sum_exp, log_sum_exp
 
 namespace detail
 {
@@ -81,9 +82,19 @@ static FastLog GLOBAL_FAST_LOG_14(14);
 
 } // namespace detail
 
-inline float fast_log (float x)
+inline float eric_log (float x)
 {
     return detail::GLOBAL_FAST_LOG_14.log(x);
+}
+
+inline float fast_log (float x)
+{
+    return fmath::log(x);
+}
+
+inline float fast_exp (float x)
+{
+    return fmath::exp(x);
 }
 
 inline float fast_log_sum_exp (float x, float y)
@@ -91,7 +102,7 @@ inline float fast_log_sum_exp (float x, float y)
     float min = x < y ? x : y;
     float max = x < y ? y : x;
 
-    return max + fast_log(1.0f + expf(min - max));
+    return max + fast_log(1.0f + fast_exp(min - max));
 }
 
 inline float log_sum_exp (float x, float y)

@@ -30,11 +30,15 @@
 #include <distributions/random.hpp>
 #include <distributions/timers.hpp>
 #include <distributions/aligned_allocator.hpp>
-#include <distributions/fmath.hpp>
+#include <distributions/vendor/fmath.hpp>
 
 #ifdef USE_YEPPP
 #include <yepBuiltin.h>
 #endif // USE_YEPPP
+
+#ifdef USE_AMD_LIBM
+#include <amdlibm.h>
+#endif // USE_AMD_LIBM
 
 #ifdef USE_INTEL_MKL
 #include <mkl_vml.h>
@@ -92,6 +96,21 @@ struct yeppp_exp
 };
 #endif // USE_YEPPP
 
+#ifdef USE_AMD_LIBM
+struct libm_exp
+{
+    static const char * name () { return "libm"; }
+    static const char * fun () { return "exp"; }
+
+    static void inplace (Vector & values)
+    {
+        const size_t size = values.size();
+        float * __restrict__ data = & values[0];
+        amd_vrsa_expf(size, data, data);
+    }
+};
+#endif // USE_AMD_LIBM
+
 #ifdef USE_INTEL_MKL
 struct mkl_exp
 {
@@ -118,7 +137,7 @@ struct glibc_log
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         for (int i = 0; i < size; ++i) {
-            data[i] = logf(data[i]);
+            data[i] = std::log(data[i]);
         }
     }
 };
@@ -138,9 +157,9 @@ struct fmath_log
     }
 };
 
-struct eric_log
+struct _eric_log
 {
-    static const char * name () { return "dists"; }
+    static const char * name () { return "eric"; }
     static const char * fun () { return "log"; }
 
     static void inplace (Vector & values)
@@ -148,7 +167,7 @@ struct eric_log
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         for (int i = 0; i < size; ++i) {
-            data[i] = fast_log(data[i]);
+            data[i] = distributions::eric_log(data[i]);
         }
     }
 };
@@ -169,6 +188,21 @@ struct yeppp_log
     }
 };
 #endif // USE_YEPPP
+
+#ifdef USE_AMD_LIBM
+struct libm_log
+{
+    static const char * name () { return "libm"; }
+    static const char * fun () { return "log"; }
+
+    static void inplace (Vector & values)
+    {
+        const size_t size = values.size();
+        float * __restrict__ data = & values[0];
+        amd_vrsa_logf(size, data, data);
+    }
+};
+#endif // USE_AMD_LIBM
 
 #ifdef USE_INTEL_MKL
 struct mkl_log
@@ -203,7 +237,7 @@ struct glibc_lgamma
 
 struct eric_lgamma
 {
-    static const char * name () { return "dists"; }
+    static const char * name () { return "eric"; }
     static const char * fun () { return "lgamma"; }
 
     static void inplace (Vector & values)
@@ -250,7 +284,7 @@ struct glibc_lgamma_nu
 
 struct eric_lgamma_nu
 {
-    static const char * name () { return "dists"; }
+    static const char * name () { return "eric"; }
     static const char * fun () { return "lgamma_nu"; }
 
     static void inplace (Vector & values)
@@ -325,7 +359,7 @@ void speedtest (size_t size, size_t iters)
     std::cout
         << std::left << std::setw(8) << impl::name()
         << std::left << std::setw(10) << impl::fun()
-        << std::right << std::setw(7) << int(ops_per_sec / 1e6) << 'M'
+        << std::right << std::setw(7) << int(ops_per_sec / 1e6)
         << std::endl;
 }
 
@@ -341,7 +375,7 @@ int main ()
     std::cout
         << std::left << std::setw(8) << "Version"
         << std::left << std::setw(10) << "Function"
-        << std::right << std::setw(8) << "Ops/sec"
+        << std::right << std::setw(8) << "M ops/s"
         << std::endl;
     std::cout << "--------------------------\n";
 
@@ -350,6 +384,9 @@ int main ()
 #ifdef USE_YEPPP
     speedtest<yeppp_exp>(size, iters);
 #endif // USE_YEPPP
+#ifdef USE_AMD_LIBM
+    speedtest<libm_exp>(size, iters);
+#endif // USE_AMD_LIBM
 #ifdef USE_INTEL_MKL
     speedtest<mkl_exp>(size, iters);
 #endif // USE_INTEL_MKL
@@ -361,10 +398,13 @@ int main ()
 #ifdef USE_YEPPP
     speedtest<yeppp_log>(size, iters);
 #endif // USE_YEPPP
+#ifdef USE_AMD_LIBM
+    speedtest<libm_log>(size, iters);
+#endif // USE_AMD_LIBM
 #ifdef USE_INTEL_MKL
     speedtest<mkl_log>(size, iters);
 #endif // USE_INTEL_MKL
-    speedtest<eric_log>(size, iters);
+    speedtest<_eric_log>(size, iters);
 
     std::cout << std::endl;
 

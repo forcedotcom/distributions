@@ -46,5 +46,5 @@ link_directories("${BINARY_DIR}/src")
 add_executable(foo foo.cc)
 
 target_link_libraries(foo
-  distributions_shared
+  ${DISTRIBUTIONS_SHARED_LIBS}
 )

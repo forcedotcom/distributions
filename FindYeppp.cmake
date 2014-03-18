@@ -8,7 +8,7 @@
 message(STATUS "Finding YEPPP library")
 
 execute_process(
-  COMMAND locate library/headers/yepBuiltin.h
+  COMMAND locate "library/headers/yepBuiltin.h"
   COMMAND sed "s/.library.headers.yepBuiltin.h//"
   OUTPUT_VARIABLE YEPPPROOT
   OUTPUT_STRIP_TRAILING_WHITESPACE)

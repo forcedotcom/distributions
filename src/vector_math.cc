@@ -188,7 +188,7 @@ void vector_exp (
     }
 #else // defined USE_YEPPP || defined USE_INTEL_MKL
     for (size_t i = 0; i < size; ++i) {
-        out[i] = expf(in[i]);
+        out[i] = fast_exp(in[i]);
     }
 #endif // defined USE_YEPPP || defined USE_INTEL_MKL
 }
@@ -205,7 +205,7 @@ void vector_exp (
     }
 #else // defined USE_YEPPP || defined USE_INTEL_MKL
     for (size_t i = 0; i < size; ++i) {
-        io[i] = expf(io[i]);
+        io[i] = fast_exp(io[i]);
     }
 #endif // defined USE_YEPPP || defined USE_INTEL_MKL
 }
