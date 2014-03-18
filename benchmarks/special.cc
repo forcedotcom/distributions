@@ -137,7 +137,7 @@ struct glibc_log
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         for (int i = 0; i < size; ++i) {
-            data[i] = std::log(data[i]);
+            data[i] = logf(data[i]);
         }
     }
 };
