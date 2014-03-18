@@ -30,6 +30,7 @@
 #include <distributions/random.hpp>
 #include <distributions/timers.hpp>
 #include <distributions/aligned_allocator.hpp>
+#include <distributions/fmath.hpp>
 
 #ifdef USE_YEPPP
 #include <yepBuiltin.h>
@@ -55,6 +56,21 @@ struct glibc_exp
         float * __restrict__ data = & values[0];
         for (int i = 0; i < size; ++i) {
             data[i] = expf(data[i]);
+        }
+    }
+};
+
+struct fmath_exp
+{
+    static const char * name () { return "fmath"; }
+    static const char * fun () { return "exp"; }
+
+    static void inplace (Vector & values)
+    {
+        const size_t size = values.size();
+        float * __restrict__ data = & values[0];
+        for (int i = 0; i < size; ++i) {
+            data[i] = fmath::exp(data[i]);
         }
     }
 };
@@ -103,6 +119,21 @@ struct glibc_log
         float * __restrict__ data = & values[0];
         for (int i = 0; i < size; ++i) {
             data[i] = logf(data[i]);
+        }
+    }
+};
+
+struct fmath_log
+{
+    static const char * name () { return "fmath"; }
+    static const char * fun () { return "log"; }
+
+    static void inplace (Vector & values)
+    {
+        const size_t size = values.size();
+        float * __restrict__ data = & values[0];
+        for (int i = 0; i < size; ++i) {
+            data[i] = fmath::log(data[i]);
         }
     }
 };
@@ -315,6 +346,7 @@ int main ()
     std::cout << "--------------------------\n";
 
     speedtest<glibc_exp>(size, iters);
+    speedtest<fmath_exp>(size, iters);
 #ifdef USE_YEPPP
     speedtest<yeppp_exp>(size, iters);
 #endif // USE_YEPPP
@@ -325,6 +357,7 @@ int main ()
     std::cout << std::endl;
 
     speedtest<glibc_log>(size, iters);
+    speedtest<fmath_log>(size, iters);
 #ifdef USE_YEPPP
     speedtest<yeppp_log>(size, iters);
 #endif // USE_YEPPP
