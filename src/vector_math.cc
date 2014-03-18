@@ -27,7 +27,12 @@
 
 #include <distributions/special.hpp>
 
-#ifdef USE_INTEL_MKL
+#if defined  USE_YEPPP
+
+#include <yepBuiltin.h>
+
+#elif defined USE_INTEL_MKL
+
 #include <mkl.h>
 #include <mkl_vml.h>
 namespace
@@ -44,7 +49,9 @@ struct InitializeMKL
 InitializeMKL initialize_mkl;
 
 } // anonymous namespace
-#endif // USE_INTEL_MKL
+
+#endif // defined USE_YEPPP || defined USE_INTEL_MKL
+
 
 namespace distributions
 {
@@ -173,26 +180,26 @@ void vector_exp (
         const float * __restrict__ in,
         float * __restrict__ out)
 {
-#ifdef USE_INTEL_MKL
+#if defined USE_INTEL_MKL
     vsExp(size, in, out);
-#else // USE_INTEL_MKL
+#else // defined USE_YEPPP || defined USE_INTEL_MKL
     for (size_t i = 0; i < size; ++i) {
         out[i] = expf(in[i]);
     }
-#endif // USE_INTEL_MKL
+#endif // defined USE_YEPPP || defined USE_INTEL_MKL
 }
 
 void vector_exp (
         const size_t size,
         float * __restrict__ io)
 {
-#ifdef USE_INTEL_MKL
+#if defined USE_INTEL_MKL
     vsExp(size, io, io);
-#else // USE_INTEL_MKL
+#else // defined USE_YEPPP || defined USE_INTEL_MKL
     for (size_t i = 0; i < size; ++i) {
         io[i] = expf(io[i]);
     }
-#endif // USE_INTEL_MKL
+#endif // defined USE_YEPPP || defined USE_INTEL_MKL
 }
 
 
@@ -201,26 +208,30 @@ void vector_log (
         const float * __restrict__ in,
         float * __restrict__ out)
 {
-#ifdef USE_INTEL_MKL
+#if defined USE_YEPPP
+    for (size_t i = 0; i < size; ++i) {
+        out[i] = yepBuiltin_Log_32f_32f(in[i]);
+    }
+#elif defined USE_INTEL_MKL
     vsLn(size, in, out);
-#else // USE_INTEL_MKL
+#else // defined USE_YEPPP || defined USE_INTEL_MKL
     for (size_t i = 0; i < size; ++i) {
         out[i] = fast_log(in[i]);
     }
-#endif // USE_INTEL_MKL
+#endif // defined USE_YEPPP || defined USE_INTEL_MKL
 }
 
 void vector_log (
         const size_t size,
         float * __restrict__ io)
 {
-#ifdef USE_INTEL_MKL
+#if defined USE_INTEL_MKL
     vsLn(size, io, io);
-#else // USE_INTEL_MKL
+#else // defined USE_YEPPP || defined USE_INTEL_MKL
     for (size_t i = 0; i < size; ++i) {
         io[i] = fast_log(io[i]);
     }
-#endif // USE_INTEL_MKL
+#endif // defined USE_YEPPP || defined USE_INTEL_MKL
 }
 
 void vector_lgamma (
