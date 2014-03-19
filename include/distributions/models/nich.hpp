@@ -265,11 +265,11 @@ void _classifier_resize (
         size_t group_count) const
 {
     classifier.groups.resize(group_count);
-    classifier.score.resize(group_count);
-    classifier.log_coeff.resize(group_count);
-    classifier.precision.resize(group_count);
-    classifier.mean.resize(group_count);
-    classifier.temp.resize(group_count);
+    VectorFloat_resize(classifier.score, group_count);
+    VectorFloat_resize(classifier.log_coeff, group_count);
+    VectorFloat_resize(classifier.precision, group_count);
+    VectorFloat_resize(classifier.mean, group_count);
+    VectorFloat_resize(classifier.temp, group_count);
 }
 
 public:

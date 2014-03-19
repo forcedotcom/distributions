@@ -41,4 +41,9 @@ namespace distributions
 
 typedef std::vector<float, aligned_allocator<float, 32>> VectorFloat;
 
+inline void VectorFloat_resize(VectorFloat & vect, size_t size, float fill = 0)
+{
+    vect.resize((size + 7) / 8 * 8, fill);
+}
+
 } // namespace distributions

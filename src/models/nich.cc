@@ -74,6 +74,18 @@ void NormalInverseChiSq::classifier_score (
     //    scores_accum_noalias[i] += score[i] + log_coeff[i] * fast_log(
     //        1.f + precision[i] * sqr(value_noalias - mean[i]));
     //}
+
+    // Version 4
+    //float work[8] __attribute__((aligned (32)));
+    //for (size_t i = 0; i < size; i += 8) {
+    //    for (size_t j = 0; j < 8; ++j) {
+    //        work[j] = 1.f + precision[i+j] * sqr(value_noalias - mean[i+j]);
+    //    }
+    //    vector_log(8, work);
+    //    for (size_t j = 0; j < 8; ++j) {
+    //        scores_accum_noalias[i+j] += score[i+j] + log_coeff[i+j] * work[j];
+    //    }
+    //}
 }
 
 } // namespace distributions
