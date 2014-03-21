@@ -28,53 +28,52 @@
 import numpy
 cimport numpy
 
+from distributions.rng_cc cimport (rng_t, get_rng)
 
-cdef extern from 'distributions/std_wrapper.hpp' namespace 'std_wrapper':
-    cppclass rng_t:
-        int sample "operator()" ()
-    cdef rng_t global_rng
-    cdef void std_rng_seed(unsigned long seed)
-    cdef double std_random_normal(double mu, double sigmasq)
-    cdef double std_random_chisq(double nu)
-    cdef double std_random_gamma(double alpha, double beta)
-    cdef int std_random_poisson(double mu)
-    cdef int std_random_categorical(size_t dim, double ps[])
+cdef extern from 'rng_cc.hpp' namespace 'std_wrapper':
+    cdef void std_rng_seed(rng_t & rng, unsigned long seed)
+    cdef double std_random_normal(rng_t & rng, double mu, double sigmasq)
+    cdef double std_random_chisq(rng_t & rng, double nu)
+    cdef double std_random_gamma(rng_t & rng, double alpha, double beta)
+    cdef int std_random_poisson(rng_t & rng, double mu)
+    cdef int std_random_categorical(rng_t & rng, size_t dim, double ps[])
     cdef void std_random_dirichlet(
+            rng_t & rng,
             size_t dim,
             double alphas[],
             double thetas[])
 
 
 cpdef int random():
-    return global_rng.sample()
+    return get_rng()[0].sample()
 
 
 cpdef seed(unsigned long s):
-    std_rng_seed(s)
+    std_rng_seed(get_rng()[0], s)
 
 
 cpdef double sample_normal(double mu, double sigmasq):
-    return std_random_normal(mu, sigmasq)
+    return std_random_normal(get_rng()[0], mu, sigmasq)
 
 
 cpdef double sample_chisq(double nu):
-    return std_random_chisq(nu)
+    return std_random_chisq(get_rng()[0], nu)
 
 
 cpdef sample_gamma(double a, double b):
-    return std_random_gamma(a, b)
+    return std_random_gamma(get_rng()[0], a, b)
 
 
 cpdef sample_poisson(double mu):
-    return std_random_poisson(mu)
+    return std_random_poisson(get_rng()[0], mu)
 
 
 cdef sample_discrete(size_t dim, double ps[]):
-    return std_random_categorical(dim, ps)
+    return std_random_categorical(get_rng()[0], dim, ps)
 
 
 cdef sample_dirichlet(size_t dim, double alphas[], double thetas[]):
-    std_random_dirichlet(dim, alphas, thetas)
+    std_random_dirichlet(get_rng()[0], dim, alphas, thetas)
 
 
 #def sample_discrete(numpy.ndarray[double, ndim=1] ps):

@@ -29,7 +29,7 @@ import os
 import re
 from setuptools import setup, Extension, Feature
 try:
-    from Cython.Distutils import build_ext
+    from Cython.Build import cythonize
     cython = True
     print 'building cython extensions'
 except ImportError:
@@ -51,12 +51,20 @@ with open('README.md') as f:
 
 def extension(name):
     name_pyx = '{}.pyx'.format(name.replace('.', '/'))
+    sources = [name_pyx]
+    sources.extend([
+        'src/common.cc',
+        'src/special.cc',
+        'src/random.cc',
+        'src/vector_math.cc',
+    ])
+
     return Extension(
         name,
-        sources=[name_pyx],
+        sources=sources,
         language='c++',
-        include_dirs=['include'],
-        libraries=['m', 'distributions_shared'],
+        include_dirs=['include', 'distributions'],
+        libraries=['m'],
         library_dirs=['build/src'],
         extra_compile_args=[
             '-std=c++0x',
@@ -84,22 +92,23 @@ model_feature = Feature(
     'cython models',
     standard=True,
     optional=True,
-    ext_modules=[
-        extension('distributions.hp.special'),
+    ext_modules=cythonize([
+        extension('distributions.rng_cc'),
+        # extension('distributions.hp.special'),
         extension('distributions.hp.random'),
-        extension('distributions.hp.models.dd'),
-        extension('distributions.hp.models.gp'),
-        extension('distributions.hp.models.nich'),
-        extension('distributions.hp.models.dpd'),
-        extension('distributions.lp.special'),
-        extension('distributions.lp.random'),
-        extension('distributions.lp.vector'),
-        extension('distributions.lp.models.dd'),
-        extension('distributions.lp.models.gp'),
-        extension('distributions.lp.models.nich'),
-        extension('distributions.lp.models.dpd'),
-        extension('distributions.lp.clustering'),
-    ]
+        # extension('distributions.hp.models.dd'),
+        # extension('distributions.hp.models.gp'),
+        # extension('distributions.hp.models.nich'),
+        # extension('distributions.hp.models.dpd'),
+        # extension('distributions.lp.special'),
+        # extension('distributions.lp.random'),
+        # extension('distributions.lp.vector'),
+        # extension('distributions.lp.models.dd'),
+        # extension('distributions.lp.models.gp'),
+        # extension('distributions.lp.models.nich'),
+        # extension('distributions.lp.models.dpd'),
+        # extension('distributions.lp.clustering'),
+    ]),
 )
 
 
@@ -122,7 +131,6 @@ config = {
     ],
 }
 if cython:
-    config['cmdclass'] = {'build_ext': build_ext}
     config['packages'] += [
         'distributions.hp',
         'distributions.hp.models',
