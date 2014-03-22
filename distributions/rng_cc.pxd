@@ -6,9 +6,7 @@ cdef extern from 'rng_cc.hpp' namespace 'std_wrapper':
         int sample "operator()" () nogil
         void seed(int) nogil
 
-
 cdef class RngCc:
     cdef rng_t * ptr
-
 
 cdef rng_t * get_rng()

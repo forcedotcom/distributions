@@ -28,7 +28,7 @@
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from cython.operator cimport dereference as deref, preincrement as inc
-from distributions.lp.random cimport rng_t, global_rng
+from distributions.rng_cc cimport rng_t, get_rng
 
 cdef extern from 'distributions/clustering.hpp':
 
@@ -122,7 +122,7 @@ cdef class PitmanYor:
         }
 
     def sample_assignments(self, int size):
-        cdef list assignments = self.ptr.sample_assignments(size, global_rng)
+        cdef list assignments = self.ptr.sample_assignments(size, get_rng()[0])
         return assignments
 
     def score_counts(self, list counts):
@@ -178,7 +178,7 @@ cdef class LowEntropy:
         return {'dataset_size': self.ptr.dataset_size}
 
     def sample_assignments(self, int size):
-        cdef list assignments = self.ptr.sample_assignments(size, global_rng)
+        cdef list assignments = self.ptr.sample_assignments(size, get_rng()[0])
         return assignments
 
     def score_counts(self, list counts):

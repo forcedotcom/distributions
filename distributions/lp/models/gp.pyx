@@ -29,7 +29,7 @@ from libc.stdint cimport uint32_t
 from libcpp.vector cimport vector
 cimport numpy
 numpy.import_array()
-from distributions.lp.random cimport rng_t, global_rng
+from distributions.rng_cc cimport rng_t, get_rng
 from distributions.lp.vector cimport VectorFloat
 from distributions.mixins import ComponentModel, Serializable
 
@@ -141,33 +141,33 @@ cdef class Model_cy:
     # Mutation
 
     def group_init(self, Group group):
-        self.ptr.group_init(group.ptr[0], global_rng)
+        self.ptr.group_init(group.ptr[0], get_rng()[0])
 
     def group_add_value(self, Group group, Value value):
-        self.ptr.group_add_value(group.ptr[0], value, global_rng)
+        self.ptr.group_add_value(group.ptr[0], value, get_rng()[0])
 
     def group_remove_value(self, Group group, Value value):
-        self.ptr.group_remove_value(group.ptr[0], value, global_rng)
+        self.ptr.group_remove_value(group.ptr[0], value, get_rng()[0])
 
     def group_merge(self, Group destin, Group source):
-        self.ptr.group_merge(destin.ptr[0], source.ptr[0], global_rng)
+        self.ptr.group_merge(destin.ptr[0], source.ptr[0], get_rng()[0])
 
     #-------------------------------------------------------------------------
     # Sampling
 
     def sample_value(self, Group group):
-        cdef Value value = self.ptr.sample_value(group.ptr[0], global_rng)
+        cdef Value value = self.ptr.sample_value(group.ptr[0], get_rng()[0])
         return value
 
     def sample_group(self, int size):
         cdef Group group = Group()
         cdef Model_cc.Sampler sampler
-        self.ptr.sampler_init(sampler, group.ptr[0], global_rng)
+        self.ptr.sampler_init(sampler, group.ptr[0], get_rng()[0])
         cdef list result = []
         cdef int i
         cdef Value value
         for i in xrange(size):
-            value = self.ptr.sampler_eval(sampler, global_rng)
+            value = self.ptr.sampler_eval(sampler, get_rng()[0])
             result.append(value)
         return result
 
@@ -175,19 +175,19 @@ cdef class Model_cy:
     # Scoring
 
     def score_value(self, Group group, Value value):
-        return self.ptr.score_value(group.ptr[0], value, global_rng)
+        return self.ptr.score_value(group.ptr[0], value, get_rng()[0])
 
     def score_group(self, Group group):
-        return self.ptr.score_group(group.ptr[0], global_rng)
+        return self.ptr.score_group(group.ptr[0], get_rng()[0])
 
     #-------------------------------------------------------------------------
     # Classification
 
     def classifier_init(self, Classifier classifier):
-        self.ptr.classifier_init(classifier.ptr[0], global_rng)
+        self.ptr.classifier_init(classifier.ptr[0], get_rng()[0])
 
     def classifier_add_group(self, Classifier classifier):
-        self.ptr.classifier_add_group(classifier.ptr[0], global_rng)
+        self.ptr.classifier_add_group(classifier.ptr[0], get_rng()[0])
 
     def classifier_remove_group(self, Classifier classifier, int groupid):
         self.ptr.classifier_remove_group(classifier.ptr[0], groupid)
@@ -201,7 +201,7 @@ cdef class Model_cy:
             classifier.ptr[0],
             groupid,
             value,
-            global_rng)
+            get_rng()[0])
 
     def classifier_remove_value(
             self,
@@ -212,7 +212,7 @@ cdef class Model_cy:
             classifier.ptr[0],
             groupid,
             value,
-            global_rng)
+            get_rng()[0])
 
     def classifier_score(
             self,
@@ -226,7 +226,7 @@ cdef class Model_cy:
             classifier.ptr[0],
             value,
             data,
-            global_rng)
+            get_rng()[0])
 
     #-------------------------------------------------------------------------
     # Examples
