@@ -27,119 +27,132 @@
 
 import os
 import re
-from setuptools import setup, Extension, Feature
+import sys
+from distutils.core import setup, Extension
+from distutils.version import LooseVersion
+
+import numpy as np
+
 try:
-    from Cython.Distutils import build_ext
+    from Cython.Build import cythonize
+    from Cython.Compiler.Main import Version as cython_version
+    min_cython_version = '0.20.1'
+    if LooseVersion(cython_version.version) < LooseVersion(min_cython_version):
+        raise ValueError(
+            'cython support requires cython>={}'.format(min_cython_version))
     cython = True
-    print 'building cython extensions'
 except ImportError:
     cython = False
-    print 'not building cython extensions'
 
 
-VERSION = None
+clang = False
+if sys.platform.lower().startswith('darwin'):
+    clang = True
+
+
+include_dirs = ['include', 'distributions']
+include_dirs.append(np.get_include())
+
+
+extra_compile_args = []
+if clang:
+    extra_compile_args.extend([
+        '-mmacosx-version-min=10.7',  # for anaconda
+        '-std=c++11',
+        '-stdlib=libc++',
+    ])
+else:
+    extra_compile_args.extend([
+        '-std=c++0x',
+        '-Wall',
+        '-Werror',
+        '-Wno-unused-function',
+        '-Wno-sign-compare',
+        '-Wno-strict-aliasing',
+        '-O3',
+        '-ffast-math',
+        '-funsafe-math-optimizations',
+        #'-fno-trapping-math',
+        #'-ffinite-math-only',
+        #'-fvect-cost-model',
+        '-mfpmath=sse',
+        '-msse4.1',
+        #'-mavx',
+        #'-mrecip',
+        #'-march=native',
+    ])
+
+
+def make_extension(name):
+    module = 'distributions.' + name
+    sources = [
+        '{}.{}'.format(module.replace('.', '/'), 'pyx' if cython else 'cpp')
+    ]
+    if name.startswith('lp'):
+        sources += [
+            'src/common.cc',
+            'src/special.cc',
+            'src/random.cc',
+            'src/vector_math.cc',
+        ]
+    return Extension(
+        module,
+        sources=sources,
+        language='c++',
+        include_dirs=include_dirs,
+        libraries=['m'],
+        extra_compile_args=extra_compile_args,
+    )
+
+
+def make_extensions(names):
+    return [make_extension(name) for name in names]
+
+
+hp_extensions = make_extensions([
+    'rng_cc',
+    'global_rng',
+    'hp.special',
+    'hp.random',
+    'hp.models.dd',
+    'hp.models.gp',
+    'hp.models.nich',
+    'hp.models.dpd',
+])
+
+
+lp_extensions = make_extensions([
+    'lp.special',
+    'lp.random',
+    'lp.vector',
+    'lp.models.dd',
+    'lp.models.gp',
+    'lp.models.nich',
+    'lp.models.dpd',
+    'lp.clustering',
+])
+
+
+if cython:
+    ext_modules = cythonize(hp_extensions + lp_extensions)
+else:
+    ext_modules = hp_extensions + lp_extensions
+
+
+version = None
 with open(os.path.join('distributions', '__init__.py')) as f:
     for line in f:
         if re.match("__version__ = '\S+'$", line):
-            VERSION = line.split()[-1].strip("'")
-assert VERSION, 'could not determine version'
+            version = line.split()[-1].strip("'")
+assert version, 'could not determine version'
 
 
 with open('README.md') as f:
     long_description = f.read()
 
 
-EXTRA_COMPILE_ARGS = [
-    '-std=c++0x',
-    '-Wall',
-    '-Werror',
-    '-Wno-unused-function',
-    '-Wno-sign-compare',
-    '-Wno-strict-aliasing',
-    '-O3',
-    '-ffast-math',
-    '-funsafe-math-optimizations',
-    #'-fno-trapping-math',
-    #'-ffinite-math-only',
-    #'-fvect-cost-model',
-    '-mfpmath=sse',
-    '-msse4.1',
-    #'-mavx',
-    #'-mrecip',
-    #'-march=native',
-]
-
-
-def hp_extension(name):
-    name = 'distributions.' + name
-    name_pyx = '{}.pyx'.format(name.replace('.', '/'))
-    sources = [name_pyx]
-    return Extension(
-        name,
-        sources=sources,
-        language='c++',
-        include_dirs=['include', 'distributions'],
-        libraries=['m'],
-        extra_compile_args=EXTRA_COMPILE_ARGS,
-    )
-
-
-def lp_extension(name):
-    name = 'distributions.' + name
-    name_pyx = '{}.pyx'.format(name.replace('.', '/'))
-    sources = [name_pyx]
-    sources += [
-        'src/common.cc',
-        'src/special.cc',
-        'src/random.cc',
-        'src/vector_math.cc',
-    ]
-    return Extension(
-        name,
-        sources=sources,
-        language='c++',
-        include_dirs=['include', 'distributions'],
-        libraries=['m'],
-        extra_compile_args=EXTRA_COMPILE_ARGS,
-    )
-
-
-high_precision = Feature(
-    'high precision functions and models (cython)',
-    standard=True,
-    optional=True,
-    ext_modules=[
-        hp_extension('rng_cc'),
-        hp_extension('global_rng'),
-        hp_extension('hp.special'),
-        hp_extension('hp.random'),
-        hp_extension('hp.models.dd'),
-        hp_extension('hp.models.gp'),
-        hp_extension('hp.models.nich'),
-        hp_extension('hp.models.dpd'),
-    ],
-)
-
-
-low_precision = Feature(
-    'low precision functions and models (cython + libdistributions)',
-    standard=True,
-    optional=True,
-    ext_modules=[
-        lp_extension('lp.special'),
-        lp_extension('lp.random'),
-        lp_extension('lp.vector'),
-        lp_extension('lp.models.dd'),
-        lp_extension('lp.models.gp'),
-        lp_extension('lp.models.nich'),
-        lp_extension('lp.models.dpd'),
-        lp_extension('lp.clustering'),
-    ],
-)
-
-
 config = {
-    'version': VERSION,
+    'version': version,
     'name': 'distributions',
     'description': 'Primitives for Bayesian MCMC inference',
     'long_description': long_description,
@@ -148,23 +161,18 @@ config = {
     'maintainer': 'Fritz Obermeyer',
     'maintainer_email': 'fobermeyer@salesforce.com',
     'license': 'Revised BSD',
-    'features': {
-        'high-precision': high_precision,
-        'low-precision': low_precision,
-    },
     'packages': [
         'distributions',
         'distributions.dbg',
         'distributions.dbg.models',
         'distributions.tests',
-    ],
-}
-if cython:
-    config['packages'] += [
         'distributions.hp',
         'distributions.hp.models',
         'distributions.lp',
         'distributions.lp.models',
-    ]
-    config['cmdclass'] = {'build_ext': build_ext}
+    ],
+    'ext_modules': ext_modules,
+}
+
+
 setup(**config)
