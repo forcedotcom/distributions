@@ -1,4 +1,5 @@
 recursive-include * *
+include README.md
 prune .git*
 prune build
 prune distributions.egg-info
