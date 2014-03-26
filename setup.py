@@ -28,7 +28,6 @@
 import os
 import re
 from setuptools import setup, Extension, Feature
-from distutils.command.build_clib import build_clib
 try:
     from Cython.Distutils import build_ext
     cython = True
