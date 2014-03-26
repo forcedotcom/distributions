@@ -1,3 +1,17 @@
+cmake_args=
+ifdef VIRTUAL_ENV
+	cmake_args=-DCMAKE_INSTALL_PREFIX=$(VIRTUAL_ENV)
+	library_path=$(LIBRARY_PATH):$(VIRTUAL_ENV)/lib/
+else
+	cmake_args=-DCMAKE_INSTALL_PREFIX=..
+	library_path=$(LIBRARY_PATH):`pwd`/lib/
+endif
+
+cy_deps=
+ifdef PYDISTRIBUTIONS_USE_LIB
+	install_cy_deps=install_cc
+endif
+
 all: test
 
 src/test_headers.cc: FORCE
@@ -8,32 +22,36 @@ src/test_headers.cc: FORCE
 	  > src/test_headers.cc
 	echo 'int main () { return 0; }' >> src/test_headers.cc
 
-build_cc: src/test_headers.cc FORCE
+configure_cc: src/test_headers.cc FORCE
 	mkdir -p build lib
-	cd build \
-	  && cmake -DCMAKE_INSTALL_PREFIX=.. .. \
-	  && $(MAKE) install
+	cd build && cmake $(cmake_args) ..
+
+build_cc: configure_cc FORCE
+	cd build && $(MAKE)
 
 install_cc: build_cc FORCE
-	test -e $(VIRTUAL_ENV) \
-	  && cp lib/* $(VIRTUAL_ENV)/lib/
+	cd build && make install
 
-install_cy: install_cc FORCE
+install_cy: $(install_cy_deps) FORCE
 	pip install -r requirements.txt
-	pip install -e .
+	LIBRARY_PATH=$(library_path) pip install -e .
 
-install_py: FORCE
-	pip install -r requirements.txt
-	pip install --global-option --without-cython .
+install: install_cc install_cy FORCE
 
-install: install_cy install_cc
+test_cc: install_cc FORCE
+	cd build && ctest
+	./test_cmake.sh
+	@echo '----------------'
+	@echo 'PASSED CC TESTS'
 
-test: install
+test_cy: install_cy FORCE
 	pyflakes setup.py distributions derivations
 	pep8 --repeat --exclude=*_pb2.py setup.py distributions derivations
 	nosetests -v
-	cd build && ctest
-	./test_cmake.sh
+	@echo '----------------'
+	@echo 'PASSED CY TESTS'
+
+test: test_cc test_cy FORCE
 	@echo '----------------'
 	@echo 'PASSED ALL TESTS'
 

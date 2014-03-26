@@ -83,24 +83,31 @@ else:
     ])
 
 
+use_libdistributions = 'PYDISTRIBUTIONS_USE_LIB' in os.environ
+
+
 def make_extension(name):
     module = 'distributions.' + name
     sources = [
         '{}.{}'.format(module.replace('.', '/'), 'pyx' if cython else 'cpp')
     ]
+    libraries = ['m']
     if name.startswith('lp'):
-        sources += [
-            'src/common.cc',
-            'src/special.cc',
-            'src/random.cc',
-            'src/vector_math.cc',
-        ]
+        if use_libdistributions:
+            libraries.append('distributions_shared')
+        else:
+            sources += [
+                'src/common.cc',
+                'src/special.cc',
+                'src/random.cc',
+                'src/vector_math.cc',
+            ]
     return Extension(
         module,
         sources=sources,
         language='c++',
         include_dirs=include_dirs,
-        libraries=['m'],
+        libraries=libraries,
         extra_compile_args=extra_compile_args,
     )
 
