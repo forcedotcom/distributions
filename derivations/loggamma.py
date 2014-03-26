@@ -112,7 +112,7 @@ def func_test(approx_func, max):
     y = gammaln(x)
     yhat = map(approx_func, x)
 
-    pyplot.subplot(2, 1,  1)
+    pyplot.subplot(2, 1, 1)
     pyplot.plot(x, y, linewidth=2)
     pyplot.plot(x, yhat, color='r')
     pyplot.subplot(2, 1, 2)
