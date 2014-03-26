@@ -28,7 +28,8 @@
 import numpy
 cimport numpy
 
-from distributions.rng_cc cimport (rng_t, get_rng)
+from distributions.rng_cc cimport rng_t
+from distributions.global_rng cimport get_rng
 
 cdef extern from 'rng_cc.hpp' namespace 'std_wrapper':
     cdef void std_rng_seed(rng_t & rng, unsigned long seed)

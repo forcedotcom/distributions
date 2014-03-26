@@ -9,4 +9,4 @@ cdef extern from 'rng_cc.hpp' namespace 'std_wrapper':
 cdef class RngCc:
     cdef rng_t * ptr
 
-cdef rng_t * get_rng()
+cdef rng_t * extract_rng(RngCc rng)

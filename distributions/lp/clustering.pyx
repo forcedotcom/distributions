@@ -28,7 +28,8 @@
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from cython.operator cimport dereference as deref, preincrement as inc
-from distributions.rng_cc cimport rng_t, get_rng
+from distributions.rng_cc cimport rng_t
+from distributions.global_rng cimport get_rng
 
 cdef extern from 'distributions/clustering.hpp':
 

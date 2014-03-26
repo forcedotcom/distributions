@@ -29,7 +29,8 @@ from libc.math cimport exp
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from python cimport PyObject
-from distributions.rng_cc cimport rng_t, get_rng
+from distributions.rng_cc cimport rng_t
+from distributions.global_rng cimport get_rng
 
 ctypedef PyObject* O
 

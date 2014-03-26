@@ -111,6 +111,7 @@ high_precision = Feature(
     optional=True,
     ext_modules=[
         hp_extension('rng_cc'),
+        hp_extension('global_rng'),
         hp_extension('hp.special'),
         hp_extension('hp.random'),
         hp_extension('hp.models.dd'),

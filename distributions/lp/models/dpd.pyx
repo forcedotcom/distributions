@@ -29,7 +29,8 @@ from libcpp.vector cimport vector
 cimport numpy
 numpy.import_array()
 from cython.operator cimport dereference as deref, preincrement as inc
-from distributions.rng_cc cimport rng_t, get_rng
+from distributions.rng_cc cimport rng_t
+from distributions.global_rng cimport get_rng
 from distributions.lp.vector cimport VectorFloat
 from distributions.sparse_counter cimport SparseCounter
 from distributions.mixins import ComponentModel, Serializable

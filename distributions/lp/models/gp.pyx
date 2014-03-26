@@ -29,7 +29,8 @@ from libc.stdint cimport uint32_t
 from libcpp.vector cimport vector
 cimport numpy
 numpy.import_array()
-from distributions.rng_cc cimport rng_t, get_rng
+from distributions.rng_cc cimport rng_t
+from distributions.global_rng cimport get_rng
 from distributions.lp.vector cimport VectorFloat
 from distributions.mixins import ComponentModel, Serializable
 

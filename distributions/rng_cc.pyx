@@ -1,6 +1,3 @@
-import distributions.rng
-
-
 cdef class RngCc:
     def __cinit__(self):
         self.ptr = new rng_t()
@@ -9,6 +6,3 @@ cdef class RngCc:
 
 cdef rng_t * extract_rng(RngCc rng):
     return rng.ptr
-
-cdef rng_t * get_rng():
-    return extract_rng(distributions.rng.global_rng.cc)
