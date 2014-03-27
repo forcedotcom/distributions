@@ -58,7 +58,7 @@ extra_compile_args = []
 if clang:
     extra_compile_args.extend([
         '-mmacosx-version-min=10.7',  # for anaconda
-        '-std=c++11',
+        '-std=c++0x',
         '-stdlib=libc++',
     ])
 else:
