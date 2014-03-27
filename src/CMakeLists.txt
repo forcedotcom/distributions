@@ -4,7 +4,6 @@ set(DISTRIBUTIONS_SOURCE_FILES
   common.cc
   special.cc
   random.cc
-  std_wrapper.cc
   vector_math.cc
   clustering.cc
   models/nich.cc

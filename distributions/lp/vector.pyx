@@ -25,8 +25,6 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from distributions.lp.vector cimport VectorFloat
-
 
 cdef list vector_float_to_list(VectorFloat & vector):
     cdef list result = []

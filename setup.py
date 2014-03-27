@@ -49,57 +49,92 @@ with open('README.md') as f:
     long_description = f.read()
 
 
-def extension(name):
+EXTRA_COMPILE_ARGS = [
+    '-std=c++0x',
+    '-Wall',
+    '-Werror',
+    '-Wno-unused-function',
+    '-Wno-sign-compare',
+    '-Wno-strict-aliasing',
+    '-O3',
+    '-ffast-math',
+    '-funsafe-math-optimizations',
+    #'-fno-trapping-math',
+    #'-ffinite-math-only',
+    #'-fvect-cost-model',
+    '-mfpmath=sse',
+    '-msse4.1',
+    #'-mavx',
+    #'-mrecip',
+    #'-march=native',
+]
+
+
+def hp_extension(name):
+    name = 'distributions.' + name
     name_pyx = '{}.pyx'.format(name.replace('.', '/'))
+    sources = [name_pyx]
     return Extension(
         name,
-        sources=[name_pyx],
+        sources=sources,
         language='c++',
-        include_dirs=['include'],
-        libraries=['m', 'distributions_shared'],
-        library_dirs=['build/src'],
-        extra_compile_args=[
-            '-std=c++0x',
-            '-Wall',
-            '-Werror',
-            '-Wno-unused-function',
-            '-Wno-sign-compare',
-            '-Wno-strict-aliasing',
-            '-O3',
-            '-ffast-math',
-            '-funsafe-math-optimizations',
-            #'-fno-trapping-math',
-            #'-ffinite-math-only',
-            #'-fvect-cost-model',
-            '-mfpmath=sse',
-            '-msse4.1',
-            #'-mavx',
-            #'-mrecip',
-            #'-march=native',
-        ],
+        include_dirs=['include', 'distributions'],
+        libraries=['m'],
+        extra_compile_args=EXTRA_COMPILE_ARGS,
     )
 
 
-model_feature = Feature(
-    'cython models',
+def lp_extension(name):
+    name = 'distributions.' + name
+    name_pyx = '{}.pyx'.format(name.replace('.', '/'))
+    sources = [name_pyx]
+    sources += [
+        'src/common.cc',
+        'src/special.cc',
+        'src/random.cc',
+        'src/vector_math.cc',
+    ]
+    return Extension(
+        name,
+        sources=sources,
+        language='c++',
+        include_dirs=['include', 'distributions'],
+        libraries=['m'],
+        extra_compile_args=EXTRA_COMPILE_ARGS,
+    )
+
+
+high_precision = Feature(
+    'high precision functions and models (cython)',
     standard=True,
     optional=True,
     ext_modules=[
-        extension('distributions.hp.special'),
-        extension('distributions.hp.random'),
-        extension('distributions.hp.models.dd'),
-        extension('distributions.hp.models.gp'),
-        extension('distributions.hp.models.nich'),
-        extension('distributions.hp.models.dpd'),
-        extension('distributions.lp.special'),
-        extension('distributions.lp.random'),
-        extension('distributions.lp.vector'),
-        extension('distributions.lp.models.dd'),
-        extension('distributions.lp.models.gp'),
-        extension('distributions.lp.models.nich'),
-        extension('distributions.lp.models.dpd'),
-        extension('distributions.lp.clustering'),
-    ]
+        hp_extension('rng_cc'),
+        hp_extension('global_rng'),
+        hp_extension('hp.special'),
+        hp_extension('hp.random'),
+        hp_extension('hp.models.dd'),
+        hp_extension('hp.models.gp'),
+        hp_extension('hp.models.nich'),
+        hp_extension('hp.models.dpd'),
+    ],
+)
+
+
+low_precision = Feature(
+    'low precision functions and models (cython + libdistributions)',
+    standard=True,
+    optional=True,
+    ext_modules=[
+        lp_extension('lp.special'),
+        lp_extension('lp.random'),
+        lp_extension('lp.vector'),
+        lp_extension('lp.models.dd'),
+        lp_extension('lp.models.gp'),
+        lp_extension('lp.models.nich'),
+        lp_extension('lp.models.dpd'),
+        lp_extension('lp.clustering'),
+    ],
 )
 
 
@@ -113,7 +148,10 @@ config = {
     'maintainer': 'Fritz Obermeyer',
     'maintainer_email': 'fobermeyer@salesforce.com',
     'license': 'Revised BSD',
-    'features': {'cython': model_feature},
+    'features': {
+        'high-precision': high_precision,
+        'low-precision': low_precision,
+    },
     'packages': [
         'distributions',
         'distributions.dbg',
@@ -122,13 +160,11 @@ config = {
     ],
 }
 if cython:
-    config['cmdclass'] = {'build_ext': build_ext}
     config['packages'] += [
         'distributions.hp',
         'distributions.hp.models',
         'distributions.lp',
         'distributions.lp.models',
     ]
-
-
+    config['cmdclass'] = {'build_ext': build_ext}
 setup(**config)
