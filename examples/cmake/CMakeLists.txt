@@ -29,7 +29,6 @@ else()
   ExternalProject_Add(distributions
     PREFIX distributions
     GIT_REPOSITORY https://github.com/forcedotcom/distributions.git
-    GIT_TAG 2.0
     INSTALL_COMMAND ""
   )
 endif()
