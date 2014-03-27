@@ -19,7 +19,7 @@ distributions with pip:
     pip install distributions
 
 For help with other builds, see
-[the installation documentation](http://distributions.readthedocs.org/en/docs/installation.html).
+[the installation documentation](http://distributions.readthedocs.org/en/latest/installation.html).
 
 
 ## Documentation
