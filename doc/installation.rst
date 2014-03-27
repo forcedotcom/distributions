@@ -19,7 +19,7 @@ You may build distributions in several ways:
 Python Standalone
 -----------------
 
-Install numpy and scipy. Then::
+COMING SOON: Install numpy and scipy. Then::
 
     pip install distributions
 
