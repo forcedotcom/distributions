@@ -12,9 +12,8 @@ You may build distributions in several ways:
     On OSX, distributions builds with newer versions of clang, but
     some systems default to g++. You can force distributions to use
     clang by setting the ``CC`` environment variable before running
-    any ``pip``, ``cmake``, or ``make`` commands::
-
-        export CC=clang
+    any ``pip``, ``cmake``, or ``make`` commands with ``export
+    CC=clang``.
 
 
 Python Standalone
