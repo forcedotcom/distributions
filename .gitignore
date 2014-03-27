@@ -6,3 +6,4 @@ temp.*
 *.pyc
 *.cpp
 *.so
+doc/_build
