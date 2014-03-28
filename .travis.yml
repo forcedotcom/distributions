@@ -16,4 +16,4 @@ install:
   - make install$FLAVOR
   - pip freeze
 script:
-  - LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$VIRTUAL_ENV/lib" make test$FLAVOR
+  - make test$FLAVOR
