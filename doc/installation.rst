@@ -41,6 +41,26 @@ Follow instructions for C++ Standalone. Install numpy and scipy. Then::
 
     PYDISTRIBUTIONS_USE_LIB=1 LIBRARY_PATH=/my/prefix/lib pip install distributions
 
+.. warning::
+
+    When using wrapped libdistributions, the dynamic linker must be
+    able to find the library. The environment variables used to do
+    this differ from platform to platform.
+
+    On Linux, you might run python as follows::
+
+        LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/my/prefix/lib python
+
+    On OSX, you'll need a different flag::
+
+        DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:/my/prefix/lib python
+
+    If you use virtualenv with virtualenvwrapper and use the
+    virtualenv root as your prefix, it is convenient to add a
+    postactivate hook to set this environment. On Linux, this would
+    look like this::
+
+        echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$VIRTUAL_ENV/lib' >> $VIRTUAL_ENV/bin/postactivate
 
 Developer Quick Start
 ---------------------
@@ -56,4 +76,4 @@ virtualenv. Then::
     PYDISTRIBUTIONS_USE_LIB=1 make test
 
 The top-level ``Makefile`` provides many targets useful for
-development. The command above will:
+development.

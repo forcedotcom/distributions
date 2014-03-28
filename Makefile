@@ -1,10 +1,23 @@
+uname:=$(shell uname -s)
+
+ld_library_path=
+ifeq ($(uname),Linux)
+	ld_library_path=LD_LIBRARY_PATH
+endif
+ifeq ($(uname),Darwin)
+	ld_library_path=DYLD_LIBRARY_PATH
+endif
+
 cmake_args=
+nose_env=
 ifdef VIRTUAL_ENV
 	cmake_args=-DCMAKE_INSTALL_PREFIX=$(VIRTUAL_ENV)
 	library_path=$(LIBRARY_PATH):$(VIRTUAL_ENV)/lib/
+	nose_env=$(ld_library_path)=$($(ld_library_path)):$(VIRTUAL_ENV)/lib/
 else
 	cmake_args=-DCMAKE_INSTALL_PREFIX=..
 	library_path=$(LIBRARY_PATH):`pwd`/lib/
+	nose_env=$(ld_library_path)=$($(ld_library_path)):`pwd`/lib/
 endif
 
 cy_deps=
@@ -38,20 +51,24 @@ install_cy: $(install_cy_deps) FORCE
 
 install: install_cc install_cy FORCE
 
+test_cc_examples: install_cc FORCE
+	./test_cmake.sh
+	@echo '----------------'
+	@echo 'PASSED CC EXAMPLES'
+
 test_cc: install_cc FORCE
 	cd build && ctest
-	./test_cmake.sh
 	@echo '----------------'
 	@echo 'PASSED CC TESTS'
 
 test_cy: install_cy FORCE
 	pyflakes setup.py distributions derivations
 	pep8 --repeat --ignore=E265 --exclude=*_pb2.py setup.py distributions derivations
-	nosetests -v
+	$(nose_env) nosetests -v
 	@echo '----------------'
 	@echo 'PASSED CY TESTS'
 
-test: test_cc test_cy FORCE
+test: test_cc test_cc_examples test_cy FORCE
 	@echo '----------------'
 	@echo 'PASSED ALL TESTS'
 
