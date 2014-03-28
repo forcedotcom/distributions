@@ -6,3 +6,4 @@ Welcome to distributions
 
    overview
    installation
+   guides

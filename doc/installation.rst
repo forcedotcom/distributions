@@ -62,6 +62,9 @@ Follow instructions for C++ Standalone. Install numpy and scipy. Then::
 
         echo 'export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$VIRTUAL_ENV/lib' >> $VIRTUAL_ENV/bin/postactivate
 
+
+.. _installation-developer:
+
 Developer Quick Start
 ---------------------
 

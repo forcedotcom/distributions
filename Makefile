@@ -87,4 +87,7 @@ profile: install_cc FORCE
 clean: FORCE
 	git clean -Xdf
 
+doc: FORCE
+	cd doc && make html
+
 FORCE:

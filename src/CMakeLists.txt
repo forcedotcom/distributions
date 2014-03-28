@@ -6,6 +6,7 @@ set(DISTRIBUTIONS_SOURCE_FILES
   random.cc
   vector_math.cc
   clustering.cc
+  models/bb.cc
   models/nich.cc
   models/gp.cc
 )
