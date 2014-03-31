@@ -25,15 +25,77 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+cimport numpy
+
+
 cdef extern from "distributions/vector.hpp" namespace "distributions":
-    cppclass VectorFloat:
+    cdef cppclass VectorFloat:
+        cppclass iterator:
+            float& operator*() nogil
+            iterator operator++() nogil
+            iterator operator--() nogil
+            iterator operator+(size_t) nogil
+            iterator operator-(size_t) nogil
+            bint operator==(iterator) nogil
+            bint operator!=(iterator) nogil
+            bint operator<(iterator) nogil
+            bint operator>(iterator) nogil
+            bint operator<=(iterator) nogil
+            bint operator>=(iterator) nogil
+        cppclass reverse_iterator:
+            float& operator*() nogil
+            iterator operator++() nogil
+            iterator operator--() nogil
+            iterator operator+(size_t) nogil
+            iterator operator-(size_t) nogil
+            bint operator==(reverse_iterator) nogil
+            bint operator!=(reverse_iterator) nogil
+            bint operator<(reverse_iterator) nogil
+            bint operator>(reverse_iterator) nogil
+            bint operator<=(reverse_iterator) nogil
+            bint operator>=(reverse_iterator) nogil
         VectorFloat() nogil except +
-        size_t size () nogil
-        float & at "operator[]" (size_t index) nogil
+        VectorFloat(VectorFloat&) nogil except +
+        VectorFloat(size_t) nogil except +
+        VectorFloat(size_t, float&) nogil except +
+        float& operator[](size_t) nogil
+        bint operator==(VectorFloat&, VectorFloat&) nogil
+        bint operator!=(VectorFloat&, VectorFloat&) nogil
+        bint operator<(VectorFloat&, VectorFloat&) nogil
+        bint operator>(VectorFloat&, VectorFloat&) nogil
+        bint operator<=(VectorFloat&, VectorFloat&) nogil
+        bint operator>=(VectorFloat&, VectorFloat&) nogil
+        void assign(size_t, float&) nogil
+        float& at(size_t) nogil
+        float& back() nogil
+        iterator begin() nogil
+        size_t capacity() nogil
+        void clear() nogil
+        bint empty() nogil
+        iterator end() nogil
+        iterator erase(iterator) nogil
+        iterator erase(iterator, iterator) nogil
+        float& front() nogil
+        iterator insert(iterator, float&) nogil
+        void insert(iterator, size_t, float&) nogil
+        void insert(iterator, iterator, iterator) nogil
+        size_t max_size() nogil
+        void pop_back() nogil
+        void push_back(float&) nogil
+        reverse_iterator rbegin() nogil
+        reverse_iterator rend() nogil
+        void reserve(size_t) nogil
+        void resize(size_t) nogil
+        void resize(size_t, float&) nogil
+        size_t size() nogil
+        void swap(VectorFloat&) nogil
 
 
-cdef extern from "distributions/vector_math.hpp" namespace "distributions":
-    cdef vector_add(size_t size, float * io, float * in1) nogil
+cdef void vector_float_from_ndarray(
+        VectorFloat & vector_float,
+        numpy.ndarray[numpy.float32_t, ndim=1] ndarray)
 
 
-cdef list vector_float_to_list(VectorFloat & vector)
+cdef void vector_float_to_ndarray(
+        VectorFloat & vector_float,
+        numpy.ndarray[numpy.float32_t, ndim=1] ndarray)

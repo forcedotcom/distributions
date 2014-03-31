@@ -319,6 +319,10 @@ void classifier_score (
         rng_t &) const
 {
     DIST_ASSERT1(value < dim, "value out of bounds");
+    DIST_ASSERT2(
+        scores_accum.size() == classifier.groups.size(),
+        "expected scores_accum.size() = " << classifier.groups.size() <<
+        ", actual " << scores_accum.size());
     const size_t group_count = classifier.groups.size();
     vector_add_subtract(
         group_count,

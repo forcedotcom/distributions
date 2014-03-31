@@ -89,7 +89,8 @@ inline float eric_log (float x)
 
 inline float fast_log (float x)
 {
-    return fmath::log(x);
+    return eric_log(x);
+    //return fmath::log(x);
 }
 
 inline float fast_exp (float x)

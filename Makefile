@@ -43,7 +43,7 @@ build_cc: configure_cc FORCE
 	cd build && $(MAKE)
 
 install_cc: build_cc FORCE
-	cd build && make install
+	cd build && $(MAKE) install
 
 install_cy: $(install_cy_deps) FORCE
 	pip install -r requirements.txt
