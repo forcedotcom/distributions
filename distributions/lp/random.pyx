@@ -29,7 +29,8 @@ from libc.math cimport exp
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 from python cimport PyObject
-from distributions.lp.random cimport rng_t, global_rng
+from distributions.rng_cc cimport rng_t
+from distributions.global_rng cimport get_rng
 
 ctypedef PyObject* O
 
@@ -81,5 +82,5 @@ def sample_pair_from_urn(list urn):
     cdef vector[O] _urn
     for item in urn:
         _urn.push_back(<O> item)
-    cdef pair[O, O] result = _sample_pair_from_urn(global_rng, _urn)
+    cdef pair[O, O] result = _sample_pair_from_urn(get_rng()[0], _urn)
     return (<object> result.first, <object> result.second)

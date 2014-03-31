@@ -27,84 +27,139 @@
 
 import os
 import re
-from setuptools import setup, Extension, Feature
+import sys
+from distutils.core import setup, Extension
+from distutils.version import LooseVersion
+
+import numpy as np
+
 try:
-    from Cython.Distutils import build_ext
+    from Cython.Build import cythonize
+    from Cython.Compiler.Main import Version as cython_version
+    min_cython_version = '0.20.1'
+    if LooseVersion(cython_version.version) < LooseVersion(min_cython_version):
+        raise ValueError(
+            'cython support requires cython>={}'.format(min_cython_version))
     cython = True
-    print 'building cython extensions'
 except ImportError:
     cython = False
-    print 'not building cython extensions'
 
 
-VERSION = None
+clang = False
+if sys.platform.lower().startswith('darwin'):
+    clang = True
+
+
+include_dirs = ['include', 'distributions']
+include_dirs.append(np.get_include())
+
+
+extra_compile_args = []
+if clang:
+    extra_compile_args.extend([
+        '-mmacosx-version-min=10.7',  # for anaconda
+        '-std=c++0x',
+        '-stdlib=libc++',
+    ])
+else:
+    extra_compile_args.extend([
+        '-std=c++0x',
+        '-Wall',
+        '-Werror',
+        '-Wno-unused-function',
+        '-Wno-sign-compare',
+        '-Wno-strict-aliasing',
+        '-O3',
+        '-ffast-math',
+        '-funsafe-math-optimizations',
+        #'-fno-trapping-math',
+        #'-ffinite-math-only',
+        #'-fvect-cost-model',
+        '-mfpmath=sse',
+        '-msse4.1',
+        #'-mavx',
+        #'-mrecip',
+        #'-march=native',
+    ])
+
+
+use_libdistributions = 'PYDISTRIBUTIONS_USE_LIB' in os.environ
+
+
+def make_extension(name):
+    module = 'distributions.' + name
+    sources = [
+        '{}.{}'.format(module.replace('.', '/'), 'pyx' if cython else 'cpp')
+    ]
+    libraries = ['m']
+    if name.startswith('lp'):
+        if use_libdistributions:
+            libraries.append('distributions_shared')
+        else:
+            sources += [
+                'src/common.cc',
+                'src/special.cc',
+                'src/random.cc',
+                'src/vector_math.cc',
+            ]
+    return Extension(
+        module,
+        sources=sources,
+        language='c++',
+        include_dirs=include_dirs,
+        libraries=libraries,
+        extra_compile_args=extra_compile_args,
+    )
+
+
+def make_extensions(names):
+    return [make_extension(name) for name in names]
+
+
+hp_extensions = make_extensions([
+    'rng_cc',
+    'global_rng',
+    'hp.special',
+    'hp.random',
+    'hp.models.dd',
+    'hp.models.gp',
+    'hp.models.nich',
+    'hp.models.dpd',
+])
+
+
+lp_extensions = make_extensions([
+    'lp.special',
+    'lp.random',
+    'lp.vector',
+    'lp.models.dd',
+    'lp.models.gp',
+    'lp.models.nich',
+    'lp.models.dpd',
+    'lp.clustering',
+])
+
+
+if cython:
+    ext_modules = cythonize(hp_extensions + lp_extensions)
+else:
+    ext_modules = hp_extensions + lp_extensions
+
+
+version = None
 with open(os.path.join('distributions', '__init__.py')) as f:
     for line in f:
         if re.match("__version__ = '\S+'$", line):
-            VERSION = line.split()[-1].strip("'")
-assert VERSION, 'could not determine version'
+            version = line.split()[-1].strip("'")
+assert version, 'could not determine version'
 
 
 with open('README.md') as f:
     long_description = f.read()
 
 
-def extension(name):
-    name_pyx = '{}.pyx'.format(name.replace('.', '/'))
-    return Extension(
-        name,
-        sources=[name_pyx],
-        language='c++',
-        include_dirs=['include'],
-        libraries=['m', 'distributions_shared'],
-        library_dirs=['build/src'],
-        extra_compile_args=[
-            '-std=c++0x',
-            '-Wall',
-            '-Werror',
-            '-Wno-unused-function',
-            '-Wno-sign-compare',
-            '-Wno-strict-aliasing',
-            '-O3',
-            '-ffast-math',
-            '-funsafe-math-optimizations',
-            #'-fno-trapping-math',
-            #'-ffinite-math-only',
-            #'-fvect-cost-model',
-            '-mfpmath=sse',
-            '-msse4.1',
-            #'-mavx',
-            #'-mrecip',
-            #'-march=native',
-        ],
-    )
-
-
-model_feature = Feature(
-    'cython models',
-    standard=True,
-    optional=True,
-    ext_modules=[
-        extension('distributions.hp.special'),
-        extension('distributions.hp.random'),
-        extension('distributions.hp.models.dd'),
-        extension('distributions.hp.models.gp'),
-        extension('distributions.hp.models.nich'),
-        extension('distributions.hp.models.dpd'),
-        extension('distributions.lp.special'),
-        extension('distributions.lp.random'),
-        extension('distributions.lp.vector'),
-        extension('distributions.lp.models.dd'),
-        extension('distributions.lp.models.gp'),
-        extension('distributions.lp.models.nich'),
-        extension('distributions.lp.models.dpd'),
-        extension('distributions.lp.clustering'),
-    ]
-)
-
-
 config = {
-    'version': VERSION,
+    'version': version,
     'name': 'distributions',
     'description': 'Primitives for Bayesian MCMC inference',
     'long_description': long_description,
@@ -113,22 +168,18 @@ config = {
     'maintainer': 'Fritz Obermeyer',
     'maintainer_email': 'fobermeyer@salesforce.com',
     'license': 'Revised BSD',
-    'features': {'cython': model_feature},
     'packages': [
         'distributions',
         'distributions.dbg',
         'distributions.dbg.models',
         'distributions.tests',
-    ],
-}
-if cython:
-    config['cmdclass'] = {'build_ext': build_ext}
-    config['packages'] += [
         'distributions.hp',
         'distributions.hp.models',
         'distributions.lp',
         'distributions.lp.models',
-    ]
+    ],
+    'ext_modules': ext_modules,
+}
 
 
 setup(**config)
