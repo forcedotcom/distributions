@@ -31,7 +31,11 @@ cimport numpy
 numpy.import_array()
 from distributions.rng_cc cimport rng_t
 from distributions.global_rng cimport get_rng
-from distributions.lp.vector cimport VectorFloat
+from distributions.lp.vector cimport (
+    VectorFloat,
+    vector_float_from_ndarray,
+    vector_float_to_ndarray,
+)
 from distributions.mixins import ComponentModel, Serializable
 
 
@@ -80,7 +84,8 @@ cdef extern from "distributions/models/nich.hpp" namespace "distributions":
             (Classifier &, size_t, Value &, rng_t &) nogil
         void classifier_remove_value \
             (Classifier &, size_t, Value &, rng_t &) nogil
-        void classifier_score (Classifier &, Value &, float *, rng_t &) nogil
+        void classifier_score \
+            (Classifier &, Value &, VectorFloat &, rng_t &) nogil
 
 
 cdef class Group:
@@ -225,12 +230,14 @@ cdef class Model_cy:
             numpy.ndarray[numpy.float32_t, ndim=1] scores_accum):
         assert len(scores_accum) == classifier.ptr.groups.size(), \
             "scores_accum != len(classifier)"
-        cdef float * data = <float *> scores_accum.data
+        cdef VectorFloat scores
+        vector_float_from_ndarray(scores, scores_accum)
         self.ptr.classifier_score(
             classifier.ptr[0],
             value,
-            data,
+            scores,
             get_rng()[0])
+        vector_float_to_ndarray(scores, scores_accum)
 
     #-------------------------------------------------------------------------
     # Examples

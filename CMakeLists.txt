@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 2.6)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
 
 project(distributions)
+set(DISTRIBUTIONS_SHARED_LIBS m distributions_shared)
+set(DISTRIBUTIONS_STATIC_LIBS m distributions_static)
 
 if(APPLE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
@@ -11,12 +13,32 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g -std=c++0x")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wno-sign-compare -Wno-strict-aliasing")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -mfpmath=sse -msse4.1")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math -funsafe-math-optimizations")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx") # on sandy bridge and later
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-trapping-math -ffinite-math-only -fvect-cost-model -mrecip")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx") # on sandy bridge and later
 if(DEFINED ENV{CXX_FLAGS})
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} $ENV{CXX_FLAGS}") # for testing
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} $ENV{CXX_FLAGS}") # for testing
 endif()
 message("CXX_FLAGS =${CMAKE_CXX_FLAGS}")
+
+find_package(Yeppp)
+if(YEPPP_FOUND)
+  message(STATUS "Using YEPPP")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_YEPPP")
+  include_directories(${YEPPP_INCLUDE_DIRS})
+  link_directories(${YEPPP_LIBRARY_DIRS})
+  #set(DISTRIBUTIONS_SHARED_LIBS ${YEPPP_LIBRARIES} ${DISTRIBUTIONS_SHARED_LIBS})
+  #set(DISTRIBUTIONS_STATIC_LIBS ${YEPPP_LIBRARIES} ${DISTRIBUTIONS_STATIC_LIBS})
+endif()
+
+find_package(LibM)
+if(AMD_LIBM_FOUND)
+  message(STATUS "Using AMD LibM")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_AMD_LIBM")
+  include_directories(${AMD_LIBM_INCLUDE_DIRS})
+  link_directories(${AMD_LIBM_LIBRARY_DIRS})
+  set(DISTRIBUTIONS_SHARED_LIBS ${AMD_LIBM_LIBRARIES} ${DISTRIBUTIONS_SHARED_LIBS})
+  set(DISTRIBUTIONS_STATIC_LIBS ${AMD_LIBM_LIBRARIES} ${DISTRIBUTIONS_STATIC_LIBS})
+endif()
 
 find_package(MKL)
 if(MKL_FOUND)
@@ -24,6 +46,8 @@ if(MKL_FOUND)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUSE_INTEL_MKL")
   include_directories(${MKL_INCLUDE_DIRS})
   link_directories(${MKL_LIBRARY_DIRS})
+  set(DISTRIBUTIONS_SHARED_LIBS ${MKL_LIBRARIES} ${DISTRIBUTIONS_SHARED_LIBS})
+  set(DISTRIBUTIONS_STATIC_LIBS ${MKL_LIBRARIES} ${DISTRIBUTIONS_STATIC_LIBS})
 endif()
 
 enable_testing()

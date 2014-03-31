@@ -43,7 +43,7 @@ build_cc: configure_cc FORCE
 	cd build && $(MAKE)
 
 install_cc: build_cc FORCE
-	cd build && make install
+	cd build && $(MAKE) install
 
 install_cy: $(install_cy_deps) FORCE
 	pip install -r requirements.txt
@@ -83,6 +83,7 @@ profile: install_cc FORCE
 	build/benchmarks/sample_from_scores
 	build/benchmarks/sample_assignment_from_py
 	build/benchmarks/special
+	build/benchmarks/classifier
 
 clean: FORCE
 	git clean -Xdf

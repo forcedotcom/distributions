@@ -10,15 +10,15 @@ message(STATUS "Finding Intel MKL library")
 execute_process(
   COMMAND locate mkl_vml.h
   COMMAND grep -o ".*\\<mkl\\>"
-  OUTPUT_VARIABLE MKLROOT
+  OUTPUT_VARIABLE MKL_ROOT
   OUTPUT_STRIP_TRAILING_WHITESPACE)
 
-if(MKLROOT)
-  message(STATUS "  found Intel MKL at ${MKLROOT}")
+if(MKL_ROOT)
+  message(STATUS "  found Intel MKL at ${MKL_ROOT}")
   set(MKL_FOUND true)
 
-  set(MKL_INCLUDE_DIRS ${MKLROOT}/include)
-  set(MKL_LIBRARY_DIRS ${MKLROOT}/lib/intel64)
+  set(MKL_INCLUDE_DIRS ${MKL_ROOT}/include)
+  set(MKL_LIBRARY_DIRS ${MKL_ROOT}/lib/intel64)
 
   set(MKL_LIBRARIES
     mkl_intel_ilp64

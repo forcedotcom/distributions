@@ -40,6 +40,9 @@ template<int max_dim>
 struct DirichletDiscrete
 {
 
+static const char * name () { return "DirichletDiscrete"; }
+static const char * short_name () { return "dd"; }
+
 //----------------------------------------------------------------------------
 // Data
 
@@ -312,14 +315,18 @@ void classifier_remove_value (
 void classifier_score (
         const Classifier & classifier,
         const Value & value,
-        float * scores_accum,
+        VectorFloat & scores_accum,
         rng_t &) const
 {
     DIST_ASSERT1(value < dim, "value out of bounds");
+    DIST_ASSERT2(
+        scores_accum.size() == classifier.groups.size(),
+        "expected scores_accum.size() = " << classifier.groups.size() <<
+        ", actual " << scores_accum.size());
     const size_t group_count = classifier.groups.size();
     vector_add_subtract(
         group_count,
-        scores_accum,
+        scores_accum.data(),
         classifier.scores[value].data(),
         classifier.scores_shift.data());
 }
@@ -379,6 +386,22 @@ float fitter_score (
     return vector_sum(fitter.scores.size(), fitter.scores.data());
 }
 
+//----------------------------------------------------------------------------
+// Examples
+
+static DirichletDiscrete<max_dim> EXAMPLE ();
+
 }; // struct DirichletDiscrete<max_dim>
+
+template<int max_dim>
+inline DirichletDiscrete<max_dim> DirichletDiscrete<max_dim>::EXAMPLE ()
+{
+    DirichletDiscrete<max_dim> model;
+    model.dim = max_dim;
+    for (int i = 0; i < max_dim; ++i) {
+        model.alphas[i] = 0.5;
+    }
+    return model;
+}
 
 } // namespace distributions

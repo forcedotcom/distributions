@@ -30,6 +30,15 @@
 #include <distributions/random.hpp>
 #include <distributions/timers.hpp>
 #include <distributions/aligned_allocator.hpp>
+#include <distributions/vendor/fmath.hpp>
+
+#ifdef USE_YEPPP
+#include <yepBuiltin.h>
+#endif // USE_YEPPP
+
+#ifdef USE_AMD_LIBM
+#include <amdlibm.h>
+#endif // USE_AMD_LIBM
 
 #ifdef USE_INTEL_MKL
 #include <mkl_vml.h>
@@ -54,6 +63,53 @@ struct glibc_exp
         }
     }
 };
+
+struct fmath_exp
+{
+    static const char * name () { return "fmath"; }
+    static const char * fun () { return "exp"; }
+
+    static void inplace (Vector & values)
+    {
+        const size_t size = values.size();
+        float * __restrict__ data = & values[0];
+        for (int i = 0; i < size; ++i) {
+            data[i] = fmath::exp(data[i]);
+        }
+    }
+};
+
+#ifdef USE_YEPPP
+struct yeppp_exp
+{
+    static const char * name () { return "yeppp"; }
+    static const char * fun () { return "exp"; }
+
+    static void inplace (Vector & values)
+    {
+        const size_t size = values.size();
+        float * __restrict__ data = & values[0];
+        for (int i = 0; i < size; ++i) {
+            data[i] = yepBuiltin_Exp_32f_32f(data[i]);
+        }
+    }
+};
+#endif // USE_YEPPP
+
+#ifdef USE_AMD_LIBM
+struct libm_exp
+{
+    static const char * name () { return "libm"; }
+    static const char * fun () { return "exp"; }
+
+    static void inplace (Vector & values)
+    {
+        const size_t size = values.size();
+        float * __restrict__ data = & values[0];
+        amd_vrsa_expf(size, data, data);
+    }
+};
+#endif // USE_AMD_LIBM
 
 #ifdef USE_INTEL_MKL
 struct mkl_exp
@@ -86,9 +142,9 @@ struct glibc_log
     }
 };
 
-struct eric_log
+struct fmath_log
 {
-    static const char * name () { return "dists"; }
+    static const char * name () { return "fmath"; }
     static const char * fun () { return "log"; }
 
     static void inplace (Vector & values)
@@ -96,10 +152,57 @@ struct eric_log
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         for (int i = 0; i < size; ++i) {
-            data[i] = fast_log(data[i]);
+            data[i] = fmath::log(data[i]);
         }
     }
 };
+
+struct _eric_log
+{
+    static const char * name () { return "eric"; }
+    static const char * fun () { return "log"; }
+
+    static void inplace (Vector & values)
+    {
+        const size_t size = values.size();
+        float * __restrict__ data = & values[0];
+        for (int i = 0; i < size; ++i) {
+            data[i] = distributions::eric_log(data[i]);
+        }
+    }
+};
+
+#ifdef USE_YEPPP
+struct yeppp_log
+{
+    static const char * name () { return "yeppp"; }
+    static const char * fun () { return "log"; }
+
+    static void inplace (Vector & values)
+    {
+        const size_t size = values.size();
+        float * __restrict__ data = & values[0];
+        for (int i = 0; i < size; ++i) {
+            data[i] = yepBuiltin_Log_32f_32f(data[i]);
+        }
+    }
+};
+#endif // USE_YEPPP
+
+#ifdef USE_AMD_LIBM
+struct libm_log
+{
+    static const char * name () { return "libm"; }
+    static const char * fun () { return "log"; }
+
+    static void inplace (Vector & values)
+    {
+        const size_t size = values.size();
+        float * __restrict__ data = & values[0];
+        amd_vrsa_logf(size, data, data);
+    }
+};
+#endif // USE_AMD_LIBM
 
 #ifdef USE_INTEL_MKL
 struct mkl_log
@@ -134,7 +237,7 @@ struct glibc_lgamma
 
 struct eric_lgamma
 {
-    static const char * name () { return "dists"; }
+    static const char * name () { return "eric"; }
     static const char * fun () { return "lgamma"; }
 
     static void inplace (Vector & values)
@@ -181,7 +284,7 @@ struct glibc_lgamma_nu
 
 struct eric_lgamma_nu
 {
-    static const char * name () { return "dists"; }
+    static const char * name () { return "eric"; }
     static const char * fun () { return "lgamma_nu"; }
 
     static void inplace (Vector & values)
@@ -254,9 +357,10 @@ void speedtest (size_t size, size_t iters)
     double time_sec = time * 1e-6;
     double ops_per_sec = size * iters / time_sec;
     std::cout
-        << std::left << std::setw(8) << impl::name()
         << std::left << std::setw(10) << impl::fun()
-        << std::right << std::setw(7) << int(ops_per_sec / 1e6) << 'M'
+        << std::left << std::setw(8) << impl::name()
+        << std::right << std::setw(7) << std::fixed << std::setprecision(1)
+            << float(ops_per_sec / 1e6)
         << std::endl;
 }
 
@@ -266,17 +370,23 @@ int main ()
     vmlSetMode(VML_EP | VML_FTZDAZ_ON | VML_ERRMODE_IGNORE);
 #endif // USE_INTEL_MKL
 
-    const size_t size = 1 << 12;
+    const size_t size = 1 << 10;
     const size_t iters = 1 << 13;
 
     std::cout
-        << std::left << std::setw(8) << "Version"
         << std::left << std::setw(10) << "Function"
-        << std::right << std::setw(8) << "Ops/sec"
+        << std::left << std::setw(8) << "Version"
+        << std::right << std::setw(8) << "ops/us"
         << std::endl;
-    std::cout << "--------------------------\n";
 
     speedtest<glibc_exp>(size, iters);
+    speedtest<fmath_exp>(size, iters);
+#ifdef USE_YEPPP
+    speedtest<yeppp_exp>(size, iters);
+#endif // USE_YEPPP
+#ifdef USE_AMD_LIBM
+    speedtest<libm_exp>(size, iters);
+#endif // USE_AMD_LIBM
 #ifdef USE_INTEL_MKL
     speedtest<mkl_exp>(size, iters);
 #endif // USE_INTEL_MKL
@@ -284,26 +394,33 @@ int main ()
     std::cout << std::endl;
 
     speedtest<glibc_log>(size, iters);
-    speedtest<eric_log>(size, iters);
+    speedtest<fmath_log>(size, iters);
+#ifdef USE_YEPPP
+    speedtest<yeppp_log>(size, iters);
+#endif // USE_YEPPP
+#ifdef USE_AMD_LIBM
+    speedtest<libm_log>(size, iters);
+#endif // USE_AMD_LIBM
 #ifdef USE_INTEL_MKL
     speedtest<mkl_log>(size, iters);
 #endif // USE_INTEL_MKL
+    speedtest<_eric_log>(size, iters);
 
     std::cout << std::endl;
 
     speedtest<glibc_lgamma>(size, iters);
-    speedtest<eric_lgamma>(size, iters);
 #ifdef USE_INTEL_MKL
     speedtest<mkl_lgamma>(size, iters);
 #endif // USE_INTEL_MKL
+    speedtest<eric_lgamma>(size, iters);
 
     std::cout << std::endl;
 
     speedtest<glibc_lgamma_nu>(size, iters);
-    speedtest<eric_lgamma_nu>(size, iters);
 #ifdef USE_INTEL_MKL
     speedtest<mkl_lgamma_nu>(size, iters);
 #endif // USE_INTEL_MKL
+    speedtest<eric_lgamma_nu>(size, iters);
 
     return 0;
 }

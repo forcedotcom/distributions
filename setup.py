@@ -54,7 +54,9 @@ include_dirs = ['include', 'distributions']
 include_dirs.append(np.get_include())
 
 
-extra_compile_args = []
+extra_compile_args = [
+    '-DDIST_DEBUG_LEVEL=3',
+]
 if clang:
     extra_compile_args.extend([
         '-mmacosx-version-min=10.7',  # for anaconda

@@ -83,7 +83,7 @@ float scores_to_likelihoods (std::vector<float> & scores)
 
     float total = 0;
     for (size_t i = 0; i < size; ++i) {
-        total += scores_data[i] = expf(scores_data[i] - max_score);
+        total += scores_data[i] = fast_exp(scores_data[i] - max_score);
     }
 
     return total;
@@ -100,7 +100,7 @@ float score_from_scores_overwrite (
 
     float total = 0;
     for (size_t i = 0; i < size; ++i) {
-        total += expf(scores_data[i] -= max_score);
+        total += fast_exp(scores_data[i] -= max_score);
     }
 
     if (SYNCHRONIZE_ENTROPY_FOR_UNIT_TESTING) {

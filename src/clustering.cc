@@ -262,7 +262,7 @@ std::vector<count_t> Clustering<count_t>::LowEntropy::sample_assignments (
     for (count_t & assign : assignments) {
 
         float likelihood_empty =
-            expf(score_add_value(0, unused, size));
+            fast_exp(score_add_value(0, unused, size));
         if (counts.empty() or counts.back()) {
             counts.push_back(0);
             likelihoods.push_back(likelihood_empty);
@@ -280,7 +280,7 @@ std::vector<count_t> Clustering<count_t>::LowEntropy::sample_assignments (
         size += 1;
         float & likelihood = likelihoods[assign];
         float new_likelihood =
-            expf(score_add_value(count, unused, size));
+            fast_exp(score_add_value(count, unused, size));
         total += new_likelihood - likelihood;
         likelihood = new_likelihood;
     }

@@ -38,6 +38,9 @@ namespace distributions
 struct NormalInverseChiSq
 {
 
+static const char * name () { return "NormalInverseChiSq"; }
+static const char * short_name () { return "nich"; }
+
 //----------------------------------------------------------------------------
 // Data
 
@@ -262,11 +265,11 @@ void _classifier_resize (
         size_t group_count) const
 {
     classifier.groups.resize(group_count);
-    classifier.score.resize(group_count);
-    classifier.log_coeff.resize(group_count);
-    classifier.precision.resize(group_count);
-    classifier.mean.resize(group_count);
-    classifier.temp.resize(group_count);
+    VectorFloat_resize(classifier.score, group_count);
+    VectorFloat_resize(classifier.log_coeff, group_count);
+    VectorFloat_resize(classifier.precision, group_count);
+    VectorFloat_resize(classifier.mean, group_count);
+    VectorFloat_resize(classifier.temp, group_count);
 }
 
 public:
@@ -335,9 +338,24 @@ void classifier_remove_value (
 void classifier_score (
         const Classifier & classifier,
         const Value & value,
-        float * scores_accum,
+        VectorFloat & scores_accum,
         rng_t &) const;
 
+//----------------------------------------------------------------------------
+// Examples
+
+static NormalInverseChiSq EXAMPLE ();
+
 }; // struct NormalInverseChiSq
+
+inline NormalInverseChiSq NormalInverseChiSq::EXAMPLE ()
+{
+    NormalInverseChiSq model;
+    model.mu = 0.0;
+    model.kappa = 1.0;
+    model.sigmasq = 1.0;
+    model.nu = 1.0;
+    return model;
+}
 
 } // namespace distributions

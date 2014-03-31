@@ -290,8 +290,8 @@ def postpred(subsample_size=10):
 
     # entropy
     entropy = numpy.array([
-        n * (n / (n - 1.0)) ** (n - 1.0) if n > 1 else 1
-        for n in X
+        x * (x / (x - 1.0)) ** (x - 1.0) if x > 1 else 1
+        for x in X
     ])
     Y = entropy / entropy.min()
     pyplot.plot(X, Y, 'k--', label='entropy', linewidth=2)

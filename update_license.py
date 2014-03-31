@@ -43,17 +43,27 @@ SYMBOL_OF = {
     for extension in extensions
 }
 
+dir_blacklist = [
+    '.git',
+    'examples',
+    'vendor',
+    'doc',
+]
+
+file_blacklist = [
+    '*.pb.h',
+    '*.pb.cc',
+    '*_pb2.py',
+    'test_headers.cc',
+]
+
 FILES = sorted(
     os.path.join(root, filename)
     for root, dirnames, filenames in os.walk('.')
-    if '.git' not in root.split('/')
-    if 'examples' not in root.split('/')
+    if not any(d in root.split('/') for d in dir_blacklist)
     for extension in extensions
     for filename in fnmatch.filter(filenames, '*' + extension)
-    if not fnmatch.fnmatch(filename, '*.pb.h')
-    if not fnmatch.fnmatch(filename, '*.pb.cc')
-    if not fnmatch.fnmatch(filename, '*_pb2.py')
-    if not fnmatch.fnmatch(filename, 'test_headers.cc')
+    if not any(fnmatch.fnmatch(filename, patt) for patt in file_blacklist)
 )
 
 LICENSE = []

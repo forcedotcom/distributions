@@ -25,10 +25,26 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+cimport numpy
+numpy.import_array()
 
-cdef list vector_float_to_list(VectorFloat & vector):
-    cdef list result = []
+
+cdef void vector_float_from_ndarray(
+        VectorFloat & vector_float,
+        numpy.ndarray[numpy.float32_t, ndim=1] ndarray):
+    cdef int size = ndarray.shape[0]
+    vector_float.resize(size)
     cdef int i
-    for i in xrange(vector.size()):
-        result.append(vector.at(i))
-    return result
+    for i in xrange(size):
+        vector_float[i] = ndarray[i]
+
+
+cdef void vector_float_to_ndarray(
+        VectorFloat & vector_float,
+        numpy.ndarray[numpy.float32_t, ndim=1] ndarray):
+    cdef int size = vector_float.size()
+    cdef tuple shape = (size,)
+    ndarray.resize(shape)
+    cdef int i
+    for i in xrange(size):
+        ndarray[i] = vector_float[i]

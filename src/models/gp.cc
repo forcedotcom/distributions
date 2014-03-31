@@ -34,16 +34,19 @@ namespace distributions
 void GammaPoisson::classifier_score (
         const Classifier & classifier,
         const Value & value,
-        float * scores_accum,
+        VectorFloat & scores_accum,
         rng_t &) const
 {
     const size_t size = classifier.groups.size();
     const float value_noalias = value;
-    float * __restrict__ scores_accum_noalias = scores_accum;
-    const float * __restrict__ score = classifier.score.data();
-    const float * __restrict__ post_alpha = classifier.post_alpha.data();
-    const float * __restrict__ score_coeff = classifier.score_coeff.data();
-    float * __restrict__ temp = classifier.temp.data();
+    float * __restrict__ scores_accum_noalias =
+        VectorFloat_data(scores_accum);
+    const float * __restrict__ score = VectorFloat_data(classifier.score);
+    const float * __restrict__ post_alpha =
+        VectorFloat_data(classifier.post_alpha);
+    const float * __restrict__ score_coeff =
+        VectorFloat_data(classifier.score_coeff);
+    float * __restrict__ temp = VectorFloat_data(classifier.temp);
 
     const float log_factorial_value = fast_log_factorial(value);
     for (size_t i = 0; i < size; ++i) {
