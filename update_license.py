@@ -47,6 +47,7 @@ dir_blacklist = [
     '.git',
     'examples',
     'vendor',
+    'doc',
 ]
 
 file_blacklist = [
