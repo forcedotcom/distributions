@@ -26,6 +26,7 @@
 // USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <iostream>
+#include <iomanip>
 #include <distributions/random.hpp>
 #include <distributions/timers.hpp>
 
@@ -57,16 +58,19 @@ size_t speedtest (size_t size, size_t iters)
 
     time -= current_time_us();
 
-    double time_sec = time * 1e-6;
-    double choices_per_sec = size * iters / time_sec;
-    std::cout << size << '\t' << choices_per_sec << '\n';
+    double time_us = time;
+    double choices_per_us = size * iters / time_us;
+    std::cout <<
+        size << '\t' <<
+        std::right << std::setw(8) << std::fixed << std::setprecision(1) <<
+        choices_per_us << '\n';
 
     return bogus;
 }
 
 int main()
 {
-    std::cout << "size" << '\t' << "choices_per_sec" << '\n';
+    std::cout << "size" << '\t' << "choices/us" << '\n';
 
     int max_exponent = 15;
     for (int i = 1; i < max_exponent; ++i) {

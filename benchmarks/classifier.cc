@@ -139,7 +139,9 @@ void speedtest (
     std::cout <<
         Model::short_name() << '\t' <<
         group_count << '\t' <<
+        std::right << std::setw(7) << std::fixed << std::setprecision(2) <<
         scorers_rate << '\t' <<
+        std::right << std::setw(7) << std::fixed << std::setprecision(2) <<
         classifier_rate << '\n';
 }
 

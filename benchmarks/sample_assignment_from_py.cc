@@ -26,6 +26,7 @@
 // USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <iostream>
+#include <iomanip>
 #include <cstdio>
 #include <distributions/random.hpp>
 #include <distributions/clustering.hpp>
@@ -69,7 +70,9 @@ size_t speedtest (size_t size, size_t iters, float alpha, float d)
     double mean_cats = total_cats / iters;
     std::cout <<
         size << '\t' <<
+        std::right << std::setw(6) << std::fixed << std::setprecision(1) <<
         mean_cats << '\t' <<
+        std::right << std::setw(12) << std::fixed << std::setprecision(1) <<
         samples_per_sec << '\n';
 
     return bogus;
@@ -80,14 +83,14 @@ int main (int argc, char ** argv)
     float alpha = (argc > 1) ? atof(argv[1]) : 1.0f;
     float d = (argc > 2) ? atof(argv[2]) : 0.2f;
 
-    std::cout << "size" << '\t' << "cats" << '\t' << "samples_per_sec";
+    std::cout << "size" << '\t' << "cats" << '\t' << "samples/sec";
     std::cout << " (alpha = " << alpha << ", d = " << d << ")\n";
 
-    int min_exponent = 10;
-    int max_exponent = 20;
+    int min_exponent = 3;
+    int max_exponent = 6;
     for (int i = min_exponent; i <= max_exponent; ++i) {
-        int size = 1 << i;
-        int iters = 4 << (max_exponent - i);
+        int size = int(round(pow(10, i)));
+        int iters = 10000000 / size;
         speedtest(size, iters, alpha, d);
     }
 

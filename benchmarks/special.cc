@@ -357,9 +357,10 @@ void speedtest (size_t size, size_t iters)
     double time_sec = time * 1e-6;
     double ops_per_sec = size * iters / time_sec;
     std::cout
-        << std::left << std::setw(8) << impl::name()
         << std::left << std::setw(10) << impl::fun()
-        << std::left << std::setw(7) << float(ops_per_sec / 1e6)
+        << std::left << std::setw(8) << impl::name()
+        << std::right << std::setw(7) << std::fixed << std::setprecision(1)
+            << float(ops_per_sec / 1e6)
         << std::endl;
 }
 
@@ -373,8 +374,8 @@ int main ()
     const size_t iters = 1 << 13;
 
     std::cout
-        << std::left << std::setw(8) << "Version"
         << std::left << std::setw(10) << "Function"
+        << std::left << std::setw(8) << "Version"
         << std::right << std::setw(8) << "ops/us"
         << std::endl;
 
