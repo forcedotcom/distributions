@@ -25,73 +25,62 @@
 // TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 // USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package distributions_protobuf;
+#include <distributions/common.hpp>
+#include <distributions/schema.pb.h>
+#include <distributions/models/dd.hpp>
+#include <distributions/models/dpd.hpp>
+#include <distributions/models/nich.hpp>
+#include <distributions/models/gp.hpp>
 
-//----------------------------------------------------------------------------
-// Clustering
-
-message Clustering  // simulates a sum type
+namespace distributions
 {
-  message PitmanYor
-  {
-    required float alpha = 1;
-    required float d = 2;
-  }
 
-  message LowEntropy
-  {
-    required uint64 dataset_size = 1;
-  }
+namespace protobuf
+{
+using namespace distributions_protobuf;
+} // namespace protobuf
 
-  optional PitmanYor pitman_yor = 1;
-  optional LowEntropy low_entropy = 2;
+template<int max_dim>
+inline void model_load (
+        DirichletDiscrete<max_dim> & model,
+        const protobuf::DirichletDiscrete & model_pb)
+{
+    model.dim = model_pb.alphas_size();
+    DIST_ASSERT(model.dim <= 16, "dim is too large: " << model.dim);
+    for (size_t i = 0; i < model.dim; ++i) {
+        model.alphas[i] = model_pb.alphas(i);
+    }
 }
 
-//----------------------------------------------------------------------------
-// Basic Models
-
-message BetaBernoulli {
-  required float alpha = 1;
-  required float beta = 2;
+inline void model_load (
+        DirichletProcessDiscrete & model,
+        const protobuf::DirichletProcessDiscrete & model_pb)
+{
+    model.gamma = model_pb.gamma();
+    model.alpha = model_pb.alpha();
+    model.beta0 = model_pb.beta0();
+    model.betas.resize(model_pb.betas_size());
+    for (size_t i = 0; i < model.betas.size(); ++i) {
+        model.betas[i] = model_pb.betas(i);
+    }
 }
 
-message DirichletDiscrete {
-  repeated float alphas = 1;
+inline void model_load (
+        GammaPoisson & model,
+        const protobuf::GammaPoisson & model_pb)
+{
+    model.alpha = model_pb.alpha();
+    model.inv_beta = 1.f / model_pb.beta();
 }
 
-message DirichletProcessDiscrete {
-  required float gamma = 1;
-  required float alpha = 2;
-  required float beta0 = 3;
-  repeated float betas = 4;
+inline void model_load (
+        NormalInverseChiSq & model,
+        const protobuf::NormalInverseChiSq & model_pb)
+{
+    model.mu = model_pb.mu();
+    model.kappa = model_pb.kappa();
+    model.sigmasq = model_pb.sigmasq();
+    model.nu = model_pb.nu();
 }
 
-message GammaPoisson {
-  required float alpha = 1;
-  required float beta = 2;
-}
-
-message NormalInverseChiSq {
-  required float mu = 1;
-  required float kappa = 2;
-  required float sigmasq = 3;
-  required float nu = 4;
-}
-
-//----------------------------------------------------------------------------
-// Products
-
-message ProductModel {
-  repeated BetaBernoulli bb = 1;
-  repeated DirichletDiscrete dd = 2;  // must be in order of increasing dim
-  repeated DirichletProcessDiscrete dpd = 3;
-  repeated GammaPoisson gp = 4;
-  repeated NormalInverseChiSq nich = 5;
-}
-
-message ProductValue {
-  repeated bool observed = 1;
-  repeated bool booleans = 2;  // including bb
-  repeated uint32 counts = 3;  // including dd, dpd, gp
-  repeated float reals = 4;  // including nich
-}
+} // namespace distributions

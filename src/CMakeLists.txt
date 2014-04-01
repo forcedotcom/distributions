@@ -10,6 +10,10 @@ set(DISTRIBUTIONS_SOURCE_FILES
   models/gp.cc
 )
 
+if(PROTOBUF_FOUND)
+  set(DISTRIBUTIONS_SOURCE_FILES schema.pb.cc ${DISTRIBUTIONS_SOURCE_FILES})
+endif()
+
 add_library(distributions_shared SHARED ${DISTRIBUTIONS_SOURCE_FILES})
 add_library(distributions_static STATIC ${DISTRIBUTIONS_SOURCE_FILES})
 install(TARGETS distributions_shared LIBRARY DESTINATION lib)

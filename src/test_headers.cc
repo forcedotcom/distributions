@@ -5,6 +5,7 @@
 #include <distributions/models/dpd.hpp>
 #include <distributions/models/gp.hpp>
 #include <distributions/models/nich.hpp>
+#include <distributions/protobuf.hpp>
 #include <distributions/random_fwd.hpp>
 #include <distributions/random.hpp>
 #include <distributions/sparse_counter.hpp>
