@@ -10,7 +10,7 @@ from google.protobuf import reflection
 DESCRIPTOR = descriptor.FileDescriptor(
   name='distributions/schema.proto',
   package='distributions_protobuf',
-  serialized_pb='\n\x1a\x64istributions/schema.proto\x12\x16\x64istributions_protobuf\"\xdd\x01\n\nClustering\x12@\n\npitman_yor\x18\x01 \x01(\x0b\x32,.distributions_protobuf.Clustering.PitmanYor\x12\x42\n\x0blow_entropy\x18\x02 \x01(\x0b\x32-.distributions_protobuf.Clustering.LowEntropy\x1a%\n\tPitmanYor\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\t\n\x01\x64\x18\x02 \x02(\x02\x1a\"\n\nLowEntropy\x12\x14\n\x0c\x64\x61taset_size\x18\x01 \x02(\x04\",\n\rBetaBernoulli\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\"#\n\x11\x44irichletDiscrete\x12\x0e\n\x06\x61lphas\x18\x01 \x03(\x02\"V\n\x18\x44irichletProcessDiscrete\x12\r\n\x05gamma\x18\x01 \x02(\x02\x12\r\n\x05\x61lpha\x18\x02 \x02(\x02\x12\r\n\x05\x62\x65ta0\x18\x03 \x02(\x02\x12\r\n\x05\x62\x65tas\x18\x04 \x03(\x02\"+\n\x0cGammaPoisson\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\"L\n\x12NormalInverseChiSq\x12\n\n\x02mu\x18\x01 \x02(\x02\x12\r\n\x05kappa\x18\x02 \x02(\x02\x12\x0f\n\x07sigmasq\x18\x03 \x02(\x02\x12\n\n\x02nu\x18\x04 \x02(\x02\"\xdb\x02\n\x0cProductModel\x12\x36\n\nclustering\x18\x01 \x01(\x0b\x32\".distributions_protobuf.Clustering\x12\x31\n\x02\x62\x62\x18\x02 \x03(\x0b\x32%.distributions_protobuf.BetaBernoulli\x12\x35\n\x02\x64\x64\x18\x03 \x03(\x0b\x32).distributions_protobuf.DirichletDiscrete\x12=\n\x03\x64pd\x18\x04 \x03(\x0b\x32\x30.distributions_protobuf.DirichletProcessDiscrete\x12\x30\n\x02gp\x18\x05 \x03(\x0b\x32$.distributions_protobuf.GammaPoisson\x12\x38\n\x04nich\x18\x06 \x03(\x0b\x32*.distributions_protobuf.NormalInverseChiSq\"Q\n\x0cProductValue\x12\x10\n\x08observed\x18\x01 \x03(\x08\x12\x10\n\x08\x62ooleans\x18\x02 \x03(\x08\x12\x0e\n\x06\x63ounts\x18\x03 \x03(\r\x12\r\n\x05reals\x18\x04 \x03(\x02')
+  serialized_pb='\n\x1a\x64istributions/schema.proto\x12\x16\x64istributions_protobuf\"\xdd\x01\n\nClustering\x12@\n\npitman_yor\x18\x01 \x01(\x0b\x32,.distributions_protobuf.Clustering.PitmanYor\x12\x42\n\x0blow_entropy\x18\x02 \x01(\x0b\x32-.distributions_protobuf.Clustering.LowEntropy\x1a%\n\tPitmanYor\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\t\n\x01\x64\x18\x02 \x02(\x02\x1a\"\n\nLowEntropy\x12\x14\n\x0c\x64\x61taset_size\x18\x01 \x02(\x04\"S\n\rBetaBernoulli\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\x1a%\n\x05Group\x12\r\n\x05heads\x18\x01 \x02(\x04\x12\r\n\x05tails\x18\x02 \x02(\x04\"<\n\x11\x44irichletDiscrete\x12\x0e\n\x06\x61lphas\x18\x01 \x03(\x02\x1a\x17\n\x05Group\x12\x0e\n\x06\x63ounts\x18\x01 \x03(\x04\"}\n\x18\x44irichletProcessDiscrete\x12\r\n\x05gamma\x18\x01 \x02(\x02\x12\r\n\x05\x61lpha\x18\x02 \x02(\x02\x12\r\n\x05\x62\x65ta0\x18\x03 \x02(\x02\x12\r\n\x05\x62\x65tas\x18\x04 \x03(\x02\x1a%\n\x05Group\x12\x0c\n\x04keys\x18\x01 \x03(\r\x12\x0e\n\x06values\x18\x02 \x03(\x04\"b\n\x0cGammaPoisson\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\x1a\x35\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0b\n\x03sum\x18\x02 \x02(\x04\x12\x10\n\x08log_prod\x18\x03 \x02(\x02\"\x90\x01\n\x12NormalInverseChiSq\x12\n\n\x02mu\x18\x01 \x02(\x02\x12\r\n\x05kappa\x18\x02 \x02(\x02\x12\x0f\n\x07sigmasq\x18\x03 \x02(\x02\x12\n\n\x02nu\x18\x04 \x02(\x02\x1a\x42\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0c\n\x04mean\x18\x02 \x02(\x02\x12\x1c\n\x14\x63ount_times_variance\x18\x03 \x02(\x02\"\xf9\x05\n\x0cProductModel\x12\x36\n\nclustering\x18\x01 \x01(\x0b\x32\".distributions_protobuf.Clustering\x12\x31\n\x02\x62\x62\x18\x02 \x03(\x0b\x32%.distributions_protobuf.BetaBernoulli\x12\x35\n\x02\x64\x64\x18\x03 \x03(\x0b\x32).distributions_protobuf.DirichletDiscrete\x12=\n\x03\x64pd\x18\x04 \x03(\x0b\x32\x30.distributions_protobuf.DirichletProcessDiscrete\x12\x30\n\x02gp\x18\x05 \x03(\x0b\x32$.distributions_protobuf.GammaPoisson\x12\x38\n\x04nich\x18\x06 \x03(\x0b\x32*.distributions_protobuf.NormalInverseChiSq\x1aP\n\x0bSparseValue\x12\x10\n\x08observed\x18\x01 \x03(\x08\x12\x10\n\x08\x62ooleans\x18\x02 \x03(\x08\x12\x0e\n\x06\x63ounts\x18\x03 \x03(\x04\x12\r\n\x05reals\x18\x04 \x03(\x02\x1a\xc9\x02\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x01(\x04\x12\x37\n\x02\x62\x62\x18\x02 \x03(\x0b\x32+.distributions_protobuf.BetaBernoulli.Group\x12;\n\x02\x64\x64\x18\x03 \x03(\x0b\x32/.distributions_protobuf.DirichletDiscrete.Group\x12\x43\n\x03\x64pd\x18\x04 \x03(\x0b\x32\x36.distributions_protobuf.DirichletProcessDiscrete.Group\x12\x36\n\x02gp\x18\x05 \x03(\x0b\x32*.distributions_protobuf.GammaPoisson.Group\x12>\n\x04nich\x18\x06 \x03(\x0b\x32\x30.distributions_protobuf.NormalInverseChiSq.Group')
 
 
 
@@ -111,6 +111,40 @@ _CLUSTERING = descriptor.Descriptor(
 )
 
 
+_BETABERNOULLI_GROUP = descriptor.Descriptor(
+  name='Group',
+  full_name='distributions_protobuf.BetaBernoulli.Group',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='heads', full_name='distributions_protobuf.BetaBernoulli.Group.heads', index=0,
+      number=1, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='tails', full_name='distributions_protobuf.BetaBernoulli.Group.tails', index=1,
+      number=2, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=324,
+  serialized_end=361,
+)
+
 _BETABERNOULLI = descriptor.Descriptor(
   name='BetaBernoulli',
   full_name='distributions_protobuf.BetaBernoulli',
@@ -135,16 +169,43 @@ _BETABERNOULLI = descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[],
+  nested_types=[_BETABERNOULLI_GROUP, ],
   enum_types=[
   ],
   options=None,
   is_extendable=False,
   extension_ranges=[],
   serialized_start=278,
-  serialized_end=322,
+  serialized_end=361,
 )
 
+
+_DIRICHLETDISCRETE_GROUP = descriptor.Descriptor(
+  name='Group',
+  full_name='distributions_protobuf.DirichletDiscrete.Group',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='counts', full_name='distributions_protobuf.DirichletDiscrete.Group.counts', index=0,
+      number=1, type=4, cpp_type=4, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=400,
+  serialized_end=423,
+)
 
 _DIRICHLETDISCRETE = descriptor.Descriptor(
   name='DirichletDiscrete',
@@ -163,16 +224,50 @@ _DIRICHLETDISCRETE = descriptor.Descriptor(
   ],
   extensions=[
   ],
+  nested_types=[_DIRICHLETDISCRETE_GROUP, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=363,
+  serialized_end=423,
+)
+
+
+_DIRICHLETPROCESSDISCRETE_GROUP = descriptor.Descriptor(
+  name='Group',
+  full_name='distributions_protobuf.DirichletProcessDiscrete.Group',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='keys', full_name='distributions_protobuf.DirichletProcessDiscrete.Group.keys', index=0,
+      number=1, type=13, cpp_type=3, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='values', full_name='distributions_protobuf.DirichletProcessDiscrete.Group.values', index=1,
+      number=2, type=4, cpp_type=4, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
   nested_types=[],
   enum_types=[
   ],
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=324,
-  serialized_end=359,
+  serialized_start=513,
+  serialized_end=550,
 )
-
 
 _DIRICHLETPROCESSDISCRETE = descriptor.Descriptor(
   name='DirichletProcessDiscrete',
@@ -212,16 +307,57 @@ _DIRICHLETPROCESSDISCRETE = descriptor.Descriptor(
   ],
   extensions=[
   ],
+  nested_types=[_DIRICHLETPROCESSDISCRETE_GROUP, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=425,
+  serialized_end=550,
+)
+
+
+_GAMMAPOISSON_GROUP = descriptor.Descriptor(
+  name='Group',
+  full_name='distributions_protobuf.GammaPoisson.Group',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='count', full_name='distributions_protobuf.GammaPoisson.Group.count', index=0,
+      number=1, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='sum', full_name='distributions_protobuf.GammaPoisson.Group.sum', index=1,
+      number=2, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='log_prod', full_name='distributions_protobuf.GammaPoisson.Group.log_prod', index=2,
+      number=3, type=2, cpp_type=6, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
   nested_types=[],
   enum_types=[
   ],
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=361,
-  serialized_end=447,
+  serialized_start=597,
+  serialized_end=650,
 )
-
 
 _GAMMAPOISSON = descriptor.Descriptor(
   name='GammaPoisson',
@@ -247,16 +383,57 @@ _GAMMAPOISSON = descriptor.Descriptor(
   ],
   extensions=[
   ],
+  nested_types=[_GAMMAPOISSON_GROUP, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=552,
+  serialized_end=650,
+)
+
+
+_NORMALINVERSECHISQ_GROUP = descriptor.Descriptor(
+  name='Group',
+  full_name='distributions_protobuf.NormalInverseChiSq.Group',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='count', full_name='distributions_protobuf.NormalInverseChiSq.Group.count', index=0,
+      number=1, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='mean', full_name='distributions_protobuf.NormalInverseChiSq.Group.mean', index=1,
+      number=2, type=2, cpp_type=6, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='count_times_variance', full_name='distributions_protobuf.NormalInverseChiSq.Group.count_times_variance', index=2,
+      number=3, type=2, cpp_type=6, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
   nested_types=[],
   enum_types=[
   ],
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=449,
-  serialized_end=492,
+  serialized_start=731,
+  serialized_end=797,
 )
-
 
 _NORMALINVERSECHISQ = descriptor.Descriptor(
   name='NormalInverseChiSq',
@@ -296,16 +473,126 @@ _NORMALINVERSECHISQ = descriptor.Descriptor(
   ],
   extensions=[
   ],
+  nested_types=[_NORMALINVERSECHISQ_GROUP, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=653,
+  serialized_end=797,
+)
+
+
+_PRODUCTMODEL_SPARSEVALUE = descriptor.Descriptor(
+  name='SparseValue',
+  full_name='distributions_protobuf.ProductModel.SparseValue',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='observed', full_name='distributions_protobuf.ProductModel.SparseValue.observed', index=0,
+      number=1, type=8, cpp_type=7, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='booleans', full_name='distributions_protobuf.ProductModel.SparseValue.booleans', index=1,
+      number=2, type=8, cpp_type=7, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='counts', full_name='distributions_protobuf.ProductModel.SparseValue.counts', index=2,
+      number=3, type=4, cpp_type=4, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='reals', full_name='distributions_protobuf.ProductModel.SparseValue.reals', index=3,
+      number=4, type=2, cpp_type=6, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
   nested_types=[],
   enum_types=[
   ],
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=494,
-  serialized_end=570,
+  serialized_start=1149,
+  serialized_end=1229,
 )
 
+_PRODUCTMODEL_GROUP = descriptor.Descriptor(
+  name='Group',
+  full_name='distributions_protobuf.ProductModel.Group',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='count', full_name='distributions_protobuf.ProductModel.Group.count', index=0,
+      number=1, type=4, cpp_type=4, label=1,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='bb', full_name='distributions_protobuf.ProductModel.Group.bb', index=1,
+      number=2, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='dd', full_name='distributions_protobuf.ProductModel.Group.dd', index=2,
+      number=3, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='dpd', full_name='distributions_protobuf.ProductModel.Group.dpd', index=3,
+      number=4, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='gp', full_name='distributions_protobuf.ProductModel.Group.gp', index=4,
+      number=5, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='nich', full_name='distributions_protobuf.ProductModel.Group.nich', index=5,
+      number=6, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=1232,
+  serialized_end=1561,
+)
 
 _PRODUCTMODEL = descriptor.Descriptor(
   name='ProductModel',
@@ -359,69 +646,32 @@ _PRODUCTMODEL = descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[],
+  nested_types=[_PRODUCTMODEL_SPARSEVALUE, _PRODUCTMODEL_GROUP, ],
   enum_types=[
   ],
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=573,
-  serialized_end=920,
-)
-
-
-_PRODUCTVALUE = descriptor.Descriptor(
-  name='ProductValue',
-  full_name='distributions_protobuf.ProductValue',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    descriptor.FieldDescriptor(
-      name='observed', full_name='distributions_protobuf.ProductValue.observed', index=0,
-      number=1, type=8, cpp_type=7, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='booleans', full_name='distributions_protobuf.ProductValue.booleans', index=1,
-      number=2, type=8, cpp_type=7, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='counts', full_name='distributions_protobuf.ProductValue.counts', index=2,
-      number=3, type=13, cpp_type=3, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='reals', full_name='distributions_protobuf.ProductValue.reals', index=3,
-      number=4, type=2, cpp_type=6, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=922,
-  serialized_end=1003,
+  serialized_start=800,
+  serialized_end=1561,
 )
 
 _CLUSTERING_PITMANYOR.containing_type = _CLUSTERING;
 _CLUSTERING_LOWENTROPY.containing_type = _CLUSTERING;
 _CLUSTERING.fields_by_name['pitman_yor'].message_type = _CLUSTERING_PITMANYOR
 _CLUSTERING.fields_by_name['low_entropy'].message_type = _CLUSTERING_LOWENTROPY
+_BETABERNOULLI_GROUP.containing_type = _BETABERNOULLI;
+_DIRICHLETDISCRETE_GROUP.containing_type = _DIRICHLETDISCRETE;
+_DIRICHLETPROCESSDISCRETE_GROUP.containing_type = _DIRICHLETPROCESSDISCRETE;
+_GAMMAPOISSON_GROUP.containing_type = _GAMMAPOISSON;
+_NORMALINVERSECHISQ_GROUP.containing_type = _NORMALINVERSECHISQ;
+_PRODUCTMODEL_SPARSEVALUE.containing_type = _PRODUCTMODEL;
+_PRODUCTMODEL_GROUP.fields_by_name['bb'].message_type = _BETABERNOULLI_GROUP
+_PRODUCTMODEL_GROUP.fields_by_name['dd'].message_type = _DIRICHLETDISCRETE_GROUP
+_PRODUCTMODEL_GROUP.fields_by_name['dpd'].message_type = _DIRICHLETPROCESSDISCRETE_GROUP
+_PRODUCTMODEL_GROUP.fields_by_name['gp'].message_type = _GAMMAPOISSON_GROUP
+_PRODUCTMODEL_GROUP.fields_by_name['nich'].message_type = _NORMALINVERSECHISQ_GROUP
+_PRODUCTMODEL_GROUP.containing_type = _PRODUCTMODEL;
 _PRODUCTMODEL.fields_by_name['clustering'].message_type = _CLUSTERING
 _PRODUCTMODEL.fields_by_name['bb'].message_type = _BETABERNOULLI
 _PRODUCTMODEL.fields_by_name['dd'].message_type = _DIRICHLETDISCRETE
@@ -435,7 +685,6 @@ DESCRIPTOR.message_types_by_name['DirichletProcessDiscrete'] = _DIRICHLETPROCESS
 DESCRIPTOR.message_types_by_name['GammaPoisson'] = _GAMMAPOISSON
 DESCRIPTOR.message_types_by_name['NormalInverseChiSq'] = _NORMALINVERSECHISQ
 DESCRIPTOR.message_types_by_name['ProductModel'] = _PRODUCTMODEL
-DESCRIPTOR.message_types_by_name['ProductValue'] = _PRODUCTVALUE
 
 class Clustering(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
@@ -457,44 +706,80 @@ class Clustering(message.Message):
 
 class BetaBernoulli(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
+  
+  class Group(message.Message):
+    __metaclass__ = reflection.GeneratedProtocolMessageType
+    DESCRIPTOR = _BETABERNOULLI_GROUP
+    
+    # @@protoc_insertion_point(class_scope:distributions_protobuf.BetaBernoulli.Group)
   DESCRIPTOR = _BETABERNOULLI
   
   # @@protoc_insertion_point(class_scope:distributions_protobuf.BetaBernoulli)
 
 class DirichletDiscrete(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
+  
+  class Group(message.Message):
+    __metaclass__ = reflection.GeneratedProtocolMessageType
+    DESCRIPTOR = _DIRICHLETDISCRETE_GROUP
+    
+    # @@protoc_insertion_point(class_scope:distributions_protobuf.DirichletDiscrete.Group)
   DESCRIPTOR = _DIRICHLETDISCRETE
   
   # @@protoc_insertion_point(class_scope:distributions_protobuf.DirichletDiscrete)
 
 class DirichletProcessDiscrete(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
+  
+  class Group(message.Message):
+    __metaclass__ = reflection.GeneratedProtocolMessageType
+    DESCRIPTOR = _DIRICHLETPROCESSDISCRETE_GROUP
+    
+    # @@protoc_insertion_point(class_scope:distributions_protobuf.DirichletProcessDiscrete.Group)
   DESCRIPTOR = _DIRICHLETPROCESSDISCRETE
   
   # @@protoc_insertion_point(class_scope:distributions_protobuf.DirichletProcessDiscrete)
 
 class GammaPoisson(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
+  
+  class Group(message.Message):
+    __metaclass__ = reflection.GeneratedProtocolMessageType
+    DESCRIPTOR = _GAMMAPOISSON_GROUP
+    
+    # @@protoc_insertion_point(class_scope:distributions_protobuf.GammaPoisson.Group)
   DESCRIPTOR = _GAMMAPOISSON
   
   # @@protoc_insertion_point(class_scope:distributions_protobuf.GammaPoisson)
 
 class NormalInverseChiSq(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
+  
+  class Group(message.Message):
+    __metaclass__ = reflection.GeneratedProtocolMessageType
+    DESCRIPTOR = _NORMALINVERSECHISQ_GROUP
+    
+    # @@protoc_insertion_point(class_scope:distributions_protobuf.NormalInverseChiSq.Group)
   DESCRIPTOR = _NORMALINVERSECHISQ
   
   # @@protoc_insertion_point(class_scope:distributions_protobuf.NormalInverseChiSq)
 
 class ProductModel(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
+  
+  class SparseValue(message.Message):
+    __metaclass__ = reflection.GeneratedProtocolMessageType
+    DESCRIPTOR = _PRODUCTMODEL_SPARSEVALUE
+    
+    # @@protoc_insertion_point(class_scope:distributions_protobuf.ProductModel.SparseValue)
+  
+  class Group(message.Message):
+    __metaclass__ = reflection.GeneratedProtocolMessageType
+    DESCRIPTOR = _PRODUCTMODEL_GROUP
+    
+    # @@protoc_insertion_point(class_scope:distributions_protobuf.ProductModel.Group)
   DESCRIPTOR = _PRODUCTMODEL
   
   # @@protoc_insertion_point(class_scope:distributions_protobuf.ProductModel)
-
-class ProductValue(message.Message):
-  __metaclass__ = reflection.GeneratedProtocolMessageType
-  DESCRIPTOR = _PRODUCTVALUE
-  
-  # @@protoc_insertion_point(class_scope:distributions_protobuf.ProductValue)
 
 # @@protoc_insertion_point(module_scope)

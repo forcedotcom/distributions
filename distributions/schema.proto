@@ -53,10 +53,19 @@ message Clustering  // simulates a sum type
 message BetaBernoulli {
   required float alpha = 1;
   required float beta = 2;
+
+  message Group {
+    required uint64 heads = 1;
+    required uint64 tails = 2;
+  }
 }
 
 message DirichletDiscrete {
   repeated float alphas = 1;
+
+  message Group {
+    repeated uint64 counts = 1;
+  }
 }
 
 message DirichletProcessDiscrete {
@@ -64,11 +73,22 @@ message DirichletProcessDiscrete {
   required float alpha = 2;
   required float beta0 = 3;
   repeated float betas = 4;
+
+  message Group {
+    repeated uint32 keys = 1;
+    repeated uint64 values = 2;
+  }
 }
 
 message GammaPoisson {
   required float alpha = 1;
   required float beta = 2;
+
+  message Group {
+    required uint64 count = 1;
+    required uint64 sum = 2;
+    required float log_prod = 3;
+  }
 }
 
 message NormalInverseChiSq {
@@ -76,6 +96,12 @@ message NormalInverseChiSq {
   required float kappa = 2;
   required float sigmasq = 3;
   required float nu = 4;
+
+  message Group {
+    required uint64 count = 1;
+    required float mean = 2;
+    required float count_times_variance = 3;
+  }
 }
 
 //----------------------------------------------------------------------------
@@ -88,11 +114,21 @@ message ProductModel {
   repeated DirichletProcessDiscrete dpd = 4;
   repeated GammaPoisson gp = 5;
   repeated NormalInverseChiSq nich = 6;
+
+  message SparseValue {
+    repeated bool observed = 1;
+    repeated bool booleans = 2;  // including bb
+    repeated uint64 counts = 3;  // including dd, dpd, gp
+    repeated float reals = 4;  // including nich
+  }
+
+  message Group {
+    optional uint64 count = 1;
+    repeated BetaBernoulli.Group bb = 2;
+    repeated DirichletDiscrete.Group dd = 3;
+    repeated DirichletProcessDiscrete.Group dpd = 4;
+    repeated GammaPoisson.Group gp = 5;
+    repeated NormalInverseChiSq.Group nich = 6;
+  }
 }
 
-message ProductValue {
-  repeated bool observed = 1;
-  repeated bool booleans = 2;  // including bb
-  repeated uint32 counts = 3;  // including dd, dpd, gp
-  repeated float reals = 4;  // including nich
-}

@@ -27,6 +27,7 @@
 
 #include <distributions/common.hpp>
 #include <distributions/schema.pb.h>
+#include <distributions/clustering.hpp>
 #include <distributions/models/dd.hpp>
 #include <distributions/models/dpd.hpp>
 #include <distributions/models/nich.hpp>
@@ -39,6 +40,29 @@ namespace protobuf
 {
 using namespace distributions_protobuf;
 } // namespace protobuf
+
+//----------------------------------------------------------------------------
+// Clustering
+
+template<class count_t>
+inline void clustering_load (
+        typename Clustering<count_t>::PitmanYor & model,
+        const protobuf::Clustering::PitmanYor & model_pb)
+{
+    model.alpha = model_pb.alpha();
+    model.d = model_pb.d();
+}
+
+template<class count_t>
+inline void clustering_load (
+        typename Clustering<count_t>::LowEntropy & model,
+        const protobuf::Clustering::LowEntropy & model_pb)
+{
+    model.dataset_size = model_pb.dataset_size();
+}
+
+//----------------------------------------------------------------------------
+// Models
 
 template<int max_dim>
 inline void model_load (
@@ -81,6 +105,56 @@ inline void model_load (
     model.kappa = model_pb.kappa();
     model.sigmasq = model_pb.sigmasq();
     model.nu = model_pb.nu();
+}
+
+//----------------------------------------------------------------------------
+// Groups
+
+template<int max_dim>
+inline void group_dump (
+        const DirichletDiscrete<max_dim> & model,
+        const typename DirichletDiscrete<max_dim>::Group & group,
+        protobuf::DirichletDiscrete::Group & message)
+{
+    message.Clear();
+    auto & counts = * message.mutable_counts();
+    for (size_t i = 0; i < model.dim; ++i) {
+        counts.Add(group.counts[i]);
+    }
+}
+
+inline void group_dump (
+        const DirichletProcessDiscrete &,
+        const DirichletProcessDiscrete::Group & group,
+        protobuf::DirichletProcessDiscrete::Group & message)
+{
+    message.Clear();
+    auto & keys = * message.mutable_keys();
+    auto & values = * message.mutable_values();
+    for (const auto & pair : group.counts) {
+        keys.Add(pair.first);
+        values.Add(pair.second);
+    }
+}
+
+inline void group_dump (
+        const GammaPoisson &,
+        const GammaPoisson::Group & group,
+        protobuf::GammaPoisson::Group & message)
+{
+    message.set_count(group.count);
+    message.set_sum(group.sum);
+    message.set_log_prod(group.log_prod);
+}
+
+inline void group_dump (
+        const NormalInverseChiSq &,
+        const NormalInverseChiSq::Group & group,
+        protobuf::NormalInverseChiSq::Group & message)
+{
+    message.set_count(group.count);
+    message.set_mean(group.mean);
+    message.set_count_times_variance(group.count_times_variance);
 }
 
 } // namespace distributions
