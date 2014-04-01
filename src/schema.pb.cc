@@ -188,7 +188,8 @@ void protobuf_AssignDesc_distributions_2fschema_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(NormalInverseChiSq));
   ProductModel_descriptor_ = file->message_type(6);
-  static const int ProductModel_offsets_[5] = {
+  static const int ProductModel_offsets_[6] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel, clustering_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel, bb_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel, dd_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel, dpd_),
@@ -304,16 +305,18 @@ void protobuf_AddDesc_distributions_2fschema_2eproto() {
     "s\030\004 \003(\002\"+\n\014GammaPoisson\022\r\n\005alpha\030\001 \002(\002\022\014"
     "\n\004beta\030\002 \002(\002\"L\n\022NormalInverseChiSq\022\n\n\002mu"
     "\030\001 \002(\002\022\r\n\005kappa\030\002 \002(\002\022\017\n\007sigmasq\030\003 \002(\002\022\n"
-    "\n\002nu\030\004 \002(\002\"\243\002\n\014ProductModel\0221\n\002bb\030\001 \003(\0132"
-    "%.distributions_protobuf.BetaBernoulli\0225"
-    "\n\002dd\030\002 \003(\0132).distributions_protobuf.Diri"
-    "chletDiscrete\022=\n\003dpd\030\003 \003(\01320.distributio"
-    "ns_protobuf.DirichletProcessDiscrete\0220\n\002"
-    "gp\030\004 \003(\0132$.distributions_protobuf.GammaP"
-    "oisson\0228\n\004nich\030\005 \003(\0132*.distributions_pro"
-    "tobuf.NormalInverseChiSq\"Q\n\014ProductValue"
-    "\022\020\n\010observed\030\001 \003(\010\022\020\n\010booleans\030\002 \003(\010\022\016\n\006"
-    "counts\030\003 \003(\r\022\r\n\005reals\030\004 \003(\002", 947);
+    "\n\002nu\030\004 \002(\002\"\333\002\n\014ProductModel\0226\n\nclusterin"
+    "g\030\001 \001(\0132\".distributions_protobuf.Cluster"
+    "ing\0221\n\002bb\030\002 \003(\0132%.distributions_protobuf"
+    ".BetaBernoulli\0225\n\002dd\030\003 \003(\0132).distributio"
+    "ns_protobuf.DirichletDiscrete\022=\n\003dpd\030\004 \003"
+    "(\01320.distributions_protobuf.DirichletPro"
+    "cessDiscrete\0220\n\002gp\030\005 \003(\0132$.distributions"
+    "_protobuf.GammaPoisson\0228\n\004nich\030\006 \003(\0132*.d"
+    "istributions_protobuf.NormalInverseChiSq"
+    "\"Q\n\014ProductValue\022\020\n\010observed\030\001 \003(\010\022\020\n\010bo"
+    "oleans\030\002 \003(\010\022\016\n\006counts\030\003 \003(\r\022\r\n\005reals\030\004 "
+    "\003(\002", 1003);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "distributions/schema.proto", &protobuf_RegisterTypes);
   Clustering::default_instance_ = new Clustering();
@@ -2407,6 +2410,7 @@ void NormalInverseChiSq::Swap(NormalInverseChiSq* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
+const int ProductModel::kClusteringFieldNumber;
 const int ProductModel::kBbFieldNumber;
 const int ProductModel::kDdFieldNumber;
 const int ProductModel::kDpdFieldNumber;
@@ -2420,6 +2424,7 @@ ProductModel::ProductModel()
 }
 
 void ProductModel::InitAsDefaultInstance() {
+  clustering_ = const_cast< ::distributions_protobuf::Clustering*>(&::distributions_protobuf::Clustering::default_instance());
 }
 
 ProductModel::ProductModel(const ProductModel& from)
@@ -2430,6 +2435,7 @@ ProductModel::ProductModel(const ProductModel& from)
 
 void ProductModel::SharedCtor() {
   _cached_size_ = 0;
+  clustering_ = NULL;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2439,6 +2445,7 @@ ProductModel::~ProductModel() {
 
 void ProductModel::SharedDtor() {
   if (this != default_instance_) {
+    delete clustering_;
   }
 }
 
@@ -2463,6 +2470,11 @@ ProductModel* ProductModel::New() const {
 }
 
 void ProductModel::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (has_clustering()) {
+      if (clustering_ != NULL) clustering_->::distributions_protobuf::Clustering::Clear();
+    }
+  }
   bb_.Clear();
   dd_.Clear();
   dpd_.Clear();
@@ -2478,8 +2490,21 @@ bool ProductModel::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated .distributions_protobuf.BetaBernoulli bb = 1;
+      // optional .distributions_protobuf.Clustering clustering = 1;
       case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+               input, mutable_clustering()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(18)) goto parse_bb;
+        break;
+      }
+      
+      // repeated .distributions_protobuf.BetaBernoulli bb = 2;
+      case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_bb:
@@ -2488,13 +2513,13 @@ bool ProductModel::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(10)) goto parse_bb;
-        if (input->ExpectTag(18)) goto parse_dd;
+        if (input->ExpectTag(18)) goto parse_bb;
+        if (input->ExpectTag(26)) goto parse_dd;
         break;
       }
       
-      // repeated .distributions_protobuf.DirichletDiscrete dd = 2;
-      case 2: {
+      // repeated .distributions_protobuf.DirichletDiscrete dd = 3;
+      case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_dd:
@@ -2503,13 +2528,13 @@ bool ProductModel::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(18)) goto parse_dd;
-        if (input->ExpectTag(26)) goto parse_dpd;
+        if (input->ExpectTag(26)) goto parse_dd;
+        if (input->ExpectTag(34)) goto parse_dpd;
         break;
       }
       
-      // repeated .distributions_protobuf.DirichletProcessDiscrete dpd = 3;
-      case 3: {
+      // repeated .distributions_protobuf.DirichletProcessDiscrete dpd = 4;
+      case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_dpd:
@@ -2518,13 +2543,13 @@ bool ProductModel::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(26)) goto parse_dpd;
-        if (input->ExpectTag(34)) goto parse_gp;
+        if (input->ExpectTag(34)) goto parse_dpd;
+        if (input->ExpectTag(42)) goto parse_gp;
         break;
       }
       
-      // repeated .distributions_protobuf.GammaPoisson gp = 4;
-      case 4: {
+      // repeated .distributions_protobuf.GammaPoisson gp = 5;
+      case 5: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_gp:
@@ -2533,13 +2558,13 @@ bool ProductModel::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(34)) goto parse_gp;
-        if (input->ExpectTag(42)) goto parse_nich;
+        if (input->ExpectTag(42)) goto parse_gp;
+        if (input->ExpectTag(50)) goto parse_nich;
         break;
       }
       
-      // repeated .distributions_protobuf.NormalInverseChiSq nich = 5;
-      case 5: {
+      // repeated .distributions_protobuf.NormalInverseChiSq nich = 6;
+      case 6: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
          parse_nich:
@@ -2548,7 +2573,7 @@ bool ProductModel::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(42)) goto parse_nich;
+        if (input->ExpectTag(50)) goto parse_nich;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -2571,34 +2596,40 @@ bool ProductModel::MergePartialFromCodedStream(
 
 void ProductModel::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated .distributions_protobuf.BetaBernoulli bb = 1;
+  // optional .distributions_protobuf.Clustering clustering = 1;
+  if (has_clustering()) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->clustering(), output);
+  }
+  
+  // repeated .distributions_protobuf.BetaBernoulli bb = 2;
   for (int i = 0; i < this->bb_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->bb(i), output);
+      2, this->bb(i), output);
   }
   
-  // repeated .distributions_protobuf.DirichletDiscrete dd = 2;
+  // repeated .distributions_protobuf.DirichletDiscrete dd = 3;
   for (int i = 0; i < this->dd_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      2, this->dd(i), output);
+      3, this->dd(i), output);
   }
   
-  // repeated .distributions_protobuf.DirichletProcessDiscrete dpd = 3;
+  // repeated .distributions_protobuf.DirichletProcessDiscrete dpd = 4;
   for (int i = 0; i < this->dpd_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      3, this->dpd(i), output);
+      4, this->dpd(i), output);
   }
   
-  // repeated .distributions_protobuf.GammaPoisson gp = 4;
+  // repeated .distributions_protobuf.GammaPoisson gp = 5;
   for (int i = 0; i < this->gp_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      4, this->gp(i), output);
+      5, this->gp(i), output);
   }
   
-  // repeated .distributions_protobuf.NormalInverseChiSq nich = 5;
+  // repeated .distributions_protobuf.NormalInverseChiSq nich = 6;
   for (int i = 0; i < this->nich_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      5, this->nich(i), output);
+      6, this->nich(i), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -2609,39 +2640,46 @@ void ProductModel::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* ProductModel::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // repeated .distributions_protobuf.BetaBernoulli bb = 1;
+  // optional .distributions_protobuf.Clustering clustering = 1;
+  if (has_clustering()) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->clustering(), target);
+  }
+  
+  // repeated .distributions_protobuf.BetaBernoulli bb = 2;
   for (int i = 0; i < this->bb_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        1, this->bb(i), target);
+        2, this->bb(i), target);
   }
   
-  // repeated .distributions_protobuf.DirichletDiscrete dd = 2;
+  // repeated .distributions_protobuf.DirichletDiscrete dd = 3;
   for (int i = 0; i < this->dd_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        2, this->dd(i), target);
+        3, this->dd(i), target);
   }
   
-  // repeated .distributions_protobuf.DirichletProcessDiscrete dpd = 3;
+  // repeated .distributions_protobuf.DirichletProcessDiscrete dpd = 4;
   for (int i = 0; i < this->dpd_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        3, this->dpd(i), target);
+        4, this->dpd(i), target);
   }
   
-  // repeated .distributions_protobuf.GammaPoisson gp = 4;
+  // repeated .distributions_protobuf.GammaPoisson gp = 5;
   for (int i = 0; i < this->gp_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        4, this->gp(i), target);
+        5, this->gp(i), target);
   }
   
-  // repeated .distributions_protobuf.NormalInverseChiSq nich = 5;
+  // repeated .distributions_protobuf.NormalInverseChiSq nich = 6;
   for (int i = 0; i < this->nich_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
-        5, this->nich(i), target);
+        6, this->nich(i), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -2654,7 +2692,16 @@ void ProductModel::SerializeWithCachedSizes(
 int ProductModel::ByteSize() const {
   int total_size = 0;
   
-  // repeated .distributions_protobuf.BetaBernoulli bb = 1;
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // optional .distributions_protobuf.Clustering clustering = 1;
+    if (has_clustering()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+          this->clustering());
+    }
+    
+  }
+  // repeated .distributions_protobuf.BetaBernoulli bb = 2;
   total_size += 1 * this->bb_size();
   for (int i = 0; i < this->bb_size(); i++) {
     total_size +=
@@ -2662,7 +2709,7 @@ int ProductModel::ByteSize() const {
         this->bb(i));
   }
   
-  // repeated .distributions_protobuf.DirichletDiscrete dd = 2;
+  // repeated .distributions_protobuf.DirichletDiscrete dd = 3;
   total_size += 1 * this->dd_size();
   for (int i = 0; i < this->dd_size(); i++) {
     total_size +=
@@ -2670,7 +2717,7 @@ int ProductModel::ByteSize() const {
         this->dd(i));
   }
   
-  // repeated .distributions_protobuf.DirichletProcessDiscrete dpd = 3;
+  // repeated .distributions_protobuf.DirichletProcessDiscrete dpd = 4;
   total_size += 1 * this->dpd_size();
   for (int i = 0; i < this->dpd_size(); i++) {
     total_size +=
@@ -2678,7 +2725,7 @@ int ProductModel::ByteSize() const {
         this->dpd(i));
   }
   
-  // repeated .distributions_protobuf.GammaPoisson gp = 4;
+  // repeated .distributions_protobuf.GammaPoisson gp = 5;
   total_size += 1 * this->gp_size();
   for (int i = 0; i < this->gp_size(); i++) {
     total_size +=
@@ -2686,7 +2733,7 @@ int ProductModel::ByteSize() const {
         this->gp(i));
   }
   
-  // repeated .distributions_protobuf.NormalInverseChiSq nich = 5;
+  // repeated .distributions_protobuf.NormalInverseChiSq nich = 6;
   total_size += 1 * this->nich_size();
   for (int i = 0; i < this->nich_size(); i++) {
     total_size +=
@@ -2724,6 +2771,11 @@ void ProductModel::MergeFrom(const ProductModel& from) {
   dpd_.MergeFrom(from.dpd_);
   gp_.MergeFrom(from.gp_);
   nich_.MergeFrom(from.nich_);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_clustering()) {
+      mutable_clustering()->::distributions_protobuf::Clustering::MergeFrom(from.clustering());
+    }
+  }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
@@ -2741,6 +2793,9 @@ void ProductModel::CopyFrom(const ProductModel& from) {
 
 bool ProductModel::IsInitialized() const {
   
+  if (has_clustering()) {
+    if (!this->clustering().IsInitialized()) return false;
+  }
   for (int i = 0; i < bb_size(); i++) {
     if (!this->bb(i).IsInitialized()) return false;
   }
@@ -2758,6 +2813,7 @@ bool ProductModel::IsInitialized() const {
 
 void ProductModel::Swap(ProductModel* other) {
   if (other != this) {
+    std::swap(clustering_, other->clustering_);
     bb_.Swap(&other->bb_);
     dd_.Swap(&other->dd_);
     dpd_.Swap(&other->dpd_);

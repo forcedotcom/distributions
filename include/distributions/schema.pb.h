@@ -866,10 +866,18 @@ class ProductModel : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // repeated .distributions_protobuf.BetaBernoulli bb = 1;
+  // optional .distributions_protobuf.Clustering clustering = 1;
+  inline bool has_clustering() const;
+  inline void clear_clustering();
+  static const int kClusteringFieldNumber = 1;
+  inline const ::distributions_protobuf::Clustering& clustering() const;
+  inline ::distributions_protobuf::Clustering* mutable_clustering();
+  inline ::distributions_protobuf::Clustering* release_clustering();
+  
+  // repeated .distributions_protobuf.BetaBernoulli bb = 2;
   inline int bb_size() const;
   inline void clear_bb();
-  static const int kBbFieldNumber = 1;
+  static const int kBbFieldNumber = 2;
   inline const ::distributions_protobuf::BetaBernoulli& bb(int index) const;
   inline ::distributions_protobuf::BetaBernoulli* mutable_bb(int index);
   inline ::distributions_protobuf::BetaBernoulli* add_bb();
@@ -878,10 +886,10 @@ class ProductModel : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::BetaBernoulli >*
       mutable_bb();
   
-  // repeated .distributions_protobuf.DirichletDiscrete dd = 2;
+  // repeated .distributions_protobuf.DirichletDiscrete dd = 3;
   inline int dd_size() const;
   inline void clear_dd();
-  static const int kDdFieldNumber = 2;
+  static const int kDdFieldNumber = 3;
   inline const ::distributions_protobuf::DirichletDiscrete& dd(int index) const;
   inline ::distributions_protobuf::DirichletDiscrete* mutable_dd(int index);
   inline ::distributions_protobuf::DirichletDiscrete* add_dd();
@@ -890,10 +898,10 @@ class ProductModel : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletDiscrete >*
       mutable_dd();
   
-  // repeated .distributions_protobuf.DirichletProcessDiscrete dpd = 3;
+  // repeated .distributions_protobuf.DirichletProcessDiscrete dpd = 4;
   inline int dpd_size() const;
   inline void clear_dpd();
-  static const int kDpdFieldNumber = 3;
+  static const int kDpdFieldNumber = 4;
   inline const ::distributions_protobuf::DirichletProcessDiscrete& dpd(int index) const;
   inline ::distributions_protobuf::DirichletProcessDiscrete* mutable_dpd(int index);
   inline ::distributions_protobuf::DirichletProcessDiscrete* add_dpd();
@@ -902,10 +910,10 @@ class ProductModel : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletProcessDiscrete >*
       mutable_dpd();
   
-  // repeated .distributions_protobuf.GammaPoisson gp = 4;
+  // repeated .distributions_protobuf.GammaPoisson gp = 5;
   inline int gp_size() const;
   inline void clear_gp();
-  static const int kGpFieldNumber = 4;
+  static const int kGpFieldNumber = 5;
   inline const ::distributions_protobuf::GammaPoisson& gp(int index) const;
   inline ::distributions_protobuf::GammaPoisson* mutable_gp(int index);
   inline ::distributions_protobuf::GammaPoisson* add_gp();
@@ -914,10 +922,10 @@ class ProductModel : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::GammaPoisson >*
       mutable_gp();
   
-  // repeated .distributions_protobuf.NormalInverseChiSq nich = 5;
+  // repeated .distributions_protobuf.NormalInverseChiSq nich = 6;
   inline int nich_size() const;
   inline void clear_nich();
-  static const int kNichFieldNumber = 5;
+  static const int kNichFieldNumber = 6;
   inline const ::distributions_protobuf::NormalInverseChiSq& nich(int index) const;
   inline ::distributions_protobuf::NormalInverseChiSq* mutable_nich(int index);
   inline ::distributions_protobuf::NormalInverseChiSq* add_nich();
@@ -928,9 +936,12 @@ class ProductModel : public ::google::protobuf::Message {
   
   // @@protoc_insertion_point(class_scope:distributions_protobuf.ProductModel)
  private:
+  inline void set_has_clustering();
+  inline void clear_has_clustering();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
+  ::distributions_protobuf::Clustering* clustering_;
   ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::BetaBernoulli > bb_;
   ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletDiscrete > dd_;
   ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletProcessDiscrete > dpd_;
@@ -938,7 +949,7 @@ class ProductModel : public ::google::protobuf::Message {
   ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::NormalInverseChiSq > nich_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
   
   friend void  protobuf_AddDesc_distributions_2fschema_2eproto();
   friend void protobuf_AssignDesc_distributions_2fschema_2eproto();
@@ -1526,7 +1537,36 @@ inline void NormalInverseChiSq::set_nu(float value) {
 
 // ProductModel
 
-// repeated .distributions_protobuf.BetaBernoulli bb = 1;
+// optional .distributions_protobuf.Clustering clustering = 1;
+inline bool ProductModel::has_clustering() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void ProductModel::set_has_clustering() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void ProductModel::clear_has_clustering() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void ProductModel::clear_clustering() {
+  if (clustering_ != NULL) clustering_->::distributions_protobuf::Clustering::Clear();
+  clear_has_clustering();
+}
+inline const ::distributions_protobuf::Clustering& ProductModel::clustering() const {
+  return clustering_ != NULL ? *clustering_ : *default_instance_->clustering_;
+}
+inline ::distributions_protobuf::Clustering* ProductModel::mutable_clustering() {
+  set_has_clustering();
+  if (clustering_ == NULL) clustering_ = new ::distributions_protobuf::Clustering;
+  return clustering_;
+}
+inline ::distributions_protobuf::Clustering* ProductModel::release_clustering() {
+  clear_has_clustering();
+  ::distributions_protobuf::Clustering* temp = clustering_;
+  clustering_ = NULL;
+  return temp;
+}
+
+// repeated .distributions_protobuf.BetaBernoulli bb = 2;
 inline int ProductModel::bb_size() const {
   return bb_.size();
 }
@@ -1551,7 +1591,7 @@ ProductModel::mutable_bb() {
   return &bb_;
 }
 
-// repeated .distributions_protobuf.DirichletDiscrete dd = 2;
+// repeated .distributions_protobuf.DirichletDiscrete dd = 3;
 inline int ProductModel::dd_size() const {
   return dd_.size();
 }
@@ -1576,7 +1616,7 @@ ProductModel::mutable_dd() {
   return &dd_;
 }
 
-// repeated .distributions_protobuf.DirichletProcessDiscrete dpd = 3;
+// repeated .distributions_protobuf.DirichletProcessDiscrete dpd = 4;
 inline int ProductModel::dpd_size() const {
   return dpd_.size();
 }
@@ -1601,7 +1641,7 @@ ProductModel::mutable_dpd() {
   return &dpd_;
 }
 
-// repeated .distributions_protobuf.GammaPoisson gp = 4;
+// repeated .distributions_protobuf.GammaPoisson gp = 5;
 inline int ProductModel::gp_size() const {
   return gp_.size();
 }
@@ -1626,7 +1666,7 @@ ProductModel::mutable_gp() {
   return &gp_;
 }
 
-// repeated .distributions_protobuf.NormalInverseChiSq nich = 5;
+// repeated .distributions_protobuf.NormalInverseChiSq nich = 6;
 inline int ProductModel::nich_size() const {
   return nich_.size();
 }

@@ -10,7 +10,7 @@ from google.protobuf import reflection
 DESCRIPTOR = descriptor.FileDescriptor(
   name='distributions/schema.proto',
   package='distributions_protobuf',
-  serialized_pb='\n\x1a\x64istributions/schema.proto\x12\x16\x64istributions_protobuf\"\xdd\x01\n\nClustering\x12@\n\npitman_yor\x18\x01 \x01(\x0b\x32,.distributions_protobuf.Clustering.PitmanYor\x12\x42\n\x0blow_entropy\x18\x02 \x01(\x0b\x32-.distributions_protobuf.Clustering.LowEntropy\x1a%\n\tPitmanYor\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\t\n\x01\x64\x18\x02 \x02(\x02\x1a\"\n\nLowEntropy\x12\x14\n\x0c\x64\x61taset_size\x18\x01 \x02(\x04\",\n\rBetaBernoulli\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\"#\n\x11\x44irichletDiscrete\x12\x0e\n\x06\x61lphas\x18\x01 \x03(\x02\"V\n\x18\x44irichletProcessDiscrete\x12\r\n\x05gamma\x18\x01 \x02(\x02\x12\r\n\x05\x61lpha\x18\x02 \x02(\x02\x12\r\n\x05\x62\x65ta0\x18\x03 \x02(\x02\x12\r\n\x05\x62\x65tas\x18\x04 \x03(\x02\"+\n\x0cGammaPoisson\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\"L\n\x12NormalInverseChiSq\x12\n\n\x02mu\x18\x01 \x02(\x02\x12\r\n\x05kappa\x18\x02 \x02(\x02\x12\x0f\n\x07sigmasq\x18\x03 \x02(\x02\x12\n\n\x02nu\x18\x04 \x02(\x02\"\xa3\x02\n\x0cProductModel\x12\x31\n\x02\x62\x62\x18\x01 \x03(\x0b\x32%.distributions_protobuf.BetaBernoulli\x12\x35\n\x02\x64\x64\x18\x02 \x03(\x0b\x32).distributions_protobuf.DirichletDiscrete\x12=\n\x03\x64pd\x18\x03 \x03(\x0b\x32\x30.distributions_protobuf.DirichletProcessDiscrete\x12\x30\n\x02gp\x18\x04 \x03(\x0b\x32$.distributions_protobuf.GammaPoisson\x12\x38\n\x04nich\x18\x05 \x03(\x0b\x32*.distributions_protobuf.NormalInverseChiSq\"Q\n\x0cProductValue\x12\x10\n\x08observed\x18\x01 \x03(\x08\x12\x10\n\x08\x62ooleans\x18\x02 \x03(\x08\x12\x0e\n\x06\x63ounts\x18\x03 \x03(\r\x12\r\n\x05reals\x18\x04 \x03(\x02')
+  serialized_pb='\n\x1a\x64istributions/schema.proto\x12\x16\x64istributions_protobuf\"\xdd\x01\n\nClustering\x12@\n\npitman_yor\x18\x01 \x01(\x0b\x32,.distributions_protobuf.Clustering.PitmanYor\x12\x42\n\x0blow_entropy\x18\x02 \x01(\x0b\x32-.distributions_protobuf.Clustering.LowEntropy\x1a%\n\tPitmanYor\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\t\n\x01\x64\x18\x02 \x02(\x02\x1a\"\n\nLowEntropy\x12\x14\n\x0c\x64\x61taset_size\x18\x01 \x02(\x04\",\n\rBetaBernoulli\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\"#\n\x11\x44irichletDiscrete\x12\x0e\n\x06\x61lphas\x18\x01 \x03(\x02\"V\n\x18\x44irichletProcessDiscrete\x12\r\n\x05gamma\x18\x01 \x02(\x02\x12\r\n\x05\x61lpha\x18\x02 \x02(\x02\x12\r\n\x05\x62\x65ta0\x18\x03 \x02(\x02\x12\r\n\x05\x62\x65tas\x18\x04 \x03(\x02\"+\n\x0cGammaPoisson\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\"L\n\x12NormalInverseChiSq\x12\n\n\x02mu\x18\x01 \x02(\x02\x12\r\n\x05kappa\x18\x02 \x02(\x02\x12\x0f\n\x07sigmasq\x18\x03 \x02(\x02\x12\n\n\x02nu\x18\x04 \x02(\x02\"\xdb\x02\n\x0cProductModel\x12\x36\n\nclustering\x18\x01 \x01(\x0b\x32\".distributions_protobuf.Clustering\x12\x31\n\x02\x62\x62\x18\x02 \x03(\x0b\x32%.distributions_protobuf.BetaBernoulli\x12\x35\n\x02\x64\x64\x18\x03 \x03(\x0b\x32).distributions_protobuf.DirichletDiscrete\x12=\n\x03\x64pd\x18\x04 \x03(\x0b\x32\x30.distributions_protobuf.DirichletProcessDiscrete\x12\x30\n\x02gp\x18\x05 \x03(\x0b\x32$.distributions_protobuf.GammaPoisson\x12\x38\n\x04nich\x18\x06 \x03(\x0b\x32*.distributions_protobuf.NormalInverseChiSq\"Q\n\x0cProductValue\x12\x10\n\x08observed\x18\x01 \x03(\x08\x12\x10\n\x08\x62ooleans\x18\x02 \x03(\x08\x12\x0e\n\x06\x63ounts\x18\x03 \x03(\r\x12\r\n\x05reals\x18\x04 \x03(\x02')
 
 
 
@@ -315,36 +315,43 @@ _PRODUCTMODEL = descriptor.Descriptor(
   containing_type=None,
   fields=[
     descriptor.FieldDescriptor(
-      name='bb', full_name='distributions_protobuf.ProductModel.bb', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
+      name='clustering', full_name='distributions_protobuf.ProductModel.clustering', index=0,
+      number=1, type=11, cpp_type=10, label=1,
+      has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='dd', full_name='distributions_protobuf.ProductModel.dd', index=1,
+      name='bb', full_name='distributions_protobuf.ProductModel.bb', index=1,
       number=2, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='dpd', full_name='distributions_protobuf.ProductModel.dpd', index=2,
+      name='dd', full_name='distributions_protobuf.ProductModel.dd', index=2,
       number=3, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='gp', full_name='distributions_protobuf.ProductModel.gp', index=3,
+      name='dpd', full_name='distributions_protobuf.ProductModel.dpd', index=3,
       number=4, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='nich', full_name='distributions_protobuf.ProductModel.nich', index=4,
+      name='gp', full_name='distributions_protobuf.ProductModel.gp', index=4,
       number=5, type=11, cpp_type=10, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='nich', full_name='distributions_protobuf.ProductModel.nich', index=5,
+      number=6, type=11, cpp_type=10, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -359,7 +366,7 @@ _PRODUCTMODEL = descriptor.Descriptor(
   is_extendable=False,
   extension_ranges=[],
   serialized_start=573,
-  serialized_end=864,
+  serialized_end=920,
 )
 
 
@@ -407,14 +414,15 @@ _PRODUCTVALUE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=866,
-  serialized_end=947,
+  serialized_start=922,
+  serialized_end=1003,
 )
 
 _CLUSTERING_PITMANYOR.containing_type = _CLUSTERING;
 _CLUSTERING_LOWENTROPY.containing_type = _CLUSTERING;
 _CLUSTERING.fields_by_name['pitman_yor'].message_type = _CLUSTERING_PITMANYOR
 _CLUSTERING.fields_by_name['low_entropy'].message_type = _CLUSTERING_LOWENTROPY
+_PRODUCTMODEL.fields_by_name['clustering'].message_type = _CLUSTERING
 _PRODUCTMODEL.fields_by_name['bb'].message_type = _BETABERNOULLI
 _PRODUCTMODEL.fields_by_name['dd'].message_type = _DIRICHLETDISCRETE
 _PRODUCTMODEL.fields_by_name['dpd'].message_type = _DIRICHLETPROCESSDISCRETE

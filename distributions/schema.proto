@@ -82,11 +82,12 @@ message NormalInverseChiSq {
 // Products
 
 message ProductModel {
-  repeated BetaBernoulli bb = 1;
-  repeated DirichletDiscrete dd = 2;  // must be in order of increasing dim
-  repeated DirichletProcessDiscrete dpd = 3;
-  repeated GammaPoisson gp = 4;
-  repeated NormalInverseChiSq nich = 5;
+  optional Clustering clustering = 1;
+  repeated BetaBernoulli bb = 2;
+  repeated DirichletDiscrete dd = 3;  // must be in order of increasing dim
+  repeated DirichletProcessDiscrete dpd = 4;
+  repeated GammaPoisson gp = 5;
+  repeated NormalInverseChiSq nich = 6;
 }
 
 message ProductValue {
