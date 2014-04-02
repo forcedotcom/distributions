@@ -104,6 +104,8 @@ def make_extension(name):
                 'src/random.cc',
                 'src/vector_math.cc',
             ]
+            if name == 'lp.clustering':
+                sources.append('src/clustering.cc')
     return Extension(
         module,
         sources=sources,
