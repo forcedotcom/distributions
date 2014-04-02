@@ -28,6 +28,7 @@
 import math
 import functools
 from collections import defaultdict
+import numpy
 from nose import SkipTest
 from nose.tools import (
     assert_true,
@@ -36,7 +37,12 @@ from nose.tools import (
     assert_is_instance,
 )
 from distributions.util import discrete_goodness_of_fit
-from distributions.tests.util import require_cython, seed_all, assert_hasattr
+from distributions.tests.util import (
+    require_cython,
+    seed_all,
+    assert_hasattr,
+    assert_close,
+)
 require_cython()
 from distributions.lp.clustering import (
     count_assignments,
@@ -44,11 +50,10 @@ from distributions.lp.clustering import (
     LowEntropy,
 )
 
-MODELS = [
-    PitmanYor,
-    LowEntropy,
-]
-MODELS = {Model.__name__: Model for Model in MODELS}
+MODELS = {
+    'PitmanYor': PitmanYor,
+    'LowEntropy': LowEntropy,
+}
 
 SAMPLE_COUNT = 1000
 MAX_SIZE = 5
@@ -76,14 +81,13 @@ def for_each_model(*filters):
         def test_one_model(name):
             Model = MODELS[name]
             for EXAMPLE in iter_examples(Model):
-                for size in SIZES:
-                    test_fun(Model, EXAMPLE, size)
+                test_fun(Model, EXAMPLE)
 
         @functools.wraps(test_fun)
         def test_all_models():
             for name, Model in MODELS.iteritems():
                 if all(f(Model) for f in filters):
-                    yield test_fun, name
+                    yield test_one_model, name
 
         return test_all_models
     return filtered
@@ -102,30 +106,61 @@ def canonicalize(assignments):
 
 
 @for_each_model()
-def test_basic(Model, EXAMPLE, size):
+def test_sampler(Model, EXAMPLE):
     if Model.__name__ == 'LowEntropy':
         raise SkipTest('FIXME LowEntropy.score_counts is not normalized')
 
     seed_all(0)
+    for size in SIZES:
+        model = Model()
+        model.load(EXAMPLE)
+        samples = []
+        probs_dict = {}
+        for _ in xrange(SAMPLE_COUNT):
+            value = model.sample_assignments(size)
+            assignments = dict(enumerate(value))
+            counts = count_assignments(assignments)
+            prob = math.exp(model.score_counts(counts))
+            sample = canonicalize(value)
+            samples.append(sample)
+            probs_dict[sample] = prob
+
+        total = sum(probs_dict.values())
+        assert_less(
+            abs(total - 1),
+            1e-2,
+            'not normalized: {}'.format(total))
+
+        gof = discrete_goodness_of_fit(samples, probs_dict, plot=True)
+        print '{} gof = {:0.3g}'.format(Model.__name__, gof)
+        assert_greater(gof, MIN_GOODNESS_OF_FIT)
+
+
+@for_each_model(lambda Model: hasattr(Model, 'Mixture'))
+def test_mixture(Model, EXAMPLE):
+    seed_all(0)
     model = Model()
     model.load(EXAMPLE)
-    samples = []
-    probs_dict = {}
-    for _ in xrange(SAMPLE_COUNT):
-        value = model.sample_assignments(size)
-        assignments = dict(enumerate(value))
-        counts = count_assignments(assignments)
-        prob = math.exp(model.score_counts(counts))
-        sample = canonicalize(value)
-        samples.append(sample)
-        probs_dict[sample] = prob
 
-    total = sum(probs_dict.values())
-    assert_less(
-        abs(total - 1),
-        1e-2,
-        'not normalized: {}'.format(total))
+    sample_size = 1000
+    value = model.sample_assignments(sample_size)
+    assignments = dict(enumerate(value))
+    counts = count_assignments(assignments)
+    group_count = len(counts)
+    assert_greater(group_count, 1, "test is inaccurate")
+    counts = counts + [0]
 
-    gof = discrete_goodness_of_fit(samples, probs_dict, plot=True)
-    print '{} gof = {:0.3g}'.format(Model.__name__, gof)
-    assert_greater(gof, MIN_GOODNESS_OF_FIT)
+    expected = [
+        model.score_add_value(group_size, group_count, sample_size)
+        for group_size in counts
+    ]
+
+    mixture = Model.Mixture()
+    for count in counts:
+        mixture.append(count)
+    model.mixture_init(mixture)
+    actual = numpy.zeros(len(counts), dtype=numpy.float32)
+    model.mixture_score(mixture, actual)
+
+    print 'counts =', counts
+    assert_close(actual, expected)

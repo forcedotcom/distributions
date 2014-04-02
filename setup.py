@@ -56,6 +56,7 @@ include_dirs.append(np.get_include())
 
 extra_compile_args = [
     '-DDIST_DEBUG_LEVEL=3',
+    '-DDIST_THROW_ON_ERROR=1',
 ]
 if clang:
     extra_compile_args.extend([

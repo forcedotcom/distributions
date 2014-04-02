@@ -28,6 +28,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <algorithm>
 #include <distributions/common.hpp>
 #include <distributions/random.hpp>
 #include <distributions/vector.hpp>
@@ -129,10 +130,20 @@ struct PitmanYor
 
     void _mixture_update_group (Mixture & mixture, size_t groupid) const
     {
-        const auto group_count = mixture.counts.size();
+        if (DIST_DEBUG_LEVEL >= 3) {
+            size_t empty_group_count = std::count_if(
+                mixture.counts.begin(),
+                mixture.counts.end(),
+                [&](count_t count){ return count == 0; });
+            DIST_ASSERT(
+                empty_group_count == 1,
+                "expected 1 empty group, actual " << empty_group_count);
+        }
+        const auto nonempty_group_count = mixture.counts.size() - 1;
         const auto group_size = mixture.counts[groupid];
         mixture.shifted_scores[groupid] =
-            fast_log(group_size ? alpha + d * group_count : group_size - d);
+            fast_log(group_size ? group_size - d
+                                : alpha + d * nonempty_group_count);
     }
 
     public:

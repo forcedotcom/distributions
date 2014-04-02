@@ -49,44 +49,44 @@ cdef extern from 'distributions/clustering.hpp':
 
     cdef vector[int] count_assignments_cc \
             "distributions::Clustering<int>::count_assignments" \
-            (Assignments & assignments) nogil
+            (Assignments & assignments) nogil except +
 
     cppclass PitmanYor_cc "distributions::Clustering<int>::PitmanYor":
         float alpha
         float d
-        vector[int] sample_assignments(int size, rng_t & rng) nogil
+        vector[int] sample_assignments(int size, rng_t & rng) nogil except +
         cppclass Mixture:
             vector[int] counts
             int sample_size
             VectorFloat shifted_scores
-        float score_counts(vector[int] & counts) nogil
+        float score_counts(vector[int] & counts) nogil except +
         float score_add_value (
                 int group_size,
                 int group_count,
-                int sample_size) nogil
+                int sample_size) nogil except +
         float score_remove_value (
                 int group_size,
                 int group_count,
-                int sample_size) nogil
-        void mixture_init (Mixture &) nogil
-        void mixture_add_group (Mixture &) nogil
-        void mixture_remove_group (Mixture &, size_t) nogil
-        void mixture_add_value (Mixture &, size_t) nogil
-        void mixture_remove_value (Mixture &, size_t) nogil
-        void mixture_score (Mixture &, VectorFloat &) nogil
+                int sample_size) nogil except +
+        void mixture_init (Mixture &) nogil except +
+        void mixture_add_group (Mixture &) nogil except +
+        void mixture_remove_group (Mixture &, size_t) nogil except +
+        void mixture_add_value (Mixture &, size_t) nogil except +
+        void mixture_remove_value (Mixture &, size_t) nogil except +
+        void mixture_score (Mixture &, VectorFloat &) nogil except +
 
     cppclass LowEntropy_cc "distributions::Clustering<int>::LowEntropy":
         int dataset_size
-        vector[int] sample_assignments(int size, rng_t & rng) nogil
-        float score_counts(vector[int] & counts) nogil
+        vector[int] sample_assignments(int size, rng_t & rng) nogil except +
+        float score_counts(vector[int] & counts) nogil except +
         float score_add_value (
                 int group_size,
                 int group_count,
-                int sample_size) nogil
+                int sample_size) nogil except +
         float score_remove_value (
                 int group_size,
                 int group_count,
-                int sample_size) nogil
+                int sample_size) nogil except +
 
 
 cpdef list count_assignments(dict assignments):
