@@ -26,16 +26,13 @@
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import numpy
-from nose import SkipTest
 from nose.tools import assert_equal
-from distributions.tests.util import assert_close
+from distributions.tests.util import require_cython, assert_close
 
 
 def test_log_stirling1_row():
-    try:
-        from distributions.lp.special import log_stirling1_row
-    except ImportError:
-        raise SkipTest('no cython support')
+    require_cython()
+    from distributions.lp.special import log_stirling1_row
     MAX_N = 128
 
     rows = [[1]]
