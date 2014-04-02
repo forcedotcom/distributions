@@ -63,24 +63,24 @@ cdef extern from "distributions/models/dd.hpp" namespace "distributions":
             float alpha_sum
             vector[VectorFloat] scores
             VectorFloat scores_shift
-        void group_init (Group &, rng_t &) nogil
-        void group_add_value (Group &, Value &, rng_t &) nogil
-        void group_remove_value (Group &, Value &, rng_t &) nogil
-        void group_merge (Group &, Group &, rng_t &) nogil
-        void sampler_init (Sampler &, Group &, rng_t &) nogil
-        Value sampler_eval (Sampler &, rng_t &) nogil
-        Value sample_value (Group &, rng_t &) nogil
-        float score_value (Group &, Value &, rng_t &) nogil
-        float score_group (Group &, rng_t &) nogil
-        void classifier_init (Classifier &, rng_t &) nogil
-        void classifier_add_group (Classifier &, rng_t &) nogil
-        void classifier_remove_group (Classifier &, size_t) nogil
+        void group_init (Group &, rng_t &) nogil except +
+        void group_add_value (Group &, Value &, rng_t &) nogil except +
+        void group_remove_value (Group &, Value &, rng_t &) nogil except +
+        void group_merge (Group &, Group &, rng_t &) nogil except +
+        void sampler_init (Sampler &, Group &, rng_t &) nogil except +
+        Value sampler_eval (Sampler &, rng_t &) nogil except +
+        Value sample_value (Group &, rng_t &) nogil except +
+        float score_value (Group &, Value &, rng_t &) nogil except +
+        float score_group (Group &, rng_t &) nogil except +
+        void classifier_init (Classifier &, rng_t &) nogil except +
+        void classifier_add_group (Classifier &, rng_t &) nogil except +
+        void classifier_remove_group (Classifier &, size_t) nogil except +
         void classifier_add_value \
-            (Classifier &, size_t, Value &, rng_t &) nogil
+            (Classifier &, size_t, Value &, rng_t &) nogil except +
         void classifier_remove_value \
-            (Classifier &, size_t, Value &, rng_t &) nogil
+            (Classifier &, size_t, Value &, rng_t &) nogil except +
         void classifier_score \
-            (Classifier &, Value &, VectorFloat &, rng_t &) nogil
+            (Classifier &, Value &, VectorFloat &, rng_t &) nogil except +
 
 cdef class Group:
     cdef Model_cc.Group * ptr

@@ -56,6 +56,7 @@ include_dirs.append(np.get_include())
 
 extra_compile_args = [
     '-DDIST_DEBUG_LEVEL=3',
+    '-DDIST_THROW_ON_ERROR=1',
 ]
 if clang:
     extra_compile_args.extend([
@@ -104,6 +105,8 @@ def make_extension(name):
                 'src/random.cc',
                 'src/vector_math.cc',
             ]
+            if name == 'lp.clustering':
+                sources.append('src/clustering.cc')
     return Extension(
         module,
         sources=sources,
@@ -119,6 +122,7 @@ def make_extensions(names):
 
 
 hp_extensions = make_extensions([
+    'has_cython',
     'rng_cc',
     'global_rng',
     'hp.special',
