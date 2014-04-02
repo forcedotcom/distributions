@@ -28,15 +28,18 @@
 import itertools
 import numpy
 import scipy
-from nose import SkipTest
 from nose.tools import (
     assert_less,
     assert_equal,
     assert_almost_equal,
     assert_raises,
 )
-from distributions.tests.util import assert_close, assert_samples_match_scores
 from distributions.dbg.random import sample_stick, sample_discrete_log
+from distributions.tests.util import (
+    require_cython,
+    assert_close,
+    assert_samples_match_scores,
+)
 
 
 SAMPLES = 1000
@@ -52,10 +55,8 @@ def assert_normal(x, y, sigma, stddevs=4.0):
 
 
 def test_seed():
-    try:
-        import distributions.hp.random
-    except ImportError:
-        raise SkipTest('no cython support')
+    require_cython()
+    import distributions.hp.random
     global_rng = distributions.hp.random.random
     distributions.hp.random.seed(0)
     values1 = [global_rng() for _ in xrange(10)]
@@ -91,10 +92,8 @@ def scipy_normal_draw(mean, variance):
 
 
 def test_normal_draw():
-    try:
-        import distributions.hp.random
-    except ImportError:
-        raise SkipTest('no cython support')
+    require_cython()
+    import distributions.hp.random
     means = [1.0 * i for i in range(-2, 3)]
     variances = [10.0 ** i for i in range(-3, 4)]
     for mean, variance in itertools.product(means, variances):
@@ -115,10 +114,8 @@ def _test_normal_draw(draw, mean, variance):
 
 
 def test_chisq_draw():
-    try:
-        import distributions.hp.random
-    except ImportError:
-        raise SkipTest('no cython support')
+    require_cython()
+    import distributions.hp.random
     nus = [1.5 ** i for i in range(-10, 11)]
     for nu in nus:
         # Assume scipy.stats is correct
@@ -132,10 +129,8 @@ def _test_chisq_draw(draw, nu):
 
 
 def test_sample_pair_from_urn():
-    try:
-        import distributions.lp.random
-    except ImportError:
-        raise SkipTest('no cython support')
+    require_cython()
+    import distributions.lp.random
     TEST_FAIL_PROB = 1e-5
     ITEM_COUNT = 10
 
@@ -173,10 +168,8 @@ def test_sample_pair_from_urn():
 
 
 def test_prob_from_scores():
-    try:
-        import distributions.lp.random
-    except ImportError:
-        raise SkipTest('no cython support')
+    require_cython()
+    import distributions.lp.random
     rng1 = distributions.lp.random.RNG(0)
     rng2 = distributions.lp.random.RNG(0)
     for size in range(1, 100):
@@ -197,10 +190,8 @@ def test_prob_from_scores():
 
 
 def test_sample_prob_from_scores():
-    try:
-        import distributions.lp.random
-    except ImportError:
-        raise SkipTest('no cython support')
+    require_cython()
+    import distributions.lp.random
     rng = distributions.lp.random.RNG(0)
     for size in range(1, 10):
         scores = numpy.random.normal(size=size).tolist()

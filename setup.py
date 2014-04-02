@@ -119,6 +119,7 @@ def make_extensions(names):
 
 
 hp_extensions = make_extensions([
+    'has_cython',
     'rng_cc',
     'global_rng',
     'hp.special',

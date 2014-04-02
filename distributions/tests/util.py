@@ -32,12 +32,19 @@ from itertools import izip
 import math
 import numpy
 from numpy.testing import assert_array_almost_equal
+from nose import SkipTest
 from nose.tools import assert_true, assert_less, assert_equal
 import importlib
+import distributions
 from distributions.util import multinomial_goodness_of_fit
 
 ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 TOL = 1e-3
+
+
+def require_cython():
+    if not distributions.has_cython:
+        raise SkipTest('no cython support')
 
 
 def seed_all(s):

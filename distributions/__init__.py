@@ -26,3 +26,9 @@
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 __version__ = '2.0.0'
+
+try:
+    import distributions.has_cython
+    has_cython = distributions.has_cython.has_cython()
+except ImportError:
+    has_cython = False
