@@ -27,9 +27,13 @@
 
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
+cimport numpy
+numpy.import_array()
 from cython.operator cimport dereference as deref, preincrement as inc
 from distributions.rng_cc cimport rng_t
 from distributions.global_rng cimport get_rng
+from distributions.lp.vector cimport VectorFloat, vector_float_to_ndarray
+
 
 cdef extern from 'distributions/clustering.hpp':
 
@@ -51,6 +55,10 @@ cdef extern from 'distributions/clustering.hpp':
         float alpha
         float d
         vector[int] sample_assignments(int size, rng_t & rng) nogil
+        cppclass Mixture:
+            vector[int] counts
+            int sample_size
+            VectorFloat shifted_scores
         float score_counts(vector[int] & counts) nogil
         float score_add_value (
                 int group_size,
@@ -60,6 +68,12 @@ cdef extern from 'distributions/clustering.hpp':
                 int group_size,
                 int group_count,
                 int sample_size) nogil
+        void mixture_init (Mixture &) nogil
+        void mixture_add_group (Mixture &) nogil
+        void mixture_remove_group (Mixture &, size_t) nogil
+        void mixture_add_value (Mixture &, size_t) nogil
+        void mixture_remove_value (Mixture &, size_t) nogil
+        void mixture_score (Mixture &, VectorFloat &) nogil
 
     cppclass LowEntropy_cc "distributions::Clustering<int>::LowEntropy":
         int dataset_size
@@ -94,7 +108,24 @@ cdef dict dump_assignments(Assignments & assignments):
     return raw
 
 
-cdef class PitmanYor:
+cdef class PitmanYorMixture:
+    cdef PitmanYor_cc.Mixture * ptr
+    def __cinit__(self):
+        self.ptr = new PitmanYor_cc.Mixture()
+    def __dealloc__(self):
+        del self.ptr
+
+    def __len__(self):
+        return self.ptr.counts.size()
+
+    def append(self, int count):
+        self.ptr.counts.push_back(count)
+
+    def clear(self):
+        self.ptr.counts.clear()
+
+
+cdef class PitmanYor_cy:
     cdef PitmanYor_cc * ptr
     def __cinit__(self):
         self.ptr = new PitmanYor_cc()
@@ -148,6 +179,37 @@ cdef class PitmanYor:
             group_count,
             sample_size)
 
+    #-------------------------------------------------------------------------
+    # Mixture
+
+    def mixture_init(self, PitmanYorMixture mixture):
+        self.ptr.mixture_init(mixture.ptr[0])
+
+    def mixture_add_group(self, PitmanYorMixture mixture):
+        self.ptr.mixture_add_group(mixture.ptr[0])
+
+    def mixture_remove_group(self, PitmanYorMixture mixture, int groupid):
+        self.ptr.mixture_remove_group(mixture.ptr[0], groupid)
+
+    def mixture_add_value(self, PitmanYorMixture mixture, int groupid):
+        self.ptr.mixture_add_value(mixture.ptr[0], groupid)
+
+    def mixture_remove_value(self, PitmanYorMixture mixture, int groupid):
+        self.ptr.mixture_remove_value(mixture.ptr[0], groupid)
+
+    def mixture_score(
+            self,
+            PitmanYorMixture mixture,
+            numpy.ndarray[numpy.float32_t, ndim=1] scores):
+        cdef VectorFloat scores_cc
+        scores_cc.resize(len(mixture))
+        self.ptr.mixture_score(mixture.ptr[0], scores_cc)
+        vector_float_to_ndarray(scores_cc, scores)
+
+
+    #-------------------------------------------------------------------------
+    # Examples
+
     EXAMPLES = [
         {'alpha': 1., 'd': 0.},
         {'alpha': 1., 'd': 0.1},
@@ -155,6 +217,14 @@ cdef class PitmanYor:
         {'alpha': 10., 'd': 0.1},
         {'alpha': 0.1, 'd': 0.1},
     ]
+
+
+class PitmanYor(PitmanYor_cy):
+
+    #-------------------------------------------------------------------------
+    # Datatypes
+
+    Mixture = PitmanYorMixture
 
 
 cdef class LowEntropy:
@@ -203,6 +273,9 @@ cdef class LowEntropy:
             group_size,
             group_count,
             sample_size)
+
+    #-------------------------------------------------------------------------
+    # Examples
 
     EXAMPLES = [
         {'dataset_size': 5},
