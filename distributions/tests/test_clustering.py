@@ -26,11 +26,17 @@
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import math
+import functools
 from collections import defaultdict
 from nose import SkipTest
-from nose.tools import assert_less, assert_greater
+from nose.tools import (
+    assert_true,
+    assert_less,
+    assert_greater,
+    assert_is_instance,
+)
 from distributions.util import discrete_goodness_of_fit
-from distributions.tests.util import seed_all
+from distributions.tests.util import seed_all, assert_hasattr
 try:
     from distributions.lp.clustering import (
         count_assignments,
@@ -45,10 +51,45 @@ MODELS = [
     PitmanYor,
     LowEntropy,
 ]
+MODELS = {Model.__name__: Model for Model in MODELS}
 
 SAMPLE_COUNT = 1000
 MAX_SIZE = 5
+SIZES = range(2, MAX_SIZE + 1)
 MIN_GOODNESS_OF_FIT = 1e-3
+
+
+def iter_examples(Model):
+    assert_hasattr(Model, 'EXAMPLES')
+    EXAMPLES = Model.EXAMPLES
+    assert_is_instance(EXAMPLES, list)
+    assert_true(EXAMPLES, 'no examples provided')
+    for i, EXAMPLE in enumerate(EXAMPLES):
+        print 'example {}/{}'.format(1 + i, len(Model.EXAMPLES))
+        yield EXAMPLE
+
+
+def for_each_model(*filters):
+    '''
+    Run one test per Model, filtering out inappropriate Models for test.
+    '''
+    def filtered(test_fun):
+
+        @functools.wraps(test_fun)
+        def test_one_model(name):
+            Model = MODELS[name]
+            for EXAMPLE in iter_examples(Model):
+                for size in SIZES:
+                    test_fun(Model, EXAMPLE, size)
+
+        @functools.wraps(test_fun)
+        def test_all_models():
+            for name, Model in MODELS.iteritems():
+                if all(f(Model) for f in filters):
+                    yield test_fun, name
+
+        return test_all_models
+    return filtered
 
 
 def canonicalize(assignments):
@@ -63,39 +104,31 @@ def canonicalize(assignments):
     return tuple(result)
 
 
-def test_models(Model=None, size=None):
+@for_each_model()
+def test_basic(Model, EXAMPLE, size):
+    if Model.__name__ == 'LowEntropy':
+        raise SkipTest('FIXME LowEntropy.score_counts is not normalized')
+
     seed_all(0)
-    for Model in MODELS:
-        for size in xrange(2, MAX_SIZE + 1):
-            yield _test_models, Model, size
+    model = Model()
+    model.load(EXAMPLE)
+    samples = []
+    probs_dict = {}
+    for _ in xrange(SAMPLE_COUNT):
+        value = model.sample_assignments(size)
+        assignments = dict(enumerate(value))
+        counts = count_assignments(assignments)
+        prob = math.exp(model.score_counts(counts))
+        sample = canonicalize(value)
+        samples.append(sample)
+        probs_dict[sample] = prob
 
+    total = sum(probs_dict.values())
+    assert_less(
+        abs(total - 1),
+        1e-2,
+        'not normalized: {}'.format(total))
 
-def _test_models(Model, size):
-        model = Model()
-
-        if Model.__name__ == 'LowEntropy':
-            raise SkipTest('FIXME LowEntropy.score_counts is not normalized')
-
-        for i, EXAMPLE in enumerate(Model.EXAMPLES):
-            print 'Example {}'.format(i)
-            model.load(EXAMPLE)
-            samples = []
-            probs_dict = {}
-            for _ in xrange(SAMPLE_COUNT):
-                value = model.sample_assignments(size)
-                assignments = dict(enumerate(value))
-                counts = count_assignments(assignments)
-                prob = math.exp(model.score_counts(counts))
-                sample = canonicalize(value)
-                samples.append(sample)
-                probs_dict[sample] = prob
-
-            total = sum(probs_dict.values())
-            assert_less(
-                abs(total - 1),
-                1e-2,
-                'not normalized: {}'.format(total))
-
-            gof = discrete_goodness_of_fit(samples, probs_dict, plot=True)
-            print '{} gof = {:0.3g}'.format(Model.__name__, gof)
-            assert_greater(gof, MIN_GOODNESS_OF_FIT)
+    gof = discrete_goodness_of_fit(samples, probs_dict, plot=True)
+    print '{} gof = {:0.3g}'.format(Model.__name__, gof)
+    assert_greater(gof, MIN_GOODNESS_OF_FIT)
