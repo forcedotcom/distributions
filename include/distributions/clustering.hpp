@@ -30,6 +30,7 @@
 #include <unordered_map>
 #include <distributions/common.hpp>
 #include <distributions/random.hpp>
+#include <distributions/vector.hpp>
 
 namespace distributions
 {
@@ -112,6 +113,85 @@ struct PitmanYor
         sample_size -= 1;
 
         return -score_add_value(group_size, group_count, sample_size);
+    }
+
+    //------------------------------------------------------------------------
+    // Mixture
+
+    struct Mixture
+    {
+        std::vector<count_t> counts;
+        count_t sample_size;
+        VectorFloat shifted_scores;
+    };
+
+    private:
+
+    void _mixture_update_group (Mixture & mixture, size_t groupid) const
+    {
+        const auto group_count = mixture.counts.size();
+        const auto group_size = mixture.counts[groupid];
+        mixture.shifted_scores[groupid] =
+            fast_log(group_size ? alpha + d * group_count : group_size - d);
+    }
+
+    public:
+
+    void mixture_init (Mixture & mixture) const
+    {
+        const size_t group_count = mixture.counts.size();
+        mixture.sample_size = 0;
+        mixture.shifted_scores.resize(group_count);
+        for (size_t i = 0; i < group_count; ++i) {
+            mixture.sample_size += mixture.counts[i];
+            _mixture_update_group(mixture, i);
+        }
+    }
+
+    void mixture_add_group (Mixture & mixture) const
+    {
+        const size_t groupid = mixture.counts.size();
+        mixture.counts.push_back(0);
+        mixture.shifted_scores.push_back(0);
+        _mixture_update_group(mixture, groupid);
+    }
+
+    void mixture_remove_group (Mixture & mixture, size_t groupid) const
+    {
+        const size_t group_count = mixture.counts.size() - 1;
+        if (groupid != group_count) {
+            mixture.counts[groupid] = mixture.counts.back();
+            mixture.shifted_scores[groupid] = mixture.shifted_scores.back();
+        }
+        mixture.counts.resize(group_count);
+        mixture.shifted_scores.resize(group_count);
+    }
+
+    void mixture_add_value (Mixture & mixture, size_t groupid) const
+    {
+        mixture.counts[groupid] += 1;
+        mixture.sample_size += 1;
+        _mixture_update_group(mixture, groupid);
+    }
+
+    void mixture_remove_value (Mixture & mixture, size_t groupid) const
+    {
+        mixture.counts[groupid] -= 1;
+        mixture.sample_size -= 1;
+        _mixture_update_group(mixture, groupid);
+    }
+
+    void mixture_score (const Mixture & mixture, VectorFloat & scores) const
+    {
+        const size_t size = mixture.counts.size();
+        const float shift = -fast_log(mixture.sample_size + alpha);
+        const float * __restrict__ in =
+            VectorFloat_data(mixture.shifted_scores);
+        float * __restrict__ out = VectorFloat_data(scores);
+
+        for (size_t i = 0; i < size; ++i) {
+            out[i] = in[i] + shift;
+        }
     }
 };
 
