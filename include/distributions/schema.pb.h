@@ -25,7 +25,8 @@
 #include <google/protobuf/generated_message_reflection.h>
 // @@protoc_insertion_point(includes)
 
-namespace distributions_protobuf {
+namespace protobuf {
+namespace distributions {
 
 // Internal implementation detail -- do not call these.
 void  protobuf_AddDesc_distributions_2fschema_2eproto();
@@ -45,9 +46,6 @@ class GammaPoisson;
 class GammaPoisson_Group;
 class NormalInverseChiSq;
 class NormalInverseChiSq_Group;
-class ProductModel;
-class ProductModel_SparseValue;
-class ProductModel_Group;
 
 // ===================================================================
 
@@ -119,7 +117,7 @@ class Clustering_PitmanYor : public ::google::protobuf::Message {
   inline float d() const;
   inline void set_d(float value);
   
-  // @@protoc_insertion_point(class_scope:distributions_protobuf.Clustering.PitmanYor)
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.Clustering.PitmanYor)
  private:
   inline void set_has_alpha();
   inline void clear_has_alpha();
@@ -204,7 +202,7 @@ class Clustering_LowEntropy : public ::google::protobuf::Message {
   inline ::google::protobuf::uint64 dataset_size() const;
   inline void set_dataset_size(::google::protobuf::uint64 value);
   
-  // @@protoc_insertion_point(class_scope:distributions_protobuf.Clustering.LowEntropy)
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.Clustering.LowEntropy)
  private:
   inline void set_has_dataset_size();
   inline void clear_has_dataset_size();
@@ -282,23 +280,23 @@ class Clustering : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // optional .distributions_protobuf.Clustering.PitmanYor pitman_yor = 1;
+  // optional .protobuf.distributions.Clustering.PitmanYor pitman_yor = 1;
   inline bool has_pitman_yor() const;
   inline void clear_pitman_yor();
   static const int kPitmanYorFieldNumber = 1;
-  inline const ::distributions_protobuf::Clustering_PitmanYor& pitman_yor() const;
-  inline ::distributions_protobuf::Clustering_PitmanYor* mutable_pitman_yor();
-  inline ::distributions_protobuf::Clustering_PitmanYor* release_pitman_yor();
+  inline const ::protobuf::distributions::Clustering_PitmanYor& pitman_yor() const;
+  inline ::protobuf::distributions::Clustering_PitmanYor* mutable_pitman_yor();
+  inline ::protobuf::distributions::Clustering_PitmanYor* release_pitman_yor();
   
-  // optional .distributions_protobuf.Clustering.LowEntropy low_entropy = 2;
+  // optional .protobuf.distributions.Clustering.LowEntropy low_entropy = 2;
   inline bool has_low_entropy() const;
   inline void clear_low_entropy();
   static const int kLowEntropyFieldNumber = 2;
-  inline const ::distributions_protobuf::Clustering_LowEntropy& low_entropy() const;
-  inline ::distributions_protobuf::Clustering_LowEntropy* mutable_low_entropy();
-  inline ::distributions_protobuf::Clustering_LowEntropy* release_low_entropy();
+  inline const ::protobuf::distributions::Clustering_LowEntropy& low_entropy() const;
+  inline ::protobuf::distributions::Clustering_LowEntropy* mutable_low_entropy();
+  inline ::protobuf::distributions::Clustering_LowEntropy* release_low_entropy();
   
-  // @@protoc_insertion_point(class_scope:distributions_protobuf.Clustering)
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.Clustering)
  private:
   inline void set_has_pitman_yor();
   inline void clear_has_pitman_yor();
@@ -307,8 +305,8 @@ class Clustering : public ::google::protobuf::Message {
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
-  ::distributions_protobuf::Clustering_PitmanYor* pitman_yor_;
-  ::distributions_protobuf::Clustering_LowEntropy* low_entropy_;
+  ::protobuf::distributions::Clustering_PitmanYor* pitman_yor_;
+  ::protobuf::distributions::Clustering_LowEntropy* low_entropy_;
   
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
@@ -390,7 +388,7 @@ class BetaBernoulli_Group : public ::google::protobuf::Message {
   inline ::google::protobuf::uint64 tails() const;
   inline void set_tails(::google::protobuf::uint64 value);
   
-  // @@protoc_insertion_point(class_scope:distributions_protobuf.BetaBernoulli.Group)
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.BetaBernoulli.Group)
  private:
   inline void set_has_heads();
   inline void clear_has_heads();
@@ -484,7 +482,7 @@ class BetaBernoulli : public ::google::protobuf::Message {
   inline float beta() const;
   inline void set_beta(float value);
   
-  // @@protoc_insertion_point(class_scope:distributions_protobuf.BetaBernoulli)
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.BetaBernoulli)
  private:
   inline void set_has_alpha();
   inline void clear_has_alpha();
@@ -574,7 +572,7 @@ class DirichletDiscrete_Group : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >*
       mutable_counts();
   
-  // @@protoc_insertion_point(class_scope:distributions_protobuf.DirichletDiscrete.Group)
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.DirichletDiscrete.Group)
  private:
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
@@ -661,7 +659,7 @@ class DirichletDiscrete : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedField< float >*
       mutable_alphas();
   
-  // @@protoc_insertion_point(class_scope:distributions_protobuf.DirichletDiscrete)
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.DirichletDiscrete)
  private:
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
@@ -758,7 +756,7 @@ class DirichletProcessDiscrete_Group : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >*
       mutable_values();
   
-  // @@protoc_insertion_point(class_scope:distributions_protobuf.DirichletProcessDiscrete.Group)
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.DirichletProcessDiscrete.Group)
  private:
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
@@ -867,7 +865,7 @@ class DirichletProcessDiscrete : public ::google::protobuf::Message {
   inline ::google::protobuf::RepeatedField< float >*
       mutable_betas();
   
-  // @@protoc_insertion_point(class_scope:distributions_protobuf.DirichletProcessDiscrete)
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.DirichletProcessDiscrete)
  private:
   inline void set_has_gamma();
   inline void clear_has_gamma();
@@ -970,7 +968,7 @@ class GammaPoisson_Group : public ::google::protobuf::Message {
   inline float log_prod() const;
   inline void set_log_prod(float value);
   
-  // @@protoc_insertion_point(class_scope:distributions_protobuf.GammaPoisson.Group)
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.GammaPoisson.Group)
  private:
   inline void set_has_count();
   inline void clear_has_count();
@@ -1067,7 +1065,7 @@ class GammaPoisson : public ::google::protobuf::Message {
   inline float beta() const;
   inline void set_beta(float value);
   
-  // @@protoc_insertion_point(class_scope:distributions_protobuf.GammaPoisson)
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.GammaPoisson)
  private:
   inline void set_has_alpha();
   inline void clear_has_alpha();
@@ -1166,7 +1164,7 @@ class NormalInverseChiSq_Group : public ::google::protobuf::Message {
   inline float count_times_variance() const;
   inline void set_count_times_variance(float value);
   
-  // @@protoc_insertion_point(class_scope:distributions_protobuf.NormalInverseChiSq.Group)
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.NormalInverseChiSq.Group)
  private:
   inline void set_has_count();
   inline void clear_has_count();
@@ -1277,7 +1275,7 @@ class NormalInverseChiSq : public ::google::protobuf::Message {
   inline float nu() const;
   inline void set_nu(float value);
   
-  // @@protoc_insertion_point(class_scope:distributions_protobuf.NormalInverseChiSq)
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.NormalInverseChiSq)
  private:
   inline void set_has_mu();
   inline void clear_has_mu();
@@ -1304,428 +1302,6 @@ class NormalInverseChiSq : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static NormalInverseChiSq* default_instance_;
-};
-// -------------------------------------------------------------------
-
-class ProductModel_SparseValue : public ::google::protobuf::Message {
- public:
-  ProductModel_SparseValue();
-  virtual ~ProductModel_SparseValue();
-  
-  ProductModel_SparseValue(const ProductModel_SparseValue& from);
-  
-  inline ProductModel_SparseValue& operator=(const ProductModel_SparseValue& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-  
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-  
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const ProductModel_SparseValue& default_instance();
-  
-  void Swap(ProductModel_SparseValue* other);
-  
-  // implements Message ----------------------------------------------
-  
-  ProductModel_SparseValue* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const ProductModel_SparseValue& from);
-  void MergeFrom(const ProductModel_SparseValue& from);
-  void Clear();
-  bool IsInitialized() const;
-  
-  int ByteSize() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
-  int GetCachedSize() const { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  public:
-  
-  ::google::protobuf::Metadata GetMetadata() const;
-  
-  // nested types ----------------------------------------------------
-  
-  // accessors -------------------------------------------------------
-  
-  // repeated bool observed = 1;
-  inline int observed_size() const;
-  inline void clear_observed();
-  static const int kObservedFieldNumber = 1;
-  inline bool observed(int index) const;
-  inline void set_observed(int index, bool value);
-  inline void add_observed(bool value);
-  inline const ::google::protobuf::RepeatedField< bool >&
-      observed() const;
-  inline ::google::protobuf::RepeatedField< bool >*
-      mutable_observed();
-  
-  // repeated bool booleans = 2;
-  inline int booleans_size() const;
-  inline void clear_booleans();
-  static const int kBooleansFieldNumber = 2;
-  inline bool booleans(int index) const;
-  inline void set_booleans(int index, bool value);
-  inline void add_booleans(bool value);
-  inline const ::google::protobuf::RepeatedField< bool >&
-      booleans() const;
-  inline ::google::protobuf::RepeatedField< bool >*
-      mutable_booleans();
-  
-  // repeated uint64 counts = 3;
-  inline int counts_size() const;
-  inline void clear_counts();
-  static const int kCountsFieldNumber = 3;
-  inline ::google::protobuf::uint64 counts(int index) const;
-  inline void set_counts(int index, ::google::protobuf::uint64 value);
-  inline void add_counts(::google::protobuf::uint64 value);
-  inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >&
-      counts() const;
-  inline ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >*
-      mutable_counts();
-  
-  // repeated float reals = 4;
-  inline int reals_size() const;
-  inline void clear_reals();
-  static const int kRealsFieldNumber = 4;
-  inline float reals(int index) const;
-  inline void set_reals(int index, float value);
-  inline void add_reals(float value);
-  inline const ::google::protobuf::RepeatedField< float >&
-      reals() const;
-  inline ::google::protobuf::RepeatedField< float >*
-      mutable_reals();
-  
-  // @@protoc_insertion_point(class_scope:distributions_protobuf.ProductModel.SparseValue)
- private:
-  
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-  
-  ::google::protobuf::RepeatedField< bool > observed_;
-  ::google::protobuf::RepeatedField< bool > booleans_;
-  ::google::protobuf::RepeatedField< ::google::protobuf::uint64 > counts_;
-  ::google::protobuf::RepeatedField< float > reals_;
-  
-  mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
-  
-  friend void  protobuf_AddDesc_distributions_2fschema_2eproto();
-  friend void protobuf_AssignDesc_distributions_2fschema_2eproto();
-  friend void protobuf_ShutdownFile_distributions_2fschema_2eproto();
-  
-  void InitAsDefaultInstance();
-  static ProductModel_SparseValue* default_instance_;
-};
-// -------------------------------------------------------------------
-
-class ProductModel_Group : public ::google::protobuf::Message {
- public:
-  ProductModel_Group();
-  virtual ~ProductModel_Group();
-  
-  ProductModel_Group(const ProductModel_Group& from);
-  
-  inline ProductModel_Group& operator=(const ProductModel_Group& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-  
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-  
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const ProductModel_Group& default_instance();
-  
-  void Swap(ProductModel_Group* other);
-  
-  // implements Message ----------------------------------------------
-  
-  ProductModel_Group* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const ProductModel_Group& from);
-  void MergeFrom(const ProductModel_Group& from);
-  void Clear();
-  bool IsInitialized() const;
-  
-  int ByteSize() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
-  int GetCachedSize() const { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  public:
-  
-  ::google::protobuf::Metadata GetMetadata() const;
-  
-  // nested types ----------------------------------------------------
-  
-  // accessors -------------------------------------------------------
-  
-  // optional uint64 count = 1;
-  inline bool has_count() const;
-  inline void clear_count();
-  static const int kCountFieldNumber = 1;
-  inline ::google::protobuf::uint64 count() const;
-  inline void set_count(::google::protobuf::uint64 value);
-  
-  // repeated .distributions_protobuf.BetaBernoulli.Group bb = 2;
-  inline int bb_size() const;
-  inline void clear_bb();
-  static const int kBbFieldNumber = 2;
-  inline const ::distributions_protobuf::BetaBernoulli_Group& bb(int index) const;
-  inline ::distributions_protobuf::BetaBernoulli_Group* mutable_bb(int index);
-  inline ::distributions_protobuf::BetaBernoulli_Group* add_bb();
-  inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::BetaBernoulli_Group >&
-      bb() const;
-  inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::BetaBernoulli_Group >*
-      mutable_bb();
-  
-  // repeated .distributions_protobuf.DirichletDiscrete.Group dd = 3;
-  inline int dd_size() const;
-  inline void clear_dd();
-  static const int kDdFieldNumber = 3;
-  inline const ::distributions_protobuf::DirichletDiscrete_Group& dd(int index) const;
-  inline ::distributions_protobuf::DirichletDiscrete_Group* mutable_dd(int index);
-  inline ::distributions_protobuf::DirichletDiscrete_Group* add_dd();
-  inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletDiscrete_Group >&
-      dd() const;
-  inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletDiscrete_Group >*
-      mutable_dd();
-  
-  // repeated .distributions_protobuf.DirichletProcessDiscrete.Group dpd = 4;
-  inline int dpd_size() const;
-  inline void clear_dpd();
-  static const int kDpdFieldNumber = 4;
-  inline const ::distributions_protobuf::DirichletProcessDiscrete_Group& dpd(int index) const;
-  inline ::distributions_protobuf::DirichletProcessDiscrete_Group* mutable_dpd(int index);
-  inline ::distributions_protobuf::DirichletProcessDiscrete_Group* add_dpd();
-  inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletProcessDiscrete_Group >&
-      dpd() const;
-  inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletProcessDiscrete_Group >*
-      mutable_dpd();
-  
-  // repeated .distributions_protobuf.GammaPoisson.Group gp = 5;
-  inline int gp_size() const;
-  inline void clear_gp();
-  static const int kGpFieldNumber = 5;
-  inline const ::distributions_protobuf::GammaPoisson_Group& gp(int index) const;
-  inline ::distributions_protobuf::GammaPoisson_Group* mutable_gp(int index);
-  inline ::distributions_protobuf::GammaPoisson_Group* add_gp();
-  inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::GammaPoisson_Group >&
-      gp() const;
-  inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::GammaPoisson_Group >*
-      mutable_gp();
-  
-  // repeated .distributions_protobuf.NormalInverseChiSq.Group nich = 6;
-  inline int nich_size() const;
-  inline void clear_nich();
-  static const int kNichFieldNumber = 6;
-  inline const ::distributions_protobuf::NormalInverseChiSq_Group& nich(int index) const;
-  inline ::distributions_protobuf::NormalInverseChiSq_Group* mutable_nich(int index);
-  inline ::distributions_protobuf::NormalInverseChiSq_Group* add_nich();
-  inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::NormalInverseChiSq_Group >&
-      nich() const;
-  inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::NormalInverseChiSq_Group >*
-      mutable_nich();
-  
-  // @@protoc_insertion_point(class_scope:distributions_protobuf.ProductModel.Group)
- private:
-  inline void set_has_count();
-  inline void clear_has_count();
-  
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-  
-  ::google::protobuf::uint64 count_;
-  ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::BetaBernoulli_Group > bb_;
-  ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletDiscrete_Group > dd_;
-  ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletProcessDiscrete_Group > dpd_;
-  ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::GammaPoisson_Group > gp_;
-  ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::NormalInverseChiSq_Group > nich_;
-  
-  mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
-  
-  friend void  protobuf_AddDesc_distributions_2fschema_2eproto();
-  friend void protobuf_AssignDesc_distributions_2fschema_2eproto();
-  friend void protobuf_ShutdownFile_distributions_2fschema_2eproto();
-  
-  void InitAsDefaultInstance();
-  static ProductModel_Group* default_instance_;
-};
-// -------------------------------------------------------------------
-
-class ProductModel : public ::google::protobuf::Message {
- public:
-  ProductModel();
-  virtual ~ProductModel();
-  
-  ProductModel(const ProductModel& from);
-  
-  inline ProductModel& operator=(const ProductModel& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-  
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-  
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const ProductModel& default_instance();
-  
-  void Swap(ProductModel* other);
-  
-  // implements Message ----------------------------------------------
-  
-  ProductModel* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const ProductModel& from);
-  void MergeFrom(const ProductModel& from);
-  void Clear();
-  bool IsInitialized() const;
-  
-  int ByteSize() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
-  int GetCachedSize() const { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  public:
-  
-  ::google::protobuf::Metadata GetMetadata() const;
-  
-  // nested types ----------------------------------------------------
-  
-  typedef ProductModel_SparseValue SparseValue;
-  typedef ProductModel_Group Group;
-  
-  // accessors -------------------------------------------------------
-  
-  // optional .distributions_protobuf.Clustering clustering = 1;
-  inline bool has_clustering() const;
-  inline void clear_clustering();
-  static const int kClusteringFieldNumber = 1;
-  inline const ::distributions_protobuf::Clustering& clustering() const;
-  inline ::distributions_protobuf::Clustering* mutable_clustering();
-  inline ::distributions_protobuf::Clustering* release_clustering();
-  
-  // repeated .distributions_protobuf.BetaBernoulli bb = 2;
-  inline int bb_size() const;
-  inline void clear_bb();
-  static const int kBbFieldNumber = 2;
-  inline const ::distributions_protobuf::BetaBernoulli& bb(int index) const;
-  inline ::distributions_protobuf::BetaBernoulli* mutable_bb(int index);
-  inline ::distributions_protobuf::BetaBernoulli* add_bb();
-  inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::BetaBernoulli >&
-      bb() const;
-  inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::BetaBernoulli >*
-      mutable_bb();
-  
-  // repeated .distributions_protobuf.DirichletDiscrete dd = 3;
-  inline int dd_size() const;
-  inline void clear_dd();
-  static const int kDdFieldNumber = 3;
-  inline const ::distributions_protobuf::DirichletDiscrete& dd(int index) const;
-  inline ::distributions_protobuf::DirichletDiscrete* mutable_dd(int index);
-  inline ::distributions_protobuf::DirichletDiscrete* add_dd();
-  inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletDiscrete >&
-      dd() const;
-  inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletDiscrete >*
-      mutable_dd();
-  
-  // repeated .distributions_protobuf.DirichletProcessDiscrete dpd = 4;
-  inline int dpd_size() const;
-  inline void clear_dpd();
-  static const int kDpdFieldNumber = 4;
-  inline const ::distributions_protobuf::DirichletProcessDiscrete& dpd(int index) const;
-  inline ::distributions_protobuf::DirichletProcessDiscrete* mutable_dpd(int index);
-  inline ::distributions_protobuf::DirichletProcessDiscrete* add_dpd();
-  inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletProcessDiscrete >&
-      dpd() const;
-  inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletProcessDiscrete >*
-      mutable_dpd();
-  
-  // repeated .distributions_protobuf.GammaPoisson gp = 5;
-  inline int gp_size() const;
-  inline void clear_gp();
-  static const int kGpFieldNumber = 5;
-  inline const ::distributions_protobuf::GammaPoisson& gp(int index) const;
-  inline ::distributions_protobuf::GammaPoisson* mutable_gp(int index);
-  inline ::distributions_protobuf::GammaPoisson* add_gp();
-  inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::GammaPoisson >&
-      gp() const;
-  inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::GammaPoisson >*
-      mutable_gp();
-  
-  // repeated .distributions_protobuf.NormalInverseChiSq nich = 6;
-  inline int nich_size() const;
-  inline void clear_nich();
-  static const int kNichFieldNumber = 6;
-  inline const ::distributions_protobuf::NormalInverseChiSq& nich(int index) const;
-  inline ::distributions_protobuf::NormalInverseChiSq* mutable_nich(int index);
-  inline ::distributions_protobuf::NormalInverseChiSq* add_nich();
-  inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::NormalInverseChiSq >&
-      nich() const;
-  inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::NormalInverseChiSq >*
-      mutable_nich();
-  
-  // @@protoc_insertion_point(class_scope:distributions_protobuf.ProductModel)
- private:
-  inline void set_has_clustering();
-  inline void clear_has_clustering();
-  
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-  
-  ::distributions_protobuf::Clustering* clustering_;
-  ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::BetaBernoulli > bb_;
-  ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletDiscrete > dd_;
-  ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletProcessDiscrete > dpd_;
-  ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::GammaPoisson > gp_;
-  ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::NormalInverseChiSq > nich_;
-  
-  mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
-  
-  friend void  protobuf_AddDesc_distributions_2fschema_2eproto();
-  friend void protobuf_AssignDesc_distributions_2fschema_2eproto();
-  friend void protobuf_ShutdownFile_distributions_2fschema_2eproto();
-  
-  void InitAsDefaultInstance();
-  static ProductModel* default_instance_;
 };
 // ===================================================================
 
@@ -1808,7 +1384,7 @@ inline void Clustering_LowEntropy::set_dataset_size(::google::protobuf::uint64 v
 
 // Clustering
 
-// optional .distributions_protobuf.Clustering.PitmanYor pitman_yor = 1;
+// optional .protobuf.distributions.Clustering.PitmanYor pitman_yor = 1;
 inline bool Clustering::has_pitman_yor() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
@@ -1819,25 +1395,25 @@ inline void Clustering::clear_has_pitman_yor() {
   _has_bits_[0] &= ~0x00000001u;
 }
 inline void Clustering::clear_pitman_yor() {
-  if (pitman_yor_ != NULL) pitman_yor_->::distributions_protobuf::Clustering_PitmanYor::Clear();
+  if (pitman_yor_ != NULL) pitman_yor_->::protobuf::distributions::Clustering_PitmanYor::Clear();
   clear_has_pitman_yor();
 }
-inline const ::distributions_protobuf::Clustering_PitmanYor& Clustering::pitman_yor() const {
+inline const ::protobuf::distributions::Clustering_PitmanYor& Clustering::pitman_yor() const {
   return pitman_yor_ != NULL ? *pitman_yor_ : *default_instance_->pitman_yor_;
 }
-inline ::distributions_protobuf::Clustering_PitmanYor* Clustering::mutable_pitman_yor() {
+inline ::protobuf::distributions::Clustering_PitmanYor* Clustering::mutable_pitman_yor() {
   set_has_pitman_yor();
-  if (pitman_yor_ == NULL) pitman_yor_ = new ::distributions_protobuf::Clustering_PitmanYor;
+  if (pitman_yor_ == NULL) pitman_yor_ = new ::protobuf::distributions::Clustering_PitmanYor;
   return pitman_yor_;
 }
-inline ::distributions_protobuf::Clustering_PitmanYor* Clustering::release_pitman_yor() {
+inline ::protobuf::distributions::Clustering_PitmanYor* Clustering::release_pitman_yor() {
   clear_has_pitman_yor();
-  ::distributions_protobuf::Clustering_PitmanYor* temp = pitman_yor_;
+  ::protobuf::distributions::Clustering_PitmanYor* temp = pitman_yor_;
   pitman_yor_ = NULL;
   return temp;
 }
 
-// optional .distributions_protobuf.Clustering.LowEntropy low_entropy = 2;
+// optional .protobuf.distributions.Clustering.LowEntropy low_entropy = 2;
 inline bool Clustering::has_low_entropy() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
@@ -1848,20 +1424,20 @@ inline void Clustering::clear_has_low_entropy() {
   _has_bits_[0] &= ~0x00000002u;
 }
 inline void Clustering::clear_low_entropy() {
-  if (low_entropy_ != NULL) low_entropy_->::distributions_protobuf::Clustering_LowEntropy::Clear();
+  if (low_entropy_ != NULL) low_entropy_->::protobuf::distributions::Clustering_LowEntropy::Clear();
   clear_has_low_entropy();
 }
-inline const ::distributions_protobuf::Clustering_LowEntropy& Clustering::low_entropy() const {
+inline const ::protobuf::distributions::Clustering_LowEntropy& Clustering::low_entropy() const {
   return low_entropy_ != NULL ? *low_entropy_ : *default_instance_->low_entropy_;
 }
-inline ::distributions_protobuf::Clustering_LowEntropy* Clustering::mutable_low_entropy() {
+inline ::protobuf::distributions::Clustering_LowEntropy* Clustering::mutable_low_entropy() {
   set_has_low_entropy();
-  if (low_entropy_ == NULL) low_entropy_ = new ::distributions_protobuf::Clustering_LowEntropy;
+  if (low_entropy_ == NULL) low_entropy_ = new ::protobuf::distributions::Clustering_LowEntropy;
   return low_entropy_;
 }
-inline ::distributions_protobuf::Clustering_LowEntropy* Clustering::release_low_entropy() {
+inline ::protobuf::distributions::Clustering_LowEntropy* Clustering::release_low_entropy() {
   clear_has_low_entropy();
-  ::distributions_protobuf::Clustering_LowEntropy* temp = low_entropy_;
+  ::protobuf::distributions::Clustering_LowEntropy* temp = low_entropy_;
   low_entropy_ = NULL;
   return temp;
 }
@@ -2449,423 +2025,11 @@ inline void NormalInverseChiSq::set_nu(float value) {
   nu_ = value;
 }
 
-// -------------------------------------------------------------------
-
-// ProductModel_SparseValue
-
-// repeated bool observed = 1;
-inline int ProductModel_SparseValue::observed_size() const {
-  return observed_.size();
-}
-inline void ProductModel_SparseValue::clear_observed() {
-  observed_.Clear();
-}
-inline bool ProductModel_SparseValue::observed(int index) const {
-  return observed_.Get(index);
-}
-inline void ProductModel_SparseValue::set_observed(int index, bool value) {
-  observed_.Set(index, value);
-}
-inline void ProductModel_SparseValue::add_observed(bool value) {
-  observed_.Add(value);
-}
-inline const ::google::protobuf::RepeatedField< bool >&
-ProductModel_SparseValue::observed() const {
-  return observed_;
-}
-inline ::google::protobuf::RepeatedField< bool >*
-ProductModel_SparseValue::mutable_observed() {
-  return &observed_;
-}
-
-// repeated bool booleans = 2;
-inline int ProductModel_SparseValue::booleans_size() const {
-  return booleans_.size();
-}
-inline void ProductModel_SparseValue::clear_booleans() {
-  booleans_.Clear();
-}
-inline bool ProductModel_SparseValue::booleans(int index) const {
-  return booleans_.Get(index);
-}
-inline void ProductModel_SparseValue::set_booleans(int index, bool value) {
-  booleans_.Set(index, value);
-}
-inline void ProductModel_SparseValue::add_booleans(bool value) {
-  booleans_.Add(value);
-}
-inline const ::google::protobuf::RepeatedField< bool >&
-ProductModel_SparseValue::booleans() const {
-  return booleans_;
-}
-inline ::google::protobuf::RepeatedField< bool >*
-ProductModel_SparseValue::mutable_booleans() {
-  return &booleans_;
-}
-
-// repeated uint64 counts = 3;
-inline int ProductModel_SparseValue::counts_size() const {
-  return counts_.size();
-}
-inline void ProductModel_SparseValue::clear_counts() {
-  counts_.Clear();
-}
-inline ::google::protobuf::uint64 ProductModel_SparseValue::counts(int index) const {
-  return counts_.Get(index);
-}
-inline void ProductModel_SparseValue::set_counts(int index, ::google::protobuf::uint64 value) {
-  counts_.Set(index, value);
-}
-inline void ProductModel_SparseValue::add_counts(::google::protobuf::uint64 value) {
-  counts_.Add(value);
-}
-inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >&
-ProductModel_SparseValue::counts() const {
-  return counts_;
-}
-inline ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >*
-ProductModel_SparseValue::mutable_counts() {
-  return &counts_;
-}
-
-// repeated float reals = 4;
-inline int ProductModel_SparseValue::reals_size() const {
-  return reals_.size();
-}
-inline void ProductModel_SparseValue::clear_reals() {
-  reals_.Clear();
-}
-inline float ProductModel_SparseValue::reals(int index) const {
-  return reals_.Get(index);
-}
-inline void ProductModel_SparseValue::set_reals(int index, float value) {
-  reals_.Set(index, value);
-}
-inline void ProductModel_SparseValue::add_reals(float value) {
-  reals_.Add(value);
-}
-inline const ::google::protobuf::RepeatedField< float >&
-ProductModel_SparseValue::reals() const {
-  return reals_;
-}
-inline ::google::protobuf::RepeatedField< float >*
-ProductModel_SparseValue::mutable_reals() {
-  return &reals_;
-}
-
-// -------------------------------------------------------------------
-
-// ProductModel_Group
-
-// optional uint64 count = 1;
-inline bool ProductModel_Group::has_count() const {
-  return (_has_bits_[0] & 0x00000001u) != 0;
-}
-inline void ProductModel_Group::set_has_count() {
-  _has_bits_[0] |= 0x00000001u;
-}
-inline void ProductModel_Group::clear_has_count() {
-  _has_bits_[0] &= ~0x00000001u;
-}
-inline void ProductModel_Group::clear_count() {
-  count_ = GOOGLE_ULONGLONG(0);
-  clear_has_count();
-}
-inline ::google::protobuf::uint64 ProductModel_Group::count() const {
-  return count_;
-}
-inline void ProductModel_Group::set_count(::google::protobuf::uint64 value) {
-  set_has_count();
-  count_ = value;
-}
-
-// repeated .distributions_protobuf.BetaBernoulli.Group bb = 2;
-inline int ProductModel_Group::bb_size() const {
-  return bb_.size();
-}
-inline void ProductModel_Group::clear_bb() {
-  bb_.Clear();
-}
-inline const ::distributions_protobuf::BetaBernoulli_Group& ProductModel_Group::bb(int index) const {
-  return bb_.Get(index);
-}
-inline ::distributions_protobuf::BetaBernoulli_Group* ProductModel_Group::mutable_bb(int index) {
-  return bb_.Mutable(index);
-}
-inline ::distributions_protobuf::BetaBernoulli_Group* ProductModel_Group::add_bb() {
-  return bb_.Add();
-}
-inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::BetaBernoulli_Group >&
-ProductModel_Group::bb() const {
-  return bb_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::BetaBernoulli_Group >*
-ProductModel_Group::mutable_bb() {
-  return &bb_;
-}
-
-// repeated .distributions_protobuf.DirichletDiscrete.Group dd = 3;
-inline int ProductModel_Group::dd_size() const {
-  return dd_.size();
-}
-inline void ProductModel_Group::clear_dd() {
-  dd_.Clear();
-}
-inline const ::distributions_protobuf::DirichletDiscrete_Group& ProductModel_Group::dd(int index) const {
-  return dd_.Get(index);
-}
-inline ::distributions_protobuf::DirichletDiscrete_Group* ProductModel_Group::mutable_dd(int index) {
-  return dd_.Mutable(index);
-}
-inline ::distributions_protobuf::DirichletDiscrete_Group* ProductModel_Group::add_dd() {
-  return dd_.Add();
-}
-inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletDiscrete_Group >&
-ProductModel_Group::dd() const {
-  return dd_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletDiscrete_Group >*
-ProductModel_Group::mutable_dd() {
-  return &dd_;
-}
-
-// repeated .distributions_protobuf.DirichletProcessDiscrete.Group dpd = 4;
-inline int ProductModel_Group::dpd_size() const {
-  return dpd_.size();
-}
-inline void ProductModel_Group::clear_dpd() {
-  dpd_.Clear();
-}
-inline const ::distributions_protobuf::DirichletProcessDiscrete_Group& ProductModel_Group::dpd(int index) const {
-  return dpd_.Get(index);
-}
-inline ::distributions_protobuf::DirichletProcessDiscrete_Group* ProductModel_Group::mutable_dpd(int index) {
-  return dpd_.Mutable(index);
-}
-inline ::distributions_protobuf::DirichletProcessDiscrete_Group* ProductModel_Group::add_dpd() {
-  return dpd_.Add();
-}
-inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletProcessDiscrete_Group >&
-ProductModel_Group::dpd() const {
-  return dpd_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletProcessDiscrete_Group >*
-ProductModel_Group::mutable_dpd() {
-  return &dpd_;
-}
-
-// repeated .distributions_protobuf.GammaPoisson.Group gp = 5;
-inline int ProductModel_Group::gp_size() const {
-  return gp_.size();
-}
-inline void ProductModel_Group::clear_gp() {
-  gp_.Clear();
-}
-inline const ::distributions_protobuf::GammaPoisson_Group& ProductModel_Group::gp(int index) const {
-  return gp_.Get(index);
-}
-inline ::distributions_protobuf::GammaPoisson_Group* ProductModel_Group::mutable_gp(int index) {
-  return gp_.Mutable(index);
-}
-inline ::distributions_protobuf::GammaPoisson_Group* ProductModel_Group::add_gp() {
-  return gp_.Add();
-}
-inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::GammaPoisson_Group >&
-ProductModel_Group::gp() const {
-  return gp_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::GammaPoisson_Group >*
-ProductModel_Group::mutable_gp() {
-  return &gp_;
-}
-
-// repeated .distributions_protobuf.NormalInverseChiSq.Group nich = 6;
-inline int ProductModel_Group::nich_size() const {
-  return nich_.size();
-}
-inline void ProductModel_Group::clear_nich() {
-  nich_.Clear();
-}
-inline const ::distributions_protobuf::NormalInverseChiSq_Group& ProductModel_Group::nich(int index) const {
-  return nich_.Get(index);
-}
-inline ::distributions_protobuf::NormalInverseChiSq_Group* ProductModel_Group::mutable_nich(int index) {
-  return nich_.Mutable(index);
-}
-inline ::distributions_protobuf::NormalInverseChiSq_Group* ProductModel_Group::add_nich() {
-  return nich_.Add();
-}
-inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::NormalInverseChiSq_Group >&
-ProductModel_Group::nich() const {
-  return nich_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::NormalInverseChiSq_Group >*
-ProductModel_Group::mutable_nich() {
-  return &nich_;
-}
-
-// -------------------------------------------------------------------
-
-// ProductModel
-
-// optional .distributions_protobuf.Clustering clustering = 1;
-inline bool ProductModel::has_clustering() const {
-  return (_has_bits_[0] & 0x00000001u) != 0;
-}
-inline void ProductModel::set_has_clustering() {
-  _has_bits_[0] |= 0x00000001u;
-}
-inline void ProductModel::clear_has_clustering() {
-  _has_bits_[0] &= ~0x00000001u;
-}
-inline void ProductModel::clear_clustering() {
-  if (clustering_ != NULL) clustering_->::distributions_protobuf::Clustering::Clear();
-  clear_has_clustering();
-}
-inline const ::distributions_protobuf::Clustering& ProductModel::clustering() const {
-  return clustering_ != NULL ? *clustering_ : *default_instance_->clustering_;
-}
-inline ::distributions_protobuf::Clustering* ProductModel::mutable_clustering() {
-  set_has_clustering();
-  if (clustering_ == NULL) clustering_ = new ::distributions_protobuf::Clustering;
-  return clustering_;
-}
-inline ::distributions_protobuf::Clustering* ProductModel::release_clustering() {
-  clear_has_clustering();
-  ::distributions_protobuf::Clustering* temp = clustering_;
-  clustering_ = NULL;
-  return temp;
-}
-
-// repeated .distributions_protobuf.BetaBernoulli bb = 2;
-inline int ProductModel::bb_size() const {
-  return bb_.size();
-}
-inline void ProductModel::clear_bb() {
-  bb_.Clear();
-}
-inline const ::distributions_protobuf::BetaBernoulli& ProductModel::bb(int index) const {
-  return bb_.Get(index);
-}
-inline ::distributions_protobuf::BetaBernoulli* ProductModel::mutable_bb(int index) {
-  return bb_.Mutable(index);
-}
-inline ::distributions_protobuf::BetaBernoulli* ProductModel::add_bb() {
-  return bb_.Add();
-}
-inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::BetaBernoulli >&
-ProductModel::bb() const {
-  return bb_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::BetaBernoulli >*
-ProductModel::mutable_bb() {
-  return &bb_;
-}
-
-// repeated .distributions_protobuf.DirichletDiscrete dd = 3;
-inline int ProductModel::dd_size() const {
-  return dd_.size();
-}
-inline void ProductModel::clear_dd() {
-  dd_.Clear();
-}
-inline const ::distributions_protobuf::DirichletDiscrete& ProductModel::dd(int index) const {
-  return dd_.Get(index);
-}
-inline ::distributions_protobuf::DirichletDiscrete* ProductModel::mutable_dd(int index) {
-  return dd_.Mutable(index);
-}
-inline ::distributions_protobuf::DirichletDiscrete* ProductModel::add_dd() {
-  return dd_.Add();
-}
-inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletDiscrete >&
-ProductModel::dd() const {
-  return dd_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletDiscrete >*
-ProductModel::mutable_dd() {
-  return &dd_;
-}
-
-// repeated .distributions_protobuf.DirichletProcessDiscrete dpd = 4;
-inline int ProductModel::dpd_size() const {
-  return dpd_.size();
-}
-inline void ProductModel::clear_dpd() {
-  dpd_.Clear();
-}
-inline const ::distributions_protobuf::DirichletProcessDiscrete& ProductModel::dpd(int index) const {
-  return dpd_.Get(index);
-}
-inline ::distributions_protobuf::DirichletProcessDiscrete* ProductModel::mutable_dpd(int index) {
-  return dpd_.Mutable(index);
-}
-inline ::distributions_protobuf::DirichletProcessDiscrete* ProductModel::add_dpd() {
-  return dpd_.Add();
-}
-inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletProcessDiscrete >&
-ProductModel::dpd() const {
-  return dpd_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::DirichletProcessDiscrete >*
-ProductModel::mutable_dpd() {
-  return &dpd_;
-}
-
-// repeated .distributions_protobuf.GammaPoisson gp = 5;
-inline int ProductModel::gp_size() const {
-  return gp_.size();
-}
-inline void ProductModel::clear_gp() {
-  gp_.Clear();
-}
-inline const ::distributions_protobuf::GammaPoisson& ProductModel::gp(int index) const {
-  return gp_.Get(index);
-}
-inline ::distributions_protobuf::GammaPoisson* ProductModel::mutable_gp(int index) {
-  return gp_.Mutable(index);
-}
-inline ::distributions_protobuf::GammaPoisson* ProductModel::add_gp() {
-  return gp_.Add();
-}
-inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::GammaPoisson >&
-ProductModel::gp() const {
-  return gp_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::GammaPoisson >*
-ProductModel::mutable_gp() {
-  return &gp_;
-}
-
-// repeated .distributions_protobuf.NormalInverseChiSq nich = 6;
-inline int ProductModel::nich_size() const {
-  return nich_.size();
-}
-inline void ProductModel::clear_nich() {
-  nich_.Clear();
-}
-inline const ::distributions_protobuf::NormalInverseChiSq& ProductModel::nich(int index) const {
-  return nich_.Get(index);
-}
-inline ::distributions_protobuf::NormalInverseChiSq* ProductModel::mutable_nich(int index) {
-  return nich_.Mutable(index);
-}
-inline ::distributions_protobuf::NormalInverseChiSq* ProductModel::add_nich() {
-  return nich_.Add();
-}
-inline const ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::NormalInverseChiSq >&
-ProductModel::nich() const {
-  return nich_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::distributions_protobuf::NormalInverseChiSq >*
-ProductModel::mutable_nich() {
-  return &nich_;
-}
-
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace distributions_protobuf
+}  // namespace distributions
+}  // namespace protobuf
 
 #ifndef SWIG
 namespace google {

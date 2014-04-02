@@ -36,10 +36,7 @@
 namespace distributions
 {
 
-namespace protobuf
-{
-using namespace distributions_protobuf;
-} // namespace protobuf
+namespace protobuf { using namespace ::protobuf::distributions; }
 
 //----------------------------------------------------------------------------
 // Clustering

@@ -25,7 +25,7 @@
 // TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 // USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package distributions_protobuf;
+package protobuf.distributions;
 
 //----------------------------------------------------------------------------
 // Clustering
@@ -48,7 +48,7 @@ message Clustering  // simulates a sum type
 }
 
 //----------------------------------------------------------------------------
-// Basic Models
+// Models
 
 message BetaBernoulli {
   required float alpha = 1;
@@ -101,34 +101,6 @@ message NormalInverseChiSq {
     required uint64 count = 1;
     required float mean = 2;
     required float count_times_variance = 3;
-  }
-}
-
-//----------------------------------------------------------------------------
-// Products
-
-message ProductModel {
-  optional Clustering clustering = 1;
-  repeated BetaBernoulli bb = 2;
-  repeated DirichletDiscrete dd = 3;  // must be in order of increasing dim
-  repeated DirichletProcessDiscrete dpd = 4;
-  repeated GammaPoisson gp = 5;
-  repeated NormalInverseChiSq nich = 6;
-
-  message SparseValue {
-    repeated bool observed = 1;
-    repeated bool booleans = 2;  // including bb
-    repeated uint64 counts = 3;  // including dd, dpd, gp
-    repeated float reals = 4;  // including nich
-  }
-
-  message Group {
-    optional uint64 count = 1;
-    repeated BetaBernoulli.Group bb = 2;
-    repeated DirichletDiscrete.Group dd = 3;
-    repeated DirichletProcessDiscrete.Group dpd = 4;
-    repeated GammaPoisson.Group gp = 5;
-    repeated NormalInverseChiSq.Group nich = 6;
   }
 }
 

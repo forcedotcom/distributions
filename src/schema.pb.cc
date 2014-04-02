@@ -13,7 +13,8 @@
 #include <google/protobuf/wire_format.h>
 // @@protoc_insertion_point(includes)
 
-namespace distributions_protobuf {
+namespace protobuf {
+namespace distributions {
 
 namespace {
 
@@ -56,15 +57,6 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* NormalInverseChiSq_Group_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   NormalInverseChiSq_Group_reflection_ = NULL;
-const ::google::protobuf::Descriptor* ProductModel_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  ProductModel_reflection_ = NULL;
-const ::google::protobuf::Descriptor* ProductModel_SparseValue_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  ProductModel_SparseValue_reflection_ = NULL;
-const ::google::protobuf::Descriptor* ProductModel_Group_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  ProductModel_Group_reflection_ = NULL;
 
 }  // namespace
 
@@ -286,64 +278,6 @@ void protobuf_AssignDesc_distributions_2fschema_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(NormalInverseChiSq_Group));
-  ProductModel_descriptor_ = file->message_type(6);
-  static const int ProductModel_offsets_[6] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel, clustering_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel, bb_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel, dd_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel, dpd_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel, gp_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel, nich_),
-  };
-  ProductModel_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      ProductModel_descriptor_,
-      ProductModel::default_instance_,
-      ProductModel_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(ProductModel));
-  ProductModel_SparseValue_descriptor_ = ProductModel_descriptor_->nested_type(0);
-  static const int ProductModel_SparseValue_offsets_[4] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel_SparseValue, observed_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel_SparseValue, booleans_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel_SparseValue, counts_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel_SparseValue, reals_),
-  };
-  ProductModel_SparseValue_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      ProductModel_SparseValue_descriptor_,
-      ProductModel_SparseValue::default_instance_,
-      ProductModel_SparseValue_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel_SparseValue, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel_SparseValue, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(ProductModel_SparseValue));
-  ProductModel_Group_descriptor_ = ProductModel_descriptor_->nested_type(1);
-  static const int ProductModel_Group_offsets_[6] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel_Group, count_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel_Group, bb_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel_Group, dd_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel_Group, dpd_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel_Group, gp_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel_Group, nich_),
-  };
-  ProductModel_Group_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      ProductModel_Group_descriptor_,
-      ProductModel_Group::default_instance_,
-      ProductModel_Group_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel_Group, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(ProductModel_Group, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(ProductModel_Group));
 }
 
 namespace {
@@ -382,12 +316,6 @@ void protobuf_RegisterTypes(const ::std::string&) {
     NormalInverseChiSq_descriptor_, &NormalInverseChiSq::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     NormalInverseChiSq_Group_descriptor_, &NormalInverseChiSq_Group::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    ProductModel_descriptor_, &ProductModel::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    ProductModel_SparseValue_descriptor_, &ProductModel_SparseValue::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    ProductModel_Group_descriptor_, &ProductModel_Group::default_instance());
 }
 
 }  // namespace
@@ -419,12 +347,6 @@ void protobuf_ShutdownFile_distributions_2fschema_2eproto() {
   delete NormalInverseChiSq_reflection_;
   delete NormalInverseChiSq_Group::default_instance_;
   delete NormalInverseChiSq_Group_reflection_;
-  delete ProductModel::default_instance_;
-  delete ProductModel_reflection_;
-  delete ProductModel_SparseValue::default_instance_;
-  delete ProductModel_SparseValue_reflection_;
-  delete ProductModel_Group::default_instance_;
-  delete ProductModel_Group_reflection_;
 }
 
 void protobuf_AddDesc_distributions_2fschema_2eproto() {
@@ -434,11 +356,11 @@ void protobuf_AddDesc_distributions_2fschema_2eproto() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-    "\n\032distributions/schema.proto\022\026distributi"
-    "ons_protobuf\"\335\001\n\nClustering\022@\n\npitman_yo"
-    "r\030\001 \001(\0132,.distributions_protobuf.Cluster"
-    "ing.PitmanYor\022B\n\013low_entropy\030\002 \001(\0132-.dis"
-    "tributions_protobuf.Clustering.LowEntrop"
+    "\n\032distributions/schema.proto\022\026protobuf.d"
+    "istributions\"\335\001\n\nClustering\022@\n\npitman_yo"
+    "r\030\001 \001(\0132,.protobuf.distributions.Cluster"
+    "ing.PitmanYor\022B\n\013low_entropy\030\002 \001(\0132-.pro"
+    "tobuf.distributions.Clustering.LowEntrop"
     "y\032%\n\tPitmanYor\022\r\n\005alpha\030\001 \002(\002\022\t\n\001d\030\002 \002(\002"
     "\032\"\n\nLowEntropy\022\024\n\014dataset_size\030\001 \002(\004\"S\n\r"
     "BetaBernoulli\022\r\n\005alpha\030\001 \002(\002\022\014\n\004beta\030\002 \002"
@@ -453,27 +375,7 @@ void protobuf_AddDesc_distributions_2fschema_2eproto() {
     "prod\030\003 \002(\002\"\220\001\n\022NormalInverseChiSq\022\n\n\002mu\030"
     "\001 \002(\002\022\r\n\005kappa\030\002 \002(\002\022\017\n\007sigmasq\030\003 \002(\002\022\n\n"
     "\002nu\030\004 \002(\002\032B\n\005Group\022\r\n\005count\030\001 \002(\004\022\014\n\004mea"
-    "n\030\002 \002(\002\022\034\n\024count_times_variance\030\003 \002(\002\"\371\005"
-    "\n\014ProductModel\0226\n\nclustering\030\001 \001(\0132\".dis"
-    "tributions_protobuf.Clustering\0221\n\002bb\030\002 \003"
-    "(\0132%.distributions_protobuf.BetaBernoull"
-    "i\0225\n\002dd\030\003 \003(\0132).distributions_protobuf.D"
-    "irichletDiscrete\022=\n\003dpd\030\004 \003(\01320.distribu"
-    "tions_protobuf.DirichletProcessDiscrete\022"
-    "0\n\002gp\030\005 \003(\0132$.distributions_protobuf.Gam"
-    "maPoisson\0228\n\004nich\030\006 \003(\0132*.distributions_"
-    "protobuf.NormalInverseChiSq\032P\n\013SparseVal"
-    "ue\022\020\n\010observed\030\001 \003(\010\022\020\n\010booleans\030\002 \003(\010\022\016"
-    "\n\006counts\030\003 \003(\004\022\r\n\005reals\030\004 \003(\002\032\311\002\n\005Group\022"
-    "\r\n\005count\030\001 \001(\004\0227\n\002bb\030\002 \003(\0132+.distributio"
-    "ns_protobuf.BetaBernoulli.Group\022;\n\002dd\030\003 "
-    "\003(\0132/.distributions_protobuf.DirichletDi"
-    "screte.Group\022C\n\003dpd\030\004 \003(\01326.distribution"
-    "s_protobuf.DirichletProcessDiscrete.Grou"
-    "p\0226\n\002gp\030\005 \003(\0132*.distributions_protobuf.G"
-    "ammaPoisson.Group\022>\n\004nich\030\006 \003(\01320.distri"
-    "butions_protobuf.NormalInverseChiSq.Grou"
-    "p", 1561);
+    "n\030\002 \002(\002\022\034\n\024count_times_variance\030\003 \002(\002", 797);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "distributions/schema.proto", &protobuf_RegisterTypes);
   Clustering::default_instance_ = new Clustering();
@@ -489,9 +391,6 @@ void protobuf_AddDesc_distributions_2fschema_2eproto() {
   GammaPoisson_Group::default_instance_ = new GammaPoisson_Group();
   NormalInverseChiSq::default_instance_ = new NormalInverseChiSq();
   NormalInverseChiSq_Group::default_instance_ = new NormalInverseChiSq_Group();
-  ProductModel::default_instance_ = new ProductModel();
-  ProductModel_SparseValue::default_instance_ = new ProductModel_SparseValue();
-  ProductModel_Group::default_instance_ = new ProductModel_Group();
   Clustering::default_instance_->InitAsDefaultInstance();
   Clustering_PitmanYor::default_instance_->InitAsDefaultInstance();
   Clustering_LowEntropy::default_instance_->InitAsDefaultInstance();
@@ -505,9 +404,6 @@ void protobuf_AddDesc_distributions_2fschema_2eproto() {
   GammaPoisson_Group::default_instance_->InitAsDefaultInstance();
   NormalInverseChiSq::default_instance_->InitAsDefaultInstance();
   NormalInverseChiSq_Group::default_instance_->InitAsDefaultInstance();
-  ProductModel::default_instance_->InitAsDefaultInstance();
-  ProductModel_SparseValue::default_instance_->InitAsDefaultInstance();
-  ProductModel_Group::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_distributions_2fschema_2eproto);
 }
 
@@ -984,8 +880,8 @@ Clustering::Clustering()
 }
 
 void Clustering::InitAsDefaultInstance() {
-  pitman_yor_ = const_cast< ::distributions_protobuf::Clustering_PitmanYor*>(&::distributions_protobuf::Clustering_PitmanYor::default_instance());
-  low_entropy_ = const_cast< ::distributions_protobuf::Clustering_LowEntropy*>(&::distributions_protobuf::Clustering_LowEntropy::default_instance());
+  pitman_yor_ = const_cast< ::protobuf::distributions::Clustering_PitmanYor*>(&::protobuf::distributions::Clustering_PitmanYor::default_instance());
+  low_entropy_ = const_cast< ::protobuf::distributions::Clustering_LowEntropy*>(&::protobuf::distributions::Clustering_LowEntropy::default_instance());
 }
 
 Clustering::Clustering(const Clustering& from)
@@ -1035,10 +931,10 @@ Clustering* Clustering::New() const {
 void Clustering::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (has_pitman_yor()) {
-      if (pitman_yor_ != NULL) pitman_yor_->::distributions_protobuf::Clustering_PitmanYor::Clear();
+      if (pitman_yor_ != NULL) pitman_yor_->::protobuf::distributions::Clustering_PitmanYor::Clear();
     }
     if (has_low_entropy()) {
-      if (low_entropy_ != NULL) low_entropy_->::distributions_protobuf::Clustering_LowEntropy::Clear();
+      if (low_entropy_ != NULL) low_entropy_->::protobuf::distributions::Clustering_LowEntropy::Clear();
     }
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -1051,7 +947,7 @@ bool Clustering::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional .distributions_protobuf.Clustering.PitmanYor pitman_yor = 1;
+      // optional .protobuf.distributions.Clustering.PitmanYor pitman_yor = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
@@ -1064,7 +960,7 @@ bool Clustering::MergePartialFromCodedStream(
         break;
       }
       
-      // optional .distributions_protobuf.Clustering.LowEntropy low_entropy = 2;
+      // optional .protobuf.distributions.Clustering.LowEntropy low_entropy = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
@@ -1096,13 +992,13 @@ bool Clustering::MergePartialFromCodedStream(
 
 void Clustering::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // optional .distributions_protobuf.Clustering.PitmanYor pitman_yor = 1;
+  // optional .protobuf.distributions.Clustering.PitmanYor pitman_yor = 1;
   if (has_pitman_yor()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       1, this->pitman_yor(), output);
   }
   
-  // optional .distributions_protobuf.Clustering.LowEntropy low_entropy = 2;
+  // optional .protobuf.distributions.Clustering.LowEntropy low_entropy = 2;
   if (has_low_entropy()) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
       2, this->low_entropy(), output);
@@ -1116,14 +1012,14 @@ void Clustering::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* Clustering::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // optional .distributions_protobuf.Clustering.PitmanYor pitman_yor = 1;
+  // optional .protobuf.distributions.Clustering.PitmanYor pitman_yor = 1;
   if (has_pitman_yor()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
         1, this->pitman_yor(), target);
   }
   
-  // optional .distributions_protobuf.Clustering.LowEntropy low_entropy = 2;
+  // optional .protobuf.distributions.Clustering.LowEntropy low_entropy = 2;
   if (has_low_entropy()) {
     target = ::google::protobuf::internal::WireFormatLite::
       WriteMessageNoVirtualToArray(
@@ -1141,14 +1037,14 @@ int Clustering::ByteSize() const {
   int total_size = 0;
   
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // optional .distributions_protobuf.Clustering.PitmanYor pitman_yor = 1;
+    // optional .protobuf.distributions.Clustering.PitmanYor pitman_yor = 1;
     if (has_pitman_yor()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
           this->pitman_yor());
     }
     
-    // optional .distributions_protobuf.Clustering.LowEntropy low_entropy = 2;
+    // optional .protobuf.distributions.Clustering.LowEntropy low_entropy = 2;
     if (has_low_entropy()) {
       total_size += 1 +
         ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
@@ -1183,10 +1079,10 @@ void Clustering::MergeFrom(const Clustering& from) {
   GOOGLE_CHECK_NE(&from, this);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_pitman_yor()) {
-      mutable_pitman_yor()->::distributions_protobuf::Clustering_PitmanYor::MergeFrom(from.pitman_yor());
+      mutable_pitman_yor()->::protobuf::distributions::Clustering_PitmanYor::MergeFrom(from.pitman_yor());
     }
     if (from.has_low_entropy()) {
-      mutable_low_entropy()->::distributions_protobuf::Clustering_LowEntropy::MergeFrom(from.low_entropy());
+      mutable_low_entropy()->::protobuf::distributions::Clustering_LowEntropy::MergeFrom(from.low_entropy());
     }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -3862,1196 +3758,9 @@ void NormalInverseChiSq::Swap(NormalInverseChiSq* other) {
 }
 
 
-// ===================================================================
-
-#ifndef _MSC_VER
-const int ProductModel_SparseValue::kObservedFieldNumber;
-const int ProductModel_SparseValue::kBooleansFieldNumber;
-const int ProductModel_SparseValue::kCountsFieldNumber;
-const int ProductModel_SparseValue::kRealsFieldNumber;
-#endif  // !_MSC_VER
-
-ProductModel_SparseValue::ProductModel_SparseValue()
-  : ::google::protobuf::Message() {
-  SharedCtor();
-}
-
-void ProductModel_SparseValue::InitAsDefaultInstance() {
-}
-
-ProductModel_SparseValue::ProductModel_SparseValue(const ProductModel_SparseValue& from)
-  : ::google::protobuf::Message() {
-  SharedCtor();
-  MergeFrom(from);
-}
-
-void ProductModel_SparseValue::SharedCtor() {
-  _cached_size_ = 0;
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-}
-
-ProductModel_SparseValue::~ProductModel_SparseValue() {
-  SharedDtor();
-}
-
-void ProductModel_SparseValue::SharedDtor() {
-  if (this != default_instance_) {
-  }
-}
-
-void ProductModel_SparseValue::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-}
-const ::google::protobuf::Descriptor* ProductModel_SparseValue::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return ProductModel_SparseValue_descriptor_;
-}
-
-const ProductModel_SparseValue& ProductModel_SparseValue::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fschema_2eproto();  return *default_instance_;
-}
-
-ProductModel_SparseValue* ProductModel_SparseValue::default_instance_ = NULL;
-
-ProductModel_SparseValue* ProductModel_SparseValue::New() const {
-  return new ProductModel_SparseValue;
-}
-
-void ProductModel_SparseValue::Clear() {
-  observed_.Clear();
-  booleans_.Clear();
-  counts_.Clear();
-  reals_.Clear();
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
-}
-
-bool ProductModel_SparseValue::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
-  ::google::protobuf::uint32 tag;
-  while ((tag = input->ReadTag()) != 0) {
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated bool observed = 1;
-      case 1: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
-         parse_observed:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
-                 1, 8, input, this->mutable_observed())));
-        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
-                   == ::google::protobuf::internal::WireFormatLite::
-                      WIRETYPE_LENGTH_DELIMITED) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
-                 input, this->mutable_observed())));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(8)) goto parse_observed;
-        if (input->ExpectTag(16)) goto parse_booleans;
-        break;
-      }
-      
-      // repeated bool booleans = 2;
-      case 2: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
-         parse_booleans:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
-                 1, 16, input, this->mutable_booleans())));
-        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
-                   == ::google::protobuf::internal::WireFormatLite::
-                      WIRETYPE_LENGTH_DELIMITED) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
-                 input, this->mutable_booleans())));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(16)) goto parse_booleans;
-        if (input->ExpectTag(24)) goto parse_counts;
-        break;
-      }
-      
-      // repeated uint64 counts = 3;
-      case 3: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
-         parse_counts:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
-                 1, 24, input, this->mutable_counts())));
-        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
-                   == ::google::protobuf::internal::WireFormatLite::
-                      WIRETYPE_LENGTH_DELIMITED) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
-                 input, this->mutable_counts())));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(24)) goto parse_counts;
-        if (input->ExpectTag(37)) goto parse_reals;
-        break;
-      }
-      
-      // repeated float reals = 4;
-      case 4: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_reals:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 1, 37, input, this->mutable_reals())));
-        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
-                   == ::google::protobuf::internal::WireFormatLite::
-                      WIRETYPE_LENGTH_DELIMITED) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, this->mutable_reals())));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(37)) goto parse_reals;
-        if (input->ExpectAtEnd()) return true;
-        break;
-      }
-      
-      default: {
-      handle_uninterpreted:
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          return true;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
-        break;
-      }
-    }
-  }
-  return true;
-#undef DO_
-}
-
-void ProductModel_SparseValue::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated bool observed = 1;
-  for (int i = 0; i < this->observed_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteBool(
-      1, this->observed(i), output);
-  }
-  
-  // repeated bool booleans = 2;
-  for (int i = 0; i < this->booleans_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteBool(
-      2, this->booleans(i), output);
-  }
-  
-  // repeated uint64 counts = 3;
-  for (int i = 0; i < this->counts_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt64(
-      3, this->counts(i), output);
-  }
-  
-  // repeated float reals = 4;
-  for (int i = 0; i < this->reals_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(
-      4, this->reals(i), output);
-  }
-  
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-}
-
-::google::protobuf::uint8* ProductModel_SparseValue::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // repeated bool observed = 1;
-  for (int i = 0; i < this->observed_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteBoolToArray(1, this->observed(i), target);
-  }
-  
-  // repeated bool booleans = 2;
-  for (int i = 0; i < this->booleans_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteBoolToArray(2, this->booleans(i), target);
-  }
-  
-  // repeated uint64 counts = 3;
-  for (int i = 0; i < this->counts_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteUInt64ToArray(3, this->counts(i), target);
-  }
-  
-  // repeated float reals = 4;
-  for (int i = 0; i < this->reals_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteFloatToArray(4, this->reals(i), target);
-  }
-  
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  return target;
-}
-
-int ProductModel_SparseValue::ByteSize() const {
-  int total_size = 0;
-  
-  // repeated bool observed = 1;
-  {
-    int data_size = 0;
-    data_size = 1 * this->observed_size();
-    total_size += 1 * this->observed_size() + data_size;
-  }
-  
-  // repeated bool booleans = 2;
-  {
-    int data_size = 0;
-    data_size = 1 * this->booleans_size();
-    total_size += 1 * this->booleans_size() + data_size;
-  }
-  
-  // repeated uint64 counts = 3;
-  {
-    int data_size = 0;
-    for (int i = 0; i < this->counts_size(); i++) {
-      data_size += ::google::protobuf::internal::WireFormatLite::
-        UInt64Size(this->counts(i));
-    }
-    total_size += 1 * this->counts_size() + data_size;
-  }
-  
-  // repeated float reals = 4;
-  {
-    int data_size = 0;
-    data_size = 4 * this->reals_size();
-    total_size += 1 * this->reals_size() + data_size;
-  }
-  
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-  return total_size;
-}
-
-void ProductModel_SparseValue::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const ProductModel_SparseValue* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const ProductModel_SparseValue*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
-}
-
-void ProductModel_SparseValue::MergeFrom(const ProductModel_SparseValue& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  observed_.MergeFrom(from.observed_);
-  booleans_.MergeFrom(from.booleans_);
-  counts_.MergeFrom(from.counts_);
-  reals_.MergeFrom(from.reals_);
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void ProductModel_SparseValue::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-void ProductModel_SparseValue::CopyFrom(const ProductModel_SparseValue& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool ProductModel_SparseValue::IsInitialized() const {
-  
-  return true;
-}
-
-void ProductModel_SparseValue::Swap(ProductModel_SparseValue* other) {
-  if (other != this) {
-    observed_.Swap(&other->observed_);
-    booleans_.Swap(&other->booleans_);
-    counts_.Swap(&other->counts_);
-    reals_.Swap(&other->reals_);
-    std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
-    std::swap(_cached_size_, other->_cached_size_);
-  }
-}
-
-::google::protobuf::Metadata ProductModel_SparseValue::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = ProductModel_SparseValue_descriptor_;
-  metadata.reflection = ProductModel_SparseValue_reflection_;
-  return metadata;
-}
-
-
-// -------------------------------------------------------------------
-
-#ifndef _MSC_VER
-const int ProductModel_Group::kCountFieldNumber;
-const int ProductModel_Group::kBbFieldNumber;
-const int ProductModel_Group::kDdFieldNumber;
-const int ProductModel_Group::kDpdFieldNumber;
-const int ProductModel_Group::kGpFieldNumber;
-const int ProductModel_Group::kNichFieldNumber;
-#endif  // !_MSC_VER
-
-ProductModel_Group::ProductModel_Group()
-  : ::google::protobuf::Message() {
-  SharedCtor();
-}
-
-void ProductModel_Group::InitAsDefaultInstance() {
-}
-
-ProductModel_Group::ProductModel_Group(const ProductModel_Group& from)
-  : ::google::protobuf::Message() {
-  SharedCtor();
-  MergeFrom(from);
-}
-
-void ProductModel_Group::SharedCtor() {
-  _cached_size_ = 0;
-  count_ = GOOGLE_ULONGLONG(0);
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-}
-
-ProductModel_Group::~ProductModel_Group() {
-  SharedDtor();
-}
-
-void ProductModel_Group::SharedDtor() {
-  if (this != default_instance_) {
-  }
-}
-
-void ProductModel_Group::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-}
-const ::google::protobuf::Descriptor* ProductModel_Group::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return ProductModel_Group_descriptor_;
-}
-
-const ProductModel_Group& ProductModel_Group::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fschema_2eproto();  return *default_instance_;
-}
-
-ProductModel_Group* ProductModel_Group::default_instance_ = NULL;
-
-ProductModel_Group* ProductModel_Group::New() const {
-  return new ProductModel_Group;
-}
-
-void ProductModel_Group::Clear() {
-  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    count_ = GOOGLE_ULONGLONG(0);
-  }
-  bb_.Clear();
-  dd_.Clear();
-  dpd_.Clear();
-  gp_.Clear();
-  nich_.Clear();
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
-}
-
-bool ProductModel_Group::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
-  ::google::protobuf::uint32 tag;
-  while ((tag = input->ReadTag()) != 0) {
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional uint64 count = 1;
-      case 1: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
-                 input, &count_)));
-          set_has_count();
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(18)) goto parse_bb;
-        break;
-      }
-      
-      // repeated .distributions_protobuf.BetaBernoulli.Group bb = 2;
-      case 2: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_bb:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_bb()));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(18)) goto parse_bb;
-        if (input->ExpectTag(26)) goto parse_dd;
-        break;
-      }
-      
-      // repeated .distributions_protobuf.DirichletDiscrete.Group dd = 3;
-      case 3: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_dd:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_dd()));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(26)) goto parse_dd;
-        if (input->ExpectTag(34)) goto parse_dpd;
-        break;
-      }
-      
-      // repeated .distributions_protobuf.DirichletProcessDiscrete.Group dpd = 4;
-      case 4: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_dpd:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_dpd()));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(34)) goto parse_dpd;
-        if (input->ExpectTag(42)) goto parse_gp;
-        break;
-      }
-      
-      // repeated .distributions_protobuf.GammaPoisson.Group gp = 5;
-      case 5: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_gp:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_gp()));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(42)) goto parse_gp;
-        if (input->ExpectTag(50)) goto parse_nich;
-        break;
-      }
-      
-      // repeated .distributions_protobuf.NormalInverseChiSq.Group nich = 6;
-      case 6: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_nich:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_nich()));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(50)) goto parse_nich;
-        if (input->ExpectAtEnd()) return true;
-        break;
-      }
-      
-      default: {
-      handle_uninterpreted:
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          return true;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
-        break;
-      }
-    }
-  }
-  return true;
-#undef DO_
-}
-
-void ProductModel_Group::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // optional uint64 count = 1;
-  if (has_count()) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt64(1, this->count(), output);
-  }
-  
-  // repeated .distributions_protobuf.BetaBernoulli.Group bb = 2;
-  for (int i = 0; i < this->bb_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      2, this->bb(i), output);
-  }
-  
-  // repeated .distributions_protobuf.DirichletDiscrete.Group dd = 3;
-  for (int i = 0; i < this->dd_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      3, this->dd(i), output);
-  }
-  
-  // repeated .distributions_protobuf.DirichletProcessDiscrete.Group dpd = 4;
-  for (int i = 0; i < this->dpd_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      4, this->dpd(i), output);
-  }
-  
-  // repeated .distributions_protobuf.GammaPoisson.Group gp = 5;
-  for (int i = 0; i < this->gp_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      5, this->gp(i), output);
-  }
-  
-  // repeated .distributions_protobuf.NormalInverseChiSq.Group nich = 6;
-  for (int i = 0; i < this->nich_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      6, this->nich(i), output);
-  }
-  
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-}
-
-::google::protobuf::uint8* ProductModel_Group::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // optional uint64 count = 1;
-  if (has_count()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(1, this->count(), target);
-  }
-  
-  // repeated .distributions_protobuf.BetaBernoulli.Group bb = 2;
-  for (int i = 0; i < this->bb_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        2, this->bb(i), target);
-  }
-  
-  // repeated .distributions_protobuf.DirichletDiscrete.Group dd = 3;
-  for (int i = 0; i < this->dd_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        3, this->dd(i), target);
-  }
-  
-  // repeated .distributions_protobuf.DirichletProcessDiscrete.Group dpd = 4;
-  for (int i = 0; i < this->dpd_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        4, this->dpd(i), target);
-  }
-  
-  // repeated .distributions_protobuf.GammaPoisson.Group gp = 5;
-  for (int i = 0; i < this->gp_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        5, this->gp(i), target);
-  }
-  
-  // repeated .distributions_protobuf.NormalInverseChiSq.Group nich = 6;
-  for (int i = 0; i < this->nich_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        6, this->nich(i), target);
-  }
-  
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  return target;
-}
-
-int ProductModel_Group::ByteSize() const {
-  int total_size = 0;
-  
-  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // optional uint64 count = 1;
-    if (has_count()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::UInt64Size(
-          this->count());
-    }
-    
-  }
-  // repeated .distributions_protobuf.BetaBernoulli.Group bb = 2;
-  total_size += 1 * this->bb_size();
-  for (int i = 0; i < this->bb_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->bb(i));
-  }
-  
-  // repeated .distributions_protobuf.DirichletDiscrete.Group dd = 3;
-  total_size += 1 * this->dd_size();
-  for (int i = 0; i < this->dd_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->dd(i));
-  }
-  
-  // repeated .distributions_protobuf.DirichletProcessDiscrete.Group dpd = 4;
-  total_size += 1 * this->dpd_size();
-  for (int i = 0; i < this->dpd_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->dpd(i));
-  }
-  
-  // repeated .distributions_protobuf.GammaPoisson.Group gp = 5;
-  total_size += 1 * this->gp_size();
-  for (int i = 0; i < this->gp_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->gp(i));
-  }
-  
-  // repeated .distributions_protobuf.NormalInverseChiSq.Group nich = 6;
-  total_size += 1 * this->nich_size();
-  for (int i = 0; i < this->nich_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->nich(i));
-  }
-  
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-  return total_size;
-}
-
-void ProductModel_Group::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const ProductModel_Group* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const ProductModel_Group*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
-}
-
-void ProductModel_Group::MergeFrom(const ProductModel_Group& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  bb_.MergeFrom(from.bb_);
-  dd_.MergeFrom(from.dd_);
-  dpd_.MergeFrom(from.dpd_);
-  gp_.MergeFrom(from.gp_);
-  nich_.MergeFrom(from.nich_);
-  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_count()) {
-      set_count(from.count());
-    }
-  }
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void ProductModel_Group::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-void ProductModel_Group::CopyFrom(const ProductModel_Group& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool ProductModel_Group::IsInitialized() const {
-  
-  for (int i = 0; i < bb_size(); i++) {
-    if (!this->bb(i).IsInitialized()) return false;
-  }
-  for (int i = 0; i < gp_size(); i++) {
-    if (!this->gp(i).IsInitialized()) return false;
-  }
-  for (int i = 0; i < nich_size(); i++) {
-    if (!this->nich(i).IsInitialized()) return false;
-  }
-  return true;
-}
-
-void ProductModel_Group::Swap(ProductModel_Group* other) {
-  if (other != this) {
-    std::swap(count_, other->count_);
-    bb_.Swap(&other->bb_);
-    dd_.Swap(&other->dd_);
-    dpd_.Swap(&other->dpd_);
-    gp_.Swap(&other->gp_);
-    nich_.Swap(&other->nich_);
-    std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
-    std::swap(_cached_size_, other->_cached_size_);
-  }
-}
-
-::google::protobuf::Metadata ProductModel_Group::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = ProductModel_Group_descriptor_;
-  metadata.reflection = ProductModel_Group_reflection_;
-  return metadata;
-}
-
-
-// -------------------------------------------------------------------
-
-#ifndef _MSC_VER
-const int ProductModel::kClusteringFieldNumber;
-const int ProductModel::kBbFieldNumber;
-const int ProductModel::kDdFieldNumber;
-const int ProductModel::kDpdFieldNumber;
-const int ProductModel::kGpFieldNumber;
-const int ProductModel::kNichFieldNumber;
-#endif  // !_MSC_VER
-
-ProductModel::ProductModel()
-  : ::google::protobuf::Message() {
-  SharedCtor();
-}
-
-void ProductModel::InitAsDefaultInstance() {
-  clustering_ = const_cast< ::distributions_protobuf::Clustering*>(&::distributions_protobuf::Clustering::default_instance());
-}
-
-ProductModel::ProductModel(const ProductModel& from)
-  : ::google::protobuf::Message() {
-  SharedCtor();
-  MergeFrom(from);
-}
-
-void ProductModel::SharedCtor() {
-  _cached_size_ = 0;
-  clustering_ = NULL;
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-}
-
-ProductModel::~ProductModel() {
-  SharedDtor();
-}
-
-void ProductModel::SharedDtor() {
-  if (this != default_instance_) {
-    delete clustering_;
-  }
-}
-
-void ProductModel::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-}
-const ::google::protobuf::Descriptor* ProductModel::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return ProductModel_descriptor_;
-}
-
-const ProductModel& ProductModel::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fschema_2eproto();  return *default_instance_;
-}
-
-ProductModel* ProductModel::default_instance_ = NULL;
-
-ProductModel* ProductModel::New() const {
-  return new ProductModel;
-}
-
-void ProductModel::Clear() {
-  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (has_clustering()) {
-      if (clustering_ != NULL) clustering_->::distributions_protobuf::Clustering::Clear();
-    }
-  }
-  bb_.Clear();
-  dd_.Clear();
-  dpd_.Clear();
-  gp_.Clear();
-  nich_.Clear();
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
-}
-
-bool ProductModel::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
-  ::google::protobuf::uint32 tag;
-  while ((tag = input->ReadTag()) != 0) {
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // optional .distributions_protobuf.Clustering clustering = 1;
-      case 1: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-               input, mutable_clustering()));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(18)) goto parse_bb;
-        break;
-      }
-      
-      // repeated .distributions_protobuf.BetaBernoulli bb = 2;
-      case 2: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_bb:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_bb()));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(18)) goto parse_bb;
-        if (input->ExpectTag(26)) goto parse_dd;
-        break;
-      }
-      
-      // repeated .distributions_protobuf.DirichletDiscrete dd = 3;
-      case 3: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_dd:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_dd()));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(26)) goto parse_dd;
-        if (input->ExpectTag(34)) goto parse_dpd;
-        break;
-      }
-      
-      // repeated .distributions_protobuf.DirichletProcessDiscrete dpd = 4;
-      case 4: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_dpd:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_dpd()));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(34)) goto parse_dpd;
-        if (input->ExpectTag(42)) goto parse_gp;
-        break;
-      }
-      
-      // repeated .distributions_protobuf.GammaPoisson gp = 5;
-      case 5: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_gp:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_gp()));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(42)) goto parse_gp;
-        if (input->ExpectTag(50)) goto parse_nich;
-        break;
-      }
-      
-      // repeated .distributions_protobuf.NormalInverseChiSq nich = 6;
-      case 6: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_nich:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_nich()));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(50)) goto parse_nich;
-        if (input->ExpectAtEnd()) return true;
-        break;
-      }
-      
-      default: {
-      handle_uninterpreted:
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          return true;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
-        break;
-      }
-    }
-  }
-  return true;
-#undef DO_
-}
-
-void ProductModel::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // optional .distributions_protobuf.Clustering clustering = 1;
-  if (has_clustering()) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->clustering(), output);
-  }
-  
-  // repeated .distributions_protobuf.BetaBernoulli bb = 2;
-  for (int i = 0; i < this->bb_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      2, this->bb(i), output);
-  }
-  
-  // repeated .distributions_protobuf.DirichletDiscrete dd = 3;
-  for (int i = 0; i < this->dd_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      3, this->dd(i), output);
-  }
-  
-  // repeated .distributions_protobuf.DirichletProcessDiscrete dpd = 4;
-  for (int i = 0; i < this->dpd_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      4, this->dpd(i), output);
-  }
-  
-  // repeated .distributions_protobuf.GammaPoisson gp = 5;
-  for (int i = 0; i < this->gp_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      5, this->gp(i), output);
-  }
-  
-  // repeated .distributions_protobuf.NormalInverseChiSq nich = 6;
-  for (int i = 0; i < this->nich_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      6, this->nich(i), output);
-  }
-  
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-}
-
-::google::protobuf::uint8* ProductModel::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // optional .distributions_protobuf.Clustering clustering = 1;
-  if (has_clustering()) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        1, this->clustering(), target);
-  }
-  
-  // repeated .distributions_protobuf.BetaBernoulli bb = 2;
-  for (int i = 0; i < this->bb_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        2, this->bb(i), target);
-  }
-  
-  // repeated .distributions_protobuf.DirichletDiscrete dd = 3;
-  for (int i = 0; i < this->dd_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        3, this->dd(i), target);
-  }
-  
-  // repeated .distributions_protobuf.DirichletProcessDiscrete dpd = 4;
-  for (int i = 0; i < this->dpd_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        4, this->dpd(i), target);
-  }
-  
-  // repeated .distributions_protobuf.GammaPoisson gp = 5;
-  for (int i = 0; i < this->gp_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        5, this->gp(i), target);
-  }
-  
-  // repeated .distributions_protobuf.NormalInverseChiSq nich = 6;
-  for (int i = 0; i < this->nich_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        6, this->nich(i), target);
-  }
-  
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  return target;
-}
-
-int ProductModel::ByteSize() const {
-  int total_size = 0;
-  
-  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // optional .distributions_protobuf.Clustering clustering = 1;
-    if (has_clustering()) {
-      total_size += 1 +
-        ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-          this->clustering());
-    }
-    
-  }
-  // repeated .distributions_protobuf.BetaBernoulli bb = 2;
-  total_size += 1 * this->bb_size();
-  for (int i = 0; i < this->bb_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->bb(i));
-  }
-  
-  // repeated .distributions_protobuf.DirichletDiscrete dd = 3;
-  total_size += 1 * this->dd_size();
-  for (int i = 0; i < this->dd_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->dd(i));
-  }
-  
-  // repeated .distributions_protobuf.DirichletProcessDiscrete dpd = 4;
-  total_size += 1 * this->dpd_size();
-  for (int i = 0; i < this->dpd_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->dpd(i));
-  }
-  
-  // repeated .distributions_protobuf.GammaPoisson gp = 5;
-  total_size += 1 * this->gp_size();
-  for (int i = 0; i < this->gp_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->gp(i));
-  }
-  
-  // repeated .distributions_protobuf.NormalInverseChiSq nich = 6;
-  total_size += 1 * this->nich_size();
-  for (int i = 0; i < this->nich_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->nich(i));
-  }
-  
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-  return total_size;
-}
-
-void ProductModel::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const ProductModel* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const ProductModel*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
-}
-
-void ProductModel::MergeFrom(const ProductModel& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  bb_.MergeFrom(from.bb_);
-  dd_.MergeFrom(from.dd_);
-  dpd_.MergeFrom(from.dpd_);
-  gp_.MergeFrom(from.gp_);
-  nich_.MergeFrom(from.nich_);
-  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_clustering()) {
-      mutable_clustering()->::distributions_protobuf::Clustering::MergeFrom(from.clustering());
-    }
-  }
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void ProductModel::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-void ProductModel::CopyFrom(const ProductModel& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool ProductModel::IsInitialized() const {
-  
-  if (has_clustering()) {
-    if (!this->clustering().IsInitialized()) return false;
-  }
-  for (int i = 0; i < bb_size(); i++) {
-    if (!this->bb(i).IsInitialized()) return false;
-  }
-  for (int i = 0; i < dpd_size(); i++) {
-    if (!this->dpd(i).IsInitialized()) return false;
-  }
-  for (int i = 0; i < gp_size(); i++) {
-    if (!this->gp(i).IsInitialized()) return false;
-  }
-  for (int i = 0; i < nich_size(); i++) {
-    if (!this->nich(i).IsInitialized()) return false;
-  }
-  return true;
-}
-
-void ProductModel::Swap(ProductModel* other) {
-  if (other != this) {
-    std::swap(clustering_, other->clustering_);
-    bb_.Swap(&other->bb_);
-    dd_.Swap(&other->dd_);
-    dpd_.Swap(&other->dpd_);
-    gp_.Swap(&other->gp_);
-    nich_.Swap(&other->nich_);
-    std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
-    std::swap(_cached_size_, other->_cached_size_);
-  }
-}
-
-::google::protobuf::Metadata ProductModel::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = ProductModel_descriptor_;
-  metadata.reflection = ProductModel_reflection_;
-  return metadata;
-}
-
-
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace distributions_protobuf
+}  // namespace distributions
+}  // namespace protobuf
 
 // @@protoc_insertion_point(global_scope)
