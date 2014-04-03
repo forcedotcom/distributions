@@ -228,8 +228,8 @@ class PitmanYor(PitmanYor_cy, Serializable):
     def dump_protobuf(self, message):
         dumped = self.dump()
         message.Clear()
-        message.alpha = dumped.alpha
-        message.d = dumped.d
+        message.alpha = dumped['alpha']
+        message.d = dumped['d']
 
     #-------------------------------------------------------------------------
     # Datatypes
@@ -303,4 +303,4 @@ class LowEntropy(LowEntropy_cy, Serializable):
     def dump_protobuf(self, message):
         dumped = self.dump()
         message.Clear()
-        message.datset_size = dumped.dataset_size
+        message.datset_size = dumped['dataset_size']
