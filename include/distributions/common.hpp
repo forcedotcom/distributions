@@ -31,6 +31,7 @@
 
 #ifdef DIST_THROW_ON_ERROR
 #include <sstream>
+#include <stdexcept>
 #define DIST_ERROR(message) {\
     std::ostringstream PRIVATE_message; \
     PRIVATE_message \

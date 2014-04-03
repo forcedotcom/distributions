@@ -27,6 +27,7 @@
 
 try:
     from distributions import rng_cc
+    assert rng_cc  # pacify pyflakes
 except ImportError:
     rng_cc = None
 
