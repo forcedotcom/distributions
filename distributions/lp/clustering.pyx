@@ -33,6 +33,7 @@ from cython.operator cimport dereference as deref, preincrement as inc
 from distributions.rng_cc cimport rng_t
 from distributions.global_rng cimport get_rng
 from distributions.lp.vector cimport VectorFloat, vector_float_to_ndarray
+from distributions.mixins import Serializable
 
 
 cdef extern from 'distributions/clustering.hpp':
@@ -219,7 +220,7 @@ cdef class PitmanYor_cy:
     ]
 
 
-class PitmanYor(PitmanYor_cy):
+class PitmanYor(PitmanYor_cy, Serializable):
 
     def load_protobuf(self, message):
         self.load({'alpha': message.alpha, 'd': message.d})
@@ -236,7 +237,7 @@ class PitmanYor(PitmanYor_cy):
     Mixture = PitmanYorMixture
 
 
-cdef class LowEntropy:
+cdef class LowEntropy_cy:
     cdef LowEntropy_cc * ptr
     def __cinit__(self):
         self.ptr = new LowEntropy_cc()
@@ -292,3 +293,14 @@ cdef class LowEntropy:
         {'dataset_size': 100},
         {'dataset_size': 1000},
     ]
+
+
+class LowEntropy(LowEntropy_cy, Serializable):
+
+    def load_protobuf(self, message):
+        self.load({'dataset_size': message.dataset_size})
+
+    def dump_protobuf(self, message):
+        dumped = self.dump()
+        message.Clear()
+        message.datset_size = dumped.dataset_size
