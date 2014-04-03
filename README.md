@@ -1,4 +1,4 @@
-# Distributions [![Build Status](https://travis-ci.org/forcedotcom/distributions.png)](https://travis-ci.org/forcedotcom/distributions)
+# Distributions [![Build Status](https://travis-ci.org/forcedotcom/distributions.svg?branch=master)](https://travis-ci.org/forcedotcom/distributions)
 
 Distributions implements low-level primitives for Bayesian MCMC
 inference in Python and C++ including:
