@@ -150,8 +150,8 @@ cdef class PitmanYor_cy:
 
     def dump(self):
         return {
-            'alpha': self.alpha,
-            'd': self.d,
+            'alpha': self.ptr.alpha,
+            'd': self.ptr.d,
         }
 
     def sample_assignments(self, int size):
