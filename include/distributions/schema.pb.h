@@ -846,17 +846,10 @@ class DirichletProcessDiscrete : public ::google::protobuf::Message {
   inline float alpha() const;
   inline void set_alpha(float value);
   
-  // required float beta0 = 3;
-  inline bool has_beta0() const;
-  inline void clear_beta0();
-  static const int kBeta0FieldNumber = 3;
-  inline float beta0() const;
-  inline void set_beta0(float value);
-  
-  // repeated float betas = 4;
+  // repeated float betas = 3;
   inline int betas_size() const;
   inline void clear_betas();
-  static const int kBetasFieldNumber = 4;
+  static const int kBetasFieldNumber = 3;
   inline float betas(int index) const;
   inline void set_betas(int index, float value);
   inline void add_betas(float value);
@@ -871,18 +864,15 @@ class DirichletProcessDiscrete : public ::google::protobuf::Message {
   inline void clear_has_gamma();
   inline void set_has_alpha();
   inline void clear_has_alpha();
-  inline void set_has_beta0();
-  inline void clear_has_beta0();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   float gamma_;
   float alpha_;
   ::google::protobuf::RepeatedField< float > betas_;
-  float beta0_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
   
   friend void  protobuf_AddDesc_distributions_2fschema_2eproto();
   friend void protobuf_AssignDesc_distributions_2fschema_2eproto();
@@ -1058,24 +1048,24 @@ class GammaPoisson : public ::google::protobuf::Message {
   inline float alpha() const;
   inline void set_alpha(float value);
   
-  // required float beta = 2;
-  inline bool has_beta() const;
-  inline void clear_beta();
-  static const int kBetaFieldNumber = 2;
-  inline float beta() const;
-  inline void set_beta(float value);
+  // required float inv_beta = 2;
+  inline bool has_inv_beta() const;
+  inline void clear_inv_beta();
+  static const int kInvBetaFieldNumber = 2;
+  inline float inv_beta() const;
+  inline void set_inv_beta(float value);
   
   // @@protoc_insertion_point(class_scope:protobuf.distributions.GammaPoisson)
  private:
   inline void set_has_alpha();
   inline void clear_has_alpha();
-  inline void set_has_beta();
-  inline void clear_has_beta();
+  inline void set_has_inv_beta();
+  inline void clear_has_inv_beta();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
   float alpha_;
-  float beta_;
+  float inv_beta_;
   
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
@@ -1698,29 +1688,7 @@ inline void DirichletProcessDiscrete::set_alpha(float value) {
   alpha_ = value;
 }
 
-// required float beta0 = 3;
-inline bool DirichletProcessDiscrete::has_beta0() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
-}
-inline void DirichletProcessDiscrete::set_has_beta0() {
-  _has_bits_[0] |= 0x00000004u;
-}
-inline void DirichletProcessDiscrete::clear_has_beta0() {
-  _has_bits_[0] &= ~0x00000004u;
-}
-inline void DirichletProcessDiscrete::clear_beta0() {
-  beta0_ = 0;
-  clear_has_beta0();
-}
-inline float DirichletProcessDiscrete::beta0() const {
-  return beta0_;
-}
-inline void DirichletProcessDiscrete::set_beta0(float value) {
-  set_has_beta0();
-  beta0_ = value;
-}
-
-// repeated float betas = 4;
+// repeated float betas = 3;
 inline int DirichletProcessDiscrete::betas_size() const {
   return betas_.size();
 }
@@ -1841,26 +1809,26 @@ inline void GammaPoisson::set_alpha(float value) {
   alpha_ = value;
 }
 
-// required float beta = 2;
-inline bool GammaPoisson::has_beta() const {
+// required float inv_beta = 2;
+inline bool GammaPoisson::has_inv_beta() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void GammaPoisson::set_has_beta() {
+inline void GammaPoisson::set_has_inv_beta() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void GammaPoisson::clear_has_beta() {
+inline void GammaPoisson::clear_has_inv_beta() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void GammaPoisson::clear_beta() {
-  beta_ = 0;
-  clear_has_beta();
+inline void GammaPoisson::clear_inv_beta() {
+  inv_beta_ = 0;
+  clear_has_inv_beta();
 }
-inline float GammaPoisson::beta() const {
-  return beta_;
+inline float GammaPoisson::inv_beta() const {
+  return inv_beta_;
 }
-inline void GammaPoisson::set_beta(float value) {
-  set_has_beta();
-  beta_ = value;
+inline void GammaPoisson::set_inv_beta(float value) {
+  set_has_inv_beta();
+  inv_beta_ = value;
 }
 
 // -------------------------------------------------------------------

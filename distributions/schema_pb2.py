@@ -10,7 +10,7 @@ from google.protobuf import reflection
 DESCRIPTOR = descriptor.FileDescriptor(
   name='distributions/schema.proto',
   package='protobuf.distributions',
-  serialized_pb='\n\x1a\x64istributions/schema.proto\x12\x16protobuf.distributions\"\xdd\x01\n\nClustering\x12@\n\npitman_yor\x18\x01 \x01(\x0b\x32,.protobuf.distributions.Clustering.PitmanYor\x12\x42\n\x0blow_entropy\x18\x02 \x01(\x0b\x32-.protobuf.distributions.Clustering.LowEntropy\x1a%\n\tPitmanYor\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\t\n\x01\x64\x18\x02 \x02(\x02\x1a\"\n\nLowEntropy\x12\x14\n\x0c\x64\x61taset_size\x18\x01 \x02(\x04\"S\n\rBetaBernoulli\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\x1a%\n\x05Group\x12\r\n\x05heads\x18\x01 \x02(\x04\x12\r\n\x05tails\x18\x02 \x02(\x04\"<\n\x11\x44irichletDiscrete\x12\x0e\n\x06\x61lphas\x18\x01 \x03(\x02\x1a\x17\n\x05Group\x12\x0e\n\x06\x63ounts\x18\x01 \x03(\x04\"}\n\x18\x44irichletProcessDiscrete\x12\r\n\x05gamma\x18\x01 \x02(\x02\x12\r\n\x05\x61lpha\x18\x02 \x02(\x02\x12\r\n\x05\x62\x65ta0\x18\x03 \x02(\x02\x12\r\n\x05\x62\x65tas\x18\x04 \x03(\x02\x1a%\n\x05Group\x12\x0c\n\x04keys\x18\x01 \x03(\r\x12\x0e\n\x06values\x18\x02 \x03(\x04\"b\n\x0cGammaPoisson\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\x1a\x35\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0b\n\x03sum\x18\x02 \x02(\x04\x12\x10\n\x08log_prod\x18\x03 \x02(\x02\"\x90\x01\n\x12NormalInverseChiSq\x12\n\n\x02mu\x18\x01 \x02(\x02\x12\r\n\x05kappa\x18\x02 \x02(\x02\x12\x0f\n\x07sigmasq\x18\x03 \x02(\x02\x12\n\n\x02nu\x18\x04 \x02(\x02\x1a\x42\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0c\n\x04mean\x18\x02 \x02(\x02\x12\x1c\n\x14\x63ount_times_variance\x18\x03 \x02(\x02')
+  serialized_pb='\n\x1a\x64istributions/schema.proto\x12\x16protobuf.distributions\"\xdd\x01\n\nClustering\x12@\n\npitman_yor\x18\x01 \x01(\x0b\x32,.protobuf.distributions.Clustering.PitmanYor\x12\x42\n\x0blow_entropy\x18\x02 \x01(\x0b\x32-.protobuf.distributions.Clustering.LowEntropy\x1a%\n\tPitmanYor\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\t\n\x01\x64\x18\x02 \x02(\x02\x1a\"\n\nLowEntropy\x12\x14\n\x0c\x64\x61taset_size\x18\x01 \x02(\x04\"S\n\rBetaBernoulli\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\x1a%\n\x05Group\x12\r\n\x05heads\x18\x01 \x02(\x04\x12\r\n\x05tails\x18\x02 \x02(\x04\"<\n\x11\x44irichletDiscrete\x12\x0e\n\x06\x61lphas\x18\x01 \x03(\x02\x1a\x17\n\x05Group\x12\x0e\n\x06\x63ounts\x18\x01 \x03(\x04\"n\n\x18\x44irichletProcessDiscrete\x12\r\n\x05gamma\x18\x01 \x02(\x02\x12\r\n\x05\x61lpha\x18\x02 \x02(\x02\x12\r\n\x05\x62\x65tas\x18\x03 \x03(\x02\x1a%\n\x05Group\x12\x0c\n\x04keys\x18\x01 \x03(\r\x12\x0e\n\x06values\x18\x02 \x03(\x04\"f\n\x0cGammaPoisson\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x10\n\x08inv_beta\x18\x02 \x02(\x02\x1a\x35\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0b\n\x03sum\x18\x02 \x02(\x04\x12\x10\n\x08log_prod\x18\x03 \x02(\x02\"\x90\x01\n\x12NormalInverseChiSq\x12\n\n\x02mu\x18\x01 \x02(\x02\x12\r\n\x05kappa\x18\x02 \x02(\x02\x12\x0f\n\x07sigmasq\x18\x03 \x02(\x02\x12\n\n\x02nu\x18\x04 \x02(\x02\x1a\x42\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0c\n\x04mean\x18\x02 \x02(\x02\x12\x1c\n\x14\x63ount_times_variance\x18\x03 \x02(\x02')
 
 
 
@@ -265,8 +265,8 @@ _DIRICHLETPROCESSDISCRETE_GROUP = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=513,
-  serialized_end=550,
+  serialized_start=498,
+  serialized_end=535,
 )
 
 _DIRICHLETPROCESSDISCRETE = descriptor.Descriptor(
@@ -291,15 +291,8 @@ _DIRICHLETPROCESSDISCRETE = descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='beta0', full_name='protobuf.distributions.DirichletProcessDiscrete.beta0', index=2,
-      number=3, type=2, cpp_type=6, label=2,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='betas', full_name='protobuf.distributions.DirichletProcessDiscrete.betas', index=3,
-      number=4, type=2, cpp_type=6, label=3,
+      name='betas', full_name='protobuf.distributions.DirichletProcessDiscrete.betas', index=2,
+      number=3, type=2, cpp_type=6, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -314,7 +307,7 @@ _DIRICHLETPROCESSDISCRETE = descriptor.Descriptor(
   is_extendable=False,
   extension_ranges=[],
   serialized_start=425,
-  serialized_end=550,
+  serialized_end=535,
 )
 
 
@@ -355,8 +348,8 @@ _GAMMAPOISSON_GROUP = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=597,
-  serialized_end=650,
+  serialized_start=586,
+  serialized_end=639,
 )
 
 _GAMMAPOISSON = descriptor.Descriptor(
@@ -374,7 +367,7 @@ _GAMMAPOISSON = descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     descriptor.FieldDescriptor(
-      name='beta', full_name='protobuf.distributions.GammaPoisson.beta', index=1,
+      name='inv_beta', full_name='protobuf.distributions.GammaPoisson.inv_beta', index=1,
       number=2, type=2, cpp_type=6, label=2,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
@@ -389,8 +382,8 @@ _GAMMAPOISSON = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=552,
-  serialized_end=650,
+  serialized_start=537,
+  serialized_end=639,
 )
 
 
@@ -431,8 +424,8 @@ _NORMALINVERSECHISQ_GROUP = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=731,
-  serialized_end=797,
+  serialized_start=720,
+  serialized_end=786,
 )
 
 _NORMALINVERSECHISQ = descriptor.Descriptor(
@@ -479,8 +472,8 @@ _NORMALINVERSECHISQ = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=653,
-  serialized_end=797,
+  serialized_start=642,
+  serialized_end=786,
 )
 
 _CLUSTERING_PITMANYOR.containing_type = _CLUSTERING;

@@ -71,8 +71,7 @@ message DirichletDiscrete {
 message DirichletProcessDiscrete {
   required float gamma = 1;
   required float alpha = 2;
-  required float beta0 = 3;
-  repeated float betas = 4;
+  repeated float betas = 3;
 
   message Group {
     repeated uint32 keys = 1;
@@ -82,7 +81,7 @@ message DirichletProcessDiscrete {
 
 message GammaPoisson {
   required float alpha = 1;
-  required float beta = 2;
+  required float inv_beta = 2;
 
   message Group {
     required uint64 count = 1;

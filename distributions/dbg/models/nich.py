@@ -74,6 +74,25 @@ class NormalInverseChiSq(ComponentModel, Serializable):
             'nu': self.nu,
         }
 
+        def load_protobuf(self, message):
+            raise NotImplementedError('TODO')
+
+        def dump_protobuf(self, message):
+            raise NotImplementedError('TODO')
+
+    def load_protobuf(self, message):
+        self.mu = float(message.mu)
+        self.kappa = float(message.kappa)
+        self.sigmasq = float(message.sigmasq)
+        self.nu = float(message.nu)
+
+    def dump_protobuf(self, message):
+        message.Clear()
+        message.mu = self.mu
+        message.kappa = self.kappa
+        message.sigmasq = self.sigmasq
+        message.nu = self.nu
+
     #-------------------------------------------------------------------------
     # Datatypes
 

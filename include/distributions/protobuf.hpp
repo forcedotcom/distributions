@@ -79,11 +79,12 @@ inline void model_load (
 {
     model.gamma = model_pb.gamma();
     model.alpha = model_pb.alpha();
-    model.beta0 = model_pb.beta0();
     model.betas.resize(model_pb.betas_size());
+    double beta_sum = 0;
     for (size_t i = 0; i < model.betas.size(); ++i) {
-        model.betas[i] = model_pb.betas(i);
+        beta_sum += model.betas[i] = model_pb.betas(i);
     }
+    model.beta0 = 1 - beta_sum;
 }
 
 inline void model_load (
@@ -91,7 +92,7 @@ inline void model_load (
         const protobuf::GammaPoisson & model_pb)
 {
     model.alpha = model_pb.alpha();
-    model.inv_beta = 1.f / model_pb.beta();
+    model.inv_beta = model_pb.inv_beta();
 }
 
 inline void model_load (

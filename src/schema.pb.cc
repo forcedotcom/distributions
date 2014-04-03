@@ -177,10 +177,9 @@ void protobuf_AssignDesc_distributions_2fschema_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(DirichletDiscrete_Group));
   DirichletProcessDiscrete_descriptor_ = file->message_type(3);
-  static const int DirichletProcessDiscrete_offsets_[4] = {
+  static const int DirichletProcessDiscrete_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletProcessDiscrete, gamma_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletProcessDiscrete, alpha_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletProcessDiscrete, beta0_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletProcessDiscrete, betas_),
   };
   DirichletProcessDiscrete_reflection_ =
@@ -213,7 +212,7 @@ void protobuf_AssignDesc_distributions_2fschema_2eproto() {
   GammaPoisson_descriptor_ = file->message_type(4);
   static const int GammaPoisson_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GammaPoisson, alpha_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GammaPoisson, beta_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GammaPoisson, inv_beta_),
   };
   GammaPoisson_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -366,16 +365,16 @@ void protobuf_AddDesc_distributions_2fschema_2eproto() {
     "BetaBernoulli\022\r\n\005alpha\030\001 \002(\002\022\014\n\004beta\030\002 \002"
     "(\002\032%\n\005Group\022\r\n\005heads\030\001 \002(\004\022\r\n\005tails\030\002 \002("
     "\004\"<\n\021DirichletDiscrete\022\016\n\006alphas\030\001 \003(\002\032\027"
-    "\n\005Group\022\016\n\006counts\030\001 \003(\004\"}\n\030DirichletProc"
+    "\n\005Group\022\016\n\006counts\030\001 \003(\004\"n\n\030DirichletProc"
     "essDiscrete\022\r\n\005gamma\030\001 \002(\002\022\r\n\005alpha\030\002 \002("
-    "\002\022\r\n\005beta0\030\003 \002(\002\022\r\n\005betas\030\004 \003(\002\032%\n\005Group"
-    "\022\014\n\004keys\030\001 \003(\r\022\016\n\006values\030\002 \003(\004\"b\n\014GammaP"
-    "oisson\022\r\n\005alpha\030\001 \002(\002\022\014\n\004beta\030\002 \002(\002\0325\n\005G"
-    "roup\022\r\n\005count\030\001 \002(\004\022\013\n\003sum\030\002 \002(\004\022\020\n\010log_"
-    "prod\030\003 \002(\002\"\220\001\n\022NormalInverseChiSq\022\n\n\002mu\030"
-    "\001 \002(\002\022\r\n\005kappa\030\002 \002(\002\022\017\n\007sigmasq\030\003 \002(\002\022\n\n"
-    "\002nu\030\004 \002(\002\032B\n\005Group\022\r\n\005count\030\001 \002(\004\022\014\n\004mea"
-    "n\030\002 \002(\002\022\034\n\024count_times_variance\030\003 \002(\002", 797);
+    "\002\022\r\n\005betas\030\003 \003(\002\032%\n\005Group\022\014\n\004keys\030\001 \003(\r\022"
+    "\016\n\006values\030\002 \003(\004\"f\n\014GammaPoisson\022\r\n\005alpha"
+    "\030\001 \002(\002\022\020\n\010inv_beta\030\002 \002(\002\0325\n\005Group\022\r\n\005cou"
+    "nt\030\001 \002(\004\022\013\n\003sum\030\002 \002(\004\022\020\n\010log_prod\030\003 \002(\002\""
+    "\220\001\n\022NormalInverseChiSq\022\n\n\002mu\030\001 \002(\002\022\r\n\005ka"
+    "ppa\030\002 \002(\002\022\017\n\007sigmasq\030\003 \002(\002\022\n\n\002nu\030\004 \002(\002\032B"
+    "\n\005Group\022\r\n\005count\030\001 \002(\004\022\014\n\004mean\030\002 \002(\002\022\034\n\024"
+    "count_times_variance\030\003 \002(\002", 786);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "distributions/schema.proto", &protobuf_RegisterTypes);
   Clustering::default_instance_ = new Clustering();
@@ -2302,7 +2301,6 @@ void DirichletProcessDiscrete_Group::Swap(DirichletProcessDiscrete_Group* other)
 #ifndef _MSC_VER
 const int DirichletProcessDiscrete::kGammaFieldNumber;
 const int DirichletProcessDiscrete::kAlphaFieldNumber;
-const int DirichletProcessDiscrete::kBeta0FieldNumber;
 const int DirichletProcessDiscrete::kBetasFieldNumber;
 #endif  // !_MSC_VER
 
@@ -2324,7 +2322,6 @@ void DirichletProcessDiscrete::SharedCtor() {
   _cached_size_ = 0;
   gamma_ = 0;
   alpha_ = 0;
-  beta0_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2361,7 +2358,6 @@ void DirichletProcessDiscrete::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     gamma_ = 0;
     alpha_ = 0;
-    beta0_ = 0;
   }
   betas_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -2401,34 +2397,18 @@ bool DirichletProcessDiscrete::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(29)) goto parse_beta0;
+        if (input->ExpectTag(29)) goto parse_betas;
         break;
       }
       
-      // required float beta0 = 3;
+      // repeated float betas = 3;
       case 3: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_beta0:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &beta0_)));
-          set_has_beta0();
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(37)) goto parse_betas;
-        break;
-      }
-      
-      // repeated float betas = 4;
-      case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
          parse_betas:
           DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 1, 37, input, this->mutable_betas())));
+                 1, 29, input, this->mutable_betas())));
         } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
                    == ::google::protobuf::internal::WireFormatLite::
                       WIRETYPE_LENGTH_DELIMITED) {
@@ -2438,7 +2418,7 @@ bool DirichletProcessDiscrete::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(37)) goto parse_betas;
+        if (input->ExpectTag(29)) goto parse_betas;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -2471,15 +2451,10 @@ void DirichletProcessDiscrete::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->alpha(), output);
   }
   
-  // required float beta0 = 3;
-  if (has_beta0()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(3, this->beta0(), output);
-  }
-  
-  // repeated float betas = 4;
+  // repeated float betas = 3;
   for (int i = 0; i < this->betas_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteFloat(
-      4, this->betas(i), output);
+      3, this->betas(i), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -2500,15 +2475,10 @@ void DirichletProcessDiscrete::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->alpha(), target);
   }
   
-  // required float beta0 = 3;
-  if (has_beta0()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(3, this->beta0(), target);
-  }
-  
-  // repeated float betas = 4;
+  // repeated float betas = 3;
   for (int i = 0; i < this->betas_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteFloatToArray(4, this->betas(i), target);
+      WriteFloatToArray(3, this->betas(i), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -2532,13 +2502,8 @@ int DirichletProcessDiscrete::ByteSize() const {
       total_size += 1 + 4;
     }
     
-    // required float beta0 = 3;
-    if (has_beta0()) {
-      total_size += 1 + 4;
-    }
-    
   }
-  // repeated float betas = 4;
+  // repeated float betas = 3;
   {
     int data_size = 0;
     data_size = 4 * this->betas_size();
@@ -2578,9 +2543,6 @@ void DirichletProcessDiscrete::MergeFrom(const DirichletProcessDiscrete& from) {
     if (from.has_alpha()) {
       set_alpha(from.alpha());
     }
-    if (from.has_beta0()) {
-      set_beta0(from.beta0());
-    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -2598,7 +2560,7 @@ void DirichletProcessDiscrete::CopyFrom(const DirichletProcessDiscrete& from) {
 }
 
 bool DirichletProcessDiscrete::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
+  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
   
   return true;
 }
@@ -2607,7 +2569,6 @@ void DirichletProcessDiscrete::Swap(DirichletProcessDiscrete* other) {
   if (other != this) {
     std::swap(gamma_, other->gamma_);
     std::swap(alpha_, other->alpha_);
-    std::swap(beta0_, other->beta0_);
     betas_.Swap(&other->betas_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
@@ -2914,7 +2875,7 @@ void GammaPoisson_Group::Swap(GammaPoisson_Group* other) {
 
 #ifndef _MSC_VER
 const int GammaPoisson::kAlphaFieldNumber;
-const int GammaPoisson::kBetaFieldNumber;
+const int GammaPoisson::kInvBetaFieldNumber;
 #endif  // !_MSC_VER
 
 GammaPoisson::GammaPoisson()
@@ -2934,7 +2895,7 @@ GammaPoisson::GammaPoisson(const GammaPoisson& from)
 void GammaPoisson::SharedCtor() {
   _cached_size_ = 0;
   alpha_ = 0;
-  beta_ = 0;
+  inv_beta_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -2970,7 +2931,7 @@ GammaPoisson* GammaPoisson::New() const {
 void GammaPoisson::Clear() {
   if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     alpha_ = 0;
-    beta_ = 0;
+    inv_beta_ = 0;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -2993,19 +2954,19 @@ bool GammaPoisson::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(21)) goto parse_beta;
+        if (input->ExpectTag(21)) goto parse_inv_beta;
         break;
       }
       
-      // required float beta = 2;
+      // required float inv_beta = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_beta:
+         parse_inv_beta:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &beta_)));
-          set_has_beta();
+                 input, &inv_beta_)));
+          set_has_inv_beta();
         } else {
           goto handle_uninterpreted;
         }
@@ -3036,9 +2997,9 @@ void GammaPoisson::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteFloat(1, this->alpha(), output);
   }
   
-  // required float beta = 2;
-  if (has_beta()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->beta(), output);
+  // required float inv_beta = 2;
+  if (has_inv_beta()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->inv_beta(), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -3054,9 +3015,9 @@ void GammaPoisson::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(1, this->alpha(), target);
   }
   
-  // required float beta = 2;
-  if (has_beta()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->beta(), target);
+  // required float inv_beta = 2;
+  if (has_inv_beta()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->inv_beta(), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -3075,8 +3036,8 @@ int GammaPoisson::ByteSize() const {
       total_size += 1 + 4;
     }
     
-    // required float beta = 2;
-    if (has_beta()) {
+    // required float inv_beta = 2;
+    if (has_inv_beta()) {
       total_size += 1 + 4;
     }
     
@@ -3110,8 +3071,8 @@ void GammaPoisson::MergeFrom(const GammaPoisson& from) {
     if (from.has_alpha()) {
       set_alpha(from.alpha());
     }
-    if (from.has_beta()) {
-      set_beta(from.beta());
+    if (from.has_inv_beta()) {
+      set_inv_beta(from.inv_beta());
     }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
@@ -3138,7 +3099,7 @@ bool GammaPoisson::IsInitialized() const {
 void GammaPoisson::Swap(GammaPoisson* other) {
   if (other != this) {
     std::swap(alpha_, other->alpha_);
-    std::swap(beta_, other->beta_);
+    std::swap(inv_beta_, other->inv_beta_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
