@@ -221,6 +221,15 @@ cdef class PitmanYor_cy:
 
 class PitmanYor(PitmanYor_cy):
 
+    def load_protobuf(self, message):
+        self.load({'alpha': message.alpha, 'd': message.d})
+
+    def dump_protobuf(self, message):
+        dumped = self.dump()
+        message.Clear()
+        message.alpha = dumped.alpha
+        message.d = dumped.d
+
     #-------------------------------------------------------------------------
     # Datatypes
 
