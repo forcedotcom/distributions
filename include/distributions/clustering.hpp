@@ -122,13 +122,14 @@ struct PitmanYor
     struct Mixture
     {
         std::vector<count_t> counts;
+        size_t empty_groupid;
         count_t sample_size;
         VectorFloat shifted_scores;
     };
 
     private:
 
-    void _mixture_update_group (Mixture & mixture, size_t groupid) const
+    void _mixture_validate (Mixture & mixture) const
     {
         if (DIST_DEBUG_LEVEL >= 3) {
             size_t empty_group_count = std::count_if(
@@ -139,6 +140,10 @@ struct PitmanYor
                 empty_group_count == 1,
                 "expected 1 empty group, actual " << empty_group_count);
         }
+    }
+
+    void _mixture_update_group (Mixture & mixture, size_t groupid) const
+    {
         const auto nonempty_group_count = mixture.counts.size() - 1;
         const auto group_size = mixture.counts[groupid];
         mixture.shifted_scores[groupid] =
@@ -156,40 +161,59 @@ struct PitmanYor
         for (size_t i = 0; i < group_count; ++i) {
             mixture.sample_size += mixture.counts[i];
             _mixture_update_group(mixture, i);
+            if (mixture.counts[i] == 0) {
+                mixture.empty_groupid = i;
+            }
         }
+        _mixture_validate(mixture);
     }
 
-    void mixture_add_group (Mixture & mixture) const
-    {
-        const size_t groupid = mixture.counts.size();
-        mixture.counts.push_back(0);
-        mixture.shifted_scores.push_back(0);
-        _mixture_update_group(mixture, groupid);
-    }
-
-    void mixture_remove_group (Mixture & mixture, size_t groupid) const
-    {
-        const size_t group_count = mixture.counts.size() - 1;
-        if (groupid != group_count) {
-            mixture.counts[groupid] = mixture.counts.back();
-            mixture.shifted_scores[groupid] = mixture.shifted_scores.back();
-        }
-        mixture.counts.resize(group_count);
-        mixture.shifted_scores.resize(group_count);
-    }
-
-    void mixture_add_value (Mixture & mixture, size_t groupid) const
+    bool mixture_add_value (Mixture & mixture, size_t groupid) const
     {
         mixture.counts[groupid] += 1;
         mixture.sample_size += 1;
         _mixture_update_group(mixture, groupid);
+
+        bool add_group = (groupid == mixture.empty_groupid);
+        if (DIST_UNLIKELY(add_group)) {
+            mixture.empty_groupid = mixture.counts.size();
+            mixture.counts.push_back(0);
+            mixture.shifted_scores.push_back(0);
+            _mixture_update_group(mixture, mixture.empty_groupid);
+        }
+        _mixture_validate(mixture);
+
+        return add_group;
     }
 
-    void mixture_remove_value (Mixture & mixture, size_t groupid) const
+    bool mixture_remove_value (Mixture & mixture, size_t groupid) const
     {
+        DIST_ASSERT2(
+            groupid != mixture.empty_groupid,
+            "cannot remove value from empty group");
+
         mixture.counts[groupid] -= 1;
         mixture.sample_size -= 1;
-        _mixture_update_group(mixture, groupid);
+
+        bool remove_group = (mixture.counts[groupid] == 0);
+        if (DIST_LIKELY(not remove_group)) {
+            _mixture_update_group(mixture, groupid);
+        } else {
+            const size_t group_count = mixture.counts.size() - 1;
+            if (groupid != group_count) {
+                mixture.counts[groupid] = mixture.counts.back();
+                mixture.shifted_scores[groupid] = mixture.shifted_scores.back();
+                if (mixture.empty_groupid == group_count) {
+                    mixture.empty_groupid = groupid;
+                }
+            }
+            mixture.counts.resize(group_count);
+            mixture.shifted_scores.resize(group_count);
+            _mixture_update_group(mixture, mixture.empty_groupid);
+        }
+        _mixture_validate(mixture);
+
+        return remove_group;
     }
 
     void mixture_score (const Mixture & mixture, VectorFloat & scores) const

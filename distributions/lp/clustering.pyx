@@ -70,10 +70,8 @@ cdef extern from 'distributions/clustering.hpp':
                 int group_count,
                 int sample_size) nogil except +
         void mixture_init (Mixture &) nogil except +
-        void mixture_add_group (Mixture &) nogil except +
-        void mixture_remove_group (Mixture &, size_t) nogil except +
-        void mixture_add_value (Mixture &, size_t) nogil except +
-        void mixture_remove_value (Mixture &, size_t) nogil except +
+        bint mixture_add_value (Mixture &, size_t) nogil except +
+        bint mixture_remove_value (Mixture &, size_t) nogil except +
         void mixture_score (Mixture &, VectorFloat &) nogil except +
 
     cppclass LowEntropy_cc "distributions::Clustering<int>::LowEntropy":
@@ -186,17 +184,11 @@ cdef class PitmanYor_cy:
     def mixture_init(self, PitmanYorMixture mixture):
         self.ptr.mixture_init(mixture.ptr[0])
 
-    def mixture_add_group(self, PitmanYorMixture mixture):
-        self.ptr.mixture_add_group(mixture.ptr[0])
-
-    def mixture_remove_group(self, PitmanYorMixture mixture, int groupid):
-        self.ptr.mixture_remove_group(mixture.ptr[0], groupid)
-
     def mixture_add_value(self, PitmanYorMixture mixture, int groupid):
-        self.ptr.mixture_add_value(mixture.ptr[0], groupid)
+        return self.ptr.mixture_add_value(mixture.ptr[0], groupid)
 
     def mixture_remove_value(self, PitmanYorMixture mixture, int groupid):
-        self.ptr.mixture_remove_value(mixture.ptr[0], groupid)
+        return self.ptr.mixture_remove_value(mixture.ptr[0], groupid)
 
     def mixture_score(
             self,
