@@ -190,9 +190,10 @@ inline size_t sample_discrete (
     return dim - 1;
 }
 
+template<class Alloc>
 inline size_t sample_from_likelihoods (
         rng_t & rng,
-        const std::vector<float> & likelihoods,
+        const std::vector<float, Alloc> & likelihoods,
         float total_likelihood)
 {
     const size_t size = likelihoods.size();
@@ -209,35 +210,40 @@ inline size_t sample_from_likelihoods (
     return size - 1;
 }
 
+template<class Alloc>
 inline size_t sample_from_likelihoods (
         rng_t & rng,
-        const std::vector<float> & likelihoods)
+        const std::vector<float, Alloc> & likelihoods)
 {
     float total = vector_sum(likelihoods.size(), likelihoods.data());
     return sample_from_likelihoods(rng, likelihoods, total);
 }
 
+template<class Alloc>
 inline size_t sample_from_probs (
         rng_t & rng,
-        const std::vector<float> & probs)
+        const std::vector<float, Alloc> & probs)
 {
     return sample_from_likelihoods(rng, probs, 1.f);
 }
 
 // returns total likelihood
-float scores_to_likelihoods (std::vector<float> & scores);
+template<class Alloc>
+float scores_to_likelihoods (std::vector<float, Alloc> & scores);
 
+template<class Alloc>
 inline size_t sample_from_scores_overwrite (
         rng_t & rng,
-        std::vector<float> & scores)
+        std::vector<float, Alloc> & scores)
 {
     float total = scores_to_likelihoods(scores);
     return sample_from_likelihoods(rng, scores, total);
 }
 
+template<class Alloc>
 inline std::pair<size_t, float> sample_prob_from_scores_overwrite (
         rng_t & rng,
-        std::vector<float> & scores)
+        std::vector<float, Alloc> & scores)
 {
     float total = scores_to_likelihoods(scores);
     size_t sample = sample_from_likelihoods(rng, scores, total);
@@ -247,16 +253,18 @@ inline std::pair<size_t, float> sample_prob_from_scores_overwrite (
 
 // score_from_scores_overwrite(...) = log(prob_from_scores_overwrite(...)),
 // this is less succeptible to overflow than prob_from_scores_overwrite
+template<class Alloc>
 float score_from_scores_overwrite (
         rng_t & rng,
         size_t sample,
-        std::vector<float> & scores);
+        std::vector<float, Alloc> & scores);
 
+template<class Alloc>
 inline size_t sample_from_scores (
         rng_t & rng,
-        const std::vector<float> & scores)
+        const std::vector<float, Alloc> & scores)
 {
-    std::vector<float> scores_copy(scores);
+    std::vector<float, Alloc> scores_copy(scores);
     return sample_from_scores_overwrite(rng, scores_copy);
 }
 

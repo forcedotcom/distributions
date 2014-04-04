@@ -26,6 +26,7 @@
 // USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <distributions/random.hpp>
+#include <distributions/aligned_allocator.hpp>
 
 namespace distributions
 {
@@ -75,7 +76,8 @@ void sample_dirichlet_safe (
 //----------------------------------------------------------------------------
 // Discrete distribution
 
-float scores_to_likelihoods (std::vector<float> & scores)
+template<class Alloc>
+float scores_to_likelihoods (std::vector<float, Alloc> & scores)
 {
     const size_t size = scores.size();
     float * __restrict__ scores_data = scores.data();
@@ -89,10 +91,11 @@ float scores_to_likelihoods (std::vector<float> & scores)
     return total;
 }
 
+template<class Alloc>
 float score_from_scores_overwrite (
         rng_t & rng,
         size_t sample,
-        std::vector<float> & scores)
+        std::vector<float, Alloc> & scores)
 {
     const size_t size = scores.size();
     float * __restrict__ scores_data = scores.data();
@@ -110,5 +113,21 @@ float score_from_scores_overwrite (
     float score = scores_data[sample] - log(total);
     return score;
 }
+
+//----------------------------------------------------------------------------
+// Explicit template instantiations
+
+#define INSTANTIATE_TEMPLATES(Alloc)                \
+    template float scores_to_likelihoods (          \
+            std::vector<float, Alloc> &);           \
+    template float score_from_scores_overwrite (    \
+            rng_t &,                                \
+            size_t,                                 \
+            std::vector<float, Alloc> &);
+
+INSTANTIATE_TEMPLATES(std::allocator<float>)
+INSTANTIATE_TEMPLATES(aligned_allocator<float>)
+
+#undef INSTANTIATE_TEMPLATES
 
 } // namespace distributions
