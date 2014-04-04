@@ -72,20 +72,21 @@ cdef extern from "distributions/models/nich.hpp" namespace "distributions":
             VectorFloat precision
             VectorFloat mean
             VectorFloat temp
+            void init (Model_cc &, rng_t &) nogil except +
+            void add_group (Model_cc &, rng_t &) nogil except +
+            void remove_group (Model_cc &, size_t) nogil except +
+            void add_value \
+                (Model_cc &, size_t, Value &, rng_t &) nogil except +
+            void remove_value \
+                (Model_cc &, size_t, Value &, rng_t &) nogil except +
+            void score_value \
+                (Model_cc &, Value &, VectorFloat &, rng_t &) nogil except +
+
         void sampler_init (Sampler &, Group &, rng_t &) nogil except +
         Value sampler_eval (Sampler &, rng_t &) nogil except +
         Value sample_value (Group &, rng_t &) nogil except +
         float score_value (Group &, Value &, rng_t &) nogil except +
         float score_group (Group &, rng_t &) nogil except +
-        void classifier_init (Classifier &, rng_t &) nogil except +
-        void classifier_add_group (Classifier &, rng_t &) nogil except +
-        void classifier_remove_group (Classifier &, size_t) nogil except +
-        void classifier_add_value \
-            (Classifier &, size_t, Value &, rng_t &) nogil except +
-        void classifier_remove_value \
-            (Classifier &, size_t, Value &, rng_t &) nogil except +
-        void classifier_score \
-            (Classifier &, Value &, VectorFloat &, rng_t &) nogil except +
 
 
 cdef class Group:
@@ -136,6 +137,30 @@ cdef class Classifier:
     def clear(self):
         self.ptr.groups.clear()
 
+    def init(self, Model_cy model):
+        self.ptr.init(model.ptr[0], get_rng()[0])
+
+    def add_group(self, Model_cy model):
+        self.ptr.add_group(model.ptr[0], get_rng()[0])
+
+    def remove_group(self, Model_cy model, int groupid):
+        self.ptr.remove_group(model.ptr[0], groupid)
+
+    def add_value(self, Model_cy model, int groupid, Value value):
+        self.ptr.add_value(model.ptr[0], groupid, value, get_rng()[0])
+
+    def remove_value(self, Model_cy model, int groupid, Value value):
+        self.ptr.remove_value(model.ptr[0], groupid, value, get_rng()[0])
+
+    def score_value(self, Model_cy model, Value value,
+              numpy.ndarray[numpy.float32_t, ndim=1] scores_accum):
+        assert len(scores_accum) == self.ptr.groups.size(), \
+            "scores_accum != len(classifier)"
+        cdef VectorFloat scores
+        vector_float_from_ndarray(scores, scores_accum)
+        self.ptr.score_value(model.ptr[0], value, scores, get_rng()[0])
+        vector_float_to_ndarray(scores, scores_accum)
+
 
 cdef class Model_cy:
     cdef Model_cc * ptr
@@ -185,56 +210,6 @@ cdef class Model_cy:
 
     def score_group(self, Group group):
         return self.ptr.score_group(group.ptr[0], get_rng()[0])
-
-    #-------------------------------------------------------------------------
-    # Classification
-
-    def classifier_init(self, Classifier classifier):
-        self.ptr.classifier_init(classifier.ptr[0], get_rng()[0])
-
-    def classifier_add_group(self, Classifier classifier):
-        self.ptr.classifier_add_group(classifier.ptr[0], get_rng()[0])
-
-    def classifier_remove_group(self, Classifier classifier, int groupid):
-        self.ptr.classifier_remove_group(classifier.ptr[0], groupid)
-
-    def classifier_add_value(
-            self,
-            Classifier classifier,
-            int groupid,
-            Value value):
-        self.ptr.classifier_add_value(
-            classifier.ptr[0],
-            groupid,
-            value,
-            get_rng()[0])
-
-    def classifier_remove_value(
-            self,
-            Classifier classifier,
-            int groupid,
-            Value value):
-        self.ptr.classifier_remove_value(
-            classifier.ptr[0],
-            groupid,
-            value,
-            get_rng()[0])
-
-    def classifier_score(
-            self,
-            Classifier classifier,
-            Value value,
-            numpy.ndarray[numpy.float32_t, ndim=1] scores_accum):
-        assert len(scores_accum) == classifier.ptr.groups.size(), \
-            "scores_accum != len(classifier)"
-        cdef VectorFloat scores
-        vector_float_from_ndarray(scores, scores_accum)
-        self.ptr.classifier_score(
-            classifier.ptr[0],
-            value,
-            scores,
-            get_rng()[0])
-        vector_float_to_ndarray(scores, scores_accum)
 
     #-------------------------------------------------------------------------
     # Examples

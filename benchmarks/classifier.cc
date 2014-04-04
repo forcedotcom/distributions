@@ -98,7 +98,7 @@ void speedtest (
         values.push_back(value);
         assignments.push_back(groupid);
     }
-    model.classifier_init(classifier, rng);
+    classifier.init(model, rng);
     Scorers<Model> scorers(model, classifier);
     VectorFloat scores(group_count);
 
@@ -109,9 +109,9 @@ void speedtest (
             size_t k = (8 * i + j) % values.size();
             typename Model::Value value = values[k];
             size_t groupid = assignments[k];
-            model.classifier_remove_value(classifier, groupid, value, rng);
-            model.classifier_score(classifier, value, scores, rng);
-            model.classifier_add_value(classifier, groupid, value, rng);
+            classifier.remove_value(model, groupid, value, rng);
+            classifier.score_value(model, value, scores, rng);
+            classifier.add_value(model, groupid, value, rng);
         }
     }
     time += current_time_us();
@@ -164,8 +164,8 @@ int main()
 
     speedtests(DirichletDiscrete<4>::EXAMPLE());
     speedtests(DirichletProcessDiscrete::EXAMPLE());
-    speedtests(NormalInverseChiSq::EXAMPLE());
     speedtests(GammaPoisson::EXAMPLE());
+    speedtests(NormalInverseChiSq::EXAMPLE());
 
     return 0;
 }

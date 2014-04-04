@@ -141,6 +141,103 @@ struct Classifier
     VectorFloat precision;
     VectorFloat mean;
     mutable VectorFloat temp;
+
+    private:
+
+    void _update_group (
+            const Model & model,
+            size_t groupid,
+            rng_t & rng)
+    {
+        const Group & group = groups[groupid];
+        Scorer scorer;
+        model.scorer_init(scorer, group, rng);
+        score[groupid] = scorer.score;
+        log_coeff[groupid] = scorer.log_coeff;
+        precision[groupid] = scorer.precision;
+        mean[groupid] = scorer.mean;
+    }
+
+    void _resize (
+            const Model & model,
+            size_t group_count)
+    {
+        groups.resize(group_count);
+        VectorFloat_resize(score, group_count);
+        VectorFloat_resize(log_coeff, group_count);
+        VectorFloat_resize(precision, group_count);
+        VectorFloat_resize(mean, group_count);
+        VectorFloat_resize(temp, group_count);
+    }
+
+    public:
+
+    void init (
+            const Model & model,
+            rng_t & rng)
+    {
+        const size_t group_count = groups.size();
+        _resize(model, group_count);
+        for (size_t groupid = 0; groupid < group_count; ++groupid) {
+            _update_group(model, groupid, rng);
+        }
+    }
+
+    void add_group (
+            const Model & model,
+            rng_t & rng)
+    {
+        const size_t groupid = groups.size();
+        const size_t group_count = groupid + 1;
+        _resize(model, group_count);
+        groups.back().init(model, rng);
+        _update_group(model, groupid, rng);
+    }
+
+    void remove_group (
+            const Model & model,
+            size_t groupid)
+    {
+        const size_t group_count = groups.size() - 1;
+        if (groupid != group_count) {
+            std::swap(groups[groupid], groups.back());
+            score[groupid] = score.back();
+            log_coeff[groupid] = log_coeff.back();
+            precision[groupid] = precision.back();
+            mean[groupid] = mean.back();
+        }
+        _resize(model, group_count);
+    }
+
+    void add_value (
+            const Model & model,
+            size_t groupid,
+            const Value & value,
+            rng_t & rng)
+    {
+        DIST_ASSERT1(groupid < groups.size(), "groupid out of bounds");
+        Group & group = groups[groupid];
+        group.add_value(model, value, rng);
+        _update_group(model, groupid, rng);
+    }
+
+    void remove_value (
+            const Model & model,
+            size_t groupid,
+            const Value & value,
+            rng_t & rng)
+    {
+        DIST_ASSERT1(groupid < groups.size(), "groupid out of bounds");
+        Group & group = groups[groupid];
+        group.remove_value(model, value, rng);
+        _update_group(model, groupid, rng);
+    }
+
+    void score_value (
+            const Model & model,
+            const Value & value,
+            VectorFloat & scores_accum,
+            rng_t &) const;
 };
 
 //----------------------------------------------------------------------------
@@ -244,102 +341,6 @@ float score_group (
 //----------------------------------------------------------------------------
 // Classification
 
-private:
-
-void _classifier_update_group (
-        Classifier & classifier,
-        size_t groupid,
-        rng_t & rng) const
-{
-    const Group & group = classifier.groups[groupid];
-    Scorer scorer;
-    scorer_init(scorer, group, rng);
-    classifier.score[groupid] = scorer.score;
-    classifier.log_coeff[groupid] = scorer.log_coeff;
-    classifier.precision[groupid] = scorer.precision;
-    classifier.mean[groupid] = scorer.mean;
-}
-
-void _classifier_resize (
-        Classifier & classifier,
-        size_t group_count) const
-{
-    classifier.groups.resize(group_count);
-    VectorFloat_resize(classifier.score, group_count);
-    VectorFloat_resize(classifier.log_coeff, group_count);
-    VectorFloat_resize(classifier.precision, group_count);
-    VectorFloat_resize(classifier.mean, group_count);
-    VectorFloat_resize(classifier.temp, group_count);
-}
-
-public:
-
-void classifier_init (
-        Classifier & classifier,
-        rng_t & rng) const
-{
-    const size_t group_count = classifier.groups.size();
-    _classifier_resize(classifier, group_count);
-    for (size_t groupid = 0; groupid < group_count; ++groupid) {
-        _classifier_update_group(classifier, groupid, rng);
-    }
-}
-
-void classifier_add_group (
-        Classifier & classifier,
-        rng_t & rng) const
-{
-    const size_t groupid = classifier.groups.size();
-    const size_t group_count = groupid + 1;
-    _classifier_resize(classifier, group_count);
-    classifier.groups.back().init(*this, rng);
-    _classifier_update_group(classifier, groupid, rng);
-}
-
-void classifier_remove_group (
-        Classifier & classifier,
-        size_t groupid) const
-{
-    const size_t group_count = classifier.groups.size() - 1;
-    if (groupid != group_count) {
-        std::swap(classifier.groups[groupid], classifier.groups.back());
-        classifier.score[groupid] = classifier.score.back();
-        classifier.log_coeff[groupid] = classifier.log_coeff.back();
-        classifier.precision[groupid] = classifier.precision.back();
-        classifier.mean[groupid] = classifier.mean.back();
-    }
-    _classifier_resize(classifier, group_count);
-}
-
-void classifier_add_value (
-        Classifier & classifier,
-        size_t groupid,
-        const Value & value,
-        rng_t & rng) const
-{
-    DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
-    Group & group = classifier.groups[groupid];
-    group.add_value(*this, value, rng);
-    _classifier_update_group(classifier, groupid, rng);
-}
-
-void classifier_remove_value (
-        Classifier & classifier,
-        size_t groupid,
-        const Value & value,
-        rng_t & rng) const
-{
-    DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
-    Group & group = classifier.groups[groupid];
-    group.remove_value(*this, value, rng);
-    _classifier_update_group(classifier, groupid, rng);
-}
-
-void classifier_score (
-        const Classifier & classifier,
-        const Value & value,
-        VectorFloat & scores_accum,
-        rng_t &) const;
 
 //----------------------------------------------------------------------------
 // Examples
