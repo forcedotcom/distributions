@@ -47,17 +47,19 @@ def chdir(wd):
 
 
 @contextlib.contextmanager
-def tempdir():
+def tempdir(cleanup_on_error=True):
     oldwd = os.getcwd()
     wd = tempfile.mkdtemp()
     try:
         print 'cd', wd
         os.chdir(wd)
         yield wd
+        cleanup_on_error = True
     finally:
         print 'cd', oldwd
         os.chdir(oldwd)
-        shutil.rmtree(wd)
+        if cleanup_on_error:
+            shutil.rmtree(wd)
 
 
 def open_compressed(filename, mode='r'):
