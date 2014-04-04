@@ -128,7 +128,7 @@ public:
             fid_ = -1;
             raw_ = new google::protobuf::io::OstreamOutputStream(& std::cout);
         } else {
-            fid_ = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+            fid_ = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0664);
             DIST_ASSERT(fid_ != -1, "failed to open file " << filename_);
             raw_ = new google::protobuf::io::FileOutputStream(fid_);
         }
