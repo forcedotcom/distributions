@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.6)
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 project(distributions)
 set(DISTRIBUTIONS_SHARED_LIBS distributions_shared m)
@@ -52,6 +52,7 @@ endif()
 
 find_package(Protobuf)
 if(PROTOBUF_FOUND)
+  message(STATUS "Using Google Protocol Buffers")
   set(DISTRIBUTIONS_SHARED_LIBS ${DISTRIBUTIONS_SHARED_LIBS} protobuf)
   set(DISTRIBUTIONS_STATIC_LIBS ${DISTRIBUTIONS_STATIC_LIBS} protobuf)
 endif()
