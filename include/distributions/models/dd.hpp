@@ -105,7 +105,7 @@ void group_add_value (
         const Value & value,
         rng_t &) const
 {
-    DIST_ASSERT1(value < dim, "value out of bounds");
+    DIST_ASSERT1(value < dim, "value out of bounds: " << value);
     group.count_sum += 1;
     group.counts[value] += 1;
 }
@@ -115,7 +115,7 @@ void group_remove_value (
         const Value & value,
         rng_t &) const
 {
-    DIST_ASSERT1(value < dim, "value out of bounds");
+    DIST_ASSERT1(value < dim, "value out of bounds: " << value);
     group.count_sum -= 1;
     group.counts[value] -= 1;
 }
@@ -184,7 +184,7 @@ float scorer_eval (
         const Value & value,
         rng_t &) const
 {
-    DIST_ASSERT1(value < dim, "value out of bounds");
+    DIST_ASSERT1(value < dim, "value out of bounds: " << value);
     return fast_log(scorer.alphas[value] / scorer.alpha_sum);
 }
 
@@ -193,7 +193,7 @@ float score_value (
         const Value & value,
         rng_t & rng) const
 {
-    DIST_ASSERT1(value < dim, "value out of bounds");
+    DIST_ASSERT1(value < dim, "value out of bounds: " << value);
     Scorer scorer;
     scorer_init(scorer, group, rng);
     return scorer_eval(scorer, value, rng);
@@ -287,7 +287,7 @@ void classifier_add_value (
         rng_t &) const
 {
     DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
-    DIST_ASSERT1(value < dim, "value out of bounds");
+    DIST_ASSERT1(value < dim, "value out of bounds: " << value);
     Group & group = classifier.groups[groupid];
     count_t count_sum = group.count_sum += 1;
     count_t count = group.counts[value] += 1;
@@ -303,7 +303,7 @@ void classifier_remove_value (
         rng_t &) const
 {
     DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
-    DIST_ASSERT1(value < dim, "value out of bounds");
+    DIST_ASSERT1(value < dim, "value out of bounds: " << value);
     Group & group = classifier.groups[groupid];
     count_t count_sum = group.count_sum -= 1;
     count_t count = group.counts[value] -= 1;
@@ -318,7 +318,7 @@ void classifier_score (
         VectorFloat & scores_accum,
         rng_t &) const
 {
-    DIST_ASSERT1(value < dim, "value out of bounds");
+    DIST_ASSERT1(value < dim, "value out of bounds: " << value);
     DIST_ASSERT2(
         scores_accum.size() == classifier.groups.size(),
         "expected scores_accum.size() = " << classifier.groups.size() <<
@@ -362,7 +362,7 @@ void fitter_set_param_alpha (
     Value value,
     float alpha)
 {
-    DIST_ASSERT1(value < dim, "value out of bounds");
+    DIST_ASSERT1(value < dim, "value out of bounds: " << value);
 
     alphas[value] = alpha;
 
