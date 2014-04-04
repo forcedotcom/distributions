@@ -77,28 +77,28 @@ class GammaPoisson(ComponentModel, Serializable):
                 'log_prod': self.log_prod,
             }
 
+        def init(self, model):
+            self.count = 0
+            self.sum = 0
+            self.log_prod = 0.
+
+        def add_value(self, model, value):
+            self.count += 1
+            self.sum += int(value)
+            self.log_prod += log(factorial(value))
+
+        def remove_value(self, model, value):
+            self.count -= 1
+            self.sum -= int(value)
+            self.log_prod -= log(factorial(value))
+
+        def merge(self, model, source):
+            self.count += source.count
+            self.sum += source.sum
+            self.log_prod += source.log_prod
+
     #-------------------------------------------------------------------------
     # Mutation
-
-    def group_init(self, group):
-        group.count = 0
-        group.sum = 0
-        group.log_prod = 0.
-
-    def group_add_value(self, group, value):
-        group.count += 1
-        group.sum += int(value)
-        group.log_prod += log(factorial(value))
-
-    def group_remove_value(self, group, value):
-        group.count -= 1
-        group.sum -= int(value)
-        group.log_prod -= log(factorial(value))
-
-    def group_merge(self, destin, source):
-        destin.count += source.count
-        destin.sum += source.sum
-        destin.log_prod += source.log_prod
 
     def plus_group(self, group):
         post = self.__class__()

@@ -78,6 +78,41 @@ cdef class Group:
             'count_times_variance': self.count_times_variance,
         }
 
+    def init(self, Model_cy model):
+        self.count = 0
+        self.mean = 0.
+        self.count_times_variance = 0.
+
+    def add_value(self, Model_cy model, double value):
+        self.count += 1
+        cdef double delta = value - self.mean
+        self.mean += delta / self.count
+        self.count_times_variance += delta * (value - self.mean)
+
+
+    def remove_value(self, Model_cy model, double value):
+        cdef double total = self.mean * self.count
+        cdef double delta = value - self.mean
+        self.count -= 1
+        if self.count == 0:
+            self.mean = 0.
+        else:
+            self.mean = (total - value) / self.count
+        if self.count <= 1:
+            self.count_times_variance = 0.
+        else:
+            self.count_times_variance -= delta * (value - self.mean)
+
+    def merge(self, Model_cy model, Group source):
+        cdef size_t count = self.count + source.count
+        cdef double delta = source.mean - self.mean
+        cdef double source_part = <double> source.count / count
+        cdef double cross_part = self.count * source_part
+        self.count = count
+        self.mean += source_part * delta
+        self.count_times_variance += \
+            source.count_times_variance + cross_part * delta * delta
+
 
 ctypedef tuple Sampler
 
@@ -105,41 +140,6 @@ cdef class Model_cy:
 
     #-------------------------------------------------------------------------
     # Mutation
-
-    def group_init(self, Group group):
-        group.count = 0
-        group.mean = 0.
-        group.count_times_variance = 0.
-
-    def group_add_value(self, Group group, double value):
-        group.count += 1
-        cdef double delta = value - group.mean
-        group.mean += delta / group.count
-        group.count_times_variance += delta * (value - group.mean)
-
-
-    def group_remove_value(self, Group group, double value):
-        cdef double total = group.mean * group.count
-        cdef double delta = value - group.mean
-        group.count -= 1
-        if group.count == 0:
-            group.mean = 0.
-        else:
-            group.mean = (total - value) / group.count
-        if group.count <= 1:
-            group.count_times_variance = 0.
-        else:
-            group.count_times_variance -= delta * (value - group.mean)
-
-    def group_merge(self, Group destin, Group source):
-        cdef size_t count = destin.count + source.count
-        cdef double delta = source.mean - destin.mean
-        cdef double source_part = <double> source.count / count
-        cdef double cross_part = destin.count * source_part
-        destin.count = count
-        destin.mean += source_part * delta
-        destin.count_times_variance += \
-            source.count_times_variance + cross_part * delta * delta
 
     cdef Model_cy plus_group(self, Group group):
         """

@@ -37,6 +37,7 @@ namespace distributions
 
 struct GammaPoisson
 {
+typedef GammaPoisson Model;
 
 static const char * name () { return "GammaPoisson"; }
 static const char * short_name () { return "gp"; }
@@ -50,8 +51,6 @@ float inv_beta;
 //----------------------------------------------------------------------------
 // Datatypes
 
-typedef GammaPoisson Model;
-
 typedef uint32_t Value;
 
 struct Group
@@ -59,6 +58,43 @@ struct Group
     uint32_t count;
     uint32_t sum;
     float log_prod;
+
+    void init (const Model &, rng_t &)
+    {
+        count = 0;
+        sum = 0;
+        log_prod = 0.f;
+    }
+
+    void add_value (
+            const Model &,
+            const Value & value,
+            rng_t &)
+    {
+        ++count;
+        sum += value;
+        log_prod += fast_log_factorial(value);
+    }
+
+    void remove_value (
+            const Model &,
+            const Value & value,
+            rng_t &)
+    {
+        --count;
+        sum -= value;
+        log_prod -= fast_log_factorial(value);
+    }
+
+    void merge (
+            const Model &,
+            const Group & source,
+            rng_t &)
+    {
+        count += source.count;
+        sum += source.sum;
+        log_prod += source.log_prod;
+    }
 };
 
 struct Sampler
@@ -85,42 +121,6 @@ struct Classifier
 //----------------------------------------------------------------------------
 // Mutation
 
-void group_init (Group & group, rng_t &) const
-{
-    group.count = 0;
-    group.sum = 0;
-    group.log_prod = 0.f;
-}
-
-void group_add_value (
-        Group & group,
-        const Value & value,
-        rng_t &) const
-{
-    ++group.count;
-    group.sum += value;
-    group.log_prod += fast_log_factorial(value);
-}
-
-void group_remove_value (
-        Group & group,
-        const Value & value,
-        rng_t &) const
-{
-    --group.count;
-    group.sum -= value;
-    group.log_prod -= fast_log_factorial(value);
-}
-
-void group_merge (
-        Group & destin,
-        const Group & source,
-        rng_t &) const
-{
-    destin.count += source.count;
-    destin.sum += source.sum;
-    destin.log_prod += source.log_prod;
-}
 
 Model plus_group (const Group & group) const
 {
@@ -257,7 +257,7 @@ void classifier_add_group (
     const size_t groupid = classifier.groups.size();
     const size_t group_count = groupid + 1;
     _classifier_resize(classifier, group_count);
-    group_init(classifier.groups.back(), rng);
+    classifier.groups.back().init(*this, rng);
     _classifier_update_group(classifier, groupid, rng);
 }
 
@@ -283,7 +283,7 @@ void classifier_add_value (
 {
     DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
     Group & group = classifier.groups[groupid];
-    group_add_value(group, value, rng);
+    group.add_value(*this, value, rng);
     _classifier_update_group(classifier, groupid, rng);
 }
 
@@ -295,7 +295,7 @@ void classifier_remove_value (
 {
     DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
     Group & group = classifier.groups[groupid];
-    group_remove_value(group, value, rng);
+    group.remove_value(*this, value, rng);
     _classifier_update_group(classifier, groupid, rng);
 }
 

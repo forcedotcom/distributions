@@ -39,6 +39,7 @@ namespace distributions
 template<int max_dim>
 struct DirichletDiscrete
 {
+typedef DirichletDiscrete<max_dim> Model;
 
 static const char * name () { return "DirichletDiscrete"; }
 static const char * short_name () { return "dd"; }
@@ -60,6 +61,46 @@ struct Group
 {
     count_t count_sum;
     count_t counts[max_dim];
+
+    void init (
+            const Model & model,
+            rng_t &)
+    {
+        count_sum = 0;
+        for (Value value = 0; value < model.dim; ++value) {
+            counts[value] = 0;
+        }
+    }
+
+    void add_value (
+            const Model & model,
+            const Value & value,
+            rng_t &)
+    {
+        DIST_ASSERT1(value < model.dim, "value out of bounds" << value);
+        count_sum += 1;
+        counts[value] += 1;
+    }
+
+    void remove_value (
+            const Model & model,
+            const Value & value,
+            rng_t &)
+    {
+        DIST_ASSERT1(value < model.dim, "value out of bounds" << value);
+        count_sum -= 1;
+        counts[value] -= 1;
+    }
+
+    void merge (
+            const Model & model,
+            const Group & source,
+            rng_t &)
+    {
+        for (Value value = 0; value < model.dim; ++value) {
+            counts[value] += source.counts[value];
+        }
+    }
 };
 
 struct Sampler
@@ -86,50 +127,6 @@ class Fitter
     std::vector<Group> groups;
     VectorFloat scores;
 };
-
-//----------------------------------------------------------------------------
-// Mutation
-
-void group_init (
-        Group & group,
-        rng_t &) const
-{
-    group.count_sum = 0;
-    for (Value value = 0; value < dim; ++value) {
-        group.counts[value] = 0;
-    }
-}
-
-void group_add_value (
-        Group & group,
-        const Value & value,
-        rng_t &) const
-{
-    DIST_ASSERT1(value < dim, "value out of bounds: " << value);
-    group.count_sum += 1;
-    group.counts[value] += 1;
-}
-
-void group_remove_value (
-        Group & group,
-        const Value & value,
-        rng_t &) const
-{
-    DIST_ASSERT1(value < dim, "value out of bounds: " << value);
-    group.count_sum -= 1;
-    group.counts[value] -= 1;
-}
-
-void group_merge (
-        Group & destin,
-        const Group & source,
-        rng_t &) const
-{
-    DIST_ASSERT1(& destin != & source, "cannot merge with self");
-    for (Value value = 0; value < dim; ++value) {
-        destin.counts[value] += source.counts[value];
-    }
-}
 
 //----------------------------------------------------------------------------
 // Sampling
@@ -253,7 +250,7 @@ void classifier_add_group (
 {
     const size_t group_count = classifier.groups.size() + 1;
     classifier.groups.resize(group_count);
-    group_init(classifier.groups.back(), rng);
+    classifier.groups.back().init(*this, rng);
     classifier.scores_shift.resize(group_count, 0);
     for (Value value = 0; value < dim; ++value) {
         classifier.scores[value].resize(group_count, 0);

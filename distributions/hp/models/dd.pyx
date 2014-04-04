@@ -57,6 +57,23 @@ cdef class Group:
     def dump(self):
         return {'counts': [self.counts[i] for i in xrange(self.dim)]}
 
+    def init(self, Model_cy model):
+        self.dim = model.dim
+        cdef int i
+        for i in xrange(self.dim):
+            self.counts[i] = 0
+
+    def add_value(self, Model_cy model, int value):
+        self.counts[value] += 1
+
+    def remove_value(self, Model_cy model, int value):
+        self.counts[value] -= 1
+
+    def merge(self, Model_cy model, Group source):
+        cdef int i
+        for i in xrange(self.dim):
+            self.counts[i] += source.counts[i]
+
 
 # Buffer types only allowed as function local variables
 #ctypedef numpy.ndarray[numpy.float64_t, ndim=1] Sampler
@@ -79,26 +96,6 @@ cdef class Model_cy:
 
     def dump(self):
         return {'alphas': [self.alphas[i] for i in xrange(self.dim)]}
-
-    #-------------------------------------------------------------------------
-    # Mutation
-
-    def group_init(self, Group group):
-        group.dim = self.dim
-        cdef int i
-        for i in xrange(self.dim):
-            group.counts[i] = 0
-
-    def group_add_value(self, Group group, int value):
-        group.counts[value] += 1
-
-    def group_remove_value(self, Group group, int value):
-        group.counts[value] -= 1
-
-    def group_merge(self, Group destin, Group source):
-        cdef int i
-        for i in xrange(self.dim):
-            destin.counts[i] += source.counts[i]
 
     #-------------------------------------------------------------------------
     # Sampling

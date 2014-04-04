@@ -30,9 +30,9 @@ class ComponentModel(object):
 
     def group_create(self, values=[]):
         group = self.Group()
-        self.group_init(group)
+        group.init(self)
         for value in values:
-            self.group_add_value(group, value)
+            group.add_value(self, value)
         return group
 
 

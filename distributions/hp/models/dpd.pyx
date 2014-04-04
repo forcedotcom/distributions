@@ -66,6 +66,20 @@ cdef class Group:
             inc(it)
         return {'counts': counts}
 
+    def init(self, Model_cy model):
+        self.counts.clear()
+
+    def add_value(self, Model_cy model, Value value):
+        assert value != OTHER, 'tried to add OTHER to group'
+        self.counts.add(value)
+
+    def remove_value(self, Model_cy model, Value value):
+        assert value != OTHER, 'tried to remove OTHER to group'
+        self.counts.remove(value)
+
+    def merge(self, Model_cy model, Group source):
+        self.counts.merge(source.counts[0])
+
 
 # Buffer types only allowed as function local variables
 #ctypedef numpy.ndarray[numpy.float64_t, ndim=1] Sampler
@@ -94,23 +108,6 @@ cdef class Model_cy:
             'alpha': self.alpha,
             'betas': {str(i): beta for i, beta in enumerate(self.betas)},
         }
-
-    #-------------------------------------------------------------------------
-    # Mutation
-
-    def group_init(self, Group group):
-        group.counts.clear()
-
-    def group_add_value(self, Group group, Value value):
-        assert value != OTHER, 'tried to add OTHER to group'
-        group.counts.add(value)
-
-    def group_remove_value(self, Group group, Value value):
-        assert value != OTHER, 'tried to remove OTHER to group'
-        group.counts.remove(value)
-
-    def group_merge(self, Group destin, Group source):
-        destin.counts.merge(source.counts[0])
 
     #-------------------------------------------------------------------------
     # Sampling

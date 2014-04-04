@@ -88,13 +88,13 @@ void speedtest (
     std::vector<size_t> assignments;
     for (size_t groupid = 0; groupid < group_count; ++groupid) {
         typename Model::Group & group = classifier.groups[groupid];
-        model.group_init(group, rng);
+        group.init(model, rng);
     }
     for (size_t i = 0; i < 4 * group_count; ++i) {
         size_t groupid = sample_int(rng, 0, group_count - 1);
         typename Model::Group & group = classifier.groups[groupid];
         typename Model::Value value = model.sample_value(group, rng);
-        model.group_add_value(group, value, rng);
+        group.add_value(model, value, rng);
         values.push_back(value);
         assignments.push_back(groupid);
     }
@@ -125,10 +125,10 @@ void speedtest (
             typename Model::Value value = values[k];
             size_t groupid = assignments[k];
             typename Scorers<Model>::Group & group = scorers.groups[groupid];
-            model.group_remove_value(group.group, value, rng);
+            group.group.remove_value(model, value, rng);
             model.scorer_init(group.scorer, group.group, rng);
             scorers.score(model, value, scores);
-            model.group_add_value(group.group, value, rng);
+            group.group.add_value(model, value, rng);
             model.scorer_init(group.scorer, group.group, rng);
         }
     }
@@ -169,4 +169,3 @@ int main()
 
     return 0;
 }
-

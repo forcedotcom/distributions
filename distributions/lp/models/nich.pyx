@@ -53,6 +53,10 @@ cdef extern from "distributions/models/nich.hpp" namespace "distributions":
             uint32_t count
             float mean
             float count_times_variance
+            void init (Model_cc &, rng_t &) nogil except +
+            void add_value (Model_cc &, Value &, rng_t &) nogil except +
+            void remove_value (Model_cc &, Value &, rng_t &) nogil except +
+            void merge (Model_cc &, Group &, rng_t &) nogil except +
         cppclass Sampler:
             float mu
             float sigma
@@ -68,10 +72,6 @@ cdef extern from "distributions/models/nich.hpp" namespace "distributions":
             VectorFloat precision
             VectorFloat mean
             VectorFloat temp
-        void group_init (Group &, rng_t &) nogil except +
-        void group_add_value (Group &, Value &, rng_t &) nogil except +
-        void group_remove_value (Group &, Value &, rng_t &) nogil except +
-        void group_merge (Group &, Group &, rng_t &) nogil except +
         void sampler_init (Sampler &, Group &, rng_t &) nogil except +
         Value sampler_eval (Sampler &, rng_t &) nogil except +
         Value sample_value (Group &, rng_t &) nogil except +
@@ -106,6 +106,18 @@ cdef class Group:
             'mean': self.ptr.mean,
             'count_times_variance': self.ptr.count_times_variance,
         }
+
+    def init(self, Model_cy model):
+        self.ptr.init(model.ptr[0], get_rng()[0])
+
+    def add_value(self, Model_cy model, Value value):
+        self.ptr.add_value(model.ptr[0], value, get_rng()[0])
+
+    def remove_value(self, Model_cy model, Value value):
+        self.ptr.remove_value(model.ptr[0], value, get_rng()[0])
+
+    def merge(self, Model_cy model, Group source):
+        self.ptr.merge(model.ptr[0], source.ptr[0], get_rng()[0])
 
 
 cdef class Classifier:
@@ -145,21 +157,6 @@ cdef class Model_cy:
             'sigmasq': self.ptr.sigmasq,
             'nu': self.ptr.nu,
         }
-
-    #-------------------------------------------------------------------------
-    # Mutation
-
-    def group_init(self, Group group):
-        self.ptr.group_init(group.ptr[0], get_rng()[0])
-
-    def group_add_value(self, Group group, Value value):
-        self.ptr.group_add_value(group.ptr[0], value, get_rng()[0])
-
-    def group_remove_value(self, Group group, Value value):
-        self.ptr.group_remove_value(group.ptr[0], value, get_rng()[0])
-
-    def group_merge(self, Group destin, Group source):
-        self.ptr.group_merge(destin.ptr[0], source.ptr[0], get_rng()[0])
 
     #-------------------------------------------------------------------------
     # Sampling

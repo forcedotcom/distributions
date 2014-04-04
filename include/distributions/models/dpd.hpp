@@ -39,6 +39,7 @@ namespace distributions
 
 struct DirichletProcessDiscrete
 {
+typedef DirichletProcessDiscrete Model;
 
 static const char * name () { return "DirichletProcessDiscrete"; }
 static const char * short_name () { return "dpd"; }
@@ -63,6 +64,37 @@ static constexpr Value OTHER () { return -1; }
 struct Group
 {
     SparseCounter<Value, count_t> counts;  // sparse
+
+    void init (
+            const Model &,
+            rng_t &)
+    {
+        counts.clear();
+    }
+
+    void add_value (
+            const Model &,
+            const Value & value,
+            rng_t &)
+    {
+       counts.add(value);
+    }
+
+    void remove_value (
+            const Model &,
+            const Value & value,
+            rng_t &)
+    {
+       counts.remove(value);
+    }
+
+    void merge (
+            const Model &,
+            const Group & source,
+            rng_t &)
+    {
+        counts.merge(source.counts);
+    }
 };
 
 struct Sampler
@@ -85,36 +117,6 @@ struct Classifier
 //----------------------------------------------------------------------------
 // Mutation
 
-void group_init (
-        Group & group,
-        rng_t &) const
-{
-    group.counts.clear();
-}
-
-void group_add_value (
-        Group & group,
-        const Value & value,
-        rng_t &) const
-{
-   group.counts.add(value);
-}
-
-void group_remove_value (
-        Group & group,
-        const Value & value,
-        rng_t &) const
-{
-   group.counts.remove(value);
-}
-
-void group_merge (
-        Group & destin,
-        const Group & source,
-        rng_t &) const
-{
-    destin.counts.merge(source.counts);
-}
 
 //----------------------------------------------------------------------------
 // Sampling
@@ -260,7 +262,7 @@ void classifier_add_group (
     const Value dim = betas.size();
     const size_t group_count = classifier.groups.size() + 1;
     classifier.groups.resize(group_count);
-    group_init(classifier.groups.back(), rng);
+    classifier.groups.back().init(*this, rng);
     classifier.scores_shift.resize(group_count, 0);
     for (Value value = 0; value < dim; ++value) {
         classifier.scores[value].resize(group_count, 0);

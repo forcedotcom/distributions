@@ -53,6 +53,26 @@ cdef class Group:
             'log_prod': self.log_prod,
         }
 
+    def init(self, Model_cy model):
+        self.count = 0
+        self.sum = 0
+        self.log_prod = 0.
+
+    def add_value(self, Model_cy model, int value):
+        self.count += 1
+        self.sum += value
+        self.log_prod += log_factorial(value)
+
+    def remove_value(self, Model_cy model, int value):
+        self.count -= 1
+        self.sum -= value
+        self.log_prod -= log_factorial(value)
+
+    def merge(self, Model_cy model, Group source):
+        self.count += source.count
+        self.sum += source.sum
+        self.log_prod += source.log_prod
+
 
 ctypedef double Sampler
 
@@ -73,26 +93,6 @@ cdef class Model_cy:
 
     #-------------------------------------------------------------------------
     # Mutation
-
-    def group_init(self, Group group):
-        group.count = 0
-        group.sum = 0
-        group.log_prod = 0.
-
-    def group_add_value(self, Group group, int value):
-        group.count += 1
-        group.sum += value
-        group.log_prod += log_factorial(value)
-
-    def group_remove_value(self, Group group, int value):
-        group.count -= 1
-        group.sum -= value
-        group.log_prod -= log_factorial(value)
-
-    def group_merge(self, Group destin, Group source):
-        destin.count += source.count
-        destin.sum += source.sum
-        destin.log_prod += source.log_prod
 
     cdef Model_cy plus_group(self, Group group):
         cdef Model_cy post = Model_cy()

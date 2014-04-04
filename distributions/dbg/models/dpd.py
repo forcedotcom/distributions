@@ -102,34 +102,31 @@ class DirichletProcessDiscrete(ComponentModel, Serializable):
             }
             return {'counts': counts}
 
-    #-------------------------------------------------------------------------
-    # Mutation
+        def init(self, model):
+            self.counts = {}  # sparse
+            self.total = 0
 
-    def group_init(self, group):
-        group.counts = {}  # sparse
-        group.total = 0
+        def add_value(self, model, value):
+            assert value != OTHER, 'tried to add OTHER to suffstats'
+            try:
+                self.counts[value] += 1
+            except KeyError:
+                self.counts[value] = 1
+            self.total += 1
 
-    def group_add_value(self, group, value):
-        assert value != OTHER, 'tried to add OTHER to suffstats'
-        try:
-            group.counts[value] += 1
-        except KeyError:
-            group.counts[value] = 1
-        group.total += 1
+        def remove_value(self, model, value):
+            assert value != OTHER, 'tried to remove OTHER to suffstats'
+            new_count = self.counts[value] - 1
+            if new_count == 0:
+                del self.counts[value]
+            else:
+                self.counts[value] = new_count
+            self.total -= 1
 
-    def group_remove_value(self, group, value):
-        assert value != OTHER, 'tried to remove OTHER to suffstats'
-        new_count = group.counts[value] - 1
-        if new_count == 0:
-            del group.counts[value]
-        else:
-            group.counts[value] = new_count
-        group.total -= 1
-
-    def group_merge(self, destin, source):
-        for i, count in source.counts.iteritems():
-            destin.counts[i] = destin.counts.get(i, 0) + count
-        destin.total += source.total
+        def merge(self, model, source):
+            for i, count in source.counts.iteritems():
+                self.counts[i] = self.counts.get(i, 0) + count
+            self.total += source.total
 
     #-------------------------------------------------------------------------
     # Sampling
