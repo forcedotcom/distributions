@@ -32,6 +32,7 @@ import bz2
 import gzip
 import contextlib
 import simplejson
+import struct
 
 
 @contextlib.contextmanager
@@ -158,6 +159,35 @@ class json_stream_load(object):
             raise StopIteration
         else:
             return simplejson.loads(line)
+
+    def close(self):
+        self.fd.close()
+
+
+def protobuf_stream_dump(stream, filename):
+    dirname = os.path.dirname(filename)
+    if dirname and not os.path.exists(dirname):
+        os.makedirs(dirname)
+    with open_compressed(filename, 'wb') as f:
+        for item in stream:
+            assert isinstance(item, str), item
+            f.write(struct.pack('<I', len(item)))
+            f.write(item)
+
+
+class protobuf_stream_load(object):
+    def __init__(self, filename):
+        self.fd = open_compressed(filename, 'rb')
+
+    def __iter__(self):
+        return self
+
+    def next(self):
+        size_str = self.fd.read(4)
+        if len(size_str) < 4:
+            raise StopIteration
+        size = struct.unpack('<I', size_str)[0]
+        return self.fd.read(size)
 
     def close(self):
         self.fd.close()

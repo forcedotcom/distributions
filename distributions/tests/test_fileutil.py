@@ -70,9 +70,25 @@ def test_dump_load():
 def _test_dump_load(dump, load, filetype):
     for example in EXAMPLES:
         print example
-        with fileutil.tempdir() as d, fileutil.chdir(d):
+        with fileutil.tempdir():
             expected = example
             filename = 'test.json' + filetype
             dump(expected, filename)
             actual = list(load(filename))
             assert_equal(actual, expected)
+
+
+def test_protobuf_stream():
+    for filetype in ['', '.gz', '.bz2']:
+        yield _test_protobuf_stream, filetype
+
+
+def _test_protobuf_stream(filetype):
+    filename = 'test.stream' + filetype
+    expected = ['asdf', '', 'asdfasdfasdf', 'a', 's', '', '', '', 'd', 'f']
+    with fileutil.tempdir():
+        print 'dumping'
+        fileutil.protobuf_stream_dump(expected, filename)
+        print 'loading'
+        actual = list(fileutil.protobuf_stream_load(filename))
+    assert_equal(actual, expected)
