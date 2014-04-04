@@ -106,6 +106,15 @@ def canonicalize(assignments):
 
 
 @for_each_model()
+def test_io(Model, EXAMPLE):
+    model = Model()
+    model.load(EXAMPLE)
+    expected = EXAMPLE
+    actual = model.dump()
+    assert_close(expected, actual)
+
+
+@for_each_model()
 def test_sampler(Model, EXAMPLE):
     if Model.__name__ == 'LowEntropy':
         raise SkipTest('FIXME LowEntropy.score_counts is not normalized')

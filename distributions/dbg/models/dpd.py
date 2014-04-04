@@ -41,17 +41,20 @@ class DirichletProcessDiscrete(ComponentModel, Serializable):
         self.betas = None
         self.beta0 = None
 
+    def _load_beta0(self):
+        self.beta0 = 1 - self.betas.sum()
+        if not (0 <= self.betas.min() and self.betas.max() <= 1):
+            raise ValueError('betas out of bounds: {}'.format(self.betas))
+        if not (0 <= self.beta0 and self.beta0 <= 1):
+            raise ValueError('beta0 out of bounds: {}'.format(self.beta0))
+
     def load(self, raw):
         self.gamma = float(raw['gamma'])
         self.alpha = float(raw['alpha'])
         raw_betas = raw['betas']
         betas = [raw_betas[str(i)] for i in xrange(len(raw_betas))]
         self.betas = numpy.array(betas, dtype=numpy.float)  # dense
-        self.beta0 = 1 - self.betas.sum()
-        if not (0 <= self.betas.min() and self.betas.max() <= 1):
-            raise ValueError('betas out of bounds: {}'.format(self.betas))
-        if not (0 <= self.beta0 and self.beta0 <= 1):
-            raise ValueError('beta0 out of bounds: {}'.format(self.beta0))
+        self._load_beta0()
 
     def dump(self):
         return {
@@ -59,6 +62,19 @@ class DirichletProcessDiscrete(ComponentModel, Serializable):
             'alpha': self.alpha,
             'betas': {str(i): beta for i, beta in enumerate(self.betas)},
         }
+
+    def load_protobuf(self, message):
+        self.gamma = float(message.gamma)
+        self.alpha = float(message.alpha)
+        self.betas = numpy.array(message.betas, dtype=numpy.float)
+        self._load_beta0()
+
+    def dump_protobuf(self, message):
+        message.Clear()
+        message.gamma = self.gamma
+        message.alpha = self.alpha
+        for beta in self.betas:
+            message.betas.append(beta)
 
     #-------------------------------------------------------------------------
     # Datatypes

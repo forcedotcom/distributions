@@ -45,6 +45,14 @@ class DirichletDiscrete(ComponentModel, Serializable):
     def dump(self):
         return {'alphas': self.alphas.tolist()}
 
+    def load_protobuf(self, message):
+        self.alphas = numpy.array(message.alphas, dtype=numpy.float)
+
+    def dump_protobuf(self, message):
+        message.Clear()
+        for alpha in self.alphas:
+            message.alphas.append(alpha)
+
     #-------------------------------------------------------------------------
     # Datatypes
 

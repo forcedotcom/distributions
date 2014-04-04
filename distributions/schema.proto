@@ -25,11 +25,81 @@
 // TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 // USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package distributions;
+package protobuf.distributions;
 
-message Row {
-  optional string id = 1;
-  repeated bool booleans = 2;
-  repeated uint32 categoricals = 3;
-  repeated float reals = 4;
+//----------------------------------------------------------------------------
+// Clustering
+
+message Clustering  // simulates a sum type
+{
+  message PitmanYor
+  {
+    required float alpha = 1;
+    required float d = 2;
+  }
+
+  message LowEntropy
+  {
+    required uint64 dataset_size = 1;
+  }
+
+  optional PitmanYor pitman_yor = 1;
+  optional LowEntropy low_entropy = 2;
 }
+
+//----------------------------------------------------------------------------
+// Models
+
+message BetaBernoulli {
+  required float alpha = 1;
+  required float beta = 2;
+
+  message Group {
+    required uint64 heads = 1;
+    required uint64 tails = 2;
+  }
+}
+
+message DirichletDiscrete {
+  repeated float alphas = 1;
+
+  message Group {
+    repeated uint64 counts = 1;
+  }
+}
+
+message DirichletProcessDiscrete {
+  required float gamma = 1;
+  required float alpha = 2;
+  repeated float betas = 3;
+
+  message Group {
+    repeated uint32 keys = 1;
+    repeated uint64 values = 2;
+  }
+}
+
+message GammaPoisson {
+  required float alpha = 1;
+  required float inv_beta = 2;
+
+  message Group {
+    required uint64 count = 1;
+    required uint64 sum = 2;
+    required float log_prod = 3;
+  }
+}
+
+message NormalInverseChiSq {
+  required float mu = 1;
+  required float kappa = 2;
+  required float sigmasq = 3;
+  required float nu = 4;
+
+  message Group {
+    required uint64 count = 1;
+    required float mean = 2;
+    required float count_times_variance = 3;
+  }
+}
+

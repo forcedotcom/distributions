@@ -45,6 +45,15 @@ class GammaPoisson(ComponentModel, Serializable):
             'inv_beta': self.inv_beta,
         }
 
+    def load_protobuf(self, message):
+        self.alpha = float(message.alpha)
+        self.inv_beta = float(message.inv_beta)
+
+    def dump_protobuf(self, message):
+        message.Clear()
+        message.alpha = self.alpha
+        message.inv_beta = self.inv_beta
+
     #-------------------------------------------------------------------------
     # Datatypes
 

@@ -94,10 +94,10 @@ def make_extension(name):
     sources = [
         '{}.{}'.format(module.replace('.', '/'), 'pyx' if cython else 'cpp')
     ]
-    libraries = ['m']
+    libraries = ['m', 'protobuf']
     if name.startswith('lp'):
         if use_libdistributions:
-            libraries.append('distributions_shared')
+            libraries = ['distributions_shared'] + libraries
         else:
             sources += [
                 'src/common.cc',

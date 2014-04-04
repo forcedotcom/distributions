@@ -3,6 +3,7 @@ numpy>=1.6.1
 scipy>=0.9.0
 cython>=0.20.1
 simplejson
+protobuf
 parsable
 pyflakes
 pep8
