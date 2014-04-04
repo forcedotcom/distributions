@@ -27,7 +27,14 @@
 
 #pragma once
 
-#include <iostream>
+#ifdef __GNUG__
+#  define DIST_LIKELY(x) __builtin_expect(bool(x), true)
+#  define DIST_UNLIKELY(x) __builtin_expect(bool(x), false)
+#else // __GNUG__
+#  warning "ignoring likely(-), unlikely(-)"
+#  define DIST_LIKELY(x) (x)
+#  define DIST_UNLIKELY(x) (x)
+#endif // __GNUG__
 
 #ifdef DIST_THROW_ON_ERROR
 #include <sstream>
@@ -40,6 +47,7 @@
         << __PRETTY_FUNCTION__ << std::endl; \
     throw std::runtime_error(PRIVATE_message.str()); }
 #else // DIST_THROW_ON_ERROR
+#include <iostream>
 #define DIST_ERROR(message) {\
     std::cerr << "ERROR " << message << "\n\t"\
               << __FILE__ << " : " << __LINE__ << "\n\t"\

@@ -63,7 +63,7 @@ public:
             raw_ = new google::protobuf::io::IstreamInputStream(& std::cin);
         } else {
             fid_ = open(filename, O_RDONLY | O_NOATIME);
-            LOOM_ASSERT(fid_ != -1, "failed to open values file");
+            DIST_ASSERT(fid_ != -1, "failed to open values file");
             raw_ = new google::protobuf::io::FileInputStream(fid_);
         }
 
@@ -90,17 +90,17 @@ public:
     void read (Message & message)
     {
         bool success = message.ParseFromCodedStream(coded_);
-        LOOM_ASSERT(success, "failed to parse message from " << filename_);
+        DIST_ASSERT(success, "failed to parse message from " << filename_);
     }
 
     template<class Message>
     bool try_read_stream (Message & message)
     {
         uint32_t message_size = 0;
-        if (likely(coded_->ReadLittleEndian32(& message_size))) {
+        if (DIST_LIKELY(coded_->ReadLittleEndian32(& message_size))) {
             auto old_limit = coded_->PushLimit(message_size);
             bool success = message.ParseFromCodedStream(coded_);
-            LOOM_ASSERT(success, "failed to parse message from " << filename_);
+            DIST_ASSERT(success, "failed to parse message from " << filename_);
             coded_->PopLimit(old_limit);
             return true;
         } else {
@@ -129,7 +129,7 @@ public:
             raw_ = new google::protobuf::io::OstreamOutputStream(& std::cout);
         } else {
             fid_ = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-            LOOM_ASSERT(fid_ != -1, "failed to open file " << filename_);
+            DIST_ASSERT(fid_ != -1, "failed to open file " << filename_);
             raw_ = new google::protobuf::io::FileOutputStream(fid_);
         }
 
@@ -155,18 +155,18 @@ public:
     template<class Message>
     void write (Message & message)
     {
-        LOOM_ASSERT1(message.IsInitialized(), "message not initialized");
+        DIST_ASSERT1(message.IsInitialized(), "message not initialized");
         message.ByteSize();
         bool success = message.SerializeWithCachedSizes(coded_);
-        LOOM_ASSERT(success, "failed to serialize message to " << filename_);
+        DIST_ASSERT(success, "failed to serialize message to " << filename_);
     }
 
     template<class Message>
     void write_stream (Message & message)
     {
-        LOOM_ASSERT1(message.IsInitialized(), "message not initialized");
+        DIST_ASSERT1(message.IsInitialized(), "message not initialized");
         uint32_t message_size = message.ByteSize();
-        LOOM_ASSERT1(message_size > 0, "zero sized message");
+        DIST_ASSERT1(message_size > 0, "zero sized message");
         coded_->WriteLittleEndian32(message_size);
         message.SerializeWithCachedSizes(coded_);
     }
