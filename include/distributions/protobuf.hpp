@@ -25,6 +25,8 @@
 // TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 // USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#pragma once
+
 #include <distributions/common.hpp>
 #include <distributions/schema.pb.h>
 #include <distributions/clustering.hpp>
@@ -41,21 +43,36 @@ namespace protobuf { using namespace ::protobuf::distributions; }
 //----------------------------------------------------------------------------
 // Clustering
 
-template<class count_t>
+// FIXME g++ fails if these are made template<count_t>
+
 inline void clustering_load (
-        typename Clustering<count_t>::PitmanYor & model,
-        const protobuf::Clustering::PitmanYor & model_pb)
+        typename Clustering<int>::PitmanYor & model,
+        const protobuf::Clustering::PitmanYor & message)
 {
-    model.alpha = model_pb.alpha();
-    model.d = model_pb.d();
+    model.alpha = message.alpha();
+    model.d = message.d();
+}
+
+inline void clustering_load (
+        typename Clustering<int>::PitmanYor & model,
+        const protobuf::Clustering & message)
+{
+    clustering_load(model, message.pitman_yor());
+}
+
+inline void clustering_load (
+        typename Clustering<int>::LowEntropy & model,
+        const protobuf::Clustering::LowEntropy & message)
+{
+    model.dataset_size = message.dataset_size();
 }
 
 template<class count_t>
 inline void clustering_load (
-        typename Clustering<count_t>::LowEntropy & model,
-        const protobuf::Clustering::LowEntropy & model_pb)
+        typename Clustering<int>::LowEntropy & model,
+        const protobuf::Clustering & message)
 {
-    model.dataset_size = model_pb.dataset_size();
+    clustering_load(model, message.low_entropy());
 }
 
 //----------------------------------------------------------------------------
@@ -64,45 +81,45 @@ inline void clustering_load (
 template<int max_dim>
 inline void model_load (
         DirichletDiscrete<max_dim> & model,
-        const protobuf::DirichletDiscrete & model_pb)
+        const protobuf::DirichletDiscrete & message)
 {
-    model.dim = model_pb.alphas_size();
+    model.dim = message.alphas_size();
     DIST_ASSERT(model.dim <= 16, "dim is too large: " << model.dim);
     for (size_t i = 0; i < model.dim; ++i) {
-        model.alphas[i] = model_pb.alphas(i);
+        model.alphas[i] = message.alphas(i);
     }
 }
 
 inline void model_load (
         DirichletProcessDiscrete & model,
-        const protobuf::DirichletProcessDiscrete & model_pb)
+        const protobuf::DirichletProcessDiscrete & message)
 {
-    model.gamma = model_pb.gamma();
-    model.alpha = model_pb.alpha();
-    model.betas.resize(model_pb.betas_size());
+    model.gamma = message.gamma();
+    model.alpha = message.alpha();
+    model.betas.resize(message.betas_size());
     double beta_sum = 0;
     for (size_t i = 0; i < model.betas.size(); ++i) {
-        beta_sum += model.betas[i] = model_pb.betas(i);
+        beta_sum += model.betas[i] = message.betas(i);
     }
     model.beta0 = 1 - beta_sum;
 }
 
 inline void model_load (
         GammaPoisson & model,
-        const protobuf::GammaPoisson & model_pb)
+        const protobuf::GammaPoisson & message)
 {
-    model.alpha = model_pb.alpha();
-    model.inv_beta = model_pb.inv_beta();
+    model.alpha = message.alpha();
+    model.inv_beta = message.inv_beta();
 }
 
 inline void model_load (
         NormalInverseChiSq & model,
-        const protobuf::NormalInverseChiSq & model_pb)
+        const protobuf::NormalInverseChiSq & message)
 {
-    model.mu = model_pb.mu();
-    model.kappa = model_pb.kappa();
-    model.sigmasq = model_pb.sigmasq();
-    model.nu = model_pb.nu();
+    model.mu = message.mu();
+    model.kappa = message.kappa();
+    model.sigmasq = message.sigmasq();
+    model.nu = message.nu();
 }
 
 //----------------------------------------------------------------------------
