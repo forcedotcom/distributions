@@ -52,7 +52,9 @@ install_cy: $(install_cy_deps) FORCE
 
 install: install_cc install_cy FORCE
 
-test_cc_examples: install_cc FORCE
+install_cc_examples: install_cc FORCE
+
+test_cc_examples: install_cc_examples FORCE
 	./test_cmake.sh
 	@echo '----------------'
 	@echo 'PASSED CC EXAMPLES'
