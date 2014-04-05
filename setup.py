@@ -87,6 +87,7 @@ else:
 
 
 use_libdistributions = 'PYDISTRIBUTIONS_USE_LIB' in os.environ
+use_protobuf = 'DISTRIBUTIONS_USE_PROTOBUF' in os.environ
 
 
 def make_extension(name):
@@ -94,7 +95,9 @@ def make_extension(name):
     sources = [
         '{}.{}'.format(module.replace('.', '/'), 'pyx' if cython else 'cpp')
     ]
-    libraries = ['m', 'protobuf']
+    libraries = ['m']
+    if use_protobuf:
+        libraries.append('protobuf')
     if name.startswith('lp'):
         if use_libdistributions:
             libraries = ['distributions_shared'] + libraries
