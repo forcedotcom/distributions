@@ -61,6 +61,10 @@
 
 #define DIST_ASSERT(cond, message) { if (not (cond)) DIST_ERROR(message) }
 
+#define DIST_ASSERT_EQ(lhs, rhs) DIST_ASSERT(\
+        ((lhs) == (rhs)), \
+        "expected " #lhs " == " << rhs << ", actual " << lhs)
+
 #define DIST_ASSERT_(level, cond, message) \
     { if (DIST_DEBUG_LEVEL >= (level)) DIST_ASSERT(cond, message) }
 

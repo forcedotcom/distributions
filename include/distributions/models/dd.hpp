@@ -319,11 +319,13 @@ void classifier_score (
         rng_t &) const
 {
     DIST_ASSERT1(value < dim, "value out of bounds: " << value);
-    DIST_ASSERT2(
-        scores_accum.size() == classifier.groups.size(),
-        "expected scores_accum.size() = " << classifier.groups.size() <<
-        ", actual " << scores_accum.size());
     const size_t group_count = classifier.groups.size();
+    if (DIST_DEBUG_LEVEL >= 2) {
+        DIST_ASSERT_EQ(scores_accum.size(), group_count);
+        DIST_ASSERT_EQ(classifier.scores.size(), dim);
+        DIST_ASSERT_EQ(classifier.scores[value].size(), group_count);
+        DIST_ASSERT_EQ(classifier.scores_shift.size(), group_count);
+    }
     vector_add_subtract(
         group_count,
         scores_accum.data(),
