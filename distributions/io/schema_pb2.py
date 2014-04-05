@@ -8,9 +8,9 @@ from google.protobuf import reflection
 
 
 DESCRIPTOR = descriptor.FileDescriptor(
-  name='distributions/schema.proto',
+  name='distributions/io/schema.proto',
   package='protobuf.distributions',
-  serialized_pb='\n\x1a\x64istributions/schema.proto\x12\x16protobuf.distributions\"\xdd\x01\n\nClustering\x12@\n\npitman_yor\x18\x01 \x01(\x0b\x32,.protobuf.distributions.Clustering.PitmanYor\x12\x42\n\x0blow_entropy\x18\x02 \x01(\x0b\x32-.protobuf.distributions.Clustering.LowEntropy\x1a%\n\tPitmanYor\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\t\n\x01\x64\x18\x02 \x02(\x02\x1a\"\n\nLowEntropy\x12\x14\n\x0c\x64\x61taset_size\x18\x01 \x02(\x04\"S\n\rBetaBernoulli\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\x1a%\n\x05Group\x12\r\n\x05heads\x18\x01 \x02(\x04\x12\r\n\x05tails\x18\x02 \x02(\x04\"<\n\x11\x44irichletDiscrete\x12\x0e\n\x06\x61lphas\x18\x01 \x03(\x02\x1a\x17\n\x05Group\x12\x0e\n\x06\x63ounts\x18\x01 \x03(\x04\"n\n\x18\x44irichletProcessDiscrete\x12\r\n\x05gamma\x18\x01 \x02(\x02\x12\r\n\x05\x61lpha\x18\x02 \x02(\x02\x12\r\n\x05\x62\x65tas\x18\x03 \x03(\x02\x1a%\n\x05Group\x12\x0c\n\x04keys\x18\x01 \x03(\r\x12\x0e\n\x06values\x18\x02 \x03(\x04\"f\n\x0cGammaPoisson\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x10\n\x08inv_beta\x18\x02 \x02(\x02\x1a\x35\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0b\n\x03sum\x18\x02 \x02(\x04\x12\x10\n\x08log_prod\x18\x03 \x02(\x02\"\x90\x01\n\x12NormalInverseChiSq\x12\n\n\x02mu\x18\x01 \x02(\x02\x12\r\n\x05kappa\x18\x02 \x02(\x02\x12\x0f\n\x07sigmasq\x18\x03 \x02(\x02\x12\n\n\x02nu\x18\x04 \x02(\x02\x1a\x42\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0c\n\x04mean\x18\x02 \x02(\x02\x12\x1c\n\x14\x63ount_times_variance\x18\x03 \x02(\x02')
+  serialized_pb='\n\x1d\x64istributions/io/schema.proto\x12\x16protobuf.distributions\"\xdd\x01\n\nClustering\x12@\n\npitman_yor\x18\x01 \x01(\x0b\x32,.protobuf.distributions.Clustering.PitmanYor\x12\x42\n\x0blow_entropy\x18\x02 \x01(\x0b\x32-.protobuf.distributions.Clustering.LowEntropy\x1a%\n\tPitmanYor\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\t\n\x01\x64\x18\x02 \x02(\x02\x1a\"\n\nLowEntropy\x12\x14\n\x0c\x64\x61taset_size\x18\x01 \x02(\x04\"S\n\rBetaBernoulli\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\x1a%\n\x05Group\x12\r\n\x05heads\x18\x01 \x02(\x04\x12\r\n\x05tails\x18\x02 \x02(\x04\"<\n\x11\x44irichletDiscrete\x12\x0e\n\x06\x61lphas\x18\x01 \x03(\x02\x1a\x17\n\x05Group\x12\x0e\n\x06\x63ounts\x18\x01 \x03(\x04\"n\n\x18\x44irichletProcessDiscrete\x12\r\n\x05gamma\x18\x01 \x02(\x02\x12\r\n\x05\x61lpha\x18\x02 \x02(\x02\x12\r\n\x05\x62\x65tas\x18\x03 \x03(\x02\x1a%\n\x05Group\x12\x0c\n\x04keys\x18\x01 \x03(\r\x12\x0e\n\x06values\x18\x02 \x03(\x04\"f\n\x0cGammaPoisson\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x10\n\x08inv_beta\x18\x02 \x02(\x02\x1a\x35\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0b\n\x03sum\x18\x02 \x02(\x04\x12\x10\n\x08log_prod\x18\x03 \x02(\x02\"\x90\x01\n\x12NormalInverseChiSq\x12\n\n\x02mu\x18\x01 \x02(\x02\x12\r\n\x05kappa\x18\x02 \x02(\x02\x12\x0f\n\x07sigmasq\x18\x03 \x02(\x02\x12\n\n\x02nu\x18\x04 \x02(\x02\x1a\x42\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0c\n\x04mean\x18\x02 \x02(\x02\x12\x1c\n\x14\x63ount_times_variance\x18\x03 \x02(\x02')
 
 
 
@@ -45,8 +45,8 @@ _CLUSTERING_PITMANYOR = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=203,
-  serialized_end=240,
+  serialized_start=206,
+  serialized_end=243,
 )
 
 _CLUSTERING_LOWENTROPY = descriptor.Descriptor(
@@ -72,8 +72,8 @@ _CLUSTERING_LOWENTROPY = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=242,
-  serialized_end=276,
+  serialized_start=245,
+  serialized_end=279,
 )
 
 _CLUSTERING = descriptor.Descriptor(
@@ -106,8 +106,8 @@ _CLUSTERING = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=55,
-  serialized_end=276,
+  serialized_start=58,
+  serialized_end=279,
 )
 
 
@@ -141,8 +141,8 @@ _BETABERNOULLI_GROUP = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=324,
-  serialized_end=361,
+  serialized_start=327,
+  serialized_end=364,
 )
 
 _BETABERNOULLI = descriptor.Descriptor(
@@ -175,8 +175,8 @@ _BETABERNOULLI = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=278,
-  serialized_end=361,
+  serialized_start=281,
+  serialized_end=364,
 )
 
 
@@ -203,8 +203,8 @@ _DIRICHLETDISCRETE_GROUP = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=400,
-  serialized_end=423,
+  serialized_start=403,
+  serialized_end=426,
 )
 
 _DIRICHLETDISCRETE = descriptor.Descriptor(
@@ -230,8 +230,8 @@ _DIRICHLETDISCRETE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=363,
-  serialized_end=423,
+  serialized_start=366,
+  serialized_end=426,
 )
 
 
@@ -265,8 +265,8 @@ _DIRICHLETPROCESSDISCRETE_GROUP = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=498,
-  serialized_end=535,
+  serialized_start=501,
+  serialized_end=538,
 )
 
 _DIRICHLETPROCESSDISCRETE = descriptor.Descriptor(
@@ -306,8 +306,8 @@ _DIRICHLETPROCESSDISCRETE = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=425,
-  serialized_end=535,
+  serialized_start=428,
+  serialized_end=538,
 )
 
 
@@ -348,8 +348,8 @@ _GAMMAPOISSON_GROUP = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=586,
-  serialized_end=639,
+  serialized_start=589,
+  serialized_end=642,
 )
 
 _GAMMAPOISSON = descriptor.Descriptor(
@@ -382,8 +382,8 @@ _GAMMAPOISSON = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=537,
-  serialized_end=639,
+  serialized_start=540,
+  serialized_end=642,
 )
 
 
@@ -424,8 +424,8 @@ _NORMALINVERSECHISQ_GROUP = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=720,
-  serialized_end=786,
+  serialized_start=723,
+  serialized_end=789,
 )
 
 _NORMALINVERSECHISQ = descriptor.Descriptor(
@@ -472,8 +472,8 @@ _NORMALINVERSECHISQ = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=642,
-  serialized_end=786,
+  serialized_start=645,
+  serialized_end=789,
 )
 
 _CLUSTERING_PITMANYOR.containing_type = _CLUSTERING;

@@ -27,6 +27,7 @@
 
 from nose.tools import assert_equal
 from distributions import fileutil
+from distributions import io
 
 
 EXAMPLES = []
@@ -47,7 +48,7 @@ EXAMPLES.append([
 
 
 def costream_dump(stream, filename):
-    costream = fileutil.json_costream_dump(filename)
+    costream = io.stream.json_costream_dump(filename)
     costream.next()
     for item in stream:
         costream.send(item)
@@ -56,11 +57,11 @@ def costream_dump(stream, filename):
 
 def test_dump_load():
     valid_pairs = [
-        (fileutil.json_dump, fileutil.json_load),
-        (fileutil.json_stream_dump, fileutil.json_load),
-        (fileutil.json_stream_dump, fileutil.json_stream_load),
-        (costream_dump, fileutil.json_load),
-        (costream_dump, fileutil.json_stream_load),
+        (io.stream.json_dump, io.stream.json_load),
+        (io.stream.json_stream_dump, io.stream.json_load),
+        (io.stream.json_stream_dump, io.stream.json_stream_load),
+        (costream_dump, io.stream.json_load),
+        (costream_dump, io.stream.json_stream_load),
     ]
     for dump, load in valid_pairs:
         for filetype in ['', '.gz', '.bz2']:
@@ -88,7 +89,7 @@ def _test_protobuf_stream(filetype):
     expected = ['asdf', '', 'asdfasdfasdf', 'a', 's', '', '', '', 'd', 'f']
     with fileutil.tempdir():
         print 'dumping'
-        fileutil.protobuf_stream_dump(expected, filename)
+        io.stream.protobuf_stream_dump(expected, filename)
         print 'loading'
-        actual = list(fileutil.protobuf_stream_load(filename))
+        actual = list(io.stream.protobuf_stream_load(filename))
     assert_equal(actual, expected)

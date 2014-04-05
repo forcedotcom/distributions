@@ -30,6 +30,7 @@ all: test
 src/test_headers.cc: FORCE
 	find include \
 	  | grep '\.hpp' \
+	  | grep -v protobuf \
 	  | sort \
 	  | sed 's/include\/\(.*\)/#include <\1>/g' \
 	  > src/test_headers.cc
@@ -73,11 +74,11 @@ test: test_cc test_cc_examples test_cy FORCE
 	@echo 'PASSED ALL TESTS'
 
 protobuf: FORCE
-	protoc --cpp_out=include/ --python_out=. distributions/schema.proto
-	mv include/distributions/schema.pb.cc src/
-	@pyflakes distributions/schema_pb2.py \
+	protoc --cpp_out=include --python_out=. distributions/io/schema.proto
+	mkdir -p src/io && cp include/distributions/io/schema.pb.cc src/io/
+	@pyflakes distributions/io/schema_pb2.py \
 	  || (echo '...patching schema_pb2.py' \
-	    ; sed -i '/descriptor_pb2/d' distributions/schema_pb2.py)  # HACK
+	    ; sed -i '/descriptor_pb2/d' distributions/io/schema_pb2.py)  # HACK
 
 profile: install_cc FORCE
 	build/benchmarks/sample_from_scores

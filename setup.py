@@ -178,11 +178,12 @@ config = {
         'distributions',
         'distributions.dbg',
         'distributions.dbg.models',
-        'distributions.tests',
         'distributions.hp',
         'distributions.hp.models',
         'distributions.lp',
         'distributions.lp.models',
+        'distributions.io',
+        'distributions.tests',
     ],
     'ext_modules': ext_modules,
 }

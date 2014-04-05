@@ -35,7 +35,7 @@ matplotlib.use('Agg')
 from matplotlib import pyplot, font_manager
 import parsable
 from distributions.lp.special import fast_log
-from distributions.fileutil import json_stream_load, json_stream_dump
+from distributions.io.stream import json_stream_load, json_stream_dump
 
 
 DEFAULT_MAX_SIZE = 47
