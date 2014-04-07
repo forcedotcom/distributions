@@ -57,6 +57,8 @@ cdef extern from "distributions/models/gp.hpp" namespace "distributions":
             void merge (Model_cc &, Group &, rng_t &) nogil except +
         cppclass Sampler:
             float mean
+            void init (Model_cc &, Group &, rng_t &) nogil except +
+            Value eval (Model_cc &, rng_t &) nogil except +
         cppclass Scorer:
             float score
             float post_alpha
@@ -77,8 +79,6 @@ cdef extern from "distributions/models/gp.hpp" namespace "distributions":
             void score_value \
                 (Model_cc &, Value &, VectorFloat &, rng_t &) nogil except +
 
-        void sampler_init (Sampler &, Group &, rng_t &) nogil except +
-        Value sampler_eval (Sampler &, rng_t &) nogil except +
         Value sample_value (Group &, rng_t &) nogil except +
         float score_value (Group &, Value &, rng_t &) nogil except +
         float score_group (Group &, rng_t &) nogil except +
@@ -189,12 +189,12 @@ cdef class Model_cy:
     def sample_group(self, int size):
         cdef Group group = Group()
         cdef Model_cc.Sampler sampler
-        self.ptr.sampler_init(sampler, group.ptr[0], get_rng()[0])
+        sampler.init(self.ptr[0], group.ptr[0], get_rng()[0])
         cdef list result = []
         cdef int i
         cdef Value value
         for i in xrange(size):
-            value = self.ptr.sampler_eval(sampler, get_rng()[0])
+            value = sampler.eval(self.ptr[0], get_rng()[0])
             result.append(value)
         return result
 

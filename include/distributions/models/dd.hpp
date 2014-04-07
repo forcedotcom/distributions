@@ -106,12 +106,53 @@ struct Group
 struct Sampler
 {
     float ps[max_dim];
+
+    void init (
+            const Model & model,
+            const Group & group,
+            rng_t & rng)
+    {
+        for (Value value = 0; value < model.dim; ++value) {
+            ps[value] = model.alphas[value] + group.counts[value];
+        }
+
+        sample_dirichlet(rng, model.dim, ps, ps);
+    }
+
+    Value eval (
+            const Model & model,
+            rng_t & rng) const
+    {
+        return sample_discrete(rng, model.dim, ps);
+    }
 };
 
 struct Scorer
 {
     float alpha_sum;
     float alphas[max_dim];
+
+    void init (
+            const Model & model,
+            const Group & group,
+            rng_t &)
+    {
+        alpha_sum = 0;
+        for (Value value = 0; value < model.dim; ++value) {
+            float alpha = model.alphas[value] + group.counts[value];
+            alphas[value] = alpha;
+            alpha_sum += alpha;
+        }
+    }
+
+    float eval (
+            const Model & model,
+            const Value & value,
+            rng_t &) const
+    {
+        DIST_ASSERT1(value < model.dim, "value out of bounds: " << value);
+        return fast_log(alphas[value] / alpha_sum);
+    }
 };
 
 struct Classifier
@@ -239,61 +280,13 @@ class Fitter
     VectorFloat scores;
 };
 
-//----------------------------------------------------------------------------
-// Sampling
-
-void sampler_init (
-        Sampler & sampler,
-        const Group & group,
-        rng_t & rng) const
-{
-    for (Value value = 0; value < dim; ++value) {
-        sampler.ps[value] = alphas[value] + group.counts[value];
-    }
-
-    sample_dirichlet(rng, dim, sampler.ps, sampler.ps);
-}
-
-Value sampler_eval (
-        const Sampler & sampler,
-        rng_t & rng) const
-{
-    return sample_discrete(rng, dim, sampler.ps);
-}
-
 Value sample_value (
         const Group & group,
         rng_t & rng) const
 {
     Sampler sampler;
-    sampler_init(sampler, group, rng);
-    return sampler_eval(sampler, rng);
-}
-
-//----------------------------------------------------------------------------
-// Scoring
-
-void scorer_init (
-        Scorer & scorer,
-        const Group & group,
-        rng_t &) const
-{
-    float alpha_sum = 0;
-    for (Value value = 0; value < dim; ++value) {
-        float alpha = alphas[value] + group.counts[value];
-        scorer.alphas[value] = alpha;
-        alpha_sum += alpha;
-    }
-    scorer.alpha_sum = alpha_sum;
-}
-
-float scorer_eval (
-        const Scorer & scorer,
-        const Value & value,
-        rng_t &) const
-{
-    DIST_ASSERT1(value < dim, "value out of bounds: " << value);
-    return fast_log(scorer.alphas[value] / scorer.alpha_sum);
+    sampler.init(*this, group, rng);
+    return sampler.eval(*this, rng);
 }
 
 float score_value (
@@ -301,10 +294,9 @@ float score_value (
         const Value & value,
         rng_t & rng) const
 {
-    DIST_ASSERT1(value < dim, "value out of bounds: " << value);
     Scorer scorer;
-    scorer_init(scorer, group, rng);
-    return scorer_eval(scorer, value, rng);
+    scorer.init(*this, group, rng);
+    return scorer.eval(*this, value, rng);
 }
 
 float score_group (

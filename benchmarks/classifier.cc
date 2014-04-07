@@ -56,8 +56,8 @@ struct Scorers
         groups.resize(group_count);
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
             groups[groupid].group = classifier.groups[groupid];
-            model.scorer_init(
-                    groups[groupid].scorer,
+            groups[groupid].scorer.init(
+                    model,
                     groups[groupid].group,
                     rng);
         }
@@ -70,7 +70,7 @@ struct Scorers
     {
         const size_t group_count = groups.size();
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
-            float score = model.scorer_eval(groups[groupid].scorer, value, rng);
+            float score = groups[groupid].scorer.eval(model, value, rng);
             scores[groupid] += score;
         }
     }
@@ -126,10 +126,10 @@ void speedtest (
             size_t groupid = assignments[k];
             typename Scorers<Model>::Group & group = scorers.groups[groupid];
             group.group.remove_value(model, value, rng);
-            model.scorer_init(group.scorer, group.group, rng);
+            group.scorer.init(model, group.group, rng);
             scorers.score(model, value, scores);
             group.group.add_value(model, value, rng);
-            model.scorer_init(group.scorer, group.group, rng);
+            group.scorer.init(model, group.group, rng);
         }
     }
     time += current_time_us();
