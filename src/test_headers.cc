@@ -3,6 +3,7 @@
 #include <distributions/common.hpp>
 #include <distributions/models/dd.hpp>
 #include <distributions/models/dpd.hpp>
+#include <distributions/models_fwd.hpp>
 #include <distributions/models/gp.hpp>
 #include <distributions/models/nich.hpp>
 #include <distributions/random_fwd.hpp>
