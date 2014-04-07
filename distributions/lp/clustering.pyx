@@ -60,6 +60,10 @@ cdef extern from 'distributions/clustering.hpp':
             vector[int] counts
             int sample_size
             VectorFloat shifted_scores
+            void init (PitmanYor_cc &) nogil except +
+            bint add_value (PitmanYor_cc &, size_t) nogil except +
+            bint remove_value (PitmanYor_cc &, size_t) nogil except +
+            void score (PitmanYor_cc &, VectorFloat &) nogil except +
         float score_counts(vector[int] & counts) nogil except +
         float score_add_value (
                 int group_size,
@@ -69,10 +73,6 @@ cdef extern from 'distributions/clustering.hpp':
                 int group_size,
                 int group_count,
                 int sample_size) nogil except +
-        void mixture_init (Mixture &) nogil except +
-        bint mixture_add_value (Mixture &, size_t) nogil except +
-        bint mixture_remove_value (Mixture &, size_t) nogil except +
-        void mixture_score (Mixture &, VectorFloat &) nogil except +
 
     cppclass LowEntropy_cc "distributions::Clustering<int>::LowEntropy":
         int dataset_size
@@ -105,23 +105,6 @@ cdef dict dump_assignments(Assignments & assignments):
         assignments[deref(i).first] = deref(i).second
         inc(i)
     return raw
-
-
-cdef class PitmanYorMixture:
-    cdef PitmanYor_cc.Mixture * ptr
-    def __cinit__(self):
-        self.ptr = new PitmanYor_cc.Mixture()
-    def __dealloc__(self):
-        del self.ptr
-
-    def __len__(self):
-        return self.ptr.counts.size()
-
-    def append(self, int count):
-        self.ptr.counts.push_back(count)
-
-    def clear(self):
-        self.ptr.counts.clear()
 
 
 cdef class PitmanYor_cy:
@@ -178,27 +161,6 @@ cdef class PitmanYor_cy:
             group_count,
             sample_size)
 
-    #-------------------------------------------------------------------------
-    # Mixture
-
-    def mixture_init(self, PitmanYorMixture mixture):
-        self.ptr.mixture_init(mixture.ptr[0])
-
-    def mixture_add_value(self, PitmanYorMixture mixture, int groupid):
-        return self.ptr.mixture_add_value(mixture.ptr[0], groupid)
-
-    def mixture_remove_value(self, PitmanYorMixture mixture, int groupid):
-        return self.ptr.mixture_remove_value(mixture.ptr[0], groupid)
-
-    def mixture_score(
-            self,
-            PitmanYorMixture mixture,
-            numpy.ndarray[numpy.float32_t, ndim=1] scores):
-        cdef VectorFloat scores_cc
-        scores_cc.resize(len(mixture))
-        self.ptr.mixture_score(mixture.ptr[0], scores_cc)
-        vector_float_to_ndarray(scores_cc, scores)
-
 
     #-------------------------------------------------------------------------
     # Examples
@@ -210,6 +172,41 @@ cdef class PitmanYor_cy:
         {'alpha': 10., 'd': 0.1},
         {'alpha': 0.1, 'd': 0.1},
     ]
+
+
+cdef class PitmanYorMixture:
+    cdef PitmanYor_cc.Mixture * ptr
+    def __cinit__(self):
+        self.ptr = new PitmanYor_cc.Mixture()
+    def __dealloc__(self):
+        del self.ptr
+
+    def __len__(self):
+        return self.ptr.counts.size()
+
+    def append(self, int count):
+        self.ptr.counts.push_back(count)
+
+    def clear(self):
+        self.ptr.counts.clear()
+
+    def init(self, PitmanYor_cy model):
+        self.ptr.init(model.ptr[0])
+
+    def add_value(self, PitmanYor_cy model, int groupid):
+        return self.ptr.add_value(model.ptr[0], groupid)
+
+    def remove_value(self, PitmanYor_cy model, int groupid):
+        return self.ptr.remove_value(model.ptr[0], groupid)
+
+    def score(
+            self,
+            PitmanYor_cy model,
+            numpy.ndarray[numpy.float32_t, ndim=1] scores):
+        cdef VectorFloat scores_cc
+        scores_cc.resize(self.ptr.counts.size())
+        self.ptr.score(model.ptr[0], scores_cc)
+        vector_float_to_ndarray(scores_cc, scores)
 
 
 class PitmanYor(PitmanYor_cy, Serializable):

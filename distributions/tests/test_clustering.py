@@ -167,9 +167,9 @@ def test_mixture(Model, EXAMPLE):
     mixture = Model.Mixture()
     for count in counts:
         mixture.append(count)
-    model.mixture_init(mixture)
+    mixture.init(model)
     actual = numpy.zeros(len(counts), dtype=numpy.float32)
-    model.mixture_score(mixture, actual)
+    mixture.score(model, actual)
 
     print 'counts =', counts
     assert_close(actual, expected)
