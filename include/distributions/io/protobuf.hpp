@@ -126,6 +126,21 @@ inline void model_load (
 // Groups
 
 template<int max_dim>
+inline void group_load (
+        const DirichletDiscrete<max_dim> & model,
+        typename DirichletDiscrete<max_dim>::Group & group,
+        const protobuf::DirichletDiscrete::Group & message)
+{
+    DIST_ASSERT1(
+        message.counts_size() == model.dim,
+        "bad group message dim: " << message.counts_size());
+    group.counts_sum = 0;
+    for (size_t i = 0; i < model.dim; ++i) {
+        group.counts_sum += group.counts[i] = message.counts(i);
+    }
+}
+
+template<int max_dim>
 inline void group_dump (
         const DirichletDiscrete<max_dim> & model,
         const typename DirichletDiscrete<max_dim>::Group & group,
@@ -135,6 +150,23 @@ inline void group_dump (
     auto & counts = * message.mutable_counts();
     for (size_t i = 0; i < model.dim; ++i) {
         counts.Add(group.counts[i]);
+    }
+}
+
+inline void group_load (
+        const DirichletProcessDiscrete &,
+        DirichletProcessDiscrete::Group & group,
+        const protobuf::DirichletProcessDiscrete::Group & message)
+{
+    DIST_ASSERT1(
+        message.keys_size() == message.values_size(),
+        "message keys_size != vals_size");
+    group.counts.clear();
+    for (size_t i = 0, size = message.keys_size(); i < size; ++i) {
+        group.counts.insert(
+            decltype(group.counts)::value_type(
+                message.keys(i),
+                message.values(i)));
     }
 }
 
@@ -152,6 +184,16 @@ inline void group_dump (
     }
 }
 
+inline void group_load (
+        const GammaPoisson &,
+        GammaPoisson::Group & group,
+        const protobuf::GammaPoisson::Group & message)
+{
+    group.count = message.count();
+    group.sum = message.sum();
+    group.log_prod = message.log_prod();
+}
+
 inline void group_dump (
         const GammaPoisson &,
         const GammaPoisson::Group & group,
@@ -160,6 +202,16 @@ inline void group_dump (
     message.set_count(group.count);
     message.set_sum(group.sum);
     message.set_log_prod(group.log_prod);
+}
+
+inline void group_load (
+        const NormalInverseChiSq &,
+        NormalInverseChiSq::Group & group,
+        const protobuf::NormalInverseChiSq::Group & message)
+{
+    group.count = message.count();
+    group.mean = message.mean();
+    group.count_times_variance = message.count_times_variance();
 }
 
 inline void group_dump (
