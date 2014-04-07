@@ -63,7 +63,7 @@ public:
             raw_ = new google::protobuf::io::IstreamInputStream(& std::cin);
         } else {
             fid_ = open(filename, O_RDONLY | O_NOATIME);
-            DIST_ASSERT(fid_ != -1, "failed to open values file");
+            DIST_ASSERT(fid_ != -1, "failed to open input file " << filename);
             raw_ = new google::protobuf::io::FileInputStream(fid_);
         }
 
@@ -129,7 +129,7 @@ public:
             raw_ = new google::protobuf::io::OstreamOutputStream(& std::cout);
         } else {
             fid_ = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0664);
-            DIST_ASSERT(fid_ != -1, "failed to open file " << filename_);
+            DIST_ASSERT(fid_ != -1, "failed to open output file " << filename);
             raw_ = new google::protobuf::io::FileOutputStream(fid_);
         }
 
@@ -157,8 +157,7 @@ public:
     {
         DIST_ASSERT1(message.IsInitialized(), "message not initialized");
         message.ByteSize();
-        bool success = message.SerializeWithCachedSizes(coded_);
-        DIST_ASSERT(success, "failed to serialize message to " << filename_);
+        message.SerializeWithCachedSizes(coded_);
     }
 
     template<class Message>
