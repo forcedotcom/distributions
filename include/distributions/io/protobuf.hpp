@@ -134,9 +134,9 @@ inline void group_load (
     DIST_ASSERT1(
         message.counts_size() == model.dim,
         "bad group message dim: " << message.counts_size());
-    group.counts_sum = 0;
+    group.count_sum = 0;
     for (size_t i = 0; i < model.dim; ++i) {
-        group.counts_sum += group.counts[i] = message.counts(i);
+        group.count_sum += group.counts[i] = message.counts(i);
     }
 }
 
