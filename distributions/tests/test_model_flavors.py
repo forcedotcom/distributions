@@ -71,7 +71,7 @@ def _test_group(name):
 
         for value in values:
             for model, group in models_groups:
-                model.group_add_value(group, value)
+                group.add_value(model, value)
             dumped = [g.dump() for g in groups]
             assert_all_close(dumped, err_msg='group_dump')
 
@@ -90,7 +90,7 @@ def _test_group(name):
 
         for model, group in models_groups:
             dumped = group.dump()
-            model.group_init(group)
+            group.init(model)
             group.load(dumped)
 
         scores = [model.score_group(group) for model, group in models_groups]

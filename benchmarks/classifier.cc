@@ -88,17 +88,17 @@ void speedtest (
     std::vector<size_t> assignments;
     for (size_t groupid = 0; groupid < group_count; ++groupid) {
         typename Model::Group & group = classifier.groups[groupid];
-        model.group_init(group, rng);
+        group.init(model, rng);
     }
     for (size_t i = 0; i < 4 * group_count; ++i) {
         size_t groupid = sample_int(rng, 0, group_count - 1);
         typename Model::Group & group = classifier.groups[groupid];
         typename Model::Value value = model.sample_value(group, rng);
-        model.group_add_value(group, value, rng);
+        group.add_value(model, value, rng);
         values.push_back(value);
         assignments.push_back(groupid);
     }
-    model.classifier_init(classifier, rng);
+    classifier.init(model, rng);
     Scorers<Model> scorers(model, classifier);
     VectorFloat scores(group_count);
 
@@ -109,9 +109,9 @@ void speedtest (
             size_t k = (8 * i + j) % values.size();
             typename Model::Value value = values[k];
             size_t groupid = assignments[k];
-            model.classifier_remove_value(classifier, groupid, value, rng);
-            model.classifier_score(classifier, value, scores, rng);
-            model.classifier_add_value(classifier, groupid, value, rng);
+            classifier.remove_value(model, groupid, value, rng);
+            classifier.score_value(model, value, scores, rng);
+            classifier.add_value(model, groupid, value, rng);
         }
     }
     time += current_time_us();
@@ -125,10 +125,10 @@ void speedtest (
             typename Model::Value value = values[k];
             size_t groupid = assignments[k];
             typename Scorers<Model>::Group & group = scorers.groups[groupid];
-            model.group_remove_value(group.group, value, rng);
+            group.group.remove_value(model, value, rng);
             model.scorer_init(group.scorer, group.group, rng);
             scorers.score(model, value, scores);
-            model.group_add_value(group.group, value, rng);
+            group.group.add_value(model, value, rng);
             model.scorer_init(group.scorer, group.group, rng);
         }
     }
@@ -164,9 +164,8 @@ int main()
 
     speedtests(DirichletDiscrete<4>::EXAMPLE());
     speedtests(DirichletProcessDiscrete::EXAMPLE());
-    speedtests(NormalInverseChiSq::EXAMPLE());
     speedtests(GammaPoisson::EXAMPLE());
+    speedtests(NormalInverseChiSq::EXAMPLE());
 
     return 0;
 }
-

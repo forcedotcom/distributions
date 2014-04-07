@@ -39,6 +39,7 @@ namespace distributions
 
 struct DirichletProcessDiscrete
 {
+typedef DirichletProcessDiscrete Model;
 
 static const char * name () { return "DirichletProcessDiscrete"; }
 static const char * short_name () { return "dpd"; }
@@ -63,6 +64,37 @@ static constexpr Value OTHER () { return -1; }
 struct Group
 {
     SparseCounter<Value, count_t> counts;  // sparse
+
+    void init (
+            const Model &,
+            rng_t &)
+    {
+        counts.clear();
+    }
+
+    void add_value (
+            const Model &,
+            const Value & value,
+            rng_t &)
+    {
+       counts.add(value);
+    }
+
+    void remove_value (
+            const Model &,
+            const Value & value,
+            rng_t &)
+    {
+       counts.remove(value);
+    }
+
+    void merge (
+            const Model &,
+            const Group & source,
+            rng_t &)
+    {
+        counts.merge(source.counts);
+    }
 };
 
 struct Sampler
@@ -80,41 +112,116 @@ struct Classifier
     std::vector<Group> groups;
     std::vector<VectorFloat> scores;  // dense
     VectorFloat scores_shift;
+
+    void init (
+            const Model & model,
+            rng_t &)
+    {
+        const Value dim = model.betas.size();
+        const size_t group_count = groups.size();
+        scores_shift.resize(group_count);
+        scores.resize(dim);
+        for (Value value = 0; value < dim; ++value) {
+            scores[value].resize(group_count);
+        }
+        for (size_t groupid = 0; groupid < group_count; ++groupid) {
+            const Group & group = groups[groupid];
+            for (Value value = 0; value < dim; ++value) {
+                scores[value][groupid] =
+                    model.alpha * model.betas[value] + group.counts.get_count(value);
+            }
+            scores_shift[groupid] = model.alpha + group.counts.get_total();
+        }
+        vector_log(group_count, scores_shift.data());
+        for (Value value = 0; value < dim; ++value) {
+            vector_log(group_count, scores[value].data());
+        }
+    }
+
+    void add_group (
+            const Model & model,
+            rng_t & rng)
+    {
+        const Value dim = model.betas.size();
+        const size_t group_count = groups.size() + 1;
+        groups.resize(group_count);
+        groups.back().init(model, rng);
+        scores_shift.resize(group_count, 0);
+        for (Value value = 0; value < dim; ++value) {
+            scores[value].resize(group_count, 0);
+        }
+    }
+
+    void remove_group (
+            const Model & model,
+            size_t groupid)
+    {
+        const Value dim = model.betas.size();
+        const size_t group_count = groups.size() - 1;
+        if (groupid != group_count) {
+            std::swap(groups[groupid], groups.back());
+            scores_shift[groupid] = scores_shift.back();
+            for (Value value = 0; value < dim; ++value) {
+                VectorFloat & vscores = scores[value];
+                vscores[groupid] = vscores.back();
+            }
+        }
+        groups.resize(group_count);
+        scores_shift.resize(group_count);
+        for (Value value = 0; value < dim; ++value) {
+            scores[value].resize(group_count);
+        }
+    }
+
+    void add_value (
+            const Model & model,
+            size_t groupid,
+            const Value & value,
+            rng_t &)
+    {
+        DIST_ASSERT1(groupid < groups.size(), "groupid out of bounds");
+        DIST_ASSERT1(value < model.betas.size(), "value out of bounds");
+        Group & group = groups[groupid];
+        count_t count = group.counts.add(value);
+        count_t count_sum = group.counts.get_total();
+        scores[value][groupid] = fast_log(model.alpha * model.betas[value] + count);
+        scores_shift[groupid] = fast_log(model.alpha + count_sum);
+    }
+
+    void remove_value (
+            const Model & model,
+            size_t groupid,
+            const Value & value,
+            rng_t &)
+    {
+        DIST_ASSERT1(groupid < groups.size(), "groupid out of bounds");
+        DIST_ASSERT1(value < model.betas.size(), "value out of bounds");
+        Group & group = groups[groupid];
+        count_t count = group.counts.remove(value);
+        count_t count_sum = group.counts.get_total();
+        scores[value][groupid] = fast_log(model.alpha * model.betas[value] + count);
+        scores_shift[groupid] = fast_log(model.alpha + count_sum);
+    }
+
+    void score_value (
+            const Model & model,
+            const Value & value,
+            VectorFloat & scores_accum,
+            rng_t &) const
+    {
+        DIST_ASSERT1(value < model.betas.size(), "value out of bounds");
+        const size_t group_count = groups.size();
+        vector_add_subtract(
+            group_count,
+            scores_accum.data(),
+            scores[value].data(),
+            scores_shift.data());
+    }
 };
 
 //----------------------------------------------------------------------------
 // Mutation
 
-void group_init (
-        Group & group,
-        rng_t &) const
-{
-    group.counts.clear();
-}
-
-void group_add_value (
-        Group & group,
-        const Value & value,
-        rng_t &) const
-{
-   group.counts.add(value);
-}
-
-void group_remove_value (
-        Group & group,
-        const Value & value,
-        rng_t &) const
-{
-   group.counts.remove(value);
-}
-
-void group_merge (
-        Group & destin,
-        const Group & source,
-        rng_t &) const
-{
-    destin.counts.merge(source.counts);
-}
 
 //----------------------------------------------------------------------------
 // Sampling
@@ -228,110 +335,6 @@ float score_group (
 //----------------------------------------------------------------------------
 // Classification
 
-void classifier_init (
-        Classifier & classifier,
-        rng_t &) const
-{
-    const Value dim = betas.size();
-    const size_t group_count = classifier.groups.size();
-    classifier.scores_shift.resize(group_count);
-    classifier.scores.resize(dim);
-    for (Value value = 0; value < dim; ++value) {
-        classifier.scores[value].resize(group_count);
-    }
-    for (size_t groupid = 0; groupid < group_count; ++groupid) {
-        const Group & group = classifier.groups[groupid];
-        for (Value value = 0; value < dim; ++value) {
-            classifier.scores[value][groupid] =
-                alpha * betas[value] + group.counts.get_count(value);
-        }
-        classifier.scores_shift[groupid] = alpha + group.counts.get_total();
-    }
-    vector_log(group_count, classifier.scores_shift.data());
-    for (Value value = 0; value < dim; ++value) {
-        vector_log(group_count, classifier.scores[value].data());
-    }
-}
-
-void classifier_add_group (
-        Classifier & classifier,
-        rng_t & rng) const
-{
-    const Value dim = betas.size();
-    const size_t group_count = classifier.groups.size() + 1;
-    classifier.groups.resize(group_count);
-    group_init(classifier.groups.back(), rng);
-    classifier.scores_shift.resize(group_count, 0);
-    for (Value value = 0; value < dim; ++value) {
-        classifier.scores[value].resize(group_count, 0);
-    }
-}
-
-void classifier_remove_group (
-        Classifier & classifier,
-        size_t groupid) const
-{
-    const Value dim = betas.size();
-    const size_t group_count = classifier.groups.size() - 1;
-    if (groupid != group_count) {
-        std::swap(classifier.groups[groupid], classifier.groups.back());
-        classifier.scores_shift[groupid] = classifier.scores_shift.back();
-        for (Value value = 0; value < dim; ++value) {
-            VectorFloat & scores = classifier.scores[value];
-            scores[groupid] = scores.back();
-        }
-    }
-    classifier.groups.resize(group_count);
-    classifier.scores_shift.resize(group_count);
-    for (Value value = 0; value < dim; ++value) {
-        classifier.scores[value].resize(group_count);
-    }
-}
-
-void classifier_add_value (
-        Classifier & classifier,
-        size_t groupid,
-        const Value & value,
-        rng_t &) const
-{
-    DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
-    DIST_ASSERT1(value < betas.size(), "value out of bounds");
-    Group & group = classifier.groups[groupid];
-    count_t count = group.counts.add(value);
-    count_t count_sum = group.counts.get_total();
-    classifier.scores[value][groupid] = fast_log(alpha * betas[value] + count);
-    classifier.scores_shift[groupid] = fast_log(alpha + count_sum);
-}
-
-void classifier_remove_value (
-        Classifier & classifier,
-        size_t groupid,
-        const Value & value,
-        rng_t &) const
-{
-    DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
-    DIST_ASSERT1(value < betas.size(), "value out of bounds");
-    Group & group = classifier.groups[groupid];
-    count_t count = group.counts.remove(value);
-    count_t count_sum = group.counts.get_total();
-    classifier.scores[value][groupid] = fast_log(alpha * betas[value] + count);
-    classifier.scores_shift[groupid] = fast_log(alpha + count_sum);
-}
-
-void classifier_score (
-        const Classifier & classifier,
-        const Value & value,
-        VectorFloat & scores_accum,
-        rng_t &) const
-{
-    DIST_ASSERT1(value < betas.size(), "value out of bounds");
-    const size_t group_count = classifier.groups.size();
-    vector_add_subtract(
-        group_count,
-        scores_accum.data(),
-        classifier.scores[value].data(),
-        classifier.scores_shift.data());
-}
 
 //----------------------------------------------------------------------------
 // Examples

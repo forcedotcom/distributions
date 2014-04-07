@@ -68,20 +68,17 @@ class DirichletDiscrete(ComponentModel, Serializable):
         def dump(self):
             return {'counts': self.counts.tolist()}
 
-    #-------------------------------------------------------------------------
-    # Mutation
+        def init(self, model):
+            self.counts = numpy.zeros(model.dim, dtype=numpy.int)
 
-    def group_init(self, group):
-        group.counts = numpy.zeros(self.dim, dtype=numpy.int)
+        def add_value(self, model, value):
+            self.counts[value] += 1
 
-    def group_add_value(self, group, value):
-        group.counts[value] += 1
+        def remove_value(self, model, value):
+            self.counts[value] -= 1
 
-    def group_remove_value(self, group, value):
-        group.counts[value] -= 1
-
-    def group_merge(self, destin, source):
-        destin.counts += source.counts
+        def merge(self, model, source):
+            self.counts += source.counts
 
     #-------------------------------------------------------------------------
     # Sampling

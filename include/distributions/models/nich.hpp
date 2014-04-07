@@ -37,6 +37,7 @@ namespace distributions
 
 struct NormalInverseChiSq
 {
+typedef NormalInverseChiSq Model;
 
 static const char * name () { return "NormalInverseChiSq"; }
 static const char * short_name () { return "nich"; }
@@ -52,8 +53,6 @@ float nu;
 //----------------------------------------------------------------------------
 // Datatypes
 
-typedef NormalInverseChiSq Model;
-
 typedef float Value;
 
 struct Group
@@ -61,6 +60,63 @@ struct Group
     uint32_t count;
     float mean;
     float count_times_variance;
+
+    void init (
+            const Model &,
+            rng_t &)
+    {
+        count = 0;
+        mean = 0.f;
+        count_times_variance = 0.f;
+    }
+
+    void add_value (
+            const Model &,
+            const Value & value,
+            rng_t &)
+    {
+        ++count;
+        float delta = value - mean;
+        mean += delta / count;
+        count_times_variance += delta * (value - mean);
+    }
+
+    void remove_value (
+            const Model &,
+            const Value & value,
+            rng_t &)
+    {
+        float total = mean * count;
+        float delta = value - mean;
+        DIST_ASSERT(count > 0, "Can't remove empty group");
+
+        --count;
+        if (count == 0) {
+            mean = 0.f;
+        } else {
+            mean = (total - value) / count;
+        }
+        if (count <= 1) {
+            count_times_variance = 0.f;
+        } else {
+            count_times_variance -= delta * (value - mean);
+        }
+    }
+
+    void merge (
+            const Model &,
+            const Group & source,
+            rng_t &)
+    {
+        uint32_t total_count = count + source.count;
+        float delta = source.mean - mean;
+        float source_part = float(source.count) / total_count;
+        float cross_part = count * source_part;
+        count = total_count;
+        mean += source_part * delta;
+        count_times_variance +=
+            source.count_times_variance + cross_part * sqr(delta);
+    }
 };
 
 struct Sampler
@@ -85,67 +141,108 @@ struct Classifier
     VectorFloat precision;
     VectorFloat mean;
     mutable VectorFloat temp;
+
+    private:
+
+    void _update_group (
+            const Model & model,
+            size_t groupid,
+            rng_t & rng)
+    {
+        const Group & group = groups[groupid];
+        Scorer scorer;
+        model.scorer_init(scorer, group, rng);
+        score[groupid] = scorer.score;
+        log_coeff[groupid] = scorer.log_coeff;
+        precision[groupid] = scorer.precision;
+        mean[groupid] = scorer.mean;
+    }
+
+    void _resize (
+            const Model & model,
+            size_t group_count)
+    {
+        groups.resize(group_count);
+        VectorFloat_resize(score, group_count);
+        VectorFloat_resize(log_coeff, group_count);
+        VectorFloat_resize(precision, group_count);
+        VectorFloat_resize(mean, group_count);
+        VectorFloat_resize(temp, group_count);
+    }
+
+    public:
+
+    void init (
+            const Model & model,
+            rng_t & rng)
+    {
+        const size_t group_count = groups.size();
+        _resize(model, group_count);
+        for (size_t groupid = 0; groupid < group_count; ++groupid) {
+            _update_group(model, groupid, rng);
+        }
+    }
+
+    void add_group (
+            const Model & model,
+            rng_t & rng)
+    {
+        const size_t groupid = groups.size();
+        const size_t group_count = groupid + 1;
+        _resize(model, group_count);
+        groups.back().init(model, rng);
+        _update_group(model, groupid, rng);
+    }
+
+    void remove_group (
+            const Model & model,
+            size_t groupid)
+    {
+        const size_t group_count = groups.size() - 1;
+        if (groupid != group_count) {
+            std::swap(groups[groupid], groups.back());
+            score[groupid] = score.back();
+            log_coeff[groupid] = log_coeff.back();
+            precision[groupid] = precision.back();
+            mean[groupid] = mean.back();
+        }
+        _resize(model, group_count);
+    }
+
+    void add_value (
+            const Model & model,
+            size_t groupid,
+            const Value & value,
+            rng_t & rng)
+    {
+        DIST_ASSERT1(groupid < groups.size(), "groupid out of bounds");
+        Group & group = groups[groupid];
+        group.add_value(model, value, rng);
+        _update_group(model, groupid, rng);
+    }
+
+    void remove_value (
+            const Model & model,
+            size_t groupid,
+            const Value & value,
+            rng_t & rng)
+    {
+        DIST_ASSERT1(groupid < groups.size(), "groupid out of bounds");
+        Group & group = groups[groupid];
+        group.remove_value(model, value, rng);
+        _update_group(model, groupid, rng);
+    }
+
+    void score_value (
+            const Model & model,
+            const Value & value,
+            VectorFloat & scores_accum,
+            rng_t &) const;
 };
 
 //----------------------------------------------------------------------------
 // Mutation
 
-void group_init (
-        Group & group,
-        rng_t &) const
-{
-    group.count = 0;
-    group.mean = 0.f;
-    group.count_times_variance = 0.f;
-}
-
-void group_add_value (
-        Group & group,
-        const Value & value,
-        rng_t &) const
-{
-    ++group.count;
-    float delta = value - group.mean;
-    group.mean += delta / group.count;
-    group.count_times_variance += delta * (value - group.mean);
-}
-
-void group_remove_value (
-        Group & group,
-        const Value & value,
-        rng_t &) const
-{
-    float total = group.mean * group.count;
-    float delta = value - group.mean;
-    DIST_ASSERT(group.count > 0, "Can't remove empty group");
-
-    --group.count;
-    if (group.count == 0) {
-        group.mean = 0.f;
-    } else {
-        group.mean = (total - value) / group.count;
-    }
-    if (group.count <= 1) {
-        group.count_times_variance = 0.f;
-    } else {
-        group.count_times_variance -= delta * (value - group.mean);
-    }
-}
-
-void group_merge (
-        Group & destin,
-        const Group & source,
-        rng_t &) const
-{
-    uint32_t count = destin.count + source.count;
-    float delta = source.mean - destin.mean;
-    float source_part = float(source.count) / count;
-    float cross_part = destin.count * source_part;
-    destin.count = count;
-    destin.mean += source_part * delta;
-    destin.count_times_variance +=
-        source.count_times_variance + cross_part * sqr(delta);
-}
 
 Model plus_group (const Group & group) const
 {
@@ -244,102 +341,6 @@ float score_group (
 //----------------------------------------------------------------------------
 // Classification
 
-private:
-
-void _classifier_update_group (
-        Classifier & classifier,
-        size_t groupid,
-        rng_t & rng) const
-{
-    const Group & group = classifier.groups[groupid];
-    Scorer scorer;
-    scorer_init(scorer, group, rng);
-    classifier.score[groupid] = scorer.score;
-    classifier.log_coeff[groupid] = scorer.log_coeff;
-    classifier.precision[groupid] = scorer.precision;
-    classifier.mean[groupid] = scorer.mean;
-}
-
-void _classifier_resize (
-        Classifier & classifier,
-        size_t group_count) const
-{
-    classifier.groups.resize(group_count);
-    VectorFloat_resize(classifier.score, group_count);
-    VectorFloat_resize(classifier.log_coeff, group_count);
-    VectorFloat_resize(classifier.precision, group_count);
-    VectorFloat_resize(classifier.mean, group_count);
-    VectorFloat_resize(classifier.temp, group_count);
-}
-
-public:
-
-void classifier_init (
-        Classifier & classifier,
-        rng_t & rng) const
-{
-    const size_t group_count = classifier.groups.size();
-    _classifier_resize(classifier, group_count);
-    for (size_t groupid = 0; groupid < group_count; ++groupid) {
-        _classifier_update_group(classifier, groupid, rng);
-    }
-}
-
-void classifier_add_group (
-        Classifier & classifier,
-        rng_t & rng) const
-{
-    const size_t groupid = classifier.groups.size();
-    const size_t group_count = groupid + 1;
-    _classifier_resize(classifier, group_count);
-    group_init(classifier.groups.back(), rng);
-    _classifier_update_group(classifier, groupid, rng);
-}
-
-void classifier_remove_group (
-        Classifier & classifier,
-        size_t groupid) const
-{
-    const size_t group_count = classifier.groups.size() - 1;
-    if (groupid != group_count) {
-        std::swap(classifier.groups[groupid], classifier.groups.back());
-        classifier.score[groupid] = classifier.score.back();
-        classifier.log_coeff[groupid] = classifier.log_coeff.back();
-        classifier.precision[groupid] = classifier.precision.back();
-        classifier.mean[groupid] = classifier.mean.back();
-    }
-    _classifier_resize(classifier, group_count);
-}
-
-void classifier_add_value (
-        Classifier & classifier,
-        size_t groupid,
-        const Value & value,
-        rng_t & rng) const
-{
-    DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
-    Group & group = classifier.groups[groupid];
-    group_add_value(group, value, rng);
-    _classifier_update_group(classifier, groupid, rng);
-}
-
-void classifier_remove_value (
-        Classifier & classifier,
-        size_t groupid,
-        const Value & value,
-        rng_t & rng) const
-{
-    DIST_ASSERT1(groupid < classifier.groups.size(), "groupid out of bounds");
-    Group & group = classifier.groups[groupid];
-    group_remove_value(group, value, rng);
-    _classifier_update_group(classifier, groupid, rng);
-}
-
-void classifier_score (
-        const Classifier & classifier,
-        const Value & value,
-        VectorFloat & scores_accum,
-        rng_t &) const;
 
 //----------------------------------------------------------------------------
 // Examples

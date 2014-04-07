@@ -117,22 +117,22 @@ def test_interface(Model, EXAMPLE):
         assert_is_instance(value, Model.Value)
 
     group1 = model.Group()
-    model.group_init(group1)
+    group1.init(model)
     for value in values:
-        model.group_add_value(group1, value)
+        group1.add_value(model, value)
     group2 = model.group_create(values)
     assert_close(group1.dump(), group2.dump())
 
     group = model.group_create(values)
     dumped = group.dump()
-    model.group_init(group)
+    group.init(model)
     group.load(dumped)
     assert_close(group.dump(), dumped)
 
     for value in values:
-        model.group_remove_value(group2, value)
+        group2.remove_value(model, value)
     assert_not_equal(group1, group2)
-    model.group_merge(group2, group1)
+    group2.merge(model, group1)
 
     for value in values:
         model.score_value(group1, value)
@@ -165,7 +165,7 @@ def test_add_remove(Model, EXAMPLE):
         value = model.sample_value(group)
         values.append(value)
         score += model.score_value(group, value)
-        model.group_add_value(group, value)
+        group.add_value(model, value)
 
     group_all = model.group_load(model.group_dump(group))
     assert_close(
@@ -176,7 +176,7 @@ def test_add_remove(Model, EXAMPLE):
     random.shuffle(values)
 
     for value in values:
-        model.group_remove_value(group, value)
+        group.remove_value(model, value)
 
     group_empty = model.group_create()
     assert_close(
@@ -186,7 +186,7 @@ def test_add_remove(Model, EXAMPLE):
 
     random.shuffle(values)
     for value in values:
-        model.group_add_value(group, value)
+        group.add_value(model, value)
     assert_close(
         group.dump(),
         group_all.dump(),
@@ -205,7 +205,7 @@ def test_add_merge(Model, EXAMPLE):
         random.shuffle(values)
         group1 = model.group_create(values[:i])
         group2 = model.group_create(values[i:])
-        model.group_merge(group1, group2)
+        group1.merge(model, group2)
         assert_close(group.dump(), group1.dump())
 
 
@@ -218,15 +218,15 @@ def test_group_merge(Model, EXAMPLE):
     actual = model.group_create()
     for _ in xrange(100):
         value = model.sample_value(expected)
-        model.group_add_value(expected, value)
-        model.group_add_value(group1, value)
+        expected.add_value(model, value)
+        group1.add_value(model, value)
 
         value = model.sample_value(expected)
-        model.group_add_value(expected, value)
-        model.group_add_value(group2, value)
+        expected.add_value(model, value)
+        group2.add_value(model, value)
 
         actual.load(group1.dump())
-        model.group_merge(actual, group2)
+        actual.merge(model, group2)
         assert_close(actual.dump(), expected.dump())
 
 
@@ -315,34 +315,34 @@ def test_classifier_runs(Model, EXAMPLE):
     classifier = Model.Classifier()
     for value in values:
         classifier.append(model.group_create([value]))
-    model.classifier_init(classifier)
+    classifier.init(model)
 
     groupids = []
     for value in values:
         scores = numpy.zeros(len(classifier), dtype=numpy.float32)
-        model.classifier_score(classifier, value, scores)
+        classifier.score_value(model, value, scores)
         probs = scores_to_probs(scores)
         groupid = sample_discrete(probs)
-        model.classifier_add_value(classifier, groupid, value)
+        classifier.add_value(model, groupid, value)
         groupids.append(groupid)
 
-    model.classifier_add_group(classifier)
+    classifier.add_group(model)
     assert len(classifier) == len(values) + 1
     scores = numpy.zeros(len(classifier), dtype=numpy.float32)
 
     for value, groupid in zip(values, groupids):
-        model.classifier_remove_value(classifier, groupid, value)
+        classifier.remove_value(model, groupid, value)
 
-    model.classifier_remove_group(classifier, 0)
-    model.classifier_remove_group(classifier, len(classifier) - 1)
+    classifier.remove_group(model, 0)
+    classifier.remove_group(model, len(classifier) - 1)
     assert len(classifier) == len(values) - 1
 
     for value in values:
         scores = numpy.zeros(len(classifier), dtype=numpy.float32)
-        model.classifier_score(classifier, value, scores)
+        classifier.score_value(model, value, scores)
         probs = scores_to_probs(scores)
         groupid = sample_discrete(probs)
-        model.classifier_add_value(classifier, groupid, value)
+        classifier.add_value(model, groupid, value)
 
 
 @for_each_model(lambda Model: hasattr(Model, 'Classifier'))
@@ -354,12 +354,12 @@ def test_classifier_score(Model, EXAMPLE):
     classifier = Model.Classifier()
     for group in groups:
         classifier.append(group)
-    model.classifier_init(classifier)
+    classifier.init(model)
 
     def check_scores():
         expected = [model.score_value(group, value) for group in groups]
         actual = numpy.zeros(len(classifier), dtype=numpy.float32)
-        model.classifier_score(classifier, value, actual)
+        classifier.score_value(model, value, actual)
         assert_close(actual, expected, err_msg='scores')
         return actual
 
@@ -373,12 +373,12 @@ def test_classifier_score(Model, EXAMPLE):
         scores = check_scores()
         probs = scores_to_probs(scores)
         groupid = sample_discrete(probs)
-        model.group_add_value(groups[groupid], value)
-        model.classifier_add_value(classifier, groupid, value)
+        groups[groupid].add_value(model, value)
+        classifier.add_value(model, groupid, value)
         groupids.append(groupid)
 
     print 'removing'
     for value, groupid in zip(values, groupids):
-        model.group_remove_value(groups[groupid], value)
-        model.classifier_remove_value(classifier, groupid, value)
+        groups[groupid].remove_value(model, value)
+        classifier.remove_value(model, groupid, value)
         scores = check_scores()

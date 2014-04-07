@@ -116,42 +116,42 @@ class NormalInverseChiSq(ComponentModel, Serializable):
                 'count_times_variance': self.count_times_variance,
             }
 
+        def init(self, model):
+            self.count = 0
+            self.mean = 0.
+            self.count_times_variance = 0.
+
+        def add_value(self, model, value):
+            self.count += 1
+            delta = value - self.mean
+            self.mean += delta / self.count
+            self.count_times_variance += delta * (value - self.mean)
+
+        def remove_value(self, model, value):
+            total = self.mean * self.count
+            delta = value - self.mean
+            self.count -= 1
+            if self.count == 0:
+                self.mean = 0.
+            else:
+                self.mean = (total - value) / self.count
+            if self.count <= 1:
+                self.count_times_variance = 0.
+            else:
+                self.count_times_variance -= delta * (value - self.mean)
+
+        def merge(self, model, source):
+            count = self.count + source.count
+            delta = source.mean - self.mean
+            source_part = float(source.count) / count
+            cross_part = self.count * source_part
+            self.count = count
+            self.mean += source_part * delta
+            self.count_times_variance += \
+                source.count_times_variance + cross_part * delta * delta
+
     #-------------------------------------------------------------------------
     # Mutation
-
-    def group_init(self, group):
-        group.count = 0
-        group.mean = 0.
-        group.count_times_variance = 0.
-
-    def group_add_value(self, group, value):
-        group.count += 1
-        delta = value - group.mean
-        group.mean += delta / group.count
-        group.count_times_variance += delta * (value - group.mean)
-
-    def group_remove_value(self, group, value):
-        total = group.mean * group.count
-        delta = value - group.mean
-        group.count -= 1
-        if group.count == 0:
-            group.mean = 0.
-        else:
-            group.mean = (total - value) / group.count
-        if group.count <= 1:
-            group.count_times_variance = 0.
-        else:
-            group.count_times_variance -= delta * (value - group.mean)
-
-    def group_merge(self, destin, source):
-        count = destin.count + source.count
-        delta = source.mean - destin.mean
-        source_part = float(source.count) / count
-        cross_part = destin.count * source_part
-        destin.count = count
-        destin.mean += source_part * delta
-        destin.count_times_variance += \
-            source.count_times_variance + cross_part * delta * delta
 
     def plus_group(self, group):
         """
