@@ -163,10 +163,7 @@ inline void group_load (
         "message keys_size != vals_size");
     group.counts.clear();
     for (size_t i = 0, size = message.keys_size(); i < size; ++i) {
-        group.counts.insert(
-            decltype(group.counts)::value_type(
-                message.keys(i),
-                message.values(i)));
+        group.counts.add(message.keys(i), message.values(i));
     }
 }
 
