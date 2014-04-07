@@ -168,10 +168,13 @@ struct PitmanYor
         _mixture_validate(mixture);
     }
 
-    bool mixture_add_value (Mixture & mixture, size_t groupid) const
+    bool mixture_add_value (
+            Mixture & mixture,
+            size_t groupid,
+            count_t count = 1) const
     {
-        mixture.counts[groupid] += 1;
-        mixture.sample_size += 1;
+        mixture.counts[groupid] += count;
+        mixture.sample_size += count;
         _mixture_update_group(mixture, groupid);
 
         bool add_group = (groupid == mixture.empty_groupid);
@@ -186,14 +189,20 @@ struct PitmanYor
         return add_group;
     }
 
-    bool mixture_remove_value (Mixture & mixture, size_t groupid) const
+    bool mixture_remove_value (
+            Mixture & mixture,
+            size_t groupid,
+            count_t count = 1) const
     {
         DIST_ASSERT2(
             groupid != mixture.empty_groupid,
             "cannot remove value from empty group");
+        DIST_ASSERT2(
+            count <= mixture.counts[groupid],
+            "cannot remove more values than are in group");
 
-        mixture.counts[groupid] -= 1;
-        mixture.sample_size -= 1;
+        mixture.counts[groupid] -= count;
+        mixture.sample_size -= count;
 
         bool remove_group = (mixture.counts[groupid] == 0);
         if (DIST_LIKELY(not remove_group)) {
