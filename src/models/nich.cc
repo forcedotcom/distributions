@@ -31,7 +31,7 @@
 namespace distributions
 {
 
-void NormalInverseChiSq::Classifier::score_value (
+void NormalInverseChiSq::Mixture::score_value (
         const Model & model,
         const Value & value,
         VectorFloat & scores_accum,

@@ -67,7 +67,7 @@ cdef extern from "distributions/models/nich.hpp" namespace "distributions":
             float log_coeff
             float precision
             float mean
-        cppclass Classifier:
+        cppclass Mixture:
             vector[Group] groups
             VectorFloat score
             VectorFloat log_coeff
@@ -121,10 +121,10 @@ cdef class Group:
         self.ptr.merge(model.ptr[0], source.ptr[0], get_rng()[0])
 
 
-cdef class Classifier:
-    cdef Model_cc.Classifier * ptr
+cdef class Mixture:
+    cdef Model_cc.Mixture * ptr
     def __cinit__(self):
-        self.ptr = new Model_cc.Classifier()
+        self.ptr = new Model_cc.Mixture()
     def __dealloc__(self):
         del self.ptr
 
@@ -155,7 +155,7 @@ cdef class Classifier:
     def score_value(self, Model_cy model, Value value,
               numpy.ndarray[numpy.float32_t, ndim=1] scores_accum):
         assert len(scores_accum) == self.ptr.groups.size(), \
-            "scores_accum != len(classifier)"
+            "scores_accum != len(mixture)"
         cdef VectorFloat scores
         vector_float_from_ndarray(scores, scores_accum)
         self.ptr.score_value(model.ptr[0], value, scores, get_rng()[0])
@@ -231,7 +231,7 @@ class NormalInverseChiSq(Model_cy, ComponentModel, Serializable):
 
     Group = Group
 
-    Classifier = Classifier
+    Mixture = Mixture
 
 
 Model = NormalInverseChiSq

@@ -155,7 +155,7 @@ struct Scorer
     }
 };
 
-struct Classifier
+struct Mixture
 {
     std::vector<Group> groups;
     float alpha_sum;
