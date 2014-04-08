@@ -123,6 +123,23 @@ struct Sampler
 {
     float mu;
     float sigmasq;
+
+    void init (
+            const Model & model,
+            const Group & group,
+            rng_t & rng)
+    {
+        Model post = model.plus_group(group);
+        sigmasq = post.nu * post.sigmasq / sample_chisq(rng, post.nu);
+        mu = sample_normal(rng, post.mu, sigmasq / post.kappa);
+    }
+
+    Value eval (
+            const Model & model,
+            rng_t & rng) const
+    {
+        return sample_normal(rng, mu, sigmasq);
+    }
 };
 
 struct Scorer
@@ -131,9 +148,33 @@ struct Scorer
     float log_coeff;
     float precision;
     float mean;
+
+    void init (
+            const Model & model,
+            const Group & group,
+            rng_t &)
+    {
+        Model post = model.plus_group(group);
+        float lambda = post.kappa / ((post.kappa + 1.f) * post.sigmasq);
+        score =
+            fast_lgamma_nu(post.nu) + 0.5f * fast_log(lambda / (M_PIf * post.nu));
+        log_coeff = -0.5f * post.nu - 0.5f;
+        precision = lambda / post.nu;
+        mean = post.mu;
+    }
+
+    float eval (
+            const Model & model,
+            const Value & value,
+            rng_t &) const
+    {
+        return score
+             + log_coeff * fast_log(
+                 1.f + precision * sqr(value - mean));
+    }
 };
 
-struct Classifier
+struct Mixture
 {
     std::vector<Group> groups;
     VectorFloat score;
@@ -151,7 +192,7 @@ struct Classifier
     {
         const Group & group = groups[groupid];
         Scorer scorer;
-        model.scorer_init(scorer, group, rng);
+        scorer.init(model, group, rng);
         score[groupid] = scorer.score;
         log_coeff[groupid] = scorer.log_coeff;
         precision[groupid] = scorer.precision;
@@ -258,60 +299,13 @@ Model plus_group (const Group & group) const
     return post;
 }
 
-//----------------------------------------------------------------------------
-// Sampling
-
-void sampler_init (
-        Sampler & sampler,
-        const Group & group,
-        rng_t & rng) const
-{
-    Model post = plus_group(group);
-    sampler.sigmasq = post.nu * post.sigmasq / sample_chisq(rng, post.nu);
-    sampler.mu = sample_normal(rng, post.mu, sampler.sigmasq / post.kappa);
-}
-
-Value sampler_eval (
-        const Sampler & sampler,
-        rng_t & rng) const
-{
-    return sample_normal(rng, sampler.mu, sampler.sigmasq);
-}
-
 Value sample_value (
         const Group & group,
         rng_t & rng) const
 {
     Sampler sampler;
-    sampler_init(sampler, group, rng);
-    return sampler_eval(sampler, rng);
-}
-
-//----------------------------------------------------------------------------
-// Scoring
-
-void scorer_init (
-        Scorer & scorer,
-        const Group & group,
-        rng_t &) const
-{
-    Model post = plus_group(group);
-    float lambda = post.kappa / ((post.kappa + 1.f) * post.sigmasq);
-    scorer.score =
-        fast_lgamma_nu(post.nu) + 0.5f * fast_log(lambda / (M_PIf * post.nu));
-    scorer.log_coeff = -0.5f * post.nu - 0.5f;
-    scorer.precision = lambda / post.nu;
-    scorer.mean = post.mu;
-}
-
-float scorer_eval (
-        const Scorer & scorer,
-        const Value & value,
-        rng_t &) const
-{
-    return scorer.score
-         + scorer.log_coeff * fast_log(
-             1.f + scorer.precision * sqr(value - scorer.mean));
+    sampler.init(*this, group, rng);
+    return sampler.eval(*this, rng);
 }
 
 float score_value (
@@ -320,8 +314,8 @@ float score_value (
         rng_t & rng) const
 {
     Scorer scorer;
-    scorer_init(scorer, group, rng);
-    return scorer_eval(scorer, value, rng);
+    scorer.init(*this, group, rng);
+    return scorer.eval(*this, value, rng);
 }
 
 float score_group (
@@ -337,10 +331,6 @@ float score_group (
     score += -0.5f * group.count * log_pi;
     return score;
 }
-
-//----------------------------------------------------------------------------
-// Classification
-
 
 //----------------------------------------------------------------------------
 // Examples

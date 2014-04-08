@@ -60,12 +60,14 @@ cdef extern from "distributions/models/nich.hpp" namespace "distributions":
         cppclass Sampler:
             float mu
             float sigma
+            void init (Model_cc &, Group &, rng_t &) nogil except +
+            Value eval (Model_cc &, rng_t &) nogil except +
         cppclass Scorer:
             float score
             float log_coeff
             float precision
             float mean
-        cppclass Classifier:
+        cppclass Mixture:
             vector[Group] groups
             VectorFloat score
             VectorFloat log_coeff
@@ -82,8 +84,6 @@ cdef extern from "distributions/models/nich.hpp" namespace "distributions":
             void score_value \
                 (Model_cc &, Value &, VectorFloat &, rng_t &) nogil except +
 
-        void sampler_init (Sampler &, Group &, rng_t &) nogil except +
-        Value sampler_eval (Sampler &, rng_t &) nogil except +
         Value sample_value (Group &, rng_t &) nogil except +
         float score_value (Group &, Value &, rng_t &) nogil except +
         float score_group (Group &, rng_t &) nogil except +
@@ -121,10 +121,10 @@ cdef class Group:
         self.ptr.merge(model.ptr[0], source.ptr[0], get_rng()[0])
 
 
-cdef class Classifier:
-    cdef Model_cc.Classifier * ptr
+cdef class Mixture:
+    cdef Model_cc.Mixture * ptr
     def __cinit__(self):
-        self.ptr = new Model_cc.Classifier()
+        self.ptr = new Model_cc.Mixture()
     def __dealloc__(self):
         del self.ptr
 
@@ -155,7 +155,7 @@ cdef class Classifier:
     def score_value(self, Model_cy model, Value value,
               numpy.ndarray[numpy.float32_t, ndim=1] scores_accum):
         assert len(scores_accum) == self.ptr.groups.size(), \
-            "scores_accum != len(classifier)"
+            "scores_accum != len(mixture)"
         cdef VectorFloat scores
         vector_float_from_ndarray(scores, scores_accum)
         self.ptr.score_value(model.ptr[0], value, scores, get_rng()[0])
@@ -193,12 +193,12 @@ cdef class Model_cy:
     def sample_group(self, int size):
         cdef Group group = Group()
         cdef Model_cc.Sampler sampler
-        self.ptr.sampler_init(sampler, group.ptr[0], get_rng()[0])
+        sampler.init(self.ptr[0], group.ptr[0], get_rng()[0])
         cdef list result = []
         cdef int i
         cdef Value value
         for i in xrange(size):
-            value = self.ptr.sampler_eval(sampler, get_rng()[0])
+            value = sampler.eval(self.ptr[0], get_rng()[0])
             result.append(value)
         return result
 
@@ -231,7 +231,7 @@ class NormalInverseChiSq(Model_cy, ComponentModel, Serializable):
 
     Group = Group
 
-    Classifier = Classifier
+    Mixture = Mixture
 
 
 Model = NormalInverseChiSq

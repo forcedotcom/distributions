@@ -31,7 +31,7 @@ src/test_headers.cc: FORCE
 	find include \
 	  | grep '\.hpp' \
 	  | grep -v protobuf \
-	  | sort \
+	  | sort --dictionary-order \
 	  | sed 's/include\/\(.*\)/#include <\1>/g' \
 	  > src/test_headers.cc
 	echo 'int main () { return 0; }' >> src/test_headers.cc
@@ -86,7 +86,7 @@ profile: install_cc FORCE
 	build/benchmarks/sample_from_scores
 	build/benchmarks/sample_assignment_from_py
 	build/benchmarks/special
-	build/benchmarks/classifier
+	build/benchmarks/mixture
 
 clean: FORCE
 	git clean -Xdf

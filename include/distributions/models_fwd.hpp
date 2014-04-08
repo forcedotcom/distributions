@@ -31,9 +31,9 @@ namespace distributions
 {
 
 template<int max_dim>
-class DirichletDiscrete;
-class DirichletProcessDiscrete;
-class NormalInverseChiSq;
-class GammaPoisson;
+struct DirichletDiscrete;
+struct DirichletProcessDiscrete;
+struct NormalInverseChiSq;
+struct GammaPoisson;
 
 } // namespace distributions

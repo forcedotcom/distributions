@@ -15,7 +15,7 @@ target_link_libraries(special
   ${DISTRIBUTIONS_SHARED_LIBS}
 )
 
-add_executable(classifier classifier.cc)
-target_link_libraries(classifier
+add_executable(mixture mixture.cc)
+target_link_libraries(mixture
   ${DISTRIBUTIONS_SHARED_LIBS}
 )
