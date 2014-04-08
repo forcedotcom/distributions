@@ -27,8 +27,12 @@
 
 __version__ = '2.0.0'
 
+import os
+
 try:
     import distributions.has_cython
     has_cython = distributions.has_cython.has_cython()
 except ImportError:
     has_cython = False
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

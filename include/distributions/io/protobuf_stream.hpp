@@ -40,12 +40,6 @@ namespace distributions
 namespace protobuf
 {
 
-inline bool startswith (const char * filename, const char * prefix)
-{
-    return strlen(filename) >= strlen(prefix) and
-        strncmp(filename, prefix, strlen(prefix)) == 0;
-}
-
 inline bool endswith (const char * filename, const char * suffix)
 {
     return strlen(filename) >= strlen(suffix) and
@@ -58,14 +52,14 @@ public:
 
     InFile (const char * filename) : filename_(filename)
     {
-        if (startswith(filename, "-")) {
-            fid_ = -1;
-            raw_ = new google::protobuf::io::IstreamInputStream(& std::cin);
+        if (strcmp(filename, "-") == 0 or strcmp(filename, "-.gz") == 0) {
+            fid_ = STDIN_FILENO;
         } else {
             fid_ = open(filename, O_RDONLY | O_NOATIME);
             DIST_ASSERT(fid_ != -1, "failed to open input file " << filename);
-            raw_ = new google::protobuf::io::FileInputStream(fid_);
         }
+
+        raw_ = new google::protobuf::io::FileInputStream(fid_);
 
         if (endswith(filename, ".gz")) {
             gzip_ = new google::protobuf::io::GzipInputStream(raw_);
@@ -81,7 +75,7 @@ public:
         delete coded_;
         delete gzip_;
         delete raw_;
-        if (fid_ != -1) {
+        if (fid_ != STDIN_FILENO) {
             close(fid_);
         }
     }
@@ -94,7 +88,7 @@ public:
     }
 
     template<class Message>
-    bool try_read_stream (Message & message)
+    uint32_t try_read_stream (Message & message)
     {
         uint32_t message_size = 0;
         if (DIST_LIKELY(coded_->ReadLittleEndian32(& message_size))) {
@@ -102,9 +96,9 @@ public:
             bool success = message.ParseFromCodedStream(coded_);
             DIST_ASSERT(success, "failed to parse message from " << filename_);
             coded_->PopLimit(old_limit);
-            return true;
+            return message_size;
         } else {
-            return false;
+            return 0;
         }
     }
 
@@ -124,14 +118,14 @@ public:
 
     OutFile (const char * filename) : filename_(filename)
     {
-        if (startswith(filename, "-")) {
-            fid_ = -1;
-            raw_ = new google::protobuf::io::OstreamOutputStream(& std::cout);
+        if (strcmp(filename, "-") == 0 or strcmp(filename, "-.gz") == 0) {
+            fid_ = STDOUT_FILENO;
         } else {
             fid_ = open(filename, O_WRONLY | O_CREAT | O_TRUNC, 0664);
             DIST_ASSERT(fid_ != -1, "failed to open output file " << filename);
-            raw_ = new google::protobuf::io::FileOutputStream(fid_);
         }
+
+        raw_ = new google::protobuf::io::FileOutputStream(fid_);
 
         if (endswith(filename, ".gz")) {
             gzip_ = new google::protobuf::io::GzipOutputStream(raw_);
@@ -147,7 +141,7 @@ public:
         delete coded_;
         delete gzip_;
         delete raw_;
-        if (fid_ != -1) {
+        if (fid_ != STDOUT_FILENO) {
             close(fid_);
         }
     }
@@ -165,7 +159,7 @@ public:
     {
         DIST_ASSERT1(message.IsInitialized(), "message not initialized");
         uint32_t message_size = message.ByteSize();
-        DIST_ASSERT1(message_size > 0, "zero sized message");
+        DIST_ASSERT1(message_size > 0, "zero sized message is not supported");
         coded_->WriteLittleEndian32(message_size);
         message.SerializeWithCachedSizes(coded_);
     }
