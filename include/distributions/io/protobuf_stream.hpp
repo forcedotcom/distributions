@@ -156,8 +156,8 @@ public:
     void write (Message & message)
     {
         DIST_ASSERT1(message.IsInitialized(), "message not initialized");
-        message.ByteSize();
-        message.SerializeWithCachedSizes(coded_);
+        bool success = message.SerializeToCodedStream(coded_);
+        DIST_ASSERT(success, "failed to serialize message to " << filename_);
     }
 
     template<class Message>
