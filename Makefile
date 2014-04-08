@@ -31,7 +31,7 @@ src/test_headers.cc: FORCE
 	find include \
 	  | grep '\.hpp' \
 	  | grep -v protobuf \
-	  | sort \
+	  | sort --dictionary-order \
 	  | sed 's/include\/\(.*\)/#include <\1>/g' \
 	  > src/test_headers.cc
 	echo 'int main () { return 0; }' >> src/test_headers.cc
