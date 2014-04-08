@@ -57,3 +57,18 @@ class Serializable(object):
     @staticmethod
     def group_dump(group):
         return group.dump()
+
+
+class ProtobufSerializable(object):
+
+    @classmethod
+    def to_protobuf(cls, raw, message):
+        model = cls()
+        model.load(raw)
+        model.dump_protobuf(message)
+
+    @classmethod
+    def from_protobuf(cls, message):
+        model = cls()
+        model.load_protobuf(message)
+        return model.dump()

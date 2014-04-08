@@ -169,11 +169,21 @@ def test_protbuf(Model, EXAMPLE):
     model2.load_protobuf(message)
     assert_close(model2.dump(), model.dump())
 
+    message.Clear()
+    dumped = model.dump()
+    Model.to_protobuf(dumped, message)
+    assert_close(Model.from_protobuf(message), dumped)
+
     message = Message.Group()
     group.dump_protobuf(message)
     group2 = model.Group()
     group2.load_protobuf(message)
     assert_close(group2.dump(), group.dump())
+
+    message.Clear()
+    dumped = group.dump()
+    Model.Group.to_protobuf(dumped, message)
+    assert_close(Model.Group.from_protobuf(message), dumped)
 
 
 @for_each_model()

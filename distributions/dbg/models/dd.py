@@ -28,10 +28,18 @@
 import numpy
 from distributions.dbg.special import log, gammaln
 from distributions.dbg.random import sample_discrete, sample_dirichlet
-from distributions.mixins import ComponentModel, Serializable
+from distributions.mixins import (
+    ComponentModel,
+    Serializable,
+    ProtobufSerializable,
+)
 
 
-class DirichletDiscrete(ComponentModel, Serializable):
+class DirichletDiscrete(
+        ComponentModel,
+        Serializable,
+        ProtobufSerializable):
+
     def __init__(self):
         self.alphas = None
 
@@ -58,7 +66,7 @@ class DirichletDiscrete(ComponentModel, Serializable):
 
     Value = int
 
-    class Group(object):
+    class Group(ProtobufSerializable):
         def __init__(self):
             self.counts = None
 

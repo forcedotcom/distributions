@@ -37,7 +37,11 @@ Equation numbers referenced below are from this paper.
 
 from distributions.dbg.special import sqrt, log, pi, gammaln
 from distributions.dbg.random import sample_chi2, sample_normal
-from distributions.mixins import ComponentModel, Serializable
+from distributions.mixins import (
+    ComponentModel,
+    Serializable,
+    ProtobufSerializable,
+)
 
 
 # FIXME how does this relate to distributions.dbg.random.score_student_t
@@ -53,7 +57,11 @@ def score_student_t(x, nu, mu, sigmasq):
     return score
 
 
-class NormalInverseChiSq(ComponentModel, Serializable):
+class NormalInverseChiSq(
+        ComponentModel,
+        Serializable,
+        ProtobufSerializable):
+
     def __init__(self):
         self.mu = None
         self.kappa = None
@@ -98,7 +106,7 @@ class NormalInverseChiSq(ComponentModel, Serializable):
 
     Value = float
 
-    class Group(object):
+    class Group(ProtobufSerializable):
         def __init__(self):
             self.count = None
             self.mean = None

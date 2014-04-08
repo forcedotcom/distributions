@@ -29,13 +29,21 @@ import numpy
 from itertools import izip
 from distributions.dbg.special import log, gammaln
 from distributions.dbg.random import sample_discrete, sample_dirichlet
-from distributions.mixins import ComponentModel, Serializable
+from distributions.mixins import (
+    ComponentModel,
+    Serializable,
+    ProtobufSerializable,
+)
 
 
 OTHER = -1
 
 
-class DirichletProcessDiscrete(ComponentModel, Serializable):
+class DirichletProcessDiscrete(
+        ComponentModel,
+        Serializable,
+        ProtobufSerializable):
+
     def __init__(self):
         self.gamma = None
         self.alpha = None
@@ -82,7 +90,7 @@ class DirichletProcessDiscrete(ComponentModel, Serializable):
 
     Value = int
 
-    class Group(object):
+    class Group(ProtobufSerializable):
         def __init__(self):
             self.counts = None
             self.total = None

@@ -27,10 +27,18 @@
 
 from distributions.dbg.special import log, factorial, gammaln
 from distributions.dbg.random import sample_gamma, sample_poisson
-from distributions.mixins import ComponentModel, Serializable
+from distributions.mixins import (
+    ComponentModel,
+    Serializable,
+    ProtobufSerializable,
+)
 
 
-class GammaPoisson(ComponentModel, Serializable):
+class GammaPoisson(
+        ComponentModel,
+        Serializable,
+        ProtobufSerializable):
+
     def __init__(self):
         self.alpha = None
         self.inv_beta = None
@@ -59,7 +67,7 @@ class GammaPoisson(ComponentModel, Serializable):
 
     Value = int
 
-    class Group(object):
+    class Group(ProtobufSerializable):
         def __init__(self):
             self.count = None
             self.sum = None
