@@ -59,22 +59,21 @@ public:
             DIST_ASSERT(fid_ != -1, "failed to open input file " << filename);
         }
 
-        raw_ = new google::protobuf::io::FileInputStream(fid_);
+        file_ = new google::protobuf::io::FileInputStream(fid_);
 
         if (endswith(filename, ".gz")) {
-            gzip_ = new google::protobuf::io::GzipInputStream(raw_);
-            coded_ = new google::protobuf::io::CodedInputStream(gzip_);
+            gzip_ = new google::protobuf::io::GzipInputStream(file_);
+            stream_ = gzip_;
         } else {
             gzip_ = nullptr;
-            coded_ = new google::protobuf::io::CodedInputStream(raw_);
+            stream_ = file_;
         }
     }
 
     ~InFile ()
     {
-        delete coded_;
         delete gzip_;
-        delete raw_;
+        delete file_;
         if (fid_ != STDIN_FILENO) {
             close(fid_);
         }
@@ -83,19 +82,20 @@ public:
     template<class Message>
     void read (Message & message)
     {
-        bool success = message.ParseFromCodedStream(coded_);
+        bool success = message.ParseFromZeroCopyStream(stream_);
         DIST_ASSERT(success, "failed to parse message from " << filename_);
     }
 
     template<class Message>
     uint32_t try_read_stream (Message & message)
     {
+        google::protobuf::io::CodedInputStream coded(stream_);
         uint32_t message_size = 0;
-        if (DIST_LIKELY(coded_->ReadLittleEndian32(& message_size))) {
-            auto old_limit = coded_->PushLimit(message_size);
-            bool success = message.ParseFromCodedStream(coded_);
+        if (DIST_LIKELY(coded.ReadLittleEndian32(& message_size))) {
+            auto old_limit = coded.PushLimit(message_size);
+            bool success = message.ParseFromCodedStream(& coded);
             DIST_ASSERT(success, "failed to parse message from " << filename_);
-            coded_->PopLimit(old_limit);
+            coded.PopLimit(old_limit);
             return message_size;
         } else {
             return 0;
@@ -106,9 +106,9 @@ private:
 
     const std::string filename_;
     int fid_;
-    google::protobuf::io::ZeroCopyInputStream * raw_;
+    google::protobuf::io::FileInputStream * file_;
     google::protobuf::io::GzipInputStream * gzip_;
-    google::protobuf::io::CodedInputStream * coded_;
+    google::protobuf::io::ZeroCopyInputStream * stream_;
 };
 
 
@@ -125,22 +125,21 @@ public:
             DIST_ASSERT(fid_ != -1, "failed to open output file " << filename);
         }
 
-        raw_ = new google::protobuf::io::FileOutputStream(fid_);
+        file_ = new google::protobuf::io::FileOutputStream(fid_);
 
         if (endswith(filename, ".gz")) {
-            gzip_ = new google::protobuf::io::GzipOutputStream(raw_);
-            coded_ = new google::protobuf::io::CodedOutputStream(gzip_);
+            gzip_ = new google::protobuf::io::GzipOutputStream(file_);
+            stream_ = gzip_;
         } else {
             gzip_ = nullptr;
-            coded_ = new google::protobuf::io::CodedOutputStream(raw_);
+            stream_ = file_;
         }
     }
 
     ~OutFile ()
     {
-        delete coded_;
         delete gzip_;
-        delete raw_;
+        delete file_;
         if (fid_ != STDOUT_FILENO) {
             close(fid_);
         }
@@ -150,27 +149,28 @@ public:
     void write (Message & message)
     {
         DIST_ASSERT1(message.IsInitialized(), "message not initialized");
-        bool success = message.SerializeToCodedStream(coded_);
+        bool success = message.SerializeToZeroCopyStream(stream_);
         DIST_ASSERT(success, "failed to serialize message to " << filename_);
     }
 
     template<class Message>
     void write_stream (Message & message)
     {
+        google::protobuf::io::CodedOutputStream coded(stream_);
         DIST_ASSERT1(message.IsInitialized(), "message not initialized");
         uint32_t message_size = message.ByteSize();
         DIST_ASSERT1(message_size > 0, "zero sized message is not supported");
-        coded_->WriteLittleEndian32(message_size);
-        message.SerializeWithCachedSizes(coded_);
+        coded.WriteLittleEndian32(message_size);
+        message.SerializeWithCachedSizes(& coded);
     }
 
 private:
 
     const std::string filename_;
     int fid_;
-    google::protobuf::io::ZeroCopyOutputStream * raw_;
+    google::protobuf::io::FileOutputStream * file_;
     google::protobuf::io::GzipOutputStream * gzip_;
-    google::protobuf::io::CodedOutputStream * coded_;
+    google::protobuf::io::ZeroCopyOutputStream * stream_;
 };
 
 } // namespace protobuf
