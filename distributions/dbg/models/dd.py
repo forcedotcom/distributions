@@ -68,6 +68,14 @@ class DirichletDiscrete(ComponentModel, Serializable):
         def dump(self):
             return {'counts': self.counts.tolist()}
 
+        def load_protobuf(self, message):
+            self.counts = numpy.array(message.counts, dtype=numpy.int)
+
+        def dump_protobuf(self, message):
+            message.Clear()
+            for count in self.counts:
+                message.counts.append(count)
+
         def init(self, model):
             self.counts = numpy.zeros(model.dim, dtype=numpy.int)
 

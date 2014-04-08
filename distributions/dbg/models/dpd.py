@@ -26,6 +26,7 @@
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import numpy
+from itertools import izip
 from distributions.dbg.special import log, gammaln
 from distributions.dbg.random import sample_discrete, sample_dirichlet
 from distributions.mixins import ComponentModel, Serializable
@@ -101,6 +102,21 @@ class DirichletProcessDiscrete(ComponentModel, Serializable):
                 if count
             }
             return {'counts': counts}
+
+        def load_protobuf(self, message):
+            self.counts = {}
+            self.total = 0
+            for i, count in izip(message.keys, message.values):
+                if count:
+                    self.counts[int(i)] = int(count)
+                    self.total += count
+
+        def dump_protobuf(self, message):
+            message.Clear()
+            for i, count in self.counts.iteritems():
+                if count:
+                    message.keys.append(i)
+                    message.values.append(count)
 
         def init(self, model):
             self.counts = {}  # sparse

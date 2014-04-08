@@ -52,6 +52,12 @@ from distributions.tests.util import (
     seed_all,
 )
 
+try:
+    import distributions.io.schema_pb2
+    has_protobuf = True
+except ImportError:
+    has_protobuf = False
+
 DATA_COUNT = 20
 SAMPLE_COUNT = 1000
 MIN_GOODNESS_OF_FIT = 1e-3
@@ -146,6 +152,28 @@ def test_interface(Model, EXAMPLE):
     assert_close(model.dump(), EXAMPLE['model'])
     assert_close(model.dump(), Model.model_dump(model))
     assert_close(group1.dump(), Model.group_dump(group1))
+
+
+@for_each_model(lambda Model: hasattr(Model, 'load_protobuf'))
+def test_protbuf(Model, EXAMPLE):
+    if not has_protobuf:
+        raise SkipTest('protobuf not available')
+    model = Model.model_load(EXAMPLE['model'])
+    values = EXAMPLE['values']
+    group = model.group_create(values)
+    Message = getattr(distributions.io.schema_pb2, Model.__name__)
+
+    message = Message()
+    model.dump_protobuf(message)
+    model2 = Model()
+    model2.load_protobuf(message)
+    assert_close(model2.dump(), model.dump())
+
+    message = Message.Group()
+    group.dump_protobuf(message)
+    group2 = model.Group()
+    group2.load_protobuf(message)
+    assert_close(group2.dump(), group.dump())
 
 
 @for_each_model()

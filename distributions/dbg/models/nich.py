@@ -116,6 +116,16 @@ class NormalInverseChiSq(ComponentModel, Serializable):
                 'count_times_variance': self.count_times_variance,
             }
 
+        def load_protobuf(self, message):
+            self.count = int(message.count)
+            self.mean = float(message.mean)
+            self.count_times_variance = float(message.count_times_variance)
+
+        def dump_protobuf(self, message):
+            message.count = self.count
+            message.mean = self.mean
+            message.count_times_variance = self.count_times_variance
+
         def init(self, model):
             self.count = 0
             self.mean = 0.

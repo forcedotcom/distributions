@@ -77,6 +77,16 @@ class GammaPoisson(ComponentModel, Serializable):
                 'log_prod': self.log_prod,
             }
 
+        def load_protobuf(self, message):
+            self.count = int(message.count)
+            self.sum = int(message.sum)
+            self.log_prod = float(message.log_prod)
+
+        def dump_protobuf(self, message):
+            message.count = self.count
+            message.sum = self.sum
+            message.log_prod = self.log_prod
+
         def init(self, model):
             self.count = 0
             self.sum = 0
