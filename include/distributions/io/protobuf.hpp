@@ -131,9 +131,9 @@ inline void group_load (
         typename DirichletDiscrete<max_dim>::Group & group,
         const protobuf::DirichletDiscrete::Group & message)
 {
-    DIST_ASSERT1(
-        message.counts_size() == model.dim,
-        "bad group message dim: " << message.counts_size());
+    if (DIST_DEBUG_LEVEL >= 1) {
+        DIST_ASSERT_EQ(message.counts_size(), model.dim);
+    }
     group.count_sum = 0;
     for (size_t i = 0; i < model.dim; ++i) {
         group.count_sum += group.counts[i] = message.counts(i);
@@ -158,9 +158,9 @@ inline void group_load (
         DirichletProcessDiscrete::Group & group,
         const protobuf::DirichletProcessDiscrete::Group & message)
 {
-    DIST_ASSERT1(
-        message.keys_size() == message.values_size(),
-        "message keys_size != vals_size");
+    if (DIST_DEBUG_LEVEL >= 1) {
+        DIST_ASSERT_EQ(message.keys_size(), message.values_size());
+    }
     group.counts.clear();
     for (size_t i = 0, size = message.keys_size(); i < size; ++i) {
         group.counts.add(message.keys(i), message.values(i));
