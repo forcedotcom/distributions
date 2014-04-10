@@ -77,7 +77,7 @@ struct Group
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(value < model.dim, "value out of bounds: " << value);
+        DIST_ASSERT1(value < model.dim, "bad value: out of bounds: " << value);
         count_sum += 1;
         counts[value] += 1;
     }
@@ -228,7 +228,7 @@ struct Mixture
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(groupid < groups.size(), "groupid out of bounds");
+        DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
         DIST_ASSERT1(value < model.dim, "value out of bounds: " << value);
         Group & group = groups[groupid];
         count_t count_sum = group.count_sum += 1;
@@ -244,7 +244,7 @@ struct Mixture
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(groupid < groups.size(), "groupid out of bounds");
+        DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
         DIST_ASSERT1(value < model.dim, "value out of bounds: " << value);
         Group & group = groups[groupid];
         count_t count_sum = group.count_sum -= 1;
@@ -261,10 +261,9 @@ struct Mixture
             rng_t &) const
     {
         DIST_ASSERT1(value < model.dim, "value out of bounds: " << value);
-        DIST_ASSERT2(
-            scores_accum.size() == groups.size(),
-            "expected scores_accum.size() = " << groups.size() <<
-            ", actual " << scores_accum.size());
+        if (DIST_DEBUG_LEVEL >= 2) {
+            DIST_ASSERT_EQ(scores_accum.size(), groups.size());
+        }
         const size_t group_count = groups.size();
         vector_add_subtract(
             group_count,

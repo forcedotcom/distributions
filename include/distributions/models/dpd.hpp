@@ -238,7 +238,7 @@ struct Mixture
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(groupid < groups.size(), "groupid out of bounds");
+        DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
         DIST_ASSERT1(value < model.betas.size(), "value out of bounds");
         Group & group = groups[groupid];
         count_t count = group.counts.add(value);
@@ -253,7 +253,7 @@ struct Mixture
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(groupid < groups.size(), "groupid out of bounds");
+        DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
         DIST_ASSERT1(value < model.betas.size(), "value out of bounds");
         Group & group = groups[groupid];
         count_t count = group.counts.remove(value);
@@ -269,6 +269,9 @@ struct Mixture
             rng_t &) const
     {
         DIST_ASSERT1(value < model.betas.size(), "value out of bounds");
+        if (DIST_DEBUG_LEVEL >= 2) {
+            DIST_ASSERT_EQ(scores_accum.size(), groups.size());
+        }
         const size_t group_count = groups.size();
         vector_add_subtract(
             group_count,

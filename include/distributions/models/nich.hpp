@@ -256,7 +256,7 @@ struct Mixture
             const Value & value,
             rng_t & rng)
     {
-        DIST_ASSERT1(groupid < groups.size(), "groupid out of bounds");
+        DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
         Group & group = groups[groupid];
         group.add_value(model, value, rng);
         _update_group(model, groupid, rng);
@@ -268,13 +268,27 @@ struct Mixture
             const Value & value,
             rng_t & rng)
     {
-        DIST_ASSERT1(groupid < groups.size(), "groupid out of bounds");
+        DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
         Group & group = groups[groupid];
         group.remove_value(model, value, rng);
         _update_group(model, groupid, rng);
     }
 
     void score_value (
+            const Model & model,
+            const Value & value,
+            VectorFloat & scores_accum,
+            rng_t & rng) const
+    {
+        if (DIST_DEBUG_LEVEL >= 2) {
+            DIST_ASSERT_EQ(scores_accum.size(), groups.size());
+        }
+        _score_value(model, value, scores_accum, rng);
+    }
+
+    private:
+
+    void _score_value (
             const Model & model,
             const Value & value,
             VectorFloat & scores_accum,

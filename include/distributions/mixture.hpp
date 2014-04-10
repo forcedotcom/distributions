@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <vector>
 #include <distributions/common.hpp>
 
 namespace distributions
@@ -59,14 +60,18 @@ public:
     {
         if (DIST_DEBUG_LEVEL) {
             DIST_ASSERT(packed < packed_size(), "bad packed id: " << packed);
-            global_to_packed_[packed_to_global_[packed]] = ~Id(0);
+            const Id global = packed_to_global_[packed];
+            DIST_ASSERT(global < global_size(), "bad global id: " << global);
+            global_to_packed_[global] = ~Id(0);
         }
-        if (packed != packed_size()) {
+        const size_t group_count = packed_size() - 1;
+        if (packed != group_count) {
             const Id global = packed_to_global_.back();
+            DIST_ASSERT1(global < global_size(), "bad global id: " << global);
             packed_to_global_[packed] = global;
             global_to_packed_[global] = packed;
         }
-        packed_to_global_.pop_back();
+        packed_to_global_.resize(group_count);;
     }
 
     Id packed_to_global (Id packed) const
@@ -85,10 +90,10 @@ public:
         return packed;
     }
 
-private:
-
     size_t packed_size () const { return packed_to_global_.size(); }
     size_t global_size () const { return global_to_packed_.size(); }
+
+private:
 
     std::vector<Id> packed_to_global_;
     std::vector<Id> global_to_packed_;

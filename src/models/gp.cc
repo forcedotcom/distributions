@@ -31,7 +31,7 @@
 namespace distributions
 {
 
-void GammaPoisson::Mixture::score_value (
+void GammaPoisson::Mixture::_score_value (
         const Model & model,
         const Value & value,
         VectorFloat & scores_accum,
