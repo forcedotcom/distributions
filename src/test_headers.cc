@@ -1,6 +1,7 @@
 #include <distributions/aligned_allocator.hpp>
 #include <distributions/clustering.hpp>
 #include <distributions/common.hpp>
+#include <distributions/mixture.hpp>
 #include <distributions/models/dd.hpp>
 #include <distributions/models/dpd.hpp>
 #include <distributions/models_fwd.hpp>
