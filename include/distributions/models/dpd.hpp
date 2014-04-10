@@ -215,6 +215,7 @@ struct Mixture
             const Model & model,
             size_t groupid)
     {
+        DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
         const Value dim = model.betas.size();
         const size_t group_count = groups.size() - 1;
         if (groupid != group_count) {
@@ -253,7 +254,7 @@ struct Mixture
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
+        DIST_ASSERT2(groupid < groups.size(), "bad groupid: " << groupid);
         DIST_ASSERT1(value < model.betas.size(), "value out of bounds");
         Group & group = groups[groupid];
         count_t count = group.counts.remove(value);

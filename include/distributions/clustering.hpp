@@ -172,6 +172,7 @@ struct PitmanYor
                 size_t groupid,
                 count_t count = 1)
         {
+            DIST_ASSERT2(groupid < counts.size(), "bad groupid: " << groupid);
             counts[groupid] += count;
             sample_size += count;
             _update_group(model, groupid);
@@ -193,6 +194,7 @@ struct PitmanYor
                 size_t groupid,
                 count_t count = 1)
         {
+            DIST_ASSERT2(groupid < counts.size(), "bad groupid: " << groupid);
             DIST_ASSERT2(
                 groupid != empty_groupid,
                 "cannot remove value from empty group");

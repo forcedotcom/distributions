@@ -239,6 +239,7 @@ struct Mixture
             const Model & model,
             size_t groupid)
     {
+        DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
         const size_t group_count = groups.size() - 1;
         if (groupid != group_count) {
             std::swap(groups[groupid], groups.back());
@@ -268,7 +269,7 @@ struct Mixture
             const Value & value,
             rng_t & rng)
     {
-        DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
+        DIST_ASSERT2(groupid < groups.size(), "bad groupid: " << groupid);
         Group & group = groups[groupid];
         group.remove_value(model, value, rng);
         _update_group(model, groupid, rng);

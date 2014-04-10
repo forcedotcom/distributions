@@ -206,6 +206,7 @@ struct Mixture
             const Model & model,
             size_t groupid)
     {
+        DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
         const size_t group_count = groups.size() - 1;
         if (groupid != group_count) {
             std::swap(groups[groupid], groups.back());
@@ -244,7 +245,7 @@ struct Mixture
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
+        DIST_ASSERT2(groupid < groups.size(), "bad groupid: " << groupid);
         DIST_ASSERT1(value < model.dim, "value out of bounds: " << value);
         Group & group = groups[groupid];
         count_t count_sum = group.count_sum -= 1;
