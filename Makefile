@@ -65,9 +65,9 @@ test_cc: install_cc FORCE
 	@echo 'PASSED CC TESTS'
 
 test_cy: install_cy FORCE
-	pyflakes setup.py distributions derivations
-	pep8 --repeat --ignore=E265 --exclude=*_pb2.py setup.py distributions derivations
-	$(nose_env) nosetests -v
+	pyflakes setup.py distributions derivations examples
+	pep8 --repeat --ignore=E265 --exclude=*_pb2.py setup.py distributions derivations examples
+	$(nose_env) nosetests -v distributions derivations examples
 	@echo '----------------'
 	@echo 'PASSED CY TESTS'
 
