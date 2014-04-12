@@ -64,9 +64,11 @@ test_cc: install_cc FORCE
 	@echo '----------------'
 	@echo 'PASSED CC TESTS'
 
+PY_SOURCES=setup.py update_license.py distributions derivations examples/mixture
+
 test_cy: install_cy FORCE
-	pyflakes setup.py distributions derivations examples
-	pep8 --repeat --ignore=E265 --exclude=*_pb2.py setup.py distributions derivations examples
+	pyflakes $(PY_SOURCES)
+	pep8 --repeat --ignore=E265 --exclude=*_pb2.py $(PY_SOURCES)
 	$(nose_env) nosetests -v distributions derivations examples
 	@echo '----------------'
 	@echo 'PASSED CY TESTS'
