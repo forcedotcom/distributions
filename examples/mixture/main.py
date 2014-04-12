@@ -26,12 +26,14 @@
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import os
+import shutil
 import numpy
 import scipy
 import scipy.misc
 from distributions.dbg.random import sample_discrete, sample_discrete_log
 from distributions.lp.models.nich import NormalInverseChiSq
 from distributions.lp.clustering import PitmanYor
+from distributions.lp.mixture import MixtureIdTracker
 from distributions.io.stream import json_stream_load, json_stream_dump
 import parsable
 parsable = parsable.Parsable()
@@ -67,6 +69,7 @@ class ImageModel(object):
             self.clustering = PitmanYor.Mixture()
             self.feature_x = NormalInverseChiSq.Mixture()
             self.feature_y = NormalInverseChiSq.Mixture()
+            self.id_tracker = MixtureIdTracker()
 
         def __len__(self):
             return len(self.clustering)
@@ -99,6 +102,19 @@ class ImageModel(object):
             if group_added:
                 self.feature_x.add_group(model.feature)
                 self.feature_y.add_group(model.feature)
+                self.id_tracker.add_group()
+
+        def remove_value(self, model, groupid, xy):
+            x, y = xy
+            group_removeed = self.clustering.remove_value(
+                model.clustering,
+                groupid)
+            self.feature_x.remove_value(model.feature, groupid, x)
+            self.feature_y.remove_value(model.feature, groupid, y)
+            if group_removeed:
+                self.feature_x.remove_group(model.feature, groupid)
+                self.feature_y.remove_group(model.feature, groupid)
+                self.id_tracker.remove_group(groupid)
 
 
 def sample_from_image(image, sample_count):
@@ -181,6 +197,16 @@ def compress_annealing(passes=100):
     Compress image via subsample annealing.
     '''
     raise NotImplementedError()
+
+
+@parsable.command
+def clean():
+    '''
+    Clean out dataset and results.
+    '''
+    for dirname in [DATA, RESULTS]:
+        if not os.path.exists(dirname):
+            shutil.rmtree(dirname)
 
 
 def test(sample_count=100):
