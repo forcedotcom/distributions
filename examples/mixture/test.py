@@ -29,6 +29,8 @@ import main
 
 
 def test():
+    size = 64
+    main.IMAGE = main.IMAGE[:size, :size]
     main.run(sample_count=100, passes=3)
 
 
