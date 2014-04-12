@@ -78,11 +78,13 @@ class ImageModel(object):
             self.clustering.clear()
             self.feature_x.clear()
             self.feature_y.clear()
+            self.id_tracker.init()
 
             # Add a single empty group
             self.clustering.append(0)
             self.feature_x.add_group(model.feature)
             self.feature_y.add_group(model.feature)
+            self.id_tracker.add_group()
 
             self.clustering.init(model.clustering)
             self.feature_x.init(model.feature)
@@ -158,6 +160,7 @@ def create_dataset(sample_count=10000):
     '''
     Extract dataset from image.
     '''
+    print 'sampling {} points from image'.format(sample_count)
     samples = sample_from_image(IMAGE, sample_count)
     json_stream_dump(samples, SAMPLES)
     scipy.misc.imsave(os.path.join(RESULTS, 'original.png'), IMAGE)
@@ -169,15 +172,18 @@ def compress_sequential():
     Compress image via sequential initialization.
     '''
     assert os.path.exists(SAMPLES), 'first create dataset'
+    print 'compressing sequential initialization'
     model = ImageModel()
     mixture = ImageModel.Mixture()
     mixture.init_empty(model)
     scores = numpy.zeros(1, dtype=numpy.float32)
+
     for xy in json_stream_load(SAMPLES):
         scores.resize(len(mixture))
         mixture.score_value(model, xy, scores)
         groupid = sample_discrete_log(scores)
         mixture.add_value(model, groupid, xy)
+
     print 'found {} components'.format(len(mixture))
     image = synthesize_image(model, mixture)
     scipy.misc.imsave(os.path.join(RESULTS, 'sequential.png'), image)
@@ -188,7 +194,35 @@ def compress_gibbs(passes=100):
     '''
     Compress image via gibbs sampling.
     '''
-    raise NotImplementedError()
+    assert passes > 0
+    assert os.path.exists(SAMPLES), 'first create dataset'
+    print 'compressing via {} gibbs scans'.format(passes)
+    model = ImageModel()
+    mixture = ImageModel.Mixture()
+    mixture.init_empty(model)
+    scores = numpy.zeros(1, dtype=numpy.float32)
+    assignments = {}
+
+    for i, xy in enumerate(json_stream_load(SAMPLES)):
+        scores.resize(len(mixture))
+        mixture.score_value(model, xy, scores)
+        groupid = sample_discrete_log(scores)
+        mixture.add_value(model, groupid, xy)
+        assignments[i] = mixture.id_tracker.packed_to_global(groupid)
+
+    for _ in xrange(passes - 1):
+        for i, xy in enumerate(json_stream_load(SAMPLES)):
+            groupid = mixture.id_tracker.global_to_packed(assignments[i])
+            mixture.remove_value(model, groupid, xy)
+            scores.resize(len(mixture))
+            mixture.score_value(model, xy, scores)
+            groupid = sample_discrete_log(scores)
+            mixture.add_value(model, groupid, xy)
+            assignments[i] = mixture.id_tracker.packed_to_global(groupid)
+
+    print 'found {} components'.format(len(mixture))
+    image = synthesize_image(model, mixture)
+    scipy.misc.imsave(os.path.join(RESULTS, 'gibbs.png'), image)
 
 
 @parsable.command
@@ -212,6 +246,7 @@ def clean():
 def test(sample_count=100):
     create_dataset(sample_count)
     compress_sequential()
+    compress_gibbs(passes=3)
 
 
 if __name__ == '__main__':

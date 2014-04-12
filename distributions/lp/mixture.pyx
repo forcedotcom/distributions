@@ -44,7 +44,7 @@ cdef class MixtureIdTracker:
     def __dealloc__(self):
         del self.ptr
 
-    def init(self, int group_count):
+    def init(self, int group_count=0):
         self.ptr.init(group_count)
 
     def add_group(self):

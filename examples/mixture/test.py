@@ -26,4 +26,6 @@
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from main import test
-assert test  # pacify pyflakes
+
+if __name__ == '__main__':
+    test()
