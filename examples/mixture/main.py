@@ -17,6 +17,11 @@ SAMPLES = os.path.join(DATA, 'samples.json.gz')
 IMAGE = scipy.lena()
 
 
+for dirname in [DATA, RESULTS]:
+    if not os.path.exists(dirname):
+        os.makedirs(dirname)
+
+
 class ImageModel(object):
     def __init__(self):
         self.clustering = PitmanYor.model_load({
@@ -69,7 +74,9 @@ class ImageModel(object):
                 self.feature_y.add_group(model.feature)
 
 
-def sample_from_2d_array(image, sample_count):
+def sample_from_image(image, sample_count):
+    image = -1.0 * image
+    image -= image.min()
     x_pmf = image.sum(axis=1)
     y_pmfs = image.copy()
     for y_pmf in y_pmfs:
@@ -84,7 +91,7 @@ def sample_from_2d_array(image, sample_count):
         yield (x * x_scale - 1.0, y * y_scale - 1.0)
 
 
-def synthesize_2d_array(model, mixture):
+def synthesize_image(model, mixture):
     width, height = IMAGE.shape
     image = numpy.zeros((width, height))
     scores = numpy.zeros(len(mixture), dtype=numpy.float32)
@@ -96,8 +103,11 @@ def synthesize_2d_array(model, mixture):
             mixture.score_value(model, xy, scores)
             prob = numpy.exp(scores).sum()
             image[x, y] = prob
-    image *= 255 / image.max()
-    return image
+
+    image /= image.max()
+    image -= 1.0
+    image *= -255
+    return image.astype(numpy.uint8)
 
 
 @parsable.command
@@ -105,10 +115,9 @@ def create_dataset(sample_count=10000):
     '''
     Extract dataset from image.
     '''
-    image = -1.0 * IMAGE
-    image -= image.min()
-    samples = sample_from_2d_array(image, sample_count)
+    samples = sample_from_image(IMAGE, sample_count)
     json_stream_dump(samples, SAMPLES)
+    scipy.misc.imsave(os.path.join(RESULTS, 'original.png'), IMAGE)
 
 
 @parsable.command
@@ -127,8 +136,8 @@ def compress_sequential():
         groupid = sample_discrete_log(scores)
         mixture.add_value(model, groupid, xy)
     print 'found {} components'.format(len(mixture))
-    # TODO save model
-    # TODO synthesize image
+    image = synthesize_image(model, mixture)
+    scipy.misc.imsave(os.path.join(RESULTS, 'sequential.png'), image)
 
 
 @parsable.command
