@@ -25,5 +25,36 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from main import test
-assert test  # pacify pyflakes
+from libc.stdint cimport uint32_t
+
+
+cdef extern from "distributions/mixture.hpp":
+    cppclass MixtureIdTracker_cc "distributions::MixtureIdTracker":
+        void init (size_t group_count) nogil except +
+        void add_group () nogil except +
+        void remove_group (uint32_t packed) nogil except +
+        uint32_t packed_to_global (uint32_t packed) nogil except +
+        uint32_t global_to_packed (uint32_t packed) nogil except +
+
+
+cdef class MixtureIdTracker:
+    cdef MixtureIdTracker_cc * ptr
+    def __cinit__(self):
+        self.ptr = new MixtureIdTracker_cc()
+    def __dealloc__(self):
+        del self.ptr
+
+    def init(self, int group_count):
+        self.ptr.init(group_count)
+
+    def add_group(self):
+        self.ptr.add_group()
+
+    def remove_group(self, int packed):
+        self.ptr.remove_group(packed)
+
+    def packed_to_global(self, int packed):
+        return self.ptr.packed_to_global(packed)
+
+    def global_to_packed(self, int global_):
+        return self.ptr.global_to_packed(global_)

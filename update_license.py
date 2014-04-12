@@ -45,7 +45,6 @@ SYMBOL_OF = {
 
 dir_blacklist = [
     '.git',
-    'examples',
     'vendor',
     'doc',
 ]

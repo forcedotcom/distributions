@@ -150,6 +150,7 @@ lp_extensions = make_extensions([
     'lp.models.nich',
     'lp.models.dpd',
     'lp.clustering',
+    'lp.mixture',
 ])
 
 
