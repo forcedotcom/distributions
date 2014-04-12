@@ -118,6 +118,7 @@ cdef class Group:
 
 cdef class Mixture:
     cdef Model_cc.Mixture * ptr
+    cdef VectorFloat scores
     def __cinit__(self):
         self.ptr = new Model_cc.Mixture()
     def __dealloc__(self):
@@ -157,10 +158,9 @@ cdef class Mixture:
               numpy.ndarray[numpy.float32_t, ndim=1] scores_accum):
         assert len(scores_accum) == self.ptr.groups.size(), \
             "scores_accum != len(mixture)"
-        cdef VectorFloat scores
-        vector_float_from_ndarray(scores, scores_accum)
-        self.ptr.score_value(model.ptr[0], value, scores, get_rng()[0])
-        vector_float_to_ndarray(scores, scores_accum)
+        vector_float_from_ndarray(self.scores, scores_accum)
+        self.ptr.score_value(model.ptr[0], value, self.scores, get_rng()[0])
+        vector_float_to_ndarray(self.scores, scores_accum)
 
 cdef class Model_cy:
     cdef Model_cc * ptr

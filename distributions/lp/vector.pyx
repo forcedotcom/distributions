@@ -25,6 +25,7 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from libc.string cimport memcpy
 cimport numpy
 numpy.import_array()
 
@@ -34,9 +35,7 @@ cdef void vector_float_from_ndarray(
         numpy.ndarray[numpy.float32_t, ndim=1] ndarray):
     cdef int size = ndarray.shape[0]
     vector_float.resize(size)
-    cdef int i
-    for i in xrange(size):
-        vector_float[i] = ndarray[i]
+    memcpy(vector_float.data(), ndarray.data, size * sizeof(float))
 
 
 cdef void vector_float_to_ndarray(
@@ -45,6 +44,4 @@ cdef void vector_float_to_ndarray(
     cdef int size = vector_float.size()
     cdef tuple shape = (size,)
     ndarray.resize(shape)
-    cdef int i
-    for i in xrange(size):
-        ndarray[i] = vector_float[i]
+    memcpy(ndarray.data, vector_float.data(), size * sizeof(float))

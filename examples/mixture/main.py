@@ -146,7 +146,7 @@ def synthesize_image(model, mixture):
         for y in xrange(height):
             xy = (x * x_scale - 1.0, y * y_scale - 1.0)
             mixture.score_value(model, xy, scores)
-            prob = numpy.exp(scores).sum()
+            prob = numpy.exp(scores, out=scores).sum()
             image[x, y] = prob
 
     image /= image.max()
