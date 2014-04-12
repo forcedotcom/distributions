@@ -25,7 +25,12 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from main import test
+import main
+
+
+def test():
+    main.run(sample_count=100, passes=3)
+
 
 if __name__ == '__main__':
     test()

@@ -55,7 +55,7 @@ class ImageModel(object):
     def __init__(self):
         self.clustering = PitmanYor.model_load({
             'alpha': 1.0,
-            'd': 0.2,
+            'd': 0.5,
         })
         self.feature = NormalInverseChiSq.model_load({
             'mu': 0.0,
@@ -292,11 +292,15 @@ def clean():
             shutil.rmtree(dirname)
 
 
-def test(sample_count=100):
+@parsable.command
+def run(sample_count=10000, passes=100):
+    '''
+    Generate all datasets and run all algorithms.
+    '''
     create_dataset(sample_count)
     compress_sequential()
-    compress_gibbs(passes=3)
-    compress_annealing(passes=3)
+    compress_gibbs(passes)
+    compress_annealing(passes)
 
 
 if __name__ == '__main__':
