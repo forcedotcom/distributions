@@ -54,7 +54,7 @@ for dirname in [DATA, RESULTS]:
 class ImageModel(object):
     def __init__(self):
         self.clustering = PitmanYor.model_load({
-            'alpha': 1.0,
+            'alpha': 10.0,
             'd': 0.5,
         })
         self.feature = NormalInverseChiSq.model_load({
@@ -274,6 +274,7 @@ def compress_annealing(passes=100):
             mixture.add_value(model, groupid, xy)
             assignments[i] = mixture.id_tracker.packed_to_global(groupid)
         else:
+            i, xy = to_remove.next()
             groupid = mixture.id_tracker.global_to_packed(assignments[i])
             mixture.remove_value(model, groupid, xy)
 
