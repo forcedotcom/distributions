@@ -225,12 +225,61 @@ def compress_gibbs(passes=100):
     scipy.misc.imsave(os.path.join(RESULTS, 'gibbs.png'), image)
 
 
+def json_loop_load(filename):
+    while True:
+        for i, item in enumerate(json_stream_load(filename)):
+            yield i, item
+
+
+def annealing_schedule(passes):
+    assert passes > 1
+    passes = float(passes)
+    add_rate = passes
+    remove_rate = passes - 1
+    state = add_rate
+    while True:
+        if state >= 0:
+            state -= remove_rate
+            yield True
+        else:
+            state += add_rate
+            yield False
+
+
 @parsable.command
 def compress_annealing(passes=100):
     '''
     Compress image via subsample annealing.
     '''
-    raise NotImplementedError()
+    assert passes > 1
+    assert os.path.exists(SAMPLES), 'first create dataset'
+    print 'compressing via {} subsample annealing passes'.format(passes)
+    model = ImageModel()
+    mixture = ImageModel.Mixture()
+    mixture.init_empty(model)
+    scores = numpy.zeros(1, dtype=numpy.float32)
+    assignments = {}
+
+    to_add = json_loop_load(SAMPLES)
+    to_remove = json_loop_load(SAMPLES)
+
+    for next_action_is_add in annealing_schedule(passes):
+        if next_action_is_add:
+            i, xy = to_add.next()
+            if i in assignments:
+                break
+            scores.resize(len(mixture))
+            mixture.score_value(model, xy, scores)
+            groupid = sample_discrete_log(scores)
+            mixture.add_value(model, groupid, xy)
+            assignments[i] = mixture.id_tracker.packed_to_global(groupid)
+        else:
+            groupid = mixture.id_tracker.global_to_packed(assignments[i])
+            mixture.remove_value(model, groupid, xy)
+
+    print 'found {} components'.format(len(mixture))
+    image = synthesize_image(model, mixture)
+    scipy.misc.imsave(os.path.join(RESULTS, 'annealing.png'), image)
 
 
 @parsable.command
@@ -247,6 +296,7 @@ def test(sample_count=100):
     create_dataset(sample_count)
     compress_sequential()
     compress_gibbs(passes=3)
+    compress_annealing(passes=3)
 
 
 if __name__ == '__main__':
