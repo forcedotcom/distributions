@@ -46,7 +46,7 @@ DATA = os.path.join(ROOT, 'data')
 RESULTS = os.path.join(ROOT, 'results')
 SAMPLES = os.path.join(DATA, 'samples.json.gz')
 IMAGE = scipy.lena()
-SAMPLE_COUNT = 10000
+SAMPLE_COUNT = 100000
 PASSES = 10
 
 
@@ -59,13 +59,13 @@ class ImageModel(object):
     def __init__(self):
         self.clustering = PitmanYor.model_load({
             'alpha': 1000.0,
-            'd': 0.2,
+            'd': 0.1,
         })
         self.feature = NormalInverseChiSq.model_load({
             'mu': 0.0,
-            'kappa': 0.1,
+            'kappa': 0.01,
             'sigmasq': 0.001,
-            'nu': 0.1,
+            'nu': 1.0,
         })
 
     class Mixture(object):
