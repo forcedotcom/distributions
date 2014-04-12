@@ -30,11 +30,13 @@ import shutil
 import numpy
 import scipy
 import scipy.misc
+import scipy.ndimage
 from distributions.dbg.random import sample_discrete, sample_discrete_log
 from distributions.lp.models.nich import NormalInverseChiSq
 from distributions.lp.clustering import PitmanYor
 from distributions.lp.mixture import MixtureIdTracker
 from distributions.io.stream import json_stream_load, json_stream_dump
+from multiprocessing import Process
 import parsable
 parsable = parsable.Parsable()
 
@@ -44,6 +46,8 @@ DATA = os.path.join(ROOT, 'data')
 RESULTS = os.path.join(ROOT, 'results')
 SAMPLES = os.path.join(DATA, 'samples.json.gz')
 IMAGE = scipy.lena()
+SAMPLE_COUNT = 10000
+PASSES = 10
 
 
 for dirname in [DATA, RESULTS]:
@@ -54,14 +58,14 @@ for dirname in [DATA, RESULTS]:
 class ImageModel(object):
     def __init__(self):
         self.clustering = PitmanYor.model_load({
-            'alpha': 10.0,
-            'd': 0.5,
+            'alpha': 1000.0,
+            'd': 0.2,
         })
         self.feature = NormalInverseChiSq.model_load({
             'mu': 0.0,
-            'kappa': 1.0,
-            'sigmasq': 1.0,
-            'nu': 1.0,
+            'kappa': 0.1,
+            'sigmasq': 0.001,
+            'nu': 0.1,
         })
 
     class Mixture(object):
@@ -155,15 +159,32 @@ def synthesize_image(model, mixture):
     return image.astype(numpy.uint8)
 
 
+def visualize_dataset(samples):
+    width, height = IMAGE.shape
+    x_scale = 2.0 / (width - 1)
+    y_scale = 2.0 / (height - 1)
+    image = numpy.zeros((width, height))
+    for x, y in samples:
+        x = int(round((x + 1.0) / x_scale))
+        y = int(round((y + 1.0) / y_scale))
+        image[x, y] += 1
+    image = scipy.ndimage.gaussian_filter(image, sigma=1)
+    image *= -255.0 / image.max()
+    image -= image.min()
+    return image.astype(numpy.uint8)
+
+
 @parsable.command
-def create_dataset(sample_count=10000):
+def create_dataset(sample_count=SAMPLE_COUNT):
     '''
     Extract dataset from image.
     '''
+    scipy.misc.imsave(os.path.join(RESULTS, 'original.png'), IMAGE)
     print 'sampling {} points from image'.format(sample_count)
     samples = sample_from_image(IMAGE, sample_count)
     json_stream_dump(samples, SAMPLES)
-    scipy.misc.imsave(os.path.join(RESULTS, 'original.png'), IMAGE)
+    image = visualize_dataset(json_stream_load(SAMPLES))
+    scipy.misc.imsave(os.path.join(RESULTS, 'samples.png'), image)
 
 
 @parsable.command
@@ -172,7 +193,7 @@ def compress_sequential():
     Compress image via sequential initialization.
     '''
     assert os.path.exists(SAMPLES), 'first create dataset'
-    print 'compressing sequential initialization'
+    print 'sequential start'
     model = ImageModel()
     mixture = ImageModel.Mixture()
     mixture.init_empty(model)
@@ -184,19 +205,57 @@ def compress_sequential():
         groupid = sample_discrete_log(scores)
         mixture.add_value(model, groupid, xy)
 
-    print 'found {} components'.format(len(mixture))
+    print 'sequential found {} components'.format(len(mixture))
     image = synthesize_image(model, mixture)
     scipy.misc.imsave(os.path.join(RESULTS, 'sequential.png'), image)
 
 
 @parsable.command
-def compress_gibbs(passes=100):
+def compress_gibbs(passes=PASSES):
     '''
     Compress image via gibbs sampling.
     '''
-    assert passes > 0
+    assert passes >= 0
     assert os.path.exists(SAMPLES), 'first create dataset'
-    print 'compressing via {} gibbs scans'.format(passes)
+    print 'prior+gibbs start {} passes'.format(passes)
+    model = ImageModel()
+    mixture = ImageModel.Mixture()
+    mixture.init_empty(model)
+    scores = numpy.zeros(1, dtype=numpy.float32)
+    assignments = {}
+
+    for i, xy in enumerate(json_stream_load(SAMPLES)):
+        scores.resize(len(mixture))
+        mixture.clustering.score(model.clustering, scores)
+        groupid = sample_discrete_log(scores)
+        mixture.add_value(model, groupid, xy)
+        assignments[i] = mixture.id_tracker.packed_to_global(groupid)
+
+    print 'prior+gibbs init with {} components'.format(len(mixture))
+
+    for _ in xrange(passes):
+        for i, xy in enumerate(json_stream_load(SAMPLES)):
+            groupid = mixture.id_tracker.global_to_packed(assignments[i])
+            mixture.remove_value(model, groupid, xy)
+            scores.resize(len(mixture))
+            mixture.score_value(model, xy, scores)
+            groupid = sample_discrete_log(scores)
+            mixture.add_value(model, groupid, xy)
+            assignments[i] = mixture.id_tracker.packed_to_global(groupid)
+
+    print 'prior+gibbs found {} components'.format(len(mixture))
+    image = synthesize_image(model, mixture)
+    scipy.misc.imsave(os.path.join(RESULTS, 'prior_gibbs.png'), image)
+
+
+@parsable.command
+def compress_seq_gibbs(passes=PASSES):
+    '''
+    Compress image via sequentiall-initialized gibbs sampling.
+    '''
+    assert passes >= 1
+    assert os.path.exists(SAMPLES), 'first create dataset'
+    print 'seq+gibbs start {} passes'.format(passes)
     model = ImageModel()
     mixture = ImageModel.Mixture()
     mixture.init_empty(model)
@@ -210,6 +269,8 @@ def compress_gibbs(passes=100):
         mixture.add_value(model, groupid, xy)
         assignments[i] = mixture.id_tracker.packed_to_global(groupid)
 
+    print 'seq+gibbs init with {} components'.format(len(mixture))
+
     for _ in xrange(passes - 1):
         for i, xy in enumerate(json_stream_load(SAMPLES)):
             groupid = mixture.id_tracker.global_to_packed(assignments[i])
@@ -220,9 +281,9 @@ def compress_gibbs(passes=100):
             mixture.add_value(model, groupid, xy)
             assignments[i] = mixture.id_tracker.packed_to_global(groupid)
 
-    print 'found {} components'.format(len(mixture))
+    print 'seq+gibbs found {} components'.format(len(mixture))
     image = synthesize_image(model, mixture)
-    scipy.misc.imsave(os.path.join(RESULTS, 'gibbs.png'), image)
+    scipy.misc.imsave(os.path.join(RESULTS, 'seq_gibbs.png'), image)
 
 
 def json_loop_load(filename):
@@ -232,8 +293,8 @@ def json_loop_load(filename):
 
 
 def annealing_schedule(passes):
-    assert passes > 1
     passes = float(passes)
+    assert passes >= 1
     add_rate = passes
     remove_rate = passes - 1
     state = add_rate
@@ -247,13 +308,13 @@ def annealing_schedule(passes):
 
 
 @parsable.command
-def compress_annealing(passes=100):
+def compress_annealing(passes=PASSES):
     '''
     Compress image via subsample annealing.
     '''
-    assert passes > 1
+    assert passes >= 1
     assert os.path.exists(SAMPLES), 'first create dataset'
-    print 'compressing via {} subsample annealing passes'.format(passes)
+    print 'annealing start {} passes'.format(passes)
     model = ImageModel()
     mixture = ImageModel.Mixture()
     mixture.init_empty(model)
@@ -278,7 +339,7 @@ def compress_annealing(passes=100):
             groupid = mixture.id_tracker.global_to_packed(assignments.pop(i))
             mixture.remove_value(model, groupid, xy)
 
-    print 'found {} components'.format(len(mixture))
+    print 'annealing found {} components'.format(len(mixture))
     image = synthesize_image(model, mixture)
     scipy.misc.imsave(os.path.join(RESULTS, 'annealing.png'), image)
 
@@ -294,15 +355,21 @@ def clean():
 
 
 @parsable.command
-def run(sample_count=10000, passes=100):
+def run(sample_count=SAMPLE_COUNT, passes=PASSES):
     '''
     Generate all datasets and run all algorithms.
     '''
     create_dataset(sample_count)
-    compress_sequential()
-    compress_gibbs(passes)
-    compress_annealing(passes)
 
+    procs = []
+    procs.append(Process(target=compress_sequential))
+    procs.append(Process(target=compress_gibbs, args=(passes,)))
+    procs.append(Process(target=compress_annealing, args=(passes,)))
+    procs.append(Process(target=compress_seq_gibbs, args=(passes,)))
+    for proc in procs:
+        proc.start()
+    for proc in procs:
+        proc.join()
 
 if __name__ == '__main__':
     parsable.dispatch()

@@ -70,16 +70,21 @@ def sample_discrete(probs, total=None):
     """
     if total is None:
         total = float(sum(probs))
-    dart = numpy.random.rand() * total
-    running = 0.0
-    for i, prob in enumerate(probs):
-        running += prob
-        if running >= dart:
-            return i
+    for attempt in xrange(10):
+        dart = numpy.random.rand() * total
+        for i, prob in enumerate(probs):
+            dart -= prob
+            if dart <= 0:
+                return i
     LOG.error(
         'imprecision in sample_discrete',
         dict(total=total, dart=dart, probs=probs))
-    raise ValueError('imprecision in sample_discrete')
+    raise ValueError('\n  '.join([
+        'imprecision in sample_discrete:',
+        'total = {}'.format(total),
+        'dart = {}'.format(dart),
+        'probs = {}'.format(probs),
+    ]))
 
 
 def sample_normal(mu, sigmasq):

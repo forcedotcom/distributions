@@ -1,18 +1,27 @@
-<table>
-  <tr>
-    <th>Original</th>
-    <th>Sequential</th>
-  </tr>
-  <tr>
-    <td><img src='results/original.png' /></th>
-    <td><img src='results/sequential.png' /></th>
-  </tr>
-  <tr>
-    <th>Gibbs</th>
-    <th>Annealing</th>
-  </tr>
-  <tr>
-    <td><img src='results/gibbs.png' /></th>
-    <td><img src='results/annealing.png' /></th>
-  </tr>
-</table>
+<head>
+  <title>Compressing an image via the Mixture API</title>
+</head>
+<body>
+  <table>
+    <tr>
+      <th>Posterior</th>
+      <th>Samples</th>
+      <th>Prior+Gibbs</th>
+    </tr>
+    <tr>
+      <td><img src='results/original.png' /></th>
+      <td><img src='results/samples.png' /></th>
+      <td><img src='results/prior_gibbs.png' /></th>
+    </tr>
+    <tr>
+      <th>Sequential</th>
+      <th>Sequential+Gibbs</th>
+      <th>Anneal Subsample</th>
+    </tr>
+    <tr>
+      <td><img src='results/sequential.png' /></th>
+      <td><img src='results/seq_gibbs.png' /></th>
+      <td><img src='results/annealing.png' /></th>
+    </tr>
+  </table>
+</body>

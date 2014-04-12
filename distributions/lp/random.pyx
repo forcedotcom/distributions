@@ -28,6 +28,8 @@
 from libc.math cimport exp
 from libcpp.vector cimport vector
 from libcpp.utility cimport pair
+cimport numpy
+numpy.import_array()
 from python cimport PyObject
 from distributions.rng_cc cimport rng_t
 from distributions.global_rng cimport get_rng
@@ -38,16 +40,19 @@ ctypedef PyObject* O
 cdef extern from "distributions/random.hpp" namespace "distributions":
     cdef pair[size_t, float] sample_prob_from_scores_overwrite (
             rng_t & rng,
-            vector[float] & scores)
+            vector[float] & scores) nogil
     cdef float score_from_scores_overwrite (
             rng_t & rng,
             size_t sample,
-            vector[float] & scores)
-    cdef pair[O, O] _sample_pair_from_urn \
+            vector[float] & scores) nogil
+    cdef pair[O, O] sample_pair_from_urn_cc \
             "distributions::sample_pair_from_urn<PyObject *>" (
             rng_t & rng,
             vector[O] & urn) nogil
-
+    cdef size_t sample_discrete_cc "distributions::sample_discrete" (
+            rng_t & rng,
+            size_t dim,
+            const float * probs) nogil
 
 cdef class RNG:
     cdef rng_t * ptr
@@ -82,5 +87,11 @@ def sample_pair_from_urn(list urn):
     cdef vector[O] _urn
     for item in urn:
         _urn.push_back(<O> item)
-    cdef pair[O, O] result = _sample_pair_from_urn(get_rng()[0], _urn)
+    cdef pair[O, O] result = sample_pair_from_urn_cc(get_rng()[0], _urn)
     return (<object> result.first, <object> result.second)
+
+
+def sample_discrete(RNG rng, numpy.ndarray[numpy.float32_t, ndim=1] probs):
+    cdef size_t size = probs.shape[0]
+    cdef float * data = <float *> probs.data
+    return sample_discrete_cc(rng.ptr[0], size, data)

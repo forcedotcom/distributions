@@ -33,7 +33,7 @@ from collections import defaultdict
 def scores_to_probs(scores):
     scores = numpy.array(scores)
     scores -= scores.max()
-    probs = numpy.exp(scores)
+    probs = numpy.exp(scores, out=scores)
     probs /= probs.sum()
     return probs
 
