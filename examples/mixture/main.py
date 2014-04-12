@@ -1,5 +1,6 @@
 import os
 import numpy
+import scipy
 import scipy.misc
 from distributions.dbg.random import sample_discrete, sample_discrete_log
 from distributions.lp.models.nich import NormalInverseChiSq
@@ -12,15 +13,15 @@ parsable = parsable.Parsable()
 ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(ROOT, 'data')
 RESULTS = os.path.join(ROOT, 'results')
-IMAGE = os.path.join(DATA, 'lena.png')
 SAMPLES = os.path.join(DATA, 'samples.json.gz')
+IMAGE = scipy.lena()
 
 
 class ImageModel(object):
     def __init__(self):
         self.clustering = PitmanYor.model_load({
-            'alpha': numpy.exp(-1),
-            'd': 0,
+            'alpha': 1.0,
+            'd': 0.2,
         })
         self.feature = NormalInverseChiSq.model_load({
             'mu': 0.0,
@@ -83,12 +84,28 @@ def sample_from_2d_array(image, sample_count):
         yield (x * x_scale - 1.0, y * y_scale - 1.0)
 
 
+def synthesize_2d_array(model, mixture):
+    width, height = IMAGE.shape
+    image = numpy.zeros((width, height))
+    scores = numpy.zeros(len(mixture), dtype=numpy.float32)
+    x_scale = 2.0 / (width - 1)
+    y_scale = 2.0 / (height - 1)
+    for x in xrange(width):
+        for y in xrange(height):
+            xy = (x * x_scale - 1.0, y * y_scale - 1.0)
+            mixture.score_value(model, xy, scores)
+            prob = numpy.exp(scores).sum()
+            image[x, y] = prob
+    image *= 255 / image.max()
+    return image
+
+
 @parsable.command
 def create_dataset(sample_count=10000):
     '''
     Extract dataset from image.
     '''
-    image = -1.0 * scipy.misc.imread(IMAGE)
+    image = -1.0 * IMAGE
     image -= image.min()
     samples = sample_from_2d_array(image, sample_count)
     json_stream_dump(samples, SAMPLES)
@@ -103,12 +120,13 @@ def compress_sequential():
     model = ImageModel()
     mixture = ImageModel.Mixture()
     mixture.init_empty(model)
-    scores = numpy.zeros((1,), dtype=numpy.float32)
+    scores = numpy.zeros(1, dtype=numpy.float32)
     for xy in json_stream_load(SAMPLES):
         scores.resize(len(mixture))
         mixture.score_value(model, xy, scores)
         groupid = sample_discrete_log(scores)
         mixture.add_value(model, groupid, xy)
+    print 'found {} components'.format(len(mixture))
     # TODO save model
     # TODO synthesize image
 
@@ -129,7 +147,6 @@ def compress_annealing(passes=100):
     raise NotImplementedError()
 
 
-@parsable.command
 def test(sample_count=100):
     create_dataset(sample_count)
     compress_sequential()
