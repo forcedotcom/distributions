@@ -275,7 +275,7 @@ def compress_annealing(passes=100):
             assignments[i] = mixture.id_tracker.packed_to_global(groupid)
         else:
             i, xy = to_remove.next()
-            groupid = mixture.id_tracker.global_to_packed(assignments[i])
+            groupid = mixture.id_tracker.global_to_packed(assignments.pop(i))
             mixture.remove_value(model, groupid, xy)
 
     print 'found {} components'.format(len(mixture))
