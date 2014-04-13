@@ -45,8 +45,8 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 DATA = os.path.join(ROOT, 'data')
 RESULTS = os.path.join(ROOT, 'results')
 SAMPLES = os.path.join(DATA, 'samples.json.gz')
-IMAGE = scipy.lena()
-SAMPLE_COUNT = 100000
+IMAGE = scipy.misc.imread(os.path.join(ROOT, 'fox.png'))
+SAMPLE_COUNT = 10000
 PASSES = 10
 
 
@@ -58,13 +58,13 @@ for dirname in [DATA, RESULTS]:
 class ImageModel(object):
     def __init__(self):
         self.clustering = PitmanYor.model_load({
-            'alpha': 1000.0,
+            'alpha': 100.0,
             'd': 0.1,
         })
         self.feature = NormalInverseChiSq.model_load({
             'mu': 0.0,
-            'kappa': 0.01,
-            'sigmasq': 0.001,
+            'kappa': 0.1,
+            'sigmasq': 0.01,
             'nu': 1.0,
         })
 
@@ -129,7 +129,7 @@ def sample_from_image(image, sample_count):
     x_pmf = image.sum(axis=1)
     y_pmfs = image.copy()
     for y_pmf in y_pmfs:
-        y_pmf /= y_pmf.sum()
+        y_pmf /= (y_pmf.sum() + 1e-8)
 
     x_scale = 2.0 / (image.shape[0] - 1)
     y_scale = 2.0 / (image.shape[1] - 1)
