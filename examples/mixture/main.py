@@ -48,6 +48,7 @@ SAMPLES = os.path.join(DATA, 'samples.json.gz')
 IMAGE = scipy.misc.imread(os.path.join(ROOT, 'fox.png'))
 SAMPLE_COUNT = 10000
 PASSES = 10
+EMPTY_GROUP_COUNT = 10
 
 
 for dirname in [DATA, RESULTS]:
@@ -78,17 +79,18 @@ class ImageModel(object):
         def __len__(self):
             return len(self.clustering)
 
-        def init_empty(self, model):
+        def init(self, model, empty_group_count=EMPTY_GROUP_COUNT):
             self.clustering.clear()
             self.feature_x.clear()
             self.feature_y.clear()
             self.id_tracker.init()
 
-            # Add a single empty group
-            self.clustering.append(0)
-            self.feature_x.add_group(model.feature)
-            self.feature_y.add_group(model.feature)
-            self.id_tracker.add_group()
+            assert empty_group_count >= 1
+            for _ in xrange(empty_group_count):
+                self.clustering.append(0)
+                self.feature_x.add_group(model.feature)
+                self.feature_y.add_group(model.feature)
+                self.id_tracker.add_group()
 
             self.clustering.init(model.clustering)
             self.feature_x.init(model.feature)
@@ -196,7 +198,7 @@ def compress_sequential():
     print 'sequential start'
     model = ImageModel()
     mixture = ImageModel.Mixture()
-    mixture.init_empty(model)
+    mixture.init(model)
     scores = numpy.zeros(1, dtype=numpy.float32)
 
     for xy in json_stream_load(SAMPLES):
@@ -220,7 +222,7 @@ def compress_gibbs(passes=PASSES):
     print 'prior+gibbs start {} passes'.format(passes)
     model = ImageModel()
     mixture = ImageModel.Mixture()
-    mixture.init_empty(model)
+    mixture.init(model)
     scores = numpy.zeros(1, dtype=numpy.float32)
     assignments = {}
 
@@ -258,7 +260,7 @@ def compress_seq_gibbs(passes=PASSES):
     print 'seq+gibbs start {} passes'.format(passes)
     model = ImageModel()
     mixture = ImageModel.Mixture()
-    mixture.init_empty(model)
+    mixture.init(model)
     scores = numpy.zeros(1, dtype=numpy.float32)
     assignments = {}
 
@@ -317,7 +319,7 @@ def compress_annealing(passes=PASSES):
     print 'annealing start {} passes'.format(passes)
     model = ImageModel()
     mixture = ImageModel.Mixture()
-    mixture.init_empty(model)
+    mixture.init(model)
     scores = numpy.zeros(1, dtype=numpy.float32)
     assignments = {}
 
@@ -361,11 +363,12 @@ def run(sample_count=SAMPLE_COUNT, passes=PASSES):
     '''
     create_dataset(sample_count)
 
-    procs = []
-    procs.append(Process(target=compress_sequential))
-    procs.append(Process(target=compress_gibbs, args=(passes,)))
-    procs.append(Process(target=compress_annealing, args=(passes,)))
-    procs.append(Process(target=compress_seq_gibbs, args=(passes,)))
+    procs = [
+        Process(target=compress_sequential),
+        Process(target=compress_gibbs, args=(passes,)),
+        Process(target=compress_annealing, args=(passes,)),
+        Process(target=compress_seq_gibbs, args=(passes,)),
+    ]
     for proc in procs:
         proc.start()
     for proc in procs:

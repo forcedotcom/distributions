@@ -115,7 +115,7 @@ std::vector<count_t> Clustering<count_t>::PitmanYor::sample_assignments (
 
 
     // add all remaining entries
-    for (count_t i = 1; i < size; ++i) {
+    for (count_t i = 1; DIST_LIKELY(i < size); ++i) {
 
         // This is cool - for fixed alpha, d, the likelihood will roughly
         // exponentially decay along the likelihood vector.  And in sampling
@@ -126,7 +126,7 @@ std::vector<count_t> Clustering<count_t>::PitmanYor::sample_assignments (
         count_t assign = sample_from_likelihoods(rng, likelihoods, total);
         assignments[i] = assign;
 
-        if (assign == table_count) {
+        if (DIST_UNLIKELY(assign == table_count)) {
 
             // new table
             table_count += 1;
@@ -149,16 +149,24 @@ float Clustering<count_t>::PitmanYor::score_counts (
         const std::vector<count_t> & counts) const
 {
     double score = 0.0;
-    count_t totalfpos = 0;
+    size_t sample_size = 0;
+    size_t nonempty_group_count = 0;
 
-    for (count_t c = 0; c < counts.size(); ++c) {
-        for (count_t fpos = 0; fpos < counts[c]; ++fpos) {
-            if (fpos == 0) {
-                score += score_add_value(fpos, c, totalfpos);
-            } else {
-                score += score_add_value(fpos, c + 1, totalfpos);
+    for (size_t count : counts) {
+        if (count) {
+            size_t group_size = 0;
+
+            score += score_add_value(
+                group_size++,
+                nonempty_group_count++,
+                sample_size++);
+
+            while (group_size < count) {
+                score += score_add_value(
+                    group_size++,
+                    nonempty_group_count,
+                    sample_size++);
             }
-            ++totalfpos;
         }
     }
 
@@ -217,6 +225,7 @@ template<class count_t>
 float Clustering<count_t>::LowEntropy::score_counts (
         const std::vector<count_t> & counts) const
 {
+    // TODO allow multiple empty groups
     float score = 0.0;
     count_t sample_size = 0;
     for (count_t count : counts) {
@@ -292,6 +301,9 @@ std::vector<count_t> Clustering<count_t>::LowEntropy::sample_assignments (
 //----------------------------------------------------------------------------
 // Explicit template instantiation
 
-template struct Clustering<int>;
+template struct Clustering<int32_t>;
+//template struct Clustering<int64_t>;
+//template struct Clustering<uint32_t>;
+//template struct Clustering<uint64_t>;
 
 } // namespace distributions

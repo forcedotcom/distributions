@@ -26,8 +26,8 @@
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import math
-import random
 import numpy
+import numpy.random
 import functools
 from nose import SkipTest
 from nose.tools import (
@@ -211,7 +211,7 @@ def test_add_remove(Model, EXAMPLE):
         model.score_group(group),
         err_msg='p(x1,...,xn) != p(x1) p(x2|x1) p(xn|...)')
 
-    random.shuffle(values)
+    numpy.random.shuffle(values)
 
     for value in values:
         group.remove_value(model, value)
@@ -222,7 +222,7 @@ def test_add_remove(Model, EXAMPLE):
         group_empty.dump(),
         err_msg='group + values - values != group')
 
-    random.shuffle(values)
+    numpy.random.shuffle(values)
     for value in values:
         group.add_value(model, value)
     assert_close(
@@ -236,11 +236,11 @@ def test_add_merge(Model, EXAMPLE):
     # Test group_add_value, group_merge
     model = Model.model_load(EXAMPLE['model'])
     values = EXAMPLE['values'][:]
-    random.shuffle(values)
+    numpy.random.shuffle(values)
     group = model.group_create(values)
 
     for i in xrange(len(values) + 1):
-        random.shuffle(values)
+        numpy.random.shuffle(values)
         group1 = model.group_create(values[:i])
         group2 = model.group_create(values[i:])
         group1.merge(model, group2)
@@ -397,7 +397,10 @@ def test_mixture_score(Model, EXAMPLE):
     def check_scores():
         expected = [model.score_value(group, value) for group in groups]
         actual = numpy.zeros(len(mixture), dtype=numpy.float32)
+        noise = numpy.random.randn(len(actual))
+        actual += noise
         mixture.score_value(model, value, actual)
+        actual -= noise
         assert_close(actual, expected, err_msg='scores')
         return actual
 

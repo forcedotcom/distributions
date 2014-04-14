@@ -29,6 +29,7 @@ import math
 import functools
 from collections import defaultdict
 import numpy
+import numpy.random
 from nose import SkipTest
 from nose.tools import (
     assert_true,
@@ -154,22 +155,32 @@ def test_mixture(Model, EXAMPLE):
     sample_size = 1000
     value = model.sample_assignments(sample_size)
     assignments = dict(enumerate(value))
-    counts = count_assignments(assignments)
-    group_count = len(counts)
-    assert_greater(group_count, 1, "test is inaccurate")
-    counts = counts + [0]
+    nonempty_counts = count_assignments(assignments)
+    nonempty_group_count = len(nonempty_counts)
+    assert_greater(nonempty_group_count, 1, "test is inaccurate")
 
-    expected = [
-        model.score_add_value(group_size, group_count, sample_size)
-        for group_size in counts
-    ]
+    for empty_group_count in [1, 10]:
+        print 'empty_group_count =', empty_group_count
+        counts = nonempty_counts + [0] * empty_group_count
+        numpy.random.shuffle(counts)
 
-    mixture = Model.Mixture()
-    for count in counts:
-        mixture.append(count)
-    mixture.init(model)
-    actual = numpy.zeros(len(counts), dtype=numpy.float32)
-    mixture.score(model, actual)
+        expected = [
+            model.score_add_value(
+                group_size,
+                nonempty_group_count,
+                sample_size,
+                empty_group_count)
+            for group_size in counts
+        ]
 
-    print 'counts =', counts
-    assert_close(actual, expected)
+        mixture = Model.Mixture()
+        for count in counts:
+            mixture.append(count)
+        mixture.init(model)
+        noise = numpy.random.randn(len(counts))
+        actual = numpy.zeros(len(counts), dtype=numpy.float32)
+        actual[:] = noise
+        mixture.score(model, actual)
+
+        print 'counts =', counts
+        assert_close(actual, expected)

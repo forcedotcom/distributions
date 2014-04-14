@@ -181,9 +181,9 @@ inline size_t sample_discrete (
         const float * probs)
 {
     float t = sample_unif01(rng);
-    for (size_t i = 0; i < dim - 1; ++i) {
+    for (size_t i = 0; DIST_LIKELY(i < dim - 1); ++i) {
         t -= probs[i];
-        if (t < 0) {
+        if (DIST_UNLIKELY(t < 0)) {
             return i;
         }
     }
@@ -200,9 +200,9 @@ inline size_t sample_from_likelihoods (
 
     float t = total_likelihood * sample_unif01(rng);
 
-    for (size_t i = 0; i < size; ++i) {
+    for (size_t i = 0; DIST_LIKELY(i < size); ++i) {
         t -= likelihoods[i];
-        if (t < 0) {
+        if (DIST_UNLIKELY(t < 0)) {
             return i;
         }
     }

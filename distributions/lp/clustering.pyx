@@ -58,8 +58,9 @@ cdef extern from 'distributions/clustering.hpp':
         vector[int] sample_assignments(int size, rng_t & rng) nogil except +
         cppclass Mixture:
             vector[int] counts
-            int sample_size
-            VectorFloat shifted_scores
+            #unordered_set[uint32_t] empty_groupids
+            #int sample_size
+            #VectorFloat shifted_scores
             void init (PitmanYor_cc &) nogil except +
             bint add_value (PitmanYor_cc &, size_t) nogil except +
             bint remove_value (PitmanYor_cc &, size_t) nogil except +
@@ -67,12 +68,14 @@ cdef extern from 'distributions/clustering.hpp':
         float score_counts(vector[int] & counts) nogil except +
         float score_add_value (
                 int group_size,
-                int group_count,
-                int sample_size) nogil except +
+                int nonempty_group_count,
+                int sample_size,
+                int empty_group_count) nogil except +
         float score_remove_value (
                 int group_size,
-                int group_count,
-                int sample_size) nogil except +
+                int nonempty_group_count,
+                int sample_size,
+                int empty_group_count) nogil except +
 
     cppclass LowEntropy_cc "distributions::Clustering<int>::LowEntropy":
         int dataset_size
@@ -80,12 +83,14 @@ cdef extern from 'distributions/clustering.hpp':
         float score_counts(vector[int] & counts) nogil except +
         float score_add_value (
                 int group_size,
-                int group_count,
-                int sample_size) nogil except +
+                int nonempty_group_count,
+                int sample_size,
+                int empty_group_count) nogil except +
         float score_remove_value (
                 int group_size,
-                int group_count,
-                int sample_size) nogil except +
+                int nonempty_group_count,
+                int sample_size,
+                int empty_group_count) nogil except +
 
 
 cpdef list count_assignments(dict assignments):
@@ -147,19 +152,26 @@ cdef class PitmanYor_cy:
     def score_add_value(
             self,
             int group_size,
-            int group_count,
-            int sample_size):
-        return self.ptr.score_add_value(group_size, group_count, sample_size)
+            int nonempty_group_count,
+            int sample_size,
+            int empty_group_count=1):
+        return self.ptr.score_add_value(
+            group_size,
+            nonempty_group_count,
+            sample_size,
+            empty_group_count)
 
     def score_remove_value(
             self,
             int group_size,
-            int group_count,
-            int sample_size):
+            int nonempty_group_count,
+            int sample_size,
+            int empty_group_count=1):
         return self.ptr.score_remove_value(
             group_size,
-            group_count,
-            sample_size)
+            nonempty_group_count,
+            sample_size,
+            empty_group_count)
 
 
     #-------------------------------------------------------------------------
@@ -259,19 +271,26 @@ cdef class LowEntropy_cy:
     def score_add_value(
             self,
             int group_size,
-            int group_count,
-            int sample_size):
-        return self.ptr.score_add_value(group_size, group_count, sample_size)
+            int nonempty_group_count,
+            int sample_size,
+            int empty_group_count=1):
+        return self.ptr.score_add_value(
+            group_size,
+            nonempty_group_count,
+            sample_size,
+            empty_group_count)
 
     def score_remove_value(
             self,
             int group_size,
-            int group_count,
-            int sample_size):
+            int nonempty_group_count,
+            int sample_size,
+            int empty_group_count=1):
         return self.ptr.score_remove_value(
             group_size,
-            group_count,
-            sample_size)
+            nonempty_group_count,
+            sample_size,
+            empty_group_count)
 
     #-------------------------------------------------------------------------
     # Examples

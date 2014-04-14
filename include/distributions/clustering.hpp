@@ -28,6 +28,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <unordered_set>
 #include <distributions/common.hpp>
 #include <distributions/random.hpp>
 #include <distributions/vector.hpp>
@@ -35,7 +36,9 @@
 namespace distributions
 {
 
-// This is explicitly instantiated for: int
+// This is explicitly instantiated for:
+// - int32_t
+// To add datatypes, edit the bottom of src/clustering.cc
 template<class count_t>
 struct Clustering
 {
@@ -78,92 +81,75 @@ struct PitmanYor
 
     float score_add_value (
             count_t group_size,
-            count_t group_count,
-            count_t sample_size) const
+            count_t nonempty_group_count,
+            count_t sample_size,
+            count_t empty_group_count = 1) const
     {
         // What is the probability (score) of adding a customer
         // to a table which currently has:
         //
         // group_size people sitting at it (can be zero)
-        // group_count tables that have people sitting at them
+        // nonempty_group_count tables that have people sitting at them
         // sample_size people seated total
         //
         // In particular, if group_size == 0, this is the prob of sitting
-        // at a new table. In that case, group_count does not
+        // at a new table. In that case, nonempty_group_count does not
         // include this "new" table, as it is obviously unoccupied.
 
         if (group_size == 0) {
-            return fast_log(
-                (alpha + d * group_count) / (sample_size + alpha));
+            float numer = alpha + d * nonempty_group_count;
+            float denom = (sample_size + alpha) * empty_group_count;
+            return fast_log(numer / denom);
         } else {
-            return fast_log(
-                (group_size - d) / (sample_size + alpha));
+            return fast_log((group_size - d) / (sample_size + alpha));
         }
     }
 
     float score_remove_value(
             count_t group_size,
-            count_t group_count,
-            count_t sample_size) const
+            count_t nonempty_group_count,
+            count_t sample_size,
+            count_t empty_group_count = 1) const
     {
         group_size -= 1;
         if (group_size == 0) {
-            --group_count;
+            --nonempty_group_count;
         }
         sample_size -= 1;
 
-        return -score_add_value(group_size, group_count, sample_size);
+        return -score_add_value(
+            group_size,
+            nonempty_group_count,
+            sample_size,
+            empty_group_count);
     }
 
+    // HACK gcc doesn't want Mixture defined outside of PitmanYor
     struct Mixture
     {
         typedef PitmanYor Model;
 
         std::vector<count_t> counts;
-        size_t empty_groupid;
+        std::unordered_set<size_t> empty_groupids;
         count_t sample_size;
         VectorFloat shifted_scores;
-
-    private:
-
-        void _validate () const
-        {
-            DIST_ASSERT2(
-                counts[empty_groupid] == 0,
-                "empty_group is not empty");
-            if (DIST_DEBUG_LEVEL >= 3) {
-                for (size_t i = 0; i < counts.size(); ++i) {
-                    if (i != empty_groupid) {
-                        DIST_ASSERT(counts[i], "extra empty group: " << i);
-                    }
-                }
-            }
-        }
-
-        void _update_group (const Model & model, size_t groupid)
-        {
-            const auto nonempty_group_count = counts.size() - 1;
-            const auto group_size = counts[groupid];
-            shifted_scores[groupid] =
-                fast_log(group_size
-                        ? group_size - model.d
-                        : model.alpha + model.d * nonempty_group_count);
-        }
-
-    public:
 
         void init (const Model & model)
         {
             const size_t group_count = counts.size();
             sample_size = 0;
             shifted_scores.resize(group_count);
+            empty_groupids.clear();
             for (size_t i = 0; i < group_count; ++i) {
                 sample_size += counts[i];
-                _update_group(model, i);
-                if (counts[i] == 0) {
-                    empty_groupid = i;
+                if (counts[i]) {
+                    _update_nonempty_group(model, i);
+                } else {
+                    empty_groupids.insert(i);
                 }
             }
+            DIST_ASSERT(empty_groupids.size(), "missing empty groups");
+            _update_empty_groups(model);
             _validate();
         }
 
@@ -172,17 +158,20 @@ struct PitmanYor
                 size_t groupid,
                 count_t count = 1)
         {
+            DIST_ASSERT1(count, "cannot add zero values");
             DIST_ASSERT2(groupid < counts.size(), "bad groupid: " << groupid);
+
+            const bool add_group = (counts[groupid] == 0);
             counts[groupid] += count;
             sample_size += count;
-            _update_group(model, groupid);
+            _update_nonempty_group(model, groupid);
 
-            bool add_group = (groupid == empty_groupid);
             if (DIST_UNLIKELY(add_group)) {
-                empty_groupid = counts.size();
+                empty_groupids.erase(groupid);
+                empty_groupids.insert(counts.size());
                 counts.push_back(0);
                 shifted_scores.push_back(0);
-                _update_group(model, empty_groupid);
+                _update_empty_groups(model);
             }
             _validate();
 
@@ -194,9 +183,10 @@ struct PitmanYor
                 size_t groupid,
                 count_t count = 1)
         {
+            DIST_ASSERT1(count, "cannot remove zero values");
             DIST_ASSERT2(groupid < counts.size(), "bad groupid: " << groupid);
             DIST_ASSERT2(
-                groupid != empty_groupid,
+                counts[groupid],
                 "cannot remove value from empty group");
             DIST_ASSERT2(
                 count <= counts[groupid],
@@ -204,22 +194,24 @@ struct PitmanYor
 
             counts[groupid] -= count;
             sample_size -= count;
+            const bool remove_group = (counts[groupid] == 0);
 
-            bool remove_group = (counts[groupid] == 0);
             if (DIST_LIKELY(not remove_group)) {
-                _update_group(model, groupid);
+                _update_nonempty_group(model, groupid);
             } else {
                 const size_t group_count = counts.size() - 1;
                 if (groupid != group_count) {
-                    counts[groupid] = counts.back();
-                    shifted_scores[groupid] = shifted_scores.back();
-                    if (empty_groupid == group_count) {
-                        empty_groupid = groupid;
+                    if (counts.back() == 0) {
+                        empty_groupids.erase(group_count);
+                        empty_groupids.insert(groupid);
+                    } else {
+                        counts[groupid] = counts.back();
+                        shifted_scores[groupid] = shifted_scores.back();
                     }
                 }
-                counts.resize(group_count);
-                shifted_scores.resize(group_count);
-                _update_group(model, empty_groupid);
+                counts.pop_back();
+                shifted_scores.pop_back();;
+                _update_empty_groups(model);
             }
             _validate();
 
@@ -230,12 +222,45 @@ struct PitmanYor
         {
             const size_t size = counts.size();
             const float shift = -fast_log(sample_size + model.alpha);
-            const float * __restrict__ in =
-                VectorFloat_data(shifted_scores);
+            const float * __restrict__ in = VectorFloat_data(shifted_scores);
             float * __restrict__ out = VectorFloat_data(scores);
 
             for (size_t i = 0; i < size; ++i) {
                 out[i] = in[i] + shift;
+            }
+        }
+
+    private:
+
+        void _validate () const
+        {
+            DIST_ASSERT1(empty_groupids.size(), "missing empty groups");
+            if (DIST_DEBUG_LEVEL >= 2) {
+                for (size_t i = 0; i < counts.size(); ++i) {
+                    bool count_is_zero = (counts[i] == 0);
+                    bool is_empty =
+                        (empty_groupids.find(i) != empty_groupids.end());
+                    DIST_ASSERT_EQ(count_is_zero, is_empty);
+                }
+            }
+        }
+
+        void _update_nonempty_group (const Model & model, size_t groupid)
+        {
+            const auto group_size = counts[groupid];
+            DIST_ASSERT2(group_size, "expected nonempty group");
+            shifted_scores[groupid] = fast_log(group_size - model.d);
+        }
+
+        void _update_empty_groups (const Model & model)
+        {
+            size_t empty_group_count = empty_groupids.size();
+            size_t nonempty_group_count = counts.size() - empty_group_count;
+            float numer = model.alpha + model.d * nonempty_group_count;
+            float denom = empty_group_count;
+            const float shifted_score = fast_log(numer / denom);
+            for (size_t i : empty_groupids) {
+                shifted_scores[i] = shifted_score;
             }
         }
     };
@@ -257,8 +282,9 @@ struct LowEntropy
 
     float score_add_value (
             count_t group_size,
-            count_t group_count,
-            count_t sample_size) const
+            count_t nonempty_group_count,
+            count_t sample_size,
+            count_t empty_group_count = 1) const
     {
         // see `python derivations/clustering.py fast_log`
         const count_t very_large = 10000;
@@ -267,7 +293,8 @@ struct LowEntropy
             if (sample_size == dataset_size) {
                 return 0.f;
             } else {
-                return approximate_postpred_correction(sample_size);
+                return approximate_postpred_correction(sample_size)
+                    - fast_log(empty_group_count);
             }
         } else if (group_size > very_large) {
             float bigger = 1.f + group_size;
@@ -281,11 +308,16 @@ struct LowEntropy
 
     float score_remove_value (
             count_t group_size,
-            count_t group_count,
-            count_t sample_size) const
+            count_t nonempty_group_count,
+            count_t sample_size,
+            count_t empty_group_count = 1) const
     {
         group_size -= 1;
-        return -score_add_value(group_size, group_count, sample_size);
+        return -score_add_value(
+            group_size,
+            nonempty_group_count,
+            sample_size,
+            empty_group_count);
     }
 
 private:
