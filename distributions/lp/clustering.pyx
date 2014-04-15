@@ -32,6 +32,7 @@ numpy.import_array()
 from cython.operator cimport dereference as deref, preincrement as inc
 from distributions.rng_cc cimport rng_t
 from distributions.global_rng cimport get_rng
+from distributions.lp.unordered_set cimport unordered_set
 from distributions.lp.vector cimport VectorFloat, vector_float_to_ndarray
 from distributions.mixins import Serializable, ProtobufSerializable
 
@@ -58,9 +59,9 @@ cdef extern from 'distributions/clustering.hpp':
         vector[int] sample_assignments(int size, rng_t & rng) nogil except +
         cppclass Mixture:
             vector[int] counts
-            #unordered_set[uint32_t] empty_groupids
-            #int sample_size
-            #VectorFloat shifted_scores
+            unordered_set[size_t] empty_groupids
+            int sample_size
+            VectorFloat shifted_scores
             void init (PitmanYor_cc &) nogil except +
             bint add_value (PitmanYor_cc &, size_t) nogil except +
             bint remove_value (PitmanYor_cc &, size_t) nogil except +
@@ -195,6 +196,15 @@ cdef class PitmanYorMixture:
 
     def __len__(self):
         return self.ptr.counts.size()
+
+    property empty_groupids:
+        def __get__(self):
+            cdef PitmanYor_cc.Mixture * ptr = self.ptr
+            cdef unordered_set[size_t].iterator i = ptr.empty_groupids.begin()
+            cdef unordered_set[size_t].iterator end = ptr.empty_groupids.end()
+            while i != end:
+                yield deref(i)
+                inc(i)
 
     def append(self, int count):
         self.ptr.counts.push_back(count)

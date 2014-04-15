@@ -33,6 +33,7 @@ import numpy.random
 from nose import SkipTest
 from nose.tools import (
     assert_true,
+    assert_equal,
     assert_less,
     assert_greater,
     assert_is_instance,
@@ -184,3 +185,8 @@ def test_mixture(Model, EXAMPLE):
 
         print 'counts =', counts
         assert_close(actual, expected)
+
+        empty_groupids = frozenset(mixture.empty_groupids)
+        assert_equal(len(empty_groupids), empty_group_count)
+        for groupid in empty_groupids:
+            assert_equal(counts[groupid], 0)
