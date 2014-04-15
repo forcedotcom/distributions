@@ -40,7 +40,8 @@ from distributions.io.stream import json_stream_load, json_stream_dump
 
 DEFAULT_MAX_SIZE = 47
 
-TEMP = 'temp.clustering'
+ROOT = os.path.dirname(os.path.abspath(__file__))
+TEMP = os.path.join(ROOT, 'temp.clustering')
 if not os.path.exists(TEMP):
     os.makedirs(TEMP)
 
@@ -235,7 +236,7 @@ def postpred(subsample_size=10):
     fixing subsample size and varying cluster size and dataset size.
     '''
     size = subsample_size
-    max_sizes = [size] + [2, 3, 5, 8, 10, 15, 20, 30, 40, 50, 60]
+    max_sizes = [size] + [2, 3, 5, 8, 10, 15, 20, 30, 40, 50]
     max_sizes = sorted(set(s for s in max_sizes if s >= size))
     colors = get_color_range(len(max_sizes))
     pyplot.figure(figsize=(12, 8))

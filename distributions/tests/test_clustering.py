@@ -30,7 +30,6 @@ import functools
 from collections import defaultdict
 import numpy
 import numpy.random
-from nose import SkipTest
 from nose.tools import (
     assert_true,
     assert_equal,
@@ -119,10 +118,16 @@ def test_io(Model, EXAMPLE):
 @for_each_model()
 def test_sampler(Model, EXAMPLE):
     if Model.__name__ == 'LowEntropy':
-        raise SkipTest('FIXME LowEntropy.score_counts is not normalized')
+        # FIXME make LowEntropy.score more accurate
+        tol = 0.5
+        renormalize = True
+    else:
+        tol = 0.01
+        renormalize = False
 
     seed_all(0)
     for size in SIZES:
+        print 'size = {}'.format(size)
         model = Model()
         model.load(EXAMPLE)
         samples = []
@@ -139,8 +144,12 @@ def test_sampler(Model, EXAMPLE):
         total = sum(probs_dict.values())
         assert_less(
             abs(total - 1),
-            1e-2,
+            tol,
             'not normalized: {}'.format(total))
+
+        if renormalize:
+            for key in probs_dict:
+                probs_dict[key] /= total
 
         gof = discrete_goodness_of_fit(samples, probs_dict, plot=True)
         print '{} gof = {:0.3g}'.format(Model.__name__, gof)
