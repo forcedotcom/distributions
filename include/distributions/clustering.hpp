@@ -47,18 +47,19 @@ struct Clustering
 //----------------------------------------------------------------------------
 // Assignments
 
-struct trivial_hash
+template<class Key>
+struct TrivialHash
 {
-    typedef count_t argument_type;
+    typedef Key argument_type;
     typedef size_t result_type;
-    size_t operator() (const count_t & key) const
+    size_t operator() (const Key & key) const
     {
-        static_assert(sizeof(count_t) <= sizeof(size_t), "invalid count_t");
+        static_assert(sizeof(Key) <= sizeof(size_t), "invalid type");
         return key;
     }
 };
 
-typedef std::unordered_map<count_t, count_t, trivial_hash> Assignments;
+typedef std::unordered_map<count_t, count_t, TrivialHash<count_t>> Assignments;
 
 static std::vector<count_t> count_assignments (
         const Assignments & assignments);
@@ -130,7 +131,7 @@ struct PitmanYor
         typedef PitmanYor Model;
 
         std::vector<count_t> counts;
-        std::unordered_set<size_t> empty_groupids;
+        std::unordered_set<size_t, TrivialHash<size_t>> empty_groupids;
         count_t sample_size;
         VectorFloat shifted_scores;
 
