@@ -46,19 +46,20 @@ std::vector<count_t> Clustering<count_t>::count_assignments (
 
     std::vector<count_t> counts;
     for (auto pair : assignments) {
-        count_t gid = pair.second;
-        if (gid >= counts.size()) {
+        size_t gid = pair.second;
+        if (DIST_UNLIKELY(gid >= counts.size())) {
             counts.resize(gid + 1, 0);
         }
-        counts[gid]++;
+        ++counts[gid];
     }
 
-#ifndef NDEBUG2
-    if (not counts.empty()) {
-        count_t min_count = * std::min_element(counts.begin(), counts.end());
-        DIST_ASSERT(min_count > 0, "groups are not contiguous");
+    if (DIST_DEBUG_LEVEL >= 2) {
+        if (not counts.empty()) {
+            count_t min_count =
+                * std::min_element(counts.begin(), counts.end());
+            DIST_ASSERT(min_count > 0, "groups are not contiguous");
+        }
     }
-#endif // NDEBUG2
 
     return counts;
 }
