@@ -44,6 +44,7 @@ from distributions.tests.util import (
     assert_hasattr,
     assert_close,
 )
+from distributions.dbg.random import scores_to_probs
 require_cython()
 from distributions.lp.clustering import (
     count_assignments,
@@ -56,9 +57,7 @@ MODELS = {
     'LowEntropy': LowEntropy,
 }
 
-SAMPLE_COUNT = 1000
-MAX_SIZE = 5
-SIZES = range(2, MAX_SIZE + 1)
+SAMPLE_COUNT = 2000
 MIN_GOODNESS_OF_FIT = 1e-3
 
 
@@ -82,6 +81,7 @@ def for_each_model(*filters):
         def test_one_model(name):
             Model = MODELS[name]
             for EXAMPLE in iter_examples(Model):
+                seed_all(0)
                 test_fun(Model, EXAMPLE)
 
         @functools.wraps(test_fun)
@@ -107,7 +107,7 @@ def canonicalize(assignments):
 
 
 @for_each_model()
-def test_io(Model, EXAMPLE):
+def test_load_and_dump(Model, EXAMPLE):
     model = Model()
     model.load(EXAMPLE)
     expected = EXAMPLE
@@ -115,55 +115,128 @@ def test_io(Model, EXAMPLE):
     assert_close(expected, actual)
 
 
-@for_each_model()
-def test_sampler(Model, EXAMPLE):
-    if Model.__name__ == 'LowEntropy':
-        # FIXME make LowEntropy.score more accurate
-        tol = 0.5
-        renormalize = True
-    else:
-        tol = 0.01
-        renormalize = False
-
-    seed_all(0)
-    for size in SIZES:
+def iter_valid_sizes(example, max_size, min_size=2):
+    max_size = 5
+    dataset_size = example.get('dataset_size', float('inf'))
+    sizes = [
+        size
+        for size in xrange(min_size, max_size + 1)
+        if size <= dataset_size
+    ]
+    assert sizes, 'no valid sizes to test'
+    for size in sizes:
         print 'size = {}'.format(size)
+        yield size
+
+
+@for_each_model()
+def test_sample_matches_score_counts(Model, EXAMPLE):
+    for size in iter_valid_sizes(EXAMPLE, max_size=6):
         model = Model()
         model.load(EXAMPLE)
+
         samples = []
         probs_dict = {}
         for _ in xrange(SAMPLE_COUNT):
             value = model.sample_assignments(size)
-            assignments = dict(enumerate(value))
-            counts = count_assignments(assignments)
-            prob = math.exp(model.score_counts(counts))
             sample = canonicalize(value)
             samples.append(sample)
-            probs_dict[sample] = prob
+            if sample not in probs_dict:
+                assignments = dict(enumerate(value))
+                counts = count_assignments(assignments)
+                prob = math.exp(model.score_counts(counts))
+                probs_dict[sample] = prob
 
+        # renormalize here; test normalization separately
         total = sum(probs_dict.values())
-        assert_less(
-            abs(total - 1),
-            tol,
-            'not normalized: {}'.format(total))
-
-        if renormalize:
-            for key in probs_dict:
-                probs_dict[key] /= total
+        for key in probs_dict:
+            probs_dict[key] /= total
 
         gof = discrete_goodness_of_fit(samples, probs_dict, plot=True)
         print '{} gof = {:0.3g}'.format(Model.__name__, gof)
         assert_greater(gof, MIN_GOODNESS_OF_FIT)
 
 
+@for_each_model()
+def test_score_counts_is_normalized(Model, EXAMPLE):
+    if Model.__name__ == 'LowEntropy':
+        print 'WARNING LowEntropy.score has low-precision normalization'
+        tol = 1e0
+    else:
+        tol = 1e-2
+
+    for sample_size in iter_valid_sizes(EXAMPLE, max_size=10):
+        model = Model()
+        model.load(EXAMPLE)
+
+        probs_dict = {}
+        for _ in xrange(SAMPLE_COUNT):
+            value = model.sample_assignments(sample_size)
+            sample = canonicalize(value)
+            if sample not in probs_dict:
+                assignments = dict(enumerate(value))
+                counts = count_assignments(assignments)
+                prob = math.exp(model.score_counts(counts))
+                probs_dict[sample] = prob
+
+        total = sum(probs_dict.values())
+        assert_less(abs(total - 1), tol, 'not normalized: {}'.format(total))
+
+
+def add_to_counts(counts, pos):
+    counts = counts[:]
+    counts[pos] += 1
+    return counts
+
+
+@for_each_model()
+def test_score_add_value_matches_score_counts(Model, EXAMPLE):
+    for larger_size in iter_valid_sizes(EXAMPLE, min_size=2, max_size=6):
+        sample_size = larger_size - 1
+        model = Model()
+        model.load(EXAMPLE)
+
+        samples = set(
+            canonicalize(model.sample_assignments(sample_size))
+            for _ in xrange(SAMPLE_COUNT)
+        )
+
+        for sample in samples:
+            nonempty_group_count = len(sample)
+            counts = map(len, sample)
+            actual = numpy.zeros(len(counts) + 1)
+            expected = numpy.zeros(len(counts) + 1)
+
+            # add to existing group
+            for i, group in enumerate(sample):
+                group_size = len(sample[i])
+                expected[i] = model.score_counts(add_to_counts(counts, i))
+                actual[i] = model.score_add_value(
+                    group_size,
+                    nonempty_group_count,
+                    sample_size)
+
+            # add to new group
+            i = len(counts)
+            group_size = 0
+            expected[i] = model.score_counts(counts + [1])
+            actual[i] = model.score_add_value(
+                group_size,
+                nonempty_group_count,
+                sample_size)
+
+            actual = scores_to_probs(actual)
+            expected = scores_to_probs(expected)
+            print actual, expected
+            assert_close(actual, expected, tol=0.05)
+
+
 @for_each_model(lambda Model: hasattr(Model, 'Mixture'))
-def test_mixture(Model, EXAMPLE):
-    seed_all(0)
+def test_mixture_score_matches_score_add_value(Model, EXAMPLE):
     model = Model()
     model.load(EXAMPLE)
 
-    sample_size = 1000
-    value = model.sample_assignments(sample_size)
+    value = model.sample_assignments(SAMPLE_COUNT)
     assignments = dict(enumerate(value))
     nonempty_counts = count_assignments(assignments)
     nonempty_group_count = len(nonempty_counts)
@@ -178,7 +251,7 @@ def test_mixture(Model, EXAMPLE):
             model.score_add_value(
                 group_size,
                 nonempty_group_count,
-                sample_size,
+                SAMPLE_COUNT,
                 empty_group_count)
             for group_size in counts
         ]

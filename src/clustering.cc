@@ -234,10 +234,7 @@ float Clustering<count_t>::LowEntropy::score_counts (
             score += count * fast_log(count);
         }
     }
-    DIST_ASSERT(
-        sample_size <= dataset_size,
-        "sample_size = " << sample_size <<
-        ", dataset_size = " << dataset_size);
+    DIST_ASSERT_LE(sample_size, dataset_size);
 
     if (sample_size != dataset_size) {
         float log_factor =
@@ -254,10 +251,7 @@ std::vector<count_t> Clustering<count_t>::LowEntropy::sample_assignments (
         count_t sample_size,
         rng_t & rng) const
 {
-    DIST_ASSERT(
-        sample_size <= dataset_size,
-        "sample_size = " << sample_size <<
-        ", dataset_size = " << dataset_size);
+    DIST_ASSERT_LE(sample_size, dataset_size);
 
     std::vector<count_t> assignments(sample_size);
     std::vector<count_t> counts;

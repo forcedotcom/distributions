@@ -101,7 +101,10 @@ def assert_close(lhs, rhs, tol=TOL, err_msg=None):
             'type mismatch: {} vs {}'.format(type(lhs), type(rhs)))
         diff = abs(lhs - rhs)
         norm = 1 + abs(lhs) + abs(rhs)
-        msg = '{} off by {}% = {}'.format(err_msg, 100 * diff / norm, diff)
+        msg = '{} off by {}% = {}'.format(
+            err_msg or '',
+            100 * diff / norm,
+            diff)
         assert_less(diff, tol * norm, msg)
     elif isinstance(lhs, numpy.ndarray) or isinstance(lhs, list):
         assert_true(
