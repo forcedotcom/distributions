@@ -313,7 +313,7 @@ cdef class LowEntropy_cy:
     ]
 
 
-class LowEntropy(LowEntropy_cy, Serializable):
+class LowEntropy(LowEntropy_cy, Serializable, ProtobufSerializable):
 
     def load_protobuf(self, message):
         self.load({'dataset_size': message.dataset_size})

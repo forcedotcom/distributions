@@ -287,7 +287,7 @@ struct LowEntropy
             count_t sample_size,
             count_t empty_group_count = 1) const
     {
-        // see `python derivations/clustering.py fast_log`
+        // see `python derivations/clustering.py fastlog`
         const count_t very_large = 10000;
 
         if (group_size == 0) {

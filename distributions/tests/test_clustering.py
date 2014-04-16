@@ -45,16 +45,15 @@ from distributions.tests.util import (
     assert_close,
 )
 from distributions.dbg.random import scores_to_probs
+import distributions.dbg.clustering
 require_cython()
-from distributions.lp.clustering import (
-    count_assignments,
-    PitmanYor,
-    LowEntropy,
-)
+import distributions.lp.clustering
+from distributions.lp.clustering import count_assignments
 
 MODELS = {
-    'PitmanYor': PitmanYor,
-    'LowEntropy': LowEntropy,
+    'lp.PitmanYor': distributions.lp.clustering.PitmanYor,
+    'lp.LowEntropy': distributions.lp.clustering.LowEntropy,
+    'dbg.LowEntropy': distributions.dbg.clustering.LowEntropy,
 }
 
 SAMPLE_COUNT = 2000
@@ -82,7 +81,12 @@ def for_each_model(*filters):
             Model = MODELS[name]
             for EXAMPLE in iter_examples(Model):
                 seed_all(0)
-                test_fun(Model, EXAMPLE)
+                if name.startswith('dbg'):
+                    # use fewer samples for slower implementations
+                    sample_count = SAMPLE_COUNT / 10
+                else:
+                    sample_count = SAMPLE_COUNT
+                test_fun(Model, EXAMPLE, sample_count)
 
         @functools.wraps(test_fun)
         def test_all_models():
@@ -107,7 +111,7 @@ def canonicalize(assignments):
 
 
 @for_each_model()
-def test_load_and_dump(Model, EXAMPLE):
+def test_load_and_dump(Model, EXAMPLE, *unused):
     model = Model()
     model.load(EXAMPLE)
     expected = EXAMPLE
@@ -130,14 +134,14 @@ def iter_valid_sizes(example, max_size, min_size=2):
 
 
 @for_each_model()
-def test_sample_matches_score_counts(Model, EXAMPLE):
+def test_sample_matches_score_counts(Model, EXAMPLE, sample_count):
     for size in iter_valid_sizes(EXAMPLE, max_size=6):
         model = Model()
         model.load(EXAMPLE)
 
         samples = []
         probs_dict = {}
-        for _ in xrange(SAMPLE_COUNT):
+        for _ in xrange(sample_count):
             value = model.sample_assignments(size)
             sample = canonicalize(value)
             samples.append(sample)
@@ -158,7 +162,7 @@ def test_sample_matches_score_counts(Model, EXAMPLE):
 
 
 @for_each_model()
-def test_score_counts_is_normalized(Model, EXAMPLE):
+def test_score_counts_is_normalized(Model, EXAMPLE, sample_count):
     if Model.__name__ == 'LowEntropy':
         print 'WARNING LowEntropy.score has low-precision normalization'
         tol = 1e0
@@ -170,7 +174,7 @@ def test_score_counts_is_normalized(Model, EXAMPLE):
         model.load(EXAMPLE)
 
         probs_dict = {}
-        for _ in xrange(SAMPLE_COUNT):
+        for _ in xrange(sample_count):
             value = model.sample_assignments(sample_size)
             sample = canonicalize(value)
             if sample not in probs_dict:
@@ -190,7 +194,7 @@ def add_to_counts(counts, pos):
 
 
 @for_each_model()
-def test_score_add_value_matches_score_counts(Model, EXAMPLE):
+def test_score_add_value_matches_score_counts(Model, EXAMPLE, sample_count):
     for larger_size in iter_valid_sizes(EXAMPLE, min_size=2, max_size=6):
         sample_size = larger_size - 1
         model = Model()
@@ -198,7 +202,7 @@ def test_score_add_value_matches_score_counts(Model, EXAMPLE):
 
         samples = set(
             canonicalize(model.sample_assignments(sample_size))
-            for _ in xrange(SAMPLE_COUNT)
+            for _ in xrange(sample_count)
         )
 
         for sample in samples:
@@ -232,11 +236,11 @@ def test_score_add_value_matches_score_counts(Model, EXAMPLE):
 
 
 @for_each_model(lambda Model: hasattr(Model, 'Mixture'))
-def test_mixture_score_matches_score_add_value(Model, EXAMPLE):
+def test_mixture_score_matches_score_add_value(Model, EXAMPLE, sample_count):
     model = Model()
     model.load(EXAMPLE)
 
-    value = model.sample_assignments(SAMPLE_COUNT)
+    value = model.sample_assignments(sample_count)
     assignments = dict(enumerate(value))
     nonempty_counts = count_assignments(assignments)
     nonempty_group_count = len(nonempty_counts)
@@ -251,7 +255,7 @@ def test_mixture_score_matches_score_add_value(Model, EXAMPLE):
             model.score_add_value(
                 group_size,
                 nonempty_group_count,
-                SAMPLE_COUNT,
+                sample_count,
                 empty_group_count)
             for group_size in counts
         ]
