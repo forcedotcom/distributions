@@ -329,6 +329,8 @@ struct LowEntropy
             empty_group_count);
     }
 
+    float log_partition_function (count_t sample_size) const;
+
 private:
 
     // ad hoc approximation,
@@ -345,6 +347,8 @@ private:
         float scale = dataset_size / sample_size;
         return fast_log(scale) * exponent;
     }
+
+    float _approximate_dataprob_correction(count_t sample_size) const;
 };
 
 }; // struct Clustering<count_t>
