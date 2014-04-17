@@ -70,6 +70,8 @@ proper nonparametric generative model.
 import os
 from collections import defaultdict
 import numpy
+from numpy import log, exp
+from scipy.special import gammaln
 import math
 import matplotlib
 matplotlib.use('Agg')
@@ -78,6 +80,8 @@ import parsable
 from distributions.lp.special import fast_log
 from distributions.io.stream import json_stream_load, json_stream_dump
 parsable = parsable.Parsable()
+
+assert exp  # pacify pyflakes
 
 
 DEFAULT_MAX_SIZE = 47
@@ -227,6 +231,73 @@ def get_subprobs(size, max_size):
 
 def enum_probs(max_size):
     return [get_probs(size) for size in range(max_size + 1)]
+
+
+@parsable.command
+def priors(N=100):
+    '''
+    Plots different partition priors.
+    '''
+    X = numpy.array(range(1, N + 1))
+
+    def plot(Y, *args, **kwargs):
+        Y = numpy.array(Y)
+        Y -= numpy.logaddexp.reduce(Y)
+        pyplot.plot(X, Y, *args, **kwargs)
+
+    plot_energy = False
+    if plot_energy:
+
+        ylabel = 'energy per object'
+
+        def crp(alpha):
+            assert 0 < alpha
+            prob = log(alpha) + gammaln(X)
+            prob /= X
+            return prob
+
+        def entropy():
+            return log(X)
+
+    else:
+
+        ylabel = 'log(probability)'
+
+        def crp(alpha):
+            assert 0 < alpha
+            prob = numpy.zeros(len(X))
+            prob[1:] = log(X[1:] - 1)
+            prob[0] = log(alpha)
+            return prob
+
+        def entropy():
+            prob = numpy.zeros(len(X))
+            n_log_n = lambda n: n * log(n)
+            prob[1:] = n_log_n(X[1:]) - n_log_n(X[1:] - 1)
+            return prob
+
+    def plot_crp(alpha):
+        plot(crp(eval(alpha)), label='CRP({})'.format(alpha))
+
+    def plot_entropy():
+        plot(entropy(), 'k--', linewidth=2, label='low-entropy')
+
+    pyplot.figure(figsize=(8, 4))
+
+    plot_entropy()
+    plot_crp('0.01')
+    plot_crp('0.1')
+    plot_crp('exp(-1)')
+    plot_crp('1.0')
+    plot_crp('10.0')
+
+    pyplot.title('Posterior Predictive Curves of Clustering Priors')
+    pyplot.xlabel('category size')
+    pyplot.ylabel(ylabel)
+    pyplot.xscale('log')
+    pyplot.legend(loc='best')
+
+    savefig('priors')
 
 
 def get_pairwise(counts):
@@ -689,6 +760,7 @@ def plots():
     '''
     Generate all plots.
     '''
+    priors()
     pairwise()
     postpred()
     dataprob()
