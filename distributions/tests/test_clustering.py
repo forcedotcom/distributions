@@ -51,11 +51,12 @@ import distributions.lp.clustering
 from distributions.lp.clustering import count_assignments
 
 MODELS = {
+    'dbg.LowEntropy': distributions.dbg.clustering.LowEntropy,
     'lp.PitmanYor': distributions.lp.clustering.PitmanYor,
     'lp.LowEntropy': distributions.lp.clustering.LowEntropy,
-    'dbg.LowEntropy': distributions.dbg.clustering.LowEntropy,
 }
 
+SKIP_EXPENSIVE_TESTS = True
 SAMPLE_COUNT = 2000
 MIN_GOODNESS_OF_FIT = 1e-3
 
@@ -81,8 +82,7 @@ def for_each_model(*filters):
             Model = MODELS[name]
             for EXAMPLE in iter_examples(Model):
                 seed_all(0)
-                if name.startswith('dbg'):
-                    # use fewer samples for slower implementations
+                if SKIP_EXPENSIVE_TESTS and name.startswith('dbg'):
                     sample_count = SAMPLE_COUNT / 10
                 else:
                     sample_count = SAMPLE_COUNT
@@ -90,7 +90,7 @@ def for_each_model(*filters):
 
         @functools.wraps(test_fun)
         def test_all_models():
-            for name, Model in MODELS.iteritems():
+            for name, Model in sorted(MODELS.iteritems()):
                 if all(f(Model) for f in filters):
                     yield test_one_model, name
 
@@ -129,7 +129,7 @@ def iter_valid_sizes(example, max_size, min_size=2):
     ]
     assert sizes, 'no valid sizes to test'
     for size in sizes:
-        print 'size = {}'.format(size)
+        print 'sample_size = {}'.format(size)
         yield size
 
 
@@ -165,9 +165,9 @@ def test_sample_matches_score_counts(Model, EXAMPLE, sample_count):
 def test_score_counts_is_normalized(Model, EXAMPLE, sample_count):
     if Model.__name__ == 'LowEntropy':
         print 'WARNING LowEntropy.score has low-precision normalization'
-        tol = 1e0
+        tol = 0.5
     else:
-        tol = 1e-2
+        tol = 0.01
 
     for sample_size in iter_valid_sizes(EXAMPLE, max_size=10):
         model = Model()
@@ -195,13 +195,12 @@ def add_to_counts(counts, pos):
 
 @for_each_model()
 def test_score_add_value_matches_score_counts(Model, EXAMPLE, sample_count):
-    for larger_size in iter_valid_sizes(EXAMPLE, min_size=2, max_size=6):
-        sample_size = larger_size - 1
+    for sample_size in iter_valid_sizes(EXAMPLE, min_size=2, max_size=6):
         model = Model()
         model.load(EXAMPLE)
 
         samples = set(
-            canonicalize(model.sample_assignments(sample_size))
+            canonicalize(model.sample_assignments(sample_size - 1))
             for _ in xrange(sample_count)
         )
 
@@ -218,7 +217,7 @@ def test_score_add_value_matches_score_counts(Model, EXAMPLE, sample_count):
                 actual[i] = model.score_add_value(
                     group_size,
                     nonempty_group_count,
-                    sample_size)
+                    sample_size - 1)
 
             # add to new group
             i = len(counts)
@@ -227,7 +226,7 @@ def test_score_add_value_matches_score_counts(Model, EXAMPLE, sample_count):
             actual[i] = model.score_add_value(
                 group_size,
                 nonempty_group_count,
-                sample_size)
+                sample_size - 1)
 
             actual = scores_to_probs(actual)
             expected = scores_to_probs(expected)

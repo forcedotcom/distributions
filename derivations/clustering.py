@@ -25,17 +25,59 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+'''
+A parameter-free clustering prior based on partition entropy.
+
+The Dirichlet prior is often used in nonparametric mixture models to model
+the partitioning of observations into clusters.
+This class implements a parameter-free alternative to the Dirichlet prior
+that preserves exchangeability, preserves asymptotic convergence rate of
+density estimation, and has an elegant interpretation as a
+minimum-description-length prior.
+
+Motivation
+----------
+
+In conjugate mixture models, samples from the posterior are sufficiently
+represented by a partitioning of observations into clusters, say as an
+assignment vector X with cluster labels X_i for each observation i.
+In our ~10^6-observation production system, we found the data size of this
+assignment vector to be a limiting factor in query latency, even after
+lossless compression.  To address this problem, we tried to incorporate the
+Shannon entropy of this assignment vector directly into the prior, as
+an information criterion.  Surprisingly, the resulting low-entropy prior
+enjoys a number of properties:
+
+- The low-entropy prior enjoys similar asymptotic convergence as the
+  Dirichlet prior.
+
+- The probability of a clustering is elegant and easy to evaluate
+  (up to an unknown normalizing constant).
+
+- The resulting distribution resembles a CRP distribution with parameter
+  alpha = exp(-1), but slightly avoids small clusters.
+
+- MAP estimates are minimum-description-length, as measured by assignment
+  vector complexity.
+
+- The low-entropy prior is parameter free, unlike the CRP, Pitman-Yor, or
+  Mixture of Finite Mixture models.
+
+A difficulty is that the prior depends on dataset size, and is hence not a
+proper nonparametric generative model.
+'''
+
 import os
 from collections import defaultdict
 import numpy
 import math
-from scipy.special import gammaln
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot, font_manager
 import parsable
 from distributions.lp.special import fast_log
 from distributions.io.stream import json_stream_load, json_stream_dump
+parsable = parsable.Parsable()
 
 
 DEFAULT_MAX_SIZE = 47
@@ -98,11 +140,17 @@ def get_smaller_probs(small_counts, large_counts, large_probs):
 
 
 def get_counts(size):
+    '''
+    Count partition shapes of a given sample size.
+
+    Inputs:
+        size = sample_size
+    Returns:
+        dict : shape -> count
+    '''
     assert 0 <= size
     cache_file = '{}/counts.{}.json.bz2'.format(TEMP, size)
-    if cache_file in CACHE:
-        return CACHE[cache_file]
-    else:
+    if cache_file not in CACHE:
         if os.path.exists(cache_file):
             flat = json_stream_load(cache_file)
             large = {tuple(key): val for key, val in flat}
@@ -115,16 +163,11 @@ def get_counts(size):
             print 'caching', cache_file
             json_stream_dump(large.iteritems(), cache_file)
         CACHE[cache_file] = large
-        return large
+    return CACHE[cache_file]
 
 
 def enum_counts(max_size):
     return [get_counts(size) for size in range(1 + max_size)]
-
-
-def get_log_count(shape):
-    raise NotImplementedError('FIXME this ignores partitions of equal size')
-    return gammaln(sum(shape) + 1) - sum(gammaln(n + 1) for n in shape)
 
 
 def get_log_z(shape):
@@ -149,12 +192,19 @@ def get_probs(size):
 
 
 def get_subprobs(size, max_size):
+    '''
+    Compute probabilities of shapes of partial assignment vectors.
+
+    Inputs:
+        size = sample_size
+        max_size = dataset_size
+    Returns:
+        dict : shape -> prob
+    '''
     assert 0 <= size
     assert size <= max_size
     cache_file = '{}/subprobs.{}.{}.json.bz2'.format(TEMP, size, max_size)
-    if cache_file in CACHE:
-        return CACHE[cache_file]
-    else:
+    if cache_file not in CACHE:
         if os.path.exists(cache_file):
             flat = json_stream_load(cache_file)
             small_probs = {tuple(key): val for key, val in flat}
@@ -172,7 +222,7 @@ def get_subprobs(size, max_size):
             print 'caching', cache_file
             json_stream_dump(small_probs.iteritems(), cache_file)
         CACHE[cache_file] = small_probs
-        return small_probs
+    return CACHE[cache_file]
 
 
 def enum_probs(max_size):
@@ -327,9 +377,9 @@ def postpred(subsample_size=10):
     savefig('postpred')
 
 
-def estimate_postpred_correction(subsample_size, dataset_size):
+def true_postpred_correction(subsample_size, dataset_size):
     '''
-    Estimate postpred constant according to size-based approximation.
+    Compute true postpred constant according to size-based approximation.
     '''
     large_counts = get_counts(subsample_size)
     large_probs = get_subprobs(subsample_size, dataset_size)
@@ -373,6 +423,8 @@ def estimate_postpred_correction(subsample_size, dataset_size):
 def dataprob(subsample_size=10, dataset_size=50):
     '''
     Plot data prob approximation.
+
+    This tests the accuracy of LowEntropy.score_counts(...).
     '''
     true_probs = get_subprobs(subsample_size, dataset_size)
     naive_probs = get_probs(subsample_size)
@@ -384,15 +436,6 @@ def dataprob(subsample_size=10, dataset_size=50):
     print 'factor =', factor
     for shape in shapes:
         approx_probs[shape] *= factor ** (len(shape) - 2)
-
-    ##N = subsample_size
-    ##z1 = math.exp(get_log_z([N]))
-    ##z2 = math.exp(get_log_z([N - 1, 1])) * N
-    ##normalize = ((z1 + 2 * z2) / (z1 + 2 * z2 / factor)) ** 2
-    #normalize = 1.0 / sum(approx_probs.itervalues())
-    # print 'normalization =', normalize
-    # for shape in shapes:
-    #    approx_probs[shape] *= normalize
 
     X = numpy.array([true_probs[shape] for shape in shapes])
     Y0 = numpy.array([naive_probs[shape] for shape in shapes])
@@ -422,9 +465,9 @@ def dataprob(subsample_size=10, dataset_size=50):
     savefig('dataprob')
 
 
-def estimate_dataprob_correction(subsample_size, dataset_size):
+def true_dataprob_correction(subsample_size, dataset_size):
     '''
-    Estimate normalization correction.
+    Compute true normalization correction.
     '''
     naive_probs = get_probs(subsample_size)
     factor = ad_hoc_size_factor(subsample_size, dataset_size)
@@ -496,11 +539,11 @@ def approximations(max_size=DEFAULT_MAX_SIZE):
 
         # postpred correction
         if size > 1:
-            truth1[key] = estimate_postpred_correction(size, max_size)
+            truth1[key] = true_postpred_correction(size, max_size)
             approx1[key] = approximate_postpred_correction(size, max_size)
 
         # normalization correction
-        truth2[key] = estimate_dataprob_correction(size, max_size)
+        truth2[key] = true_dataprob_correction(size, max_size)
         approx2[key] = approximate_dataprob_correction(size, max_size)
 
     fig, (ax1, ax2) = pyplot.subplots(2, 1, sharex=True, figsize=(12, 8))
@@ -593,19 +636,20 @@ def code(max_size=DEFAULT_MAX_SIZE):
     print '# Insert this in src/clustering.cc:'
     lines = [
         '// this code was generated by derivations/clustering.py',
-        'static const float cluster_normalizing_scores[%d] =' % (max_size + 1),
+        'static const float _cluster_normalizing_scores[%d] =' %
+        (max_size + 1),
         '{',
         number_table(log_Z),
         '};',
         '',
         '// this code was generated by derivations/clustering.py',
         'template<class count_t>',
-        'inline float cluster_normalizing_score (count_t sample_size)',
+        'inline float _cluster_normalizing_score (count_t sample_size)',
         '{',
         '    // TODO incorporate dataset_size for higher accuracy',
         '    count_t n = sample_size;',
         '    if (n < %d) {' % (max_size + 1),
-        '        return cluster_normalizing_scores[n];',
+        '        return _cluster_normalizing_scores[n];',
         '    } else {',
         '        float coeff = %0.8ff;' % coeff,
         '        float log_z_max = n * fast_log(n);',
@@ -638,6 +682,17 @@ def code(max_size=DEFAULT_MAX_SIZE):
     ]
     print '\n'.join(lines)
     print
+
+
+@parsable.command
+def plots():
+    '''
+    Generates all plots.
+    '''
+    postpred()
+    dataprob()
+    approximations()
+    normalization()
 
 
 if __name__ == '__main__':

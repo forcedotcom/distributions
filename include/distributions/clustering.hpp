@@ -287,21 +287,25 @@ struct LowEntropy
             count_t sample_size,
             count_t empty_group_count = 1) const
     {
-        // see `python derivations/clustering.py fastlog`
-        const count_t very_large = 10000;
+        if (DIST_DEBUG_LEVEL >= 1) {
+            DIST_ASSERT_LT(sample_size, dataset_size);
+            DIST_ASSERT_LT(0, empty_group_count);
+        }
 
         if (group_size == 0) {
-            if (sample_size == dataset_size) {
-                return 0.f;
-            } else {
-                return approximate_postpred_correction(sample_size)
-                    - fast_log(empty_group_count);
+            float score = -fast_log(empty_group_count);
+            if (sample_size + 1 < dataset_size) {
+                score += _approximate_postpred_correction(sample_size + 1);
             }
-        } else if (group_size > very_large) {
-            float bigger = 1.f + group_size;
+            return score;
+        }
+
+        // see `python derivations/clustering.py fastlog`
+        const count_t very_large = 10000;
+        float bigger = 1.f + group_size;
+        if (group_size > very_large) {
             return 1.f + fast_log(bigger);
         } else {
-            float bigger = 1.f + group_size;
             return fast_log(bigger / group_size) * group_size
                  + fast_log(bigger);
         }
@@ -313,6 +317,10 @@ struct LowEntropy
             count_t sample_size,
             count_t empty_group_count = 1) const
     {
+        if (DIST_DEBUG_LEVEL >= 1) {
+            DIST_ASSERT_LT(0, sample_size);
+        }
+
         group_size -= 1;
         return -score_add_value(
             group_size,
@@ -326,8 +334,13 @@ private:
     // ad hoc approximation,
     // see `python derivations/clustering.py postpred`
     // see `python derivations/clustering.py approximations`
-    float approximate_postpred_correction (float sample_size) const
+    float _approximate_postpred_correction (float sample_size) const
     {
+        if (DIST_DEBUG_LEVEL >= 2) {
+            DIST_ASSERT_LT(0, sample_size);
+            DIST_ASSERT_LT(sample_size, dataset_size);
+        }
+
         float exponent = 0.45f - 0.1f / sample_size - 0.1f / dataset_size;
         float scale = dataset_size / sample_size;
         return fast_log(scale) * exponent;

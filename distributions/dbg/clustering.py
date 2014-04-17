@@ -31,9 +31,65 @@ from distributions.mixins import Serializable, ProtobufSerializable
 
 
 class LowEntropy(Serializable, ProtobufSerializable):
+    '''
+    A parameter-free clustering prior based on partition entropy.
+
+    See /derivations/clustering.py for intro and motivation.
+
+    Definition
+    ----------
+
+    Let X = [X_0,...,X_{N-1}] be an assignment vector of N points into
+    clusters of sizes [N_0,...,N_{K-1}], i.e.
+
+        N_k = #{i | X_i = k, i in {0,...,N-1}}
+
+    The empirical entropy of the assignment vector is
+
+        H(X) = sum_k -p_k log p_k  = sum_k N_k/N log( N_k/N )
+
+    And so the information complexity of the assignment vector is N H(X),
+    where each assignment requires H(X) information to specify.
+    Define the prior probability in terms of cluster sizes [N_1,...,N_k] as
+
+        P(X)   propto   exp(-N H(X))   propto   prod_{k=1}^K N_k^{N_k}
+
+    Implementation
+    --------------
+
+    This class implements approximations to numerical functions
+    required in MCMC inference using this clustering prior:
+
+    - evaluating log posterior predictive probability of an assignment
+      given a partial assignment vector
+
+        score_add_value(...) =
+
+            log P[ X_n=x_n | X_0=x_0,...,X_{n-1}=x_{n-1} ] Z / Z_approx
+
+    - evaluating log probability of a full assignment vector,
+      up to the constant partition function
+
+        score_counts(...) =
+
+            log P[ X_0=x_0,...,X_{n-1}=x_{n-1} ] Z(n) / Z_approx(n)
+
+    - sampling a full assignment vector X ~ P[ X=x ],
+
+        X = model.sample_assignments(...)
+
+    - evaluating the partition function Z(n) exactly for small n
+      and at low accuracy for large n
+
+        _cluster_normalizing_score(n) = Z_exact(n)  for n <= 47
+                                        Z_approx(n) for n > 47
+    '''
 
     def __init__(self, dataset_size=0):
         self.dataset_size = int(dataset_size)
+
+    #-------------------------------------------------------------------------
+    # Serialization
 
     def load(self, raw):
         self.dataset_size = int(raw['dataset_size'])
@@ -49,18 +105,29 @@ class LowEntropy(Serializable, ProtobufSerializable):
         message.Clear()
         message.dataset_size = self.dataset_size
 
+    #-------------------------------------------------------------------------
+    # Sampling
+
     def sample_assignments(self, sample_size):
+        '''
+        Sample partial assignment vector
+
+            [X_0, ..., X_{n-1}]
+
+        where
+
+            n = sample_size <= N = dataset_size.
+        '''
         assert sample_size <= self.dataset_size
 
         assignments = []
         counts = []
         scores = []
-        size = 1
-        unused = 0
+        bogus = 0
 
-        for _ in xrange(sample_size):
+        for size in xrange(sample_size):
 
-            score_empty = self.score_add_value(0, unused, size)
+            score_empty = self.score_add_value(0, bogus, size)
             if len(counts) == 0 or counts[-1] != 0:
                 counts.append(0)
                 scores.append(score_empty)
@@ -70,12 +137,21 @@ class LowEntropy(Serializable, ProtobufSerializable):
             assign = sample_discrete_log(scores)
             counts[assign] += 1
             size += 1
-            scores[assign] = self.score_add_value(counts[assign], unused, size)
+            scores[assign] = self.score_add_value(counts[assign], bogus, bogus)
             assignments.append(assign)
 
         return assignments
 
+    #-------------------------------------------------------------------------
+    # Scoring
+
     def score_counts(self, counts):
+        '''
+        Return log probability of data, given sufficient statistics of
+        a partial assignment vector [X_0,...,X_{n-1}]
+
+            log P[ X_0=x_0, ..., X_{n-1}=x_{n-1} ]
+        '''
         score = 0.0
         sample_size = 0
         for count in counts:
@@ -87,10 +163,10 @@ class LowEntropy(Serializable, ProtobufSerializable):
         if sample_size != self.dataset_size:
             log_factor = self._approximate_postpred_correction(sample_size)
             score += log_factor * (len(counts) - 1)
-            score += self._approximate_dataprob_correction(
+            score += LowEntropy._approximate_dataprob_correction(
                 sample_size,
                 self.dataset_size)
-        score -= self._cluster_normalizing_score(sample_size)
+        score -= LowEntropy._cluster_normalizing_score(sample_size)
         return score
 
     def score_add_value(
@@ -99,20 +175,40 @@ class LowEntropy(Serializable, ProtobufSerializable):
             nonempty_group_count,
             sample_size,
             empty_group_count=1):
-        # see `python derivations/clustering.py fastlog`
-        very_large = 10000
+        '''
+        Return log of posterior predictive probability given
+        sufficient statistics of a partial assignments vector [X_0,...,X_{n-1}]
+
+            log P[ X_n = k | X_0=x_0, ..., X_{n-1}=x_{n-1} ]
+
+        where
+
+            group_size = #{i | x_i = k, i in {0,...,n-1}}
+
+            nonempty_group_count = #{x_i | i in {0,...,n-1}}
+
+            sample_size = n
+
+        and empty_group_count is the number of empty groups that are uniformly
+        competing for the assignment.  Typically empty_group_count = 1, but
+        multiple empty "ephemeral" groups are used in e.g. Radford Neal's
+        Algorithm-8 \cite{neal2000markov}.
+        '''
+        assert sample_size < self.dataset_size
+        assert 0 < empty_group_count
 
         if group_size == 0:
-            if sample_size == self.dataset_size:
-                return 0.0
-            else:
-                return (self._approximate_postpred_correction(sample_size)
-                        - log(empty_group_count))
-        elif group_size > very_large:
-            bigger = 1.0 + group_size
+            score = -log(empty_group_count)
+            if sample_size + 1 < self.dataset_size:
+                score += self._approximate_postpred_correction(sample_size + 1)
+            return score
+
+        # see `python derivations/clustering.py fastlog`
+        very_large = 10000
+        bigger = 1.0 + group_size
+        if group_size > very_large:
             return 1.0 + log(bigger)
         else:
-            bigger = 1.0 + group_size
             return log(bigger / group_size) * group_size + log(bigger)
 
     def score_remove_value(
@@ -121,6 +217,16 @@ class LowEntropy(Serializable, ProtobufSerializable):
             nonempty_group_count,
             sample_size,
             empty_group_count=1):
+        '''
+        Reverse transition probability of score_add_value, given
+        sufficient statistics of the partial assignment vector  [X_0,...,X_n}]
+
+            -log P[ X_n=x_n | X_0=x_0, ..., X_{n-1}=x_{n-1} ]
+
+        This is useful in Metropolis-Hastings inference.
+        '''
+        assert sample_size > 0
+
         group_size -= 1
         return -self.score_add_value(
             group_size,
@@ -128,12 +234,18 @@ class LowEntropy(Serializable, ProtobufSerializable):
             sample_size,
             empty_group_count)
 
+    #-------------------------------------------------------------------------
+    # Approximations
+
     def _approximate_postpred_correction(self, sample_size):
         '''
         ad hoc approximation,
         see `python derivations/clustering.py postpred`
         see `python derivations/clustering.py approximations`
         '''
+        assert 0 < sample_size
+        assert sample_size < self.dataset_size
+
         exponent = 0.45 - 0.1 / sample_size - 0.1 / self.dataset_size
         scale = self.dataset_size / sample_size
         return log(scale) * exponent
@@ -180,7 +292,5 @@ class LowEntropy(Serializable, ProtobufSerializable):
 
     EXAMPLES = [
         {'dataset_size': 5},
-        {'dataset_size': 10},
-        {'dataset_size': 100},
         {'dataset_size': 1000},
     ]

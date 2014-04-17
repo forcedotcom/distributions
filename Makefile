@@ -27,12 +27,10 @@ endif
 
 all: test
 
-src/test_headers.cc: FORCE
-	find include \
-	  | grep '\.hpp' \
-	  | grep -v protobuf \
-	  | sort --dictionary-order \
-	  | sed 's/include\/\(.*\)/#include <\1>/g' \
+headers:=$(shell find include | grep '\.hpp' | grep -v protobuf | sort -d)
+src/test_headers.cc: $(headers)
+	echo $(headers) \
+	  | sed 's/include\/\(\S*\)\s*/#include <\1>\n/g' \
 	  > src/test_headers.cc
 	echo 'int main () { return 0; }' >> src/test_headers.cc
 
