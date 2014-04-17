@@ -65,7 +65,7 @@ class LowEntropy(Serializable, ProtobufSerializable):
 
         score_add_value(...) =
 
-            log P[ X_n=x_n | X_0=x_0,...,X_{n-1}=x_{n-1} ] Z / Z_approx
+            log P[ X_i=x_i | X_0=x_0,...,X_{i-1}=x_{i-1} ] Z / Z_approx
 
     - evaluating log probability of a full assignment vector,
       up to the constant partition function

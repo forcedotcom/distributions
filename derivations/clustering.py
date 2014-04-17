@@ -83,7 +83,7 @@ parsable = parsable.Parsable()
 DEFAULT_MAX_SIZE = 47
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-TEMP = os.path.join(ROOT, 'temp.clustering')
+TEMP = os.path.join(ROOT, 'clustering.data')
 if not os.path.exists(TEMP):
     os.makedirs(TEMP)
 
@@ -348,10 +348,10 @@ def postpred(subsample_size=10):
     pyplot.plot(X, Y, 'k--', label='entropy', linewidth=2)
 
     # CRP
-    #alpha = math.exp(-1)
-    #Y = numpy.array([n - 1 if n > 1 else alpha for n in X])
-    #Y /= Y.min()
-    #pyplot.plot(X, Y, 'g--', label='CRP({})'.format(alpha))
+    alpha = math.exp(-1)
+    Y = numpy.array([n - 1 if n > 1 else alpha for n in X])
+    Y /= Y.min()
+    pyplot.plot(X, Y, 'g-', label='CRP(exp(-1))'.format(alpha))
 
     # ad hoc
     factors = ad_hoc_size_factor(size, numpy.array(max_sizes))
@@ -687,12 +687,14 @@ def code(max_size=DEFAULT_MAX_SIZE):
 @parsable.command
 def plots():
     '''
-    Generates all plots.
+    Generate all plots.
     '''
+    pairwise()
     postpred()
     dataprob()
     approximations()
     normalization()
+    fastlog()
 
 
 if __name__ == '__main__':
