@@ -1,4 +1,6 @@
 uname:=$(shell uname -s)
+cpu_count=$(shell python -c 'import multiprocessing as m; print m.cpu_count()')
+
 
 ld_library_path=
 ifeq ($(uname),Linux)
@@ -9,15 +11,15 @@ ifeq ($(uname),Darwin)
 endif
 
 cmake_args=
-nose_env=
+nose_env:=NOSE_PROCESSES=$(cpu_count)
 ifdef VIRTUAL_ENV
 	cmake_args=-DCMAKE_INSTALL_PREFIX=$(VIRTUAL_ENV)
 	library_path=$(LIBRARY_PATH):$(VIRTUAL_ENV)/lib/
-	nose_env=$(ld_library_path)=$($(ld_library_path)):$(VIRTUAL_ENV)/lib/
+	nose_env+=$(ld_library_path)=$($(ld_library_path)):$(VIRTUAL_ENV)/lib/
 else
 	cmake_args=-DCMAKE_INSTALL_PREFIX=..
 	library_path=$(LIBRARY_PATH):`pwd`/lib/
-	nose_env=$(ld_library_path)=$($(ld_library_path)):`pwd`/lib/
+	nose_env+=$(ld_library_path)=$($(ld_library_path)):`pwd`/lib/
 endif
 
 cy_deps=

@@ -56,7 +56,7 @@ MODELS = {
     'lp.LowEntropy': distributions.lp.clustering.LowEntropy,
 }
 
-SKIP_EXPENSIVE_TESTS = True
+SKIP_EXPENSIVE_TESTS = False
 SAMPLE_COUNT = 2000
 MIN_GOODNESS_OF_FIT = 1e-3
 
@@ -135,7 +135,7 @@ def iter_valid_sizes(example, max_size, min_size=2):
 
 @for_each_model()
 def test_sample_matches_score_counts(Model, EXAMPLE, sample_count):
-    for size in iter_valid_sizes(EXAMPLE, max_size=6):
+    for size in iter_valid_sizes(EXAMPLE, max_size=10):
         model = Model()
         model.load(EXAMPLE)
 
@@ -163,15 +163,17 @@ def test_sample_matches_score_counts(Model, EXAMPLE, sample_count):
 
 @for_each_model()
 def test_score_counts_is_normalized(Model, EXAMPLE, sample_count):
-    if Model.__name__ == 'LowEntropy':
-        print 'WARNING LowEntropy.score has low-precision normalization'
-        tol = 0.5
-    else:
-        tol = 0.01
 
     for sample_size in iter_valid_sizes(EXAMPLE, max_size=10):
         model = Model()
         model.load(EXAMPLE)
+
+        if Model.__name__ == 'LowEntropy' and sample_size < model.dataset_size:
+            print 'WARNING LowEntropy.score_counts normalization is imprecise'
+            print '  when sample_size < dataset_size'
+            tol = 0.5
+        else:
+            tol = 0.01
 
         probs_dict = {}
         for _ in xrange(sample_count):
@@ -195,7 +197,7 @@ def add_to_counts(counts, pos):
 
 @for_each_model()
 def test_score_add_value_matches_score_counts(Model, EXAMPLE, sample_count):
-    for sample_size in iter_valid_sizes(EXAMPLE, min_size=2, max_size=6):
+    for sample_size in iter_valid_sizes(EXAMPLE, min_size=2, max_size=10):
         model = Model()
         model.load(EXAMPLE)
 

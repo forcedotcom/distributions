@@ -674,7 +674,7 @@ def code(max_size=DEFAULT_MAX_SIZE):
         '    # TODO incorporate dataset_size for higher accuracy',
         '    n = sample_size',
         '    if n < %d:' % (max_size + 1),
-        '        return LowEntropy.LowEntropy_log_partition_function_table[n]',
+        '        return LowEntropy.log_partition_function_table[n]',
         '    else:',
         '        coeff = %0.8f' % coeff,
         '        log_z_max = n * log(n)',
