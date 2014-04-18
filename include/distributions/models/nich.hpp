@@ -32,28 +32,48 @@
 #include <distributions/random.hpp>
 #include <distributions/vector.hpp>
 
-namespace distributions
-{
+namespace distributions {
+namespace normal_inverse_chi_sq {
+typedef float Value;
+struct Group;
+struct Scorer;
+struct Sampler;
+struct Mixture;
 
-struct NormalInverseChiSq
+struct Model
 {
-typedef NormalInverseChiSq Model;
+typedef normal_inverse_chi_sq::Value Value;
+typedef normal_inverse_chi_sq::Group Group;
+typedef normal_inverse_chi_sq::Scorer Scorer;
+typedef normal_inverse_chi_sq::Sampler Sampler;
+typedef normal_inverse_chi_sq::Mixture Mixture;
 
 static const char * name () { return "NormalInverseChiSq"; }
 static const char * short_name () { return "nich"; }
-
-//----------------------------------------------------------------------------
-// Data
 
 float mu;
 float kappa;
 float sigmasq;
 float nu;
 
-//----------------------------------------------------------------------------
-// Datatypes
+Model plus_group(const Group & group) const;
+Value sample_value(const Group & group, rng_t & rng) const;
+float score_value(const Group & group, const Value & value, rng_t & rng) const;
+float score_group(const Group & group, rng_t &) const;
 
-typedef float Value;
+static Model EXAMPLE ();
+
+}; // struct NormalInverseChiSq
+
+inline Model Model::EXAMPLE ()
+{
+    Model model;
+    model.mu = 0.0;
+    model.kappa = 1.0;
+    model.sigmasq = 1.0;
+    model.nu = 1.0;
+    return model;
+}
 
 struct Group
 {
@@ -296,11 +316,7 @@ struct Mixture
             rng_t &) const;
 };
 
-//----------------------------------------------------------------------------
-// Mutation
-
-
-Model plus_group (const Group & group) const
+inline Model Model::plus_group (const Group & group) const
 {
     Model post;
     float mu_1 = mu - group.mean;
@@ -314,7 +330,7 @@ Model plus_group (const Group & group) const
     return post;
 }
 
-Value sample_value (
+inline Value Model::sample_value (
         const Group & group,
         rng_t & rng) const
 {
@@ -323,7 +339,7 @@ Value sample_value (
     return sampler.eval(*this, rng);
 }
 
-float score_value (
+inline float Model::score_value (
         const Group & group,
         const Value & value,
         rng_t & rng) const
@@ -333,7 +349,7 @@ float score_value (
     return scorer.eval(*this, value, rng);
 }
 
-float score_group (
+inline float Model::score_group (
         const Group & group,
         rng_t &) const
 {
@@ -347,21 +363,11 @@ float score_group (
     return score;
 }
 
-//----------------------------------------------------------------------------
-// Examples
+} // namespace normal_inverse_chi_sq
 
-static NormalInverseChiSq EXAMPLE ();
+// backwards compatibility
+typedef normal_inverse_chi_sq::Model NormalInverseChiSq;
 
-}; // struct NormalInverseChiSq
 
-inline NormalInverseChiSq NormalInverseChiSq::EXAMPLE ()
-{
-    NormalInverseChiSq model;
-    model.mu = 0.0;
-    model.kappa = 1.0;
-    model.sigmasq = 1.0;
-    model.nu = 1.0;
-    return model;
-}
 
 } // namespace distributions

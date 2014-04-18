@@ -33,37 +33,58 @@
 #include <distributions/vector.hpp>
 #include <distributions/vector_math.hpp>
 
-namespace distributions
-{
+namespace distributions {
+namespace dirichlet_discrete {
+typedef uint32_t count_t;
+typedef int Value;
+
+template<int max_dim> struct Group;
+template<int max_dim> struct Scorer;
+template<int max_dim> struct Sampler;
+template<int max_dim> struct Mixture;
 
 template<int max_dim>
-struct DirichletDiscrete
+struct Model
 {
-typedef DirichletDiscrete<max_dim> Model;
+typedef dirichlet_discrete::Value Value;
+typedef typename dirichlet_discrete::Group<max_dim> Group;
+typedef typename dirichlet_discrete::Scorer<max_dim> Scorer;
+typedef typename dirichlet_discrete::Sampler<max_dim> Sampler;
+typedef typename dirichlet_discrete::Mixture<max_dim> Mixture;
 
 static const char * name () { return "DirichletDiscrete"; }
 static const char * short_name () { return "dd"; }
 
-//----------------------------------------------------------------------------
-// Data
-
 int dim;  // fixed parameter
 float alphas[max_dim];  // hyperparamter
 
-//----------------------------------------------------------------------------
-// Datatypes
+Value sample_value(const Group & group, rng_t & rng) const;
+float score_value(const Group & group, const Value & value, rng_t & rng) const;
+float score_group(const Group & group, rng_t &) const;
 
-typedef uint32_t count_t;
+static Model<max_dim> EXAMPLE ();
 
-typedef int Value;
+}; // struct DirichletDiscrete<max_dim>
 
+template<int max_dim>
+inline Model<max_dim> Model<max_dim>::EXAMPLE ()
+{
+    Model<max_dim> model;
+    model.dim = max_dim;
+    for (int i = 0; i < max_dim; ++i) {
+        model.alphas[i] = 0.5;
+    }
+    return model;
+}
+
+template<int max_dim>
 struct Group
 {
     count_t count_sum;
     count_t counts[max_dim];
 
     void init (
-            const Model & model,
+            const Model<max_dim> & model,
             rng_t &)
     {
         count_sum = 0;
@@ -73,7 +94,7 @@ struct Group
     }
 
     void add_value (
-            const Model & model,
+            const Model<max_dim> & model,
             const Value & value,
             rng_t &)
     {
@@ -83,7 +104,7 @@ struct Group
     }
 
     void remove_value (
-            const Model & model,
+            const Model<max_dim> & model,
             const Value & value,
             rng_t &)
     {
@@ -93,8 +114,8 @@ struct Group
     }
 
     void merge (
-            const Model & model,
-            const Group & source,
+            const Model<max_dim> & model,
+            const Group<max_dim> & source,
             rng_t &)
     {
         for (Value value = 0; value < model.dim; ++value) {
@@ -103,13 +124,14 @@ struct Group
     }
 };
 
+template<int max_dim>
 struct Sampler
 {
     float ps[max_dim];
 
     void init (
-            const Model & model,
-            const Group & group,
+            const Model<max_dim> & model,
+            const Group<max_dim> & group,
             rng_t & rng)
     {
         for (Value value = 0; value < model.dim; ++value) {
@@ -120,21 +142,22 @@ struct Sampler
     }
 
     Value eval (
-            const Model & model,
+            const Model<max_dim> & model,
             rng_t & rng) const
     {
         return sample_discrete(rng, model.dim, ps);
     }
 };
 
+template<int max_dim>
 struct Scorer
 {
     float alpha_sum;
     float alphas[max_dim];
 
     void init (
-            const Model & model,
-            const Group & group,
+            const Model<max_dim> & model,
+            const Group<max_dim> & group,
             rng_t &)
     {
         alpha_sum = 0;
@@ -146,7 +169,7 @@ struct Scorer
     }
 
     float eval (
-            const Model & model,
+            const Model<max_dim> & model,
             const Value & value,
             rng_t &) const
     {
@@ -155,15 +178,16 @@ struct Scorer
     }
 };
 
+template<int max_dim>
 struct Mixture
 {
-    std::vector<Group> groups;
+    std::vector<Group<max_dim>> groups;
     float alpha_sum;
     std::vector<VectorFloat> scores;
     VectorFloat scores_shift;
 
     void init (
-            const Model & model,
+            const Model<max_dim> & model,
             rng_t &)
     {
         const size_t group_count = groups.size();
@@ -175,7 +199,7 @@ struct Mixture
             scores[value].resize(group_count);
         }
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
-            const Group & group = groups[groupid];
+            const Group<max_dim> & group = groups[groupid];
             for (Value value = 0; value < model.dim; ++value) {
                 scores[value][groupid] =
                     model.alphas[value] + group.counts[value];
@@ -190,7 +214,7 @@ struct Mixture
     }
 
     void add_group (
-            const Model & model,
+            const Model<max_dim> & model,
             rng_t & rng)
     {
         const size_t group_count = groups.size() + 1;
@@ -203,7 +227,7 @@ struct Mixture
     }
 
     void remove_group (
-            const Model & model,
+            const Model<max_dim> & model,
             size_t groupid)
     {
         DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
@@ -224,14 +248,14 @@ struct Mixture
     }
 
     void add_value (
-            const Model & model,
+            const Model<max_dim> & model,
             size_t groupid,
             const Value & value,
             rng_t &)
     {
         DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
         DIST_ASSERT1(value < model.dim, "value out of bounds: " << value);
-        Group & group = groups[groupid];
+        Group<max_dim> & group = groups[groupid];
         count_t count_sum = group.count_sum += 1;
         count_t count = group.counts[value] += 1;
         scores[value][groupid] = fast_log(model.alphas[value] + count);
@@ -240,14 +264,14 @@ struct Mixture
     }
 
     void remove_value (
-            const Model & model,
+            const Model<max_dim> & model,
             size_t groupid,
             const Value & value,
             rng_t &)
     {
         DIST_ASSERT2(groupid < groups.size(), "bad groupid: " << groupid);
         DIST_ASSERT1(value < model.dim, "value out of bounds: " << value);
-        Group & group = groups[groupid];
+        Group<max_dim> & group = groups[groupid];
         count_t count_sum = group.count_sum -= 1;
         count_t count = group.counts[value] -= 1;
         scores[value][groupid] = fast_log(model.alphas[value] + count);
@@ -256,7 +280,7 @@ struct Mixture
     }
 
     void score_value (
-            const Model & model,
+            const Model<max_dim> & model,
             const Value & value,
             VectorFloat & scores_accum,
             rng_t &) const
@@ -274,13 +298,8 @@ struct Mixture
     }
 };
 
-class Fitter
-{
-    std::vector<Group> groups;
-    VectorFloat scores;
-};
-
-Value sample_value (
+template<int max_dim>
+Value Model<max_dim>::sample_value (
         const Group & group,
         rng_t & rng) const
 {
@@ -289,7 +308,8 @@ Value sample_value (
     return sampler.eval(*this, rng);
 }
 
-float score_value (
+template<int max_dim>
+float Model<max_dim>::score_value (
         const Group & group,
         const Value & value,
         rng_t & rng) const
@@ -299,7 +319,8 @@ float score_value (
     return scorer.eval(*this, value, rng);
 }
 
-float score_group (
+template<int max_dim>
+float Model<max_dim>::score_group (
         const Group & group,
         rng_t &) const
 {
@@ -317,77 +338,13 @@ float score_group (
     return score;
 }
 
-//----------------------------------------------------------------------------
-// Fitting
 
-void fitter_init (
-    Fitter & fitter) const
-{
-    const size_t group_count = fitter.groups.size();
-    const float alpha_sum = vector_sum(dim, alphas);
-    fitter.scores.resize(dim + 1);
-    for (Value value = 0; value < dim; ++value) {
-        vector_zero(fitter.scores[value].size(), fitter.scores[value].data());
-    }
-    float score_shift = 0;
-    for (size_t groupid = 0; groupid < group_count; ++groupid) {
-        const Group & group = fitter.groups[groupid];
-        for (Value value = 0; value < dim; ++value) {
-            float alpha = alphas[value];
-            fitter.scores[value] +=
-                fast_lgamma(alpha + group.counts[value]) - fast_lgamma(alpha);
-        }
-        score_shift +=
-            fast_lgamma(alpha_sum) - fast_lgamma(alpha_sum + group.count_sum);
-    }
-    fitter.scores.back() = score_shift;
-}
 
-void fitter_set_param_alpha (
-    Fitter & fitter,
-    Value value,
-    float alpha)
-{
-    DIST_ASSERT1(value < dim, "value out of bounds: " << value);
+} // namespace dirichlet_discrete
 
-    alphas[value] = alpha;
-
-    const size_t group_count = fitter.groups.size();
-    const float alpha_sum = vector_sum(dim, alphas);
-    float score = 0;
-    float score_shift = 0;
-    for (size_t groupid = 0; groupid < group_count; ++groupid) {
-        const Group & group = fitter.groups[groupid];
-        score += fast_lgamma(alpha + group.counts[value]) - fast_lgamma(alpha);
-        score_shift +=
-            fast_lgamma(alpha_sum) - fast_lgamma(alpha_sum + group.count_sum);
-    }
-    fitter.scores[value] = score;
-    fitter.scores.back() = score_shift;
-}
-
-float fitter_score (
-        Fitter & fitter) const
-{
-    return vector_sum(fitter.scores.size(), fitter.scores.data());
-}
-
-//----------------------------------------------------------------------------
-// Examples
-
-static DirichletDiscrete<max_dim> EXAMPLE ();
-
-}; // struct DirichletDiscrete<max_dim>
-
-template<int max_dim>
-inline DirichletDiscrete<max_dim> DirichletDiscrete<max_dim>::EXAMPLE ()
-{
-    DirichletDiscrete<max_dim> model;
-    model.dim = max_dim;
-    for (int i = 0; i < max_dim; ++i) {
-        model.alphas[i] = 0.5;
-    }
-    return model;
-}
+// g++4.6 doesn't support template aliases, so use this ugly hack
+template <int max_dim>
+struct DirichletDiscrete : public dirichlet_discrete::Model<max_dim>
+{};
 
 } // namespace distributions

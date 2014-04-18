@@ -34,32 +34,51 @@
 #include <distributions/vector.hpp>
 #include <distributions/vector_math.hpp>
 
-namespace distributions
-{
+namespace distributions {
+namespace dirichlet_process_discrete {
+typedef uint32_t count_t;
+typedef uint32_t Value;
+struct Group;
+struct Scorer;
+struct Sampler;
+struct Mixture;
 
-struct DirichletProcessDiscrete
+struct Model
 {
-typedef DirichletProcessDiscrete Model;
+typedef dirichlet_process_discrete::Value Value;
+typedef dirichlet_process_discrete::Group Group;
+typedef dirichlet_process_discrete::Scorer Scorer;
+typedef dirichlet_process_discrete::Sampler Sampler;
+typedef dirichlet_process_discrete::Mixture Mixture;
 
 static const char * name () { return "DirichletProcessDiscrete"; }
 static const char * short_name () { return "dpd"; }
-
-//----------------------------------------------------------------------------
-// Data
 
 float gamma;
 float alpha;
 float beta0;
 std::vector<float> betas;  // dense
 
-//----------------------------------------------------------------------------
-// Datatypes
-
-typedef uint32_t count_t;
-
-typedef uint32_t Value;
-
 static constexpr Value OTHER () { return -1; }
+
+Value sample_value(const Group & group, rng_t & rng) const;
+float score_value(const Group & group, const Value & value, rng_t & rng) const;
+float score_group(const Group & group, rng_t &) const;
+
+static Model EXAMPLE ();
+
+};
+
+inline Model Model::EXAMPLE ()
+{
+    Model model;
+    size_t dim = 100;
+    model.gamma = 0.5;
+    model.alpha = 0.5;
+    model.beta0 = 0.0;  // must be zero for testing
+    model.betas.resize(dim, 1.0 / dim);
+    return model;
+}
 
 struct Group
 {
@@ -282,7 +301,7 @@ struct Mixture
     }
 };
 
-Value sample_value (
+inline Value Model::sample_value (
         const Group & group,
         rng_t & rng) const
 {
@@ -291,7 +310,7 @@ Value sample_value (
     return sampler.eval(*this, rng);
 }
 
-float score_value (
+inline float Model::score_value (
         const Group & group,
         const Value & value,
         rng_t & rng) const
@@ -301,7 +320,7 @@ float score_value (
     return scorer.eval(*this, value, rng);
 }
 
-float score_group (
+inline float Model::score_group (
         const Group & group,
         rng_t &) const
 {
@@ -323,22 +342,8 @@ float score_group (
     return score;
 }
 
-//----------------------------------------------------------------------------
-// Examples
+} // namespace dirichlet_process_discrete
 
-static DirichletProcessDiscrete EXAMPLE ();
-
-}; // struct DirichletProcessDiscrete<max_dim>
-
-inline DirichletProcessDiscrete DirichletProcessDiscrete::EXAMPLE ()
-{
-    DirichletProcessDiscrete model;
-    size_t dim = 100;
-    model.gamma = 0.5;
-    model.alpha = 0.5;
-    model.beta0 = 0.0;  // must be zero for testing
-    model.betas.resize(dim, 1.0 / dim);
-    return model;
-}
+typedef dirichlet_process_discrete::Model DirichletProcessDiscrete;
 
 } // namespace distributions

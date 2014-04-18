@@ -32,8 +32,14 @@ namespace distributions
 
 template<int max_dim>
 struct DirichletDiscrete;
-struct DirichletProcessDiscrete;
-struct NormalInverseChiSq;
-struct GammaPoisson;
+
+namespace dirichlet_process_discrete { struct Model; }
+typedef dirichlet_process_discrete::Model DirichletProcessDiscrete;
+
+namespace normal_inverse_chi_sq { struct Model; }
+typedef normal_inverse_chi_sq::Model NormalInverseChiSq;
+
+namespace gamma_poisson { struct Model; }
+typedef gamma_poisson::Model GammaPoisson;
 
 } // namespace distributions

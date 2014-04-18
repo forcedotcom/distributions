@@ -28,10 +28,10 @@
 #include <distributions/models/nich.hpp>
 #include <distributions/vector_math.hpp>
 
-namespace distributions
-{
+namespace distributions {
+namespace normal_inverse_chi_sq {
 
-void NormalInverseChiSq::Mixture::_score_value (
+void Mixture::_score_value (
         const Model & model,
         const Value & value,
         AlignedFloats scores_accum,
@@ -88,4 +88,5 @@ void NormalInverseChiSq::Mixture::_score_value (
     //}
 }
 
+} // namespace normal_inverse_chi_sq
 } // namespace distributions

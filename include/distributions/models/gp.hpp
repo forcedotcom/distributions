@@ -32,26 +32,44 @@
 #include <distributions/random.hpp>
 #include <distributions/vector.hpp>
 
-namespace distributions
-{
+namespace distributions {
+namespace gamma_poisson {
+typedef uint32_t Value;
+struct Group;
+struct Scorer;
+struct Sampler;
+struct Mixture;
 
-struct GammaPoisson
+struct Model
 {
-typedef GammaPoisson Model;
+typedef gamma_poisson::Value Value;
+typedef gamma_poisson::Group Group;
+typedef gamma_poisson::Scorer Scorer;
+typedef gamma_poisson::Sampler Sampler;
+typedef gamma_poisson::Mixture Mixture;
 
 static const char * name () { return "GammaPoisson"; }
 static const char * short_name () { return "gp"; }
 
-//----------------------------------------------------------------------------
-// Data
-
 float alpha;
 float inv_beta;
 
-//----------------------------------------------------------------------------
-// Datatypes
+Model plus_group(const Group & group) const;
+Value sample_value(const Group & group, rng_t & rng) const;
+float score_value(const Group & group, const Value & value, rng_t & rng) const;
+float score_group(const Group & group, rng_t &) const;
 
-typedef uint32_t Value;
+static Model EXAMPLE ();
+
+}; // struct Model
+
+inline Model Model::EXAMPLE ()
+{
+    Model model;
+    model.alpha = 1.0;
+    model.inv_beta = 1.0;
+    return model;
+}
 
 struct Group
 {
@@ -266,11 +284,8 @@ struct Mixture
             rng_t &) const;
 };
 
-//----------------------------------------------------------------------------
-// Mutation
 
-
-Model plus_group (const Group & group) const
+inline Model Model::plus_group (const Group & group) const
 {
     Model post;
     post.alpha = alpha + group.sum;
@@ -278,7 +293,7 @@ Model plus_group (const Group & group) const
     return post;
 }
 
-Value sample_value (
+inline Value Model::sample_value (
         const Group & group,
         rng_t & rng) const
 {
@@ -287,7 +302,7 @@ Value sample_value (
     return sampler.eval(*this, rng);
 }
 
-float score_value (
+inline float Model::score_value (
         const Group & group,
         const Value & value,
         rng_t & rng) const
@@ -297,7 +312,7 @@ float score_value (
     return scorer.eval(*this, value, rng);
 }
 
-float score_group (
+inline float Model::score_group (
         const Group & group,
         rng_t &) const
 {
@@ -310,19 +325,9 @@ float score_group (
 
 }
 
-//----------------------------------------------------------------------------
-// Examples
+} // namespace gamma_poisson
 
-static GammaPoisson EXAMPLE ();
-
-}; // struct GammaPoisson
-
-inline GammaPoisson GammaPoisson::EXAMPLE ()
-{
-    GammaPoisson model;
-    model.alpha = 1.0;
-    model.inv_beta = 1.0;
-    return model;
-}
+// backwards compatibility
+typedef gamma_poisson::Model GammaPoisson;
 
 } // namespace distributions

@@ -28,10 +28,10 @@
 #include <distributions/models/gp.hpp>
 #include <distributions/vector_math.hpp>
 
-namespace distributions
-{
+namespace distributions {
+namespace gamma_poisson {
 
-void GammaPoisson::Mixture::_score_value (
+void Mixture::_score_value (
         const Model & model,
         const Value & value,
         VectorFloat & scores_accum,
@@ -60,4 +60,5 @@ void GammaPoisson::Mixture::_score_value (
     }
 }
 
+} // namespace gamma_poisson
 } // namespace distributions
