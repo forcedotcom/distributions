@@ -262,9 +262,7 @@ def test_mixture_score_matches_score_add_value(Model, EXAMPLE, sample_count):
         ]
 
         mixture = Model.Mixture()
-        for count in counts:
-            mixture.append(count)
-        mixture.init(model)
+        mixture.init(model, counts)
         noise = numpy.random.randn(len(counts))
         actual = numpy.zeros(len(counts), dtype=numpy.float32)
         actual[:] = noise

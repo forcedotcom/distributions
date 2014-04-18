@@ -28,10 +28,148 @@
 #pragma once
 
 #include <vector>
+#include <unordered_set>
 #include <distributions/common.hpp>
+#include <distributions/vector.hpp>
+#include <distributions/trivial_hash.hpp>
 
 namespace distributions
 {
+
+//----------------------------------------------------------------------------
+// Mixture Driver
+//
+// This interface maintains contiguous groupids for vectorized scoring
+// while maintaining a fixed number of empty groups.
+// Specific models may use this class, or maintain custom cached scores. 
+
+template<class Model, class count_t>
+class MixtureDriver
+{
+public:
+
+    typedef std::unordered_set<size_t, TrivialHash<size_t>> IdSet;
+
+    const std::vector<count_t> & counts () const { return counts_; }
+    count_t counts (size_t groupid) const { return counts_[groupid]; }
+    const IdSet & empty_groupids () const { return empty_groupids_; }
+    size_t sample_size () const { return sample_size_; }
+
+    void init (const Model & model, const std::vector<count_t> & counts)
+    {
+        counts_ = counts;
+        empty_groupids_.clear();
+        sample_size_ = 0;
+
+        const size_t group_count = counts_.size();
+        for (size_t i = 0; i < group_count; ++i) {
+            sample_size_ += counts_[i];
+            if (counts_[i] == 0) {
+                empty_groupids_.insert(i);
+            }
+        }
+        _validate();
+    }
+
+    bool add_value (
+            const Model & model,
+            size_t groupid,
+            count_t count = 1)
+    {
+        DIST_ASSERT1(count, "cannot add zero values");
+        DIST_ASSERT2(groupid < counts_.size(), "bad groupid: " << groupid);
+
+        const bool add_group = (counts_[groupid] == 0);
+        counts_[groupid] += count;
+        sample_size_ += count;
+
+        if (DIST_UNLIKELY(add_group)) {
+            empty_groupids_.erase(groupid);
+            empty_groupids_.insert(counts_.size());
+            counts_.push_back(0);
+            _validate();
+        }
+
+        return add_group;
+    }
+
+    bool remove_value (
+            const Model & model,
+            size_t groupid,
+            count_t count = 1)
+    {
+        DIST_ASSERT1(count, "cannot remove zero values");
+        DIST_ASSERT2(groupid < counts_.size(), "bad groupid: " << groupid);
+        DIST_ASSERT2(counts_[groupid], "cannot remove value from empty group");
+        DIST_ASSERT2(count <= counts_[groupid],
+            "cannot remove more values than are in group");
+
+        counts_[groupid] -= count;
+        sample_size_ -= count;
+        const bool remove_group = (counts_[groupid] == 0);
+
+        if (DIST_UNLIKELY(remove_group)) {
+            const size_t group_count = counts_.size() - 1;
+            if (groupid != group_count) {
+                if (counts_.back() == 0) {
+                    empty_groupids_.erase(group_count);
+                    empty_groupids_.insert(groupid);
+                } else {
+                    counts_[groupid] = counts_.back();
+                }
+            }
+            counts_.pop_back();
+            _validate();
+        }
+
+        return remove_group;
+    }
+
+    void score (const Model & model, VectorFloat & scores) const
+    {
+        if (DIST_DEBUG_LEVEL >= 1) {
+            DIST_ASSERT_EQ(scores.size(), counts_.size());
+        }
+
+        const count_t group_count = counts_.size();
+        const count_t empty_group_count = empty_groupids_.size();
+        const count_t nonempty_group_count = group_count - empty_group_count;
+        for (size_t i = 0; i < group_count; ++i) {
+            scores[i] = model.score_add_value(
+                counts_[i],
+                nonempty_group_count,
+                sample_size_,
+                empty_group_count);
+        }
+    }
+
+private:
+
+    std::vector<count_t> counts_;
+    IdSet empty_groupids_;
+    count_t sample_size_;
+
+    void _validate () const
+    {
+        DIST_ASSERT1(empty_groupids_.size(), "missing empty groups");
+        if (DIST_DEBUG_LEVEL >= 2) {
+            for (size_t i = 0; i < counts_.size(); ++i) {
+                bool count_is_zero = (counts_[i] == 0);
+                bool is_empty =
+                    (empty_groupids_.find(i) != empty_groupids_.end());
+                DIST_ASSERT_EQ(count_is_zero, is_empty);
+            }
+        }
+    }
+};
+
+
+//----------------------------------------------------------------------------
+// Mixture Id Tracker
+//
+// This interface tracks a mapping between contiguous "packed" group ids
+// and fixed unique "global" ids.  Packed ids can change when groups are
+// added or removed, but global ids never change.
 
 class MixtureIdTracker
 {

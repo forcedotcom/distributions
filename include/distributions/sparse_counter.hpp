@@ -29,6 +29,7 @@
 
 #include <utility>
 #include <unordered_map>
+#include <distributions/trivial_hash.hpp>
 
 namespace distributions
 {
@@ -36,15 +37,7 @@ namespace distributions
 template<class Key, class Value>
 class SparseCounter
 {
-    struct TrivialHash
-    {
-        typedef Key argument_type;
-        typedef size_t result_type;
-
-        size_t operator() (const Key & key) const { return key; }
-    };
-
-    typedef std::unordered_map<Key, Value, TrivialHash> map_t;
+    typedef std::unordered_map<Key, Value, TrivialHash<Key>> map_t;
 
 public:
 

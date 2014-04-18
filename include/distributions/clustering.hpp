@@ -32,6 +32,8 @@
 #include <distributions/common.hpp>
 #include <distributions/random.hpp>
 #include <distributions/vector.hpp>
+#include <distributions/trivial_hash.hpp>
+#include <distributions/mixture.hpp>
 
 namespace distributions
 {
@@ -43,154 +45,13 @@ template<class count_t>
 struct Clustering
 {
 
-
 //----------------------------------------------------------------------------
 // Assignments
-
-template<class Key>
-struct TrivialHash
-{
-    typedef Key argument_type;
-    typedef size_t result_type;
-    size_t operator() (const Key & key) const
-    {
-        static_assert(sizeof(Key) <= sizeof(size_t), "invalid type");
-        return key;
-    }
-};
 
 typedef std::unordered_map<count_t, count_t, TrivialHash<count_t>> Assignments;
 
 static std::vector<count_t> count_assignments (
         const Assignments & assignments);
-
-
-//----------------------------------------------------------------------------
-// Mixture Driver
-//
-// This interface maintains contiguous groupids for vectorized scoring
-// while maintaining a fixed number of empty groups.
-// Specific models may use this class, or maintain custom cached scores. 
-
-template<class Model>
-class MixtureDriver
-{
-public:
-
-    typedef std::unordered_set<size_t, TrivialHash<size_t>> IdSet;
-
-    const std::vector<count_t> & counts () const { return counts_; }
-    const IdSet & empty_groupids () const { return empty_groupids_; }
-    size_t sample_size () const { return sample_size_; }
-
-    void init (const Model & model, const std::vector<count_t> & counts)
-    {
-        counts_ = counts;
-
-        const size_t group_count = counts_.size();
-        sample_size_ = 0;
-        empty_groupids_.clear();
-        for (size_t i = 0; i < group_count; ++i) {
-            sample_size_ += counts_[i];
-            if (counts_[i] == 0) {
-                empty_groupids_.insert(i);
-            }
-        }
-        DIST_ASSERT(empty_groupids_.size(), "missing empty groups");
-        _validate();
-    }
-
-    bool add_value (
-            const Model & model,
-            size_t groupid,
-            count_t count = 1)
-    {
-        DIST_ASSERT1(count, "cannot add zero values");
-        DIST_ASSERT2(groupid < counts_.size(), "bad groupid: " << groupid);
-
-        const bool add_group = (counts_[groupid] == 0);
-        counts_[groupid] += count;
-        sample_size_ += count;
-
-        if (DIST_UNLIKELY(add_group)) {
-            empty_groupids_.erase(groupid);
-            empty_groupids_.insert(counts_.size());
-            counts_.push_back(0);
-            _validate();
-        }
-
-        return add_group;
-    }
-
-    bool remove_value (
-            const Model & model,
-            size_t groupid,
-            count_t count = 1)
-    {
-        DIST_ASSERT1(count, "cannot remove zero values");
-        DIST_ASSERT2(groupid < counts_.size(), "bad groupid: " << groupid);
-        DIST_ASSERT2(counts_[groupid], "cannot remove value from empty group");
-        DIST_ASSERT2(count <= counts_[groupid],
-            "cannot remove more values than are in group");
-
-        counts_[groupid] -= count;
-        sample_size_ -= count;
-        const bool remove_group = (counts_[groupid] == 0);
-
-        if (DIST_UNLIKELY(remove_group)) {
-            const size_t group_count = counts_.size() - 1;
-            if (groupid != group_count) {
-                if (counts_.back() == 0) {
-                    empty_groupids_.erase(group_count);
-                    empty_groupids_.insert(groupid);
-                } else {
-                    counts_[groupid] = counts_.back();
-                }
-            }
-            counts_.pop_back();
-            _validate();
-        }
-
-        return remove_group;
-    }
-
-    void score (const Model & model, VectorFloat & scores) const
-    {
-        if (DIST_DEBUG_LEVEL >= 1) {
-            DIST_ASSERT_EQ(scores.size(), counts_.size());
-        }
-
-        const count_t group_count = counts_.size();
-        const count_t empty_group_count = empty_groupids_.size();
-        const count_t nonempty_group_count = group_count - empty_group_count;
-        for (size_t i = 0; i < group_count; ++i) {
-            scores[i] = model.score_add_value(
-                counts_[i],
-                nonempty_group_count,
-                sample_size_,
-                empty_group_count);
-        }
-    }
-
-private:
-
-    std::vector<count_t> counts_;
-    IdSet empty_groupids_;
-    count_t sample_size_;
-
-    void _validate () const
-    {
-        DIST_ASSERT1(empty_groupids_.size(), "missing empty groups");
-        if (DIST_DEBUG_LEVEL >= 2) {
-            for (size_t i = 0; i < counts_.size(); ++i) {
-                bool count_is_zero = (counts_[i] == 0);
-                bool is_empty =
-                    (empty_groupids_.find(i) != empty_groupids_.end());
-                DIST_ASSERT_EQ(count_is_zero, is_empty);
-            }
-        }
-    }
-};
 
 
 //----------------------------------------------------------------------------
@@ -260,11 +121,16 @@ struct PitmanYor
     public:
 
         typedef PitmanYor Model;
-        typedef std::unordered_set<size_t, TrivialHash<size_t>> IdSet;
+        typedef typename MixtureDriver<PitmanYor, count_t>::IdSet IdSet;
 
         const std::vector<count_t> & counts () const
         {
             return driver_.counts();
+        }
+
+        count_t counts (size_t groupid) const
+        {
+            return driver_.counts(groupid);
         }
 
         const IdSet & empty_groupids () const
@@ -279,10 +145,11 @@ struct PitmanYor
 
         void init (const Model & model, const std::vector<count_t> & counts)
         {
-            driver_.init(counts);
-            shifted_scores_.resize(counts().size());
+            driver_.init(model, counts);
+            const size_t group_count = driver_.counts().size();
+            shifted_scores_.resize(group_count);
             for (size_t i = 0; i < group_count; ++i) {
-                if (counts()[i]) {
+                if (driver_.counts(i)) {
                     _update_nonempty_group(model, i);
                 }
             }
@@ -357,7 +224,7 @@ struct PitmanYor
             }
         }
 
-        MixtureDriver<PitmanYor> driver_;
+        MixtureDriver<PitmanYor, count_t> driver_;
         VectorFloat shifted_scores_;
     };
 };
@@ -426,7 +293,7 @@ struct LowEntropy
 
     float log_partition_function (count_t sample_size) const;
 
-    typedef MixtureDriver<LowEntropy> Mixture;
+    typedef MixtureDriver<LowEntropy, count_t> Mixture;
 
 private:
 

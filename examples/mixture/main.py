@@ -80,19 +80,17 @@ class ImageModel(object):
             return len(self.clustering)
 
         def init(self, model, empty_group_count=EMPTY_GROUP_COUNT):
-            self.clustering.clear()
+            assert empty_group_count >= 1
+            counts = [0] * empty_group_count
+            self.clustering.init(model.clustering, counts)
+            assert len(self.clustering) == len(counts)
+            self.id_tracker.init(len(counts))
+
             self.feature_x.clear()
             self.feature_y.clear()
-            self.id_tracker.init()
-
-            assert empty_group_count >= 1
             for _ in xrange(empty_group_count):
-                self.clustering.append(0)
                 self.feature_x.add_group(model.feature)
                 self.feature_y.add_group(model.feature)
-                self.id_tracker.add_group()
-
-            self.clustering.init(model.clustering)
             self.feature_x.init(model.feature)
             self.feature_y.init(model.feature)
 
