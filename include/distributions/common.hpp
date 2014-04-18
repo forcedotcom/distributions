@@ -31,7 +31,7 @@
 #  define DIST_LIKELY(x) __builtin_expect(bool(x), true)
 #  define DIST_UNLIKELY(x) __builtin_expect(bool(x), false)
 #else // __GNUG__
-#  warning "ignoring likely(-), unlikely(-)"
+#  warning "ignoring DIST_LIKELY(-), DIST_UNLIKELY(-)"
 #  define DIST_LIKELY(x) (x)
 #  define DIST_UNLIKELY(x) (x)
 #endif // __GNUG__
@@ -59,11 +59,21 @@
 #  define DIST_DEBUG_LEVEL 0
 #endif // DIST_DEBUG_LEVEL
 
-#define DIST_ASSERT(cond, message) { if (not (cond)) DIST_ERROR(message) }
+#define DIST_ASSERT(cond, message) \
+    { if (DIST_UNLIKELY(not (cond))) DIST_ERROR(message) }
 
-#define DIST_ASSERT_EQ(lhs, rhs) DIST_ASSERT(\
-        ((lhs) == (rhs)), \
-        "expected " #lhs " == " << rhs << ", actual " << lhs)
+#define DIST_ASSERT_EQ(x, y) \
+    DIST_ASSERT((x) == (y), \
+            "expected " #x " == " #y "; actual " << (x) << " vs " << (y))
+#define DIST_ASSERT_LE(x, y) \
+    DIST_ASSERT((x) <= (y), \
+            "expected " #x " <= " #y "; actual " << (x) << " vs " << (y))
+#define DIST_ASSERT_LT(x, y) \
+    DIST_ASSERT((x) < (y), \
+            "expected " #x " < " #y "; actual " << (x) << " vs " << (y))
+#define DIST_ASSERT_NE(x, y) \
+    DIST_ASSERT((x) != (y), \
+            "expected " #x " != " #y "; actual " << (x) << " vs " << (y))
 
 #define DIST_ASSERT_(level, cond, message) \
     { if (DIST_DEBUG_LEVEL >= (level)) DIST_ASSERT(cond, message) }

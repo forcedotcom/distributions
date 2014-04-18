@@ -25,22 +25,69 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+'''
+A parameter-free clustering prior based on partition entropy.
+
+The Dirichlet prior is often used in nonparametric mixture models to model
+the partitioning of observations into clusters.
+This class implements a parameter-free alternative to the Dirichlet prior
+that preserves exchangeability, preserves asymptotic convergence rate of
+density estimation, and has an elegant interpretation as a
+minimum-description-length prior.
+
+Motivation
+----------
+
+In conjugate mixture models, samples from the posterior are sufficiently
+represented by a partitioning of observations into clusters, say as an
+assignment vector X with cluster labels X_i for each observation i.
+In our ~10^6-observation production system, we found the data size of this
+assignment vector to be a limiting factor in query latency, even after
+lossless compression.  To address this problem, we tried to incorporate the
+Shannon entropy of this assignment vector directly into the prior, as
+an information criterion.  Surprisingly, the resulting low-entropy prior
+enjoys a number of properties:
+
+- The low-entropy prior enjoys similar asymptotic convergence as the
+  Dirichlet prior.
+
+- The probability of a clustering is elegant and easy to evaluate
+  (up to an unknown normalizing constant).
+
+- The resulting distribution resembles a CRP distribution with parameter
+  alpha = exp(-1), but slightly avoids small clusters.
+
+- MAP estimates are minimum-description-length, as measured by assignment
+  vector complexity.
+
+- The low-entropy prior is parameter free, unlike the CRP, Pitman-Yor, or
+  Mixture of Finite Mixture models.
+
+A difficulty is that the prior depends on dataset size, and is hence not a
+proper nonparametric generative model.
+'''
+
 import os
 from collections import defaultdict
 import numpy
-import math
+from numpy import log, exp
 from scipy.special import gammaln
+import math
 import matplotlib
 matplotlib.use('Agg')
 from matplotlib import pyplot, font_manager
 import parsable
 from distributions.lp.special import fast_log
 from distributions.io.stream import json_stream_load, json_stream_dump
+parsable = parsable.Parsable()
+
+assert exp  # pacify pyflakes
 
 
 DEFAULT_MAX_SIZE = 47
 
-TEMP = 'temp.clustering'
+ROOT = os.path.dirname(os.path.abspath(__file__))
+TEMP = os.path.join(ROOT, 'clustering.data')
 if not os.path.exists(TEMP):
     os.makedirs(TEMP)
 
@@ -97,11 +144,17 @@ def get_smaller_probs(small_counts, large_counts, large_probs):
 
 
 def get_counts(size):
+    '''
+    Count partition shapes of a given sample size.
+
+    Inputs:
+        size = sample_size
+    Returns:
+        dict : shape -> count
+    '''
     assert 0 <= size
     cache_file = '{}/counts.{}.json.bz2'.format(TEMP, size)
-    if cache_file in CACHE:
-        return CACHE[cache_file]
-    else:
+    if cache_file not in CACHE:
         if os.path.exists(cache_file):
             flat = json_stream_load(cache_file)
             large = {tuple(key): val for key, val in flat}
@@ -114,16 +167,11 @@ def get_counts(size):
             print 'caching', cache_file
             json_stream_dump(large.iteritems(), cache_file)
         CACHE[cache_file] = large
-        return large
+    return CACHE[cache_file]
 
 
 def enum_counts(max_size):
     return [get_counts(size) for size in range(1 + max_size)]
-
-
-def get_log_count(shape):
-    raise NotImplementedError('FIXME this ignores partitions of equal size')
-    return gammaln(sum(shape) + 1) - sum(gammaln(n + 1) for n in shape)
 
 
 def get_log_z(shape):
@@ -148,12 +196,19 @@ def get_probs(size):
 
 
 def get_subprobs(size, max_size):
+    '''
+    Compute probabilities of shapes of partial assignment vectors.
+
+    Inputs:
+        size = sample_size
+        max_size = dataset_size
+    Returns:
+        dict : shape -> prob
+    '''
     assert 0 <= size
     assert size <= max_size
     cache_file = '{}/subprobs.{}.{}.json.bz2'.format(TEMP, size, max_size)
-    if cache_file in CACHE:
-        return CACHE[cache_file]
-    else:
+    if cache_file not in CACHE:
         if os.path.exists(cache_file):
             flat = json_stream_load(cache_file)
             small_probs = {tuple(key): val for key, val in flat}
@@ -171,11 +226,78 @@ def get_subprobs(size, max_size):
             print 'caching', cache_file
             json_stream_dump(small_probs.iteritems(), cache_file)
         CACHE[cache_file] = small_probs
-        return small_probs
+    return CACHE[cache_file]
 
 
 def enum_probs(max_size):
     return [get_probs(size) for size in range(max_size + 1)]
+
+
+@parsable.command
+def priors(N=100):
+    '''
+    Plots different partition priors.
+    '''
+    X = numpy.array(range(1, N + 1))
+
+    def plot(Y, *args, **kwargs):
+        Y = numpy.array(Y)
+        Y -= numpy.logaddexp.reduce(Y)
+        pyplot.plot(X, Y, *args, **kwargs)
+
+    plot_energy = False
+    if plot_energy:
+
+        ylabel = 'energy per object'
+
+        def crp(alpha):
+            assert 0 < alpha
+            prob = log(alpha) + gammaln(X)
+            prob /= X
+            return prob
+
+        def entropy():
+            return log(X)
+
+    else:
+
+        ylabel = 'log(probability)'
+
+        def crp(alpha):
+            assert 0 < alpha
+            prob = numpy.zeros(len(X))
+            prob[1:] = log(X[1:] - 1)
+            prob[0] = log(alpha)
+            return prob
+
+        def entropy():
+            prob = numpy.zeros(len(X))
+            n_log_n = lambda n: n * log(n)
+            prob[1:] = n_log_n(X[1:]) - n_log_n(X[1:] - 1)
+            return prob
+
+    def plot_crp(alpha):
+        plot(crp(eval(alpha)), label='CRP({})'.format(alpha))
+
+    def plot_entropy():
+        plot(entropy(), 'k--', linewidth=2, label='low-entropy')
+
+    pyplot.figure(figsize=(8, 4))
+
+    plot_entropy()
+    plot_crp('0.01')
+    plot_crp('0.1')
+    plot_crp('exp(-1)')
+    plot_crp('1.0')
+    plot_crp('10.0')
+
+    pyplot.title('Posterior Predictive Curves of Clustering Priors')
+    pyplot.xlabel('category size')
+    pyplot.ylabel(ylabel)
+    pyplot.xscale('log')
+    pyplot.legend(loc='best')
+
+    savefig('priors')
 
 
 def get_pairwise(counts):
@@ -235,7 +357,7 @@ def postpred(subsample_size=10):
     fixing subsample size and varying cluster size and dataset size.
     '''
     size = subsample_size
-    max_sizes = [size] + [2, 3, 5, 8, 10, 15, 20, 30, 40, 50, 60]
+    max_sizes = [size] + [2, 3, 5, 8, 10, 15, 20, 30, 40, 50]
     max_sizes = sorted(set(s for s in max_sizes if s >= size))
     colors = get_color_range(len(max_sizes))
     pyplot.figure(figsize=(12, 8))
@@ -297,10 +419,10 @@ def postpred(subsample_size=10):
     pyplot.plot(X, Y, 'k--', label='entropy', linewidth=2)
 
     # CRP
-    #alpha = math.exp(-1)
-    #Y = numpy.array([n - 1 if n > 1 else alpha for n in X])
-    #Y /= Y.min()
-    #pyplot.plot(X, Y, 'g--', label='CRP({})'.format(alpha))
+    alpha = math.exp(-1)
+    Y = numpy.array([x - 1 if x > 1 else alpha for x in X])
+    Y /= Y.min()
+    pyplot.plot(X, Y, 'g-', label='CRP(exp(-1))'.format(alpha))
 
     # ad hoc
     factors = ad_hoc_size_factor(size, numpy.array(max_sizes))
@@ -326,9 +448,9 @@ def postpred(subsample_size=10):
     savefig('postpred')
 
 
-def estimate_postpred_correction(subsample_size, dataset_size):
+def true_postpred_correction(subsample_size, dataset_size):
     '''
-    Estimate postpred constant according to size-based approximation.
+    Compute true postpred constant according to size-based approximation.
     '''
     large_counts = get_counts(subsample_size)
     large_probs = get_subprobs(subsample_size, dataset_size)
@@ -372,6 +494,8 @@ def estimate_postpred_correction(subsample_size, dataset_size):
 def dataprob(subsample_size=10, dataset_size=50):
     '''
     Plot data prob approximation.
+
+    This tests the accuracy of LowEntropy.score_counts(...).
     '''
     true_probs = get_subprobs(subsample_size, dataset_size)
     naive_probs = get_probs(subsample_size)
@@ -383,15 +507,6 @@ def dataprob(subsample_size=10, dataset_size=50):
     print 'factor =', factor
     for shape in shapes:
         approx_probs[shape] *= factor ** (len(shape) - 2)
-
-    ##N = subsample_size
-    ##z1 = math.exp(get_log_z([N]))
-    ##z2 = math.exp(get_log_z([N - 1, 1])) * N
-    ##normalize = ((z1 + 2 * z2) / (z1 + 2 * z2 / factor)) ** 2
-    #normalize = 1.0 / sum(approx_probs.itervalues())
-    # print 'normalization =', normalize
-    # for shape in shapes:
-    #    approx_probs[shape] *= normalize
 
     X = numpy.array([true_probs[shape] for shape in shapes])
     Y0 = numpy.array([naive_probs[shape] for shape in shapes])
@@ -421,9 +536,9 @@ def dataprob(subsample_size=10, dataset_size=50):
     savefig('dataprob')
 
 
-def estimate_dataprob_correction(subsample_size, dataset_size):
+def true_dataprob_correction(subsample_size, dataset_size):
     '''
-    Estimate normalization correction.
+    Compute true normalization correction.
     '''
     naive_probs = get_probs(subsample_size)
     factor = ad_hoc_size_factor(subsample_size, dataset_size)
@@ -495,11 +610,11 @@ def approximations(max_size=DEFAULT_MAX_SIZE):
 
         # postpred correction
         if size > 1:
-            truth1[key] = estimate_postpred_correction(size, max_size)
+            truth1[key] = true_postpred_correction(size, max_size)
             approx1[key] = approximate_postpred_correction(size, max_size)
 
         # normalization correction
-        truth2[key] = estimate_dataprob_correction(size, max_size)
+        truth2[key] = true_dataprob_correction(size, max_size)
         approx2[key] = approximate_dataprob_correction(size, max_size)
 
     fig, (ax1, ax2) = pyplot.subplots(2, 1, sharex=True, figsize=(12, 8))
@@ -560,19 +675,18 @@ def fastlog():
     savefig('fastlog')
 
 
-def number_table(numbers, width=4):
-    lines = ['{']
+def number_table(numbers, width=5):
+    lines = []
     line = ''
     for i, number in enumerate(numbers):
         if i % width == 0:
             if line:
                 lines.append(line + ',')
-            line = '    %0.8ff' % number
+            line = '    %0.8f' % number
         else:
-            line += ', %0.8ff' % number
+            line += ', %0.8f' % number
     if line:
         lines.append(line)
-    lines.append('};')
     return '\n'.join(lines)
 
 
@@ -589,19 +703,25 @@ def code(max_size=DEFAULT_MAX_SIZE):
     ]
     size = sizes[-1]
     coeff = (log_Z[-1] / get_log_z([size]) - 1.0) * size ** 0.75
+
+    print '# Insert this in src/clustering.cc:'
     lines = [
-        '// this code generated by derivations/clustering.py',
-        'static const float cluster_normalizing_scores[%d] =' % (max_size + 1),
-        number_table(log_Z),
-        '',
-        '// this code generated by derivations/clustering.py',
-        'template<class count_t>',
-        'inline float cluster_normalizing_score (count_t sample_size)',
+        '// this code was generated by derivations/clustering.py',
+        'static const float log_partition_function_table[%d] =' %
+        (max_size + 1),
         '{',
-        '    // FIXME incorporate dataset_size',
+        number_table(log_Z),
+        '};',
+        '',
+        '// this code was generated by derivations/clustering.py',
+        'template<class count_t>',
+        'float Clustering<count_t>::LowEntropy::log_partition_function (',
+        '        count_t sample_size) const',
+        '{',
+        '    // TODO incorporate dataset_size for higher accuracy',
         '    count_t n = sample_size;',
         '    if (n < %d) {' % (max_size + 1),
-        '        return cluster_normalizing_scores[n];',
+        '        return log_partition_function_table[n];',
         '    } else {',
         '        float coeff = %0.8ff;' % coeff,
         '        float log_z_max = n * fast_log(n);',
@@ -610,6 +730,43 @@ def code(max_size=DEFAULT_MAX_SIZE):
         '}',
     ]
     print '\n'.join(lines)
+    print
+
+    print '# Insert this in distributions/dbg/clustering.py:'
+    lines = [
+        '# this code was generated by derivations/clustering.py',
+        'log_partition_function_table = [',
+        number_table(log_Z),
+        ']',
+        '',
+        '',
+        '# this code was generated by derivations/clustering.py',
+        'def log_partition_function(sample_size):',
+        '    # TODO incorporate dataset_size for higher accuracy',
+        '    n = sample_size',
+        '    if n < %d:' % (max_size + 1),
+        '        return LowEntropy.log_partition_function_table[n]',
+        '    else:',
+        '        coeff = %0.8f' % coeff,
+        '        log_z_max = n * log(n)',
+        '        return log_z_max * (1.0 + coeff * n ** -0.75)',
+    ]
+    print '\n'.join(lines)
+    print
+
+
+@parsable.command
+def plots():
+    '''
+    Generate all plots.
+    '''
+    priors()
+    pairwise()
+    postpred()
+    dataprob()
+    approximations()
+    normalization()
+    fastlog()
 
 
 if __name__ == '__main__':

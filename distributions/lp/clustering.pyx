@@ -127,6 +127,14 @@ cdef class PitmanYor_cy:
             self.ptr.alpha = 1.0
             self.ptr.d = 0.0
 
+    property alpha:
+        def __get__(self):
+            return self.ptr.alpha
+
+    property d:
+        def __get__(self):
+            return self.ptr.d
+
     def load(self, dict raw):
         cdef float alpha = raw['alpha']
         cdef float d = raw['d']
@@ -261,6 +269,10 @@ cdef class LowEntropy_cy:
         else:
             self.ptr.dataset_size = 0
 
+    property dataset_size:
+        def __get__(self):
+            return self.ptr.dataset_size
+
     def load(self, dict raw):
         cdef int dataset_size = raw['dataset_size']
         assert dataset_size >= 0
@@ -313,7 +325,7 @@ cdef class LowEntropy_cy:
     ]
 
 
-class LowEntropy(LowEntropy_cy, Serializable):
+class LowEntropy(LowEntropy_cy, Serializable, ProtobufSerializable):
 
     def load_protobuf(self, message):
         self.load({'dataset_size': message.dataset_size})

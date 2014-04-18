@@ -84,7 +84,7 @@ inline void model_load (
         const protobuf::DirichletDiscrete & message)
 {
     model.dim = message.alphas_size();
-    DIST_ASSERT(model.dim <= max_dim, "dim is too large: " << model.dim);
+    DIST_ASSERT_LE(model.dim, max_dim);
     for (size_t i = 0; i < model.dim; ++i) {
         model.alphas[i] = message.alphas(i);
     }
