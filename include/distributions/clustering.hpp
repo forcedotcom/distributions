@@ -164,6 +164,7 @@ struct PitmanYor
             const bool add_group = driver_.add_value(model, groupid, count);
 
             if (DIST_UNLIKELY(add_group)) {
+                shifted_scores_.push_back(0);
                 _update_empty_groups(model);
             }
 
@@ -180,6 +181,7 @@ struct PitmanYor
 
             if (DIST_UNLIKELY(remove_group)) {
                 _update_empty_groups(model);
+                shifted_scores_.pop_back();
             } else {
                 _update_nonempty_group(model, groupid);
             }
