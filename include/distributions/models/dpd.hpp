@@ -52,10 +52,6 @@ std::vector<float> betas;  // dense
 
 static constexpr Value OTHER () { return -1; }
 
-Value sample_value(const Group & group, rng_t & rng) const;
-float score_value(const Group & group, const Value & value, rng_t & rng) const;
-float score_group(const Group & group, rng_t &) const;
-
 static Model EXAMPLE ();
 };
 
@@ -296,46 +292,50 @@ struct Mixture
     }
 };
 
-inline Value Model::sample_value (
-        const Group & group,
-        rng_t & rng) const
+} // namespace dirichlet_process_discrete
+
+inline dirichlet_process_discrete::Value sample_value (
+        const dirichlet_process_discrete::Model & model,
+        const dirichlet_process_discrete::Group & group,
+        rng_t & rng)
 {
-    Sampler sampler;
-    sampler.init(*this, group, rng);
-    return sampler.eval(*this, rng);
+    dirichlet_process_discrete::Sampler sampler;
+    sampler.init(model, group, rng);
+    return sampler.eval(model, rng);
 }
 
-inline float Model::score_value (
-        const Group & group,
-        const Value & value,
-        rng_t & rng) const
+inline float score_value (
+        const dirichlet_process_discrete::Model & model,
+        const dirichlet_process_discrete::Group & group,
+        const dirichlet_process_discrete::Value & value,
+        rng_t & rng)
 {
-    Scorer scorer;
-    scorer.init(*this, group, rng);
-    return scorer.eval(*this, value, rng);
+    dirichlet_process_discrete::Scorer scorer;
+    scorer.init(model, group, rng);
+    return scorer.eval(model, value, rng);
 }
 
-inline float Model::score_group (
-        const Group & group,
-        rng_t &) const
+inline float score_group (
+        const dirichlet_process_discrete::Model & model,
+        const dirichlet_process_discrete::Group & group,
+        rng_t &)
 {
-    const size_t size = betas.size();
+    const size_t size = model.betas.size();
     const size_t total = group.counts.get_total();
 
     float score = 0;
     for (auto i : group.counts) {
-        Value value = i.first;
+        dirichlet_process_discrete::Value value = i.first;
         DIST_ASSERT(value < size,
             "unknown DPM value: " << value << " >= " << size);
-        float prior_i = betas[value] * alpha;
+        float prior_i = model.betas[value] * model.alpha;
         score += fast_lgamma(prior_i + i.second)
                - fast_lgamma(prior_i);
     }
-    score += fast_lgamma(alpha)
-           - fast_lgamma(alpha + total);
+    score += fast_lgamma(model.alpha)
+           - fast_lgamma(model.alpha + total);
 
     return score;
 }
 
-} // namespace dirichlet_process_discrete
 } // namespace distributions

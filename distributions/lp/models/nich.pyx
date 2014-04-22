@@ -140,7 +140,7 @@ cdef class Model_cy:
     # Sampling
 
     def sample_value(self, Group group):
-        cdef Value value = self.ptr.sample_value(group.ptr[0], get_rng()[0])
+        cdef Value value = cc.sample_value(self.ptr[0], group.ptr[0], get_rng()[0])
         return value
 
     def sample_group(self, int size):
@@ -159,10 +159,10 @@ cdef class Model_cy:
     # Scoring
 
     def score_value(self, Group group, Value value):
-        return self.ptr.score_value(group.ptr[0], value, get_rng()[0])
+        return cc.score_value(self.ptr[0], group.ptr[0], value, get_rng()[0])
 
     def score_group(self, Group group):
-        return self.ptr.score_group(group.ptr[0], get_rng()[0])
+        return cc.score_group(self.ptr[0], group.ptr[0], get_rng()[0])
 
     #-------------------------------------------------------------------------
     # Examples

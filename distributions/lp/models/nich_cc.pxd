@@ -13,9 +13,6 @@ cdef extern from "distributions/models/nich.hpp" namespace "distributions::norma
         float kappa
         float sigmasq
         float nu
-        Value sample_value (Group &, rng_t &) nogil except +
-        float score_value (Group &, Value &, rng_t &) nogil except +
-        float score_group (Group &, rng_t &) nogil except +
     cppclass Group:
         uint32_t count
         float mean
@@ -50,3 +47,9 @@ cdef extern from "distributions/models/nich.hpp" namespace "distributions::norma
             (Model &, size_t, Value &, rng_t &) nogil except +
         void score_value \
             (Model &, Value &, VectorFloat &, rng_t &) nogil except +
+
+
+cdef extern from "distributions/models/nich.hpp" namespace "distributions":
+    Value sample_value (Model &, Group &, rng_t &) nogil except +
+    float score_value (Model &, Group &, Value &, rng_t &) nogil except +
+    float score_group (Model &, Group &, rng_t &) nogil except +

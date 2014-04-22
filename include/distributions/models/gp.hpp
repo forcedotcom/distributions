@@ -46,9 +46,6 @@ float alpha;
 float inv_beta;
 
 Model plus_group(const Group & group) const;
-Value sample_value(const Group & group, rng_t & rng) const;
-float score_value(const Group & group, const Value & value, rng_t & rng) const;
-float score_group(const Group & group, rng_t &) const;
 
 static Model EXAMPLE ();
 
@@ -289,37 +286,39 @@ inline Model Model::plus_group (const Group & group) const
     return post;
 }
 
-inline Value Model::sample_value (
-        const Group & group,
-        rng_t & rng) const
+} // namespace gamma_poisson
+
+inline gamma_poisson::Value sample_value (
+        const gamma_poisson::Model & model,
+        const gamma_poisson::Group & group,
+        rng_t & rng)
 {
-    Sampler sampler;
-    sampler.init(*this, group, rng);
-    return sampler.eval(*this, rng);
+    gamma_poisson::Sampler sampler;
+    sampler.init(model, group, rng);
+    return sampler.eval(model, rng);
 }
 
-inline float Model::score_value (
-        const Group & group,
-        const Value & value,
-        rng_t & rng) const
+inline float score_value (
+        const gamma_poisson::Model & model,
+        const gamma_poisson::Group & group,
+        const gamma_poisson::Value & value,
+        rng_t & rng)
 {
-    Scorer scorer;
-    scorer.init(*this, group, rng);
-    return scorer.eval(*this, value, rng);
+    gamma_poisson::Scorer scorer;
+    scorer.init(model, group, rng);
+    return scorer.eval(model, value, rng);
 }
 
-inline float Model::score_group (
-        const Group & group,
-        rng_t &) const
+inline float score_group (
+        const gamma_poisson::Model & model,
+        const gamma_poisson::Group & group,
+        rng_t &)
 {
-    Model post = plus_group(group);
-
-    float score = fast_lgamma(post.alpha) - fast_lgamma(alpha);
-    score += alpha * fast_log(inv_beta) - post.alpha * fast_log(post.inv_beta);
+    gamma_poisson::Model post = model.plus_group(group);
+    float score = fast_lgamma(post.alpha) - fast_lgamma(model.alpha);
+    score += model.alpha * fast_log(model.inv_beta) - post.alpha * fast_log(post.inv_beta);
     score += -group.log_prod;
     return score;
-
 }
 
-} // namespace gamma_poisson
 } // namespace distributions

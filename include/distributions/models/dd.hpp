@@ -53,10 +53,6 @@ typedef typename dirichlet_discrete::Sampler<max_dim> Sampler;
 int dim;  // fixed parameter
 float alphas[max_dim];  // hyperparamter
 
-Value sample_value(const Group & group, rng_t & rng) const;
-float score_value(const Group & group, const Value & value, rng_t & rng) const;
-float score_group(const Group & group, rng_t &) const;
-
 static Model<max_dim> EXAMPLE ();
 };
 
@@ -297,37 +293,42 @@ struct Mixture
     }
 };
 
+} // namespace dirichlet_discrete
+
 template<int max_dim>
-Value Model<max_dim>::sample_value (
-        const Group & group,
-        rng_t & rng) const
+inline dirichlet_discrete::Value sample_value (
+        const dirichlet_discrete::Model<max_dim> & model,
+        const dirichlet_discrete::Group<max_dim> & group,
+        rng_t & rng)
 {
-    Sampler sampler;
-    sampler.init(*this, group, rng);
-    return sampler.eval(*this, rng);
+    dirichlet_discrete::Sampler<max_dim> sampler;
+    sampler.init(model, group, rng);
+    return sampler.eval(model, rng);
 }
 
 template<int max_dim>
-float Model<max_dim>::score_value (
-        const Group & group,
-        const Value & value,
-        rng_t & rng) const
+inline float score_value (
+        const dirichlet_discrete::Model<max_dim> & model,
+        const dirichlet_discrete::Group<max_dim> & group,
+        const dirichlet_discrete::Value & value,
+        rng_t & rng)
 {
-    Scorer scorer;
-    scorer.init(*this, group, rng);
-    return scorer.eval(*this, value, rng);
+    dirichlet_discrete::Scorer<max_dim> scorer;
+    scorer.init(model, group, rng);
+    return scorer.eval(model, value, rng);
 }
 
 template<int max_dim>
-float Model<max_dim>::score_group (
-        const Group & group,
-        rng_t &) const
+inline float score_group (
+        const dirichlet_discrete::Model<max_dim> & model,
+        const dirichlet_discrete::Group<max_dim> & group,
+        rng_t &)
 {
     float alpha_sum = 0;
     float score = 0;
 
-    for (Value value = 0; value < dim; ++value) {
-        float alpha = alphas[value];
+    for (dirichlet_discrete::Value value = 0; value < model.dim; ++value) {
+        float alpha = model.alphas[value];
         alpha_sum += alpha;
         score += fast_lgamma(alpha + group.counts[value]) - fast_lgamma(alpha);
     }
@@ -337,5 +338,4 @@ float Model<max_dim>::score_group (
     return score;
 }
 
-} // namespace dirichlet_discrete
 } // namespace distributions

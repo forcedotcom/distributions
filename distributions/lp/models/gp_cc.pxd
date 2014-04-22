@@ -11,9 +11,6 @@ cdef extern from "distributions/models/gp.hpp" namespace "distributions::gamma_p
     cppclass Model:
         float alpha
         float inv_beta
-        Value sample_value (Group &, rng_t &) nogil except +
-        float score_value (Group &, Value &, rng_t &) nogil except +
-        float score_group (Group &, rng_t &) nogil except +
     cppclass Group:
         uint32_t count
         uint32_t sum
@@ -45,3 +42,9 @@ cdef extern from "distributions/models/gp.hpp" namespace "distributions::gamma_p
             (Model &, size_t, Value &, rng_t &) nogil except +
         void score_value \
             (Model &, Value &, VectorFloat &, rng_t &) nogil except +
+
+
+cdef extern from "distributions/models/gp.hpp" namespace "distributions":
+    Value sample_value (Model &, Group &, rng_t &) nogil except +
+    float score_value (Model &, Group &, Value &, rng_t &) nogil except +
+    float score_group (Model &, Group &, rng_t &) nogil except +

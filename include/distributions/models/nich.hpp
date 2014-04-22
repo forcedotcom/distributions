@@ -48,9 +48,6 @@ float sigmasq;
 float nu;
 
 Model plus_group(const Group & group) const;
-Value sample_value(const Group & group, rng_t & rng) const;
-float score_value(const Group & group, const Value & value, rng_t & rng) const;
-float score_group(const Group & group, rng_t &) const;
 
 static Model EXAMPLE ();
 };
@@ -325,38 +322,42 @@ inline Model Model::plus_group (const Group & group) const
     return post;
 }
 
-inline Value Model::sample_value (
-        const Group & group,
-        rng_t & rng) const
+} // namespace normal_inverse_chi_sq
+
+inline normal_inverse_chi_sq::Value sample_value (
+        const normal_inverse_chi_sq::Model & model,
+        const normal_inverse_chi_sq::Group & group,
+        rng_t & rng)
 {
-    Sampler sampler;
-    sampler.init(*this, group, rng);
-    return sampler.eval(*this, rng);
+    normal_inverse_chi_sq::Sampler sampler;
+    sampler.init(model, group, rng);
+    return sampler.eval(model, rng);
 }
 
-inline float Model::score_value (
-        const Group & group,
-        const Value & value,
-        rng_t & rng) const
+inline float score_value (
+        const normal_inverse_chi_sq::Model & model,
+        const normal_inverse_chi_sq::Group & group,
+        const normal_inverse_chi_sq::Value & value,
+        rng_t & rng)
 {
-    Scorer scorer;
-    scorer.init(*this, group, rng);
-    return scorer.eval(*this, value, rng);
+    normal_inverse_chi_sq::Scorer scorer;
+    scorer.init(model, group, rng);
+    return scorer.eval(model, value, rng);
 }
 
-inline float Model::score_group (
-        const Group & group,
-        rng_t &) const
+inline float score_group (
+        const normal_inverse_chi_sq::Model & model,
+        const normal_inverse_chi_sq::Group & group,
+        rng_t &)
 {
-    Model post = plus_group(group);
+    normal_inverse_chi_sq::Model post = model.plus_group(group);
     float log_pi = 1.1447298858493991f;
-    float score = fast_lgamma(0.5f * post.nu) - fast_lgamma(0.5f * nu);
-    score += 0.5f * fast_log(kappa / post.kappa);
-    score += 0.5f * nu * (fast_log(nu * sigmasq))
+    float score = fast_lgamma(0.5f * post.nu) - fast_lgamma(0.5f * model.nu);
+    score += 0.5f * fast_log(model.kappa / post.kappa);
+    score += 0.5f * model.nu * (fast_log(model.nu * model.sigmasq))
            - 0.5f * post.nu * fast_log(post.nu * post.sigmasq);
     score += -0.5f * group.count * log_pi;
     return score;
 }
 
-} // namespace normal_inverse_chi_sq
 } // namespace distributions
