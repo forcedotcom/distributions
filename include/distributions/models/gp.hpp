@@ -42,12 +42,6 @@ struct Mixture;
 
 struct Model
 {
-typedef gamma_poisson::Value Value;
-typedef gamma_poisson::Group Group;
-typedef gamma_poisson::Scorer Scorer;
-typedef gamma_poisson::Sampler Sampler;
-typedef gamma_poisson::Mixture Mixture;
-
 static const char * name () { return "GammaPoisson"; }
 static const char * short_name () { return "gp"; }
 

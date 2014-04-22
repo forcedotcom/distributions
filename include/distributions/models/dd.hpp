@@ -46,11 +46,9 @@ template<int max_dim> struct Mixture;
 template<int max_dim>
 struct Model
 {
-typedef dirichlet_discrete::Value Value;
 typedef typename dirichlet_discrete::Group<max_dim> Group;
 typedef typename dirichlet_discrete::Scorer<max_dim> Scorer;
 typedef typename dirichlet_discrete::Sampler<max_dim> Sampler;
-typedef typename dirichlet_discrete::Mixture<max_dim> Mixture;
 
 static const char * name () { return "DirichletDiscrete"; }
 static const char * short_name () { return "dd"; }

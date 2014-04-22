@@ -45,12 +45,6 @@ struct Mixture;
 
 struct Model
 {
-typedef dirichlet_process_discrete::Value Value;
-typedef dirichlet_process_discrete::Group Group;
-typedef dirichlet_process_discrete::Scorer Scorer;
-typedef dirichlet_process_discrete::Sampler Sampler;
-typedef dirichlet_process_discrete::Mixture Mixture;
-
 static const char * name () { return "DirichletProcessDiscrete"; }
 static const char * short_name () { return "dpd"; }
 

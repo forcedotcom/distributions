@@ -42,12 +42,6 @@ struct Mixture;
 
 struct Model
 {
-typedef normal_inverse_chi_sq::Value Value;
-typedef normal_inverse_chi_sq::Group Group;
-typedef normal_inverse_chi_sq::Scorer Scorer;
-typedef normal_inverse_chi_sq::Sampler Sampler;
-typedef normal_inverse_chi_sq::Mixture Mixture;
-
 static const char * name () { return "NormalInverseChiSq"; }
 static const char * short_name () { return "nich"; }
 

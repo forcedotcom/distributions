@@ -38,61 +38,14 @@ from distributions.lp.vector cimport (
 )
 from distributions.mixins import ComponentModel, Serializable
 
-
-ctypedef float Value
-
-
-cdef extern from "distributions/models/nich.hpp" namespace "distributions":
-    cdef cppclass Model_cc "distributions::NormalInverseChiSq":
-        float mu
-        float kappa
-        float sigmasq
-        float nu
-        #cppclass Value
-        cppclass Group:
-            uint32_t count
-            float mean
-            float count_times_variance
-            void init (Model_cc &, rng_t &) nogil except +
-            void add_value (Model_cc &, Value &, rng_t &) nogil except +
-            void remove_value (Model_cc &, Value &, rng_t &) nogil except +
-            void merge (Model_cc &, Group &, rng_t &) nogil except +
-        cppclass Sampler:
-            float mu
-            float sigma
-            void init (Model_cc &, Group &, rng_t &) nogil except +
-            Value eval (Model_cc &, rng_t &) nogil except +
-        cppclass Scorer:
-            float score
-            float log_coeff
-            float precision
-            float mean
-        cppclass Mixture:
-            vector[Group] groups
-            VectorFloat score
-            VectorFloat log_coeff
-            VectorFloat precision
-            VectorFloat mean
-            VectorFloat temp
-            void init (Model_cc &, rng_t &) nogil except +
-            void add_group (Model_cc &, rng_t &) nogil except +
-            void remove_group (Model_cc &, size_t) nogil except +
-            void add_value \
-                (Model_cc &, size_t, Value &, rng_t &) nogil except +
-            void remove_value \
-                (Model_cc &, size_t, Value &, rng_t &) nogil except +
-            void score_value \
-                (Model_cc &, Value &, VectorFloat &, rng_t &) nogil except +
-
-        Value sample_value (Group &, rng_t &) nogil except +
-        float score_value (Group &, Value &, rng_t &) nogil except +
-        float score_group (Group &, rng_t &) nogil except +
+cimport nich_cc as cc
+ctypedef cc.Value Value
 
 
 cdef class Group:
-    cdef Model_cc.Group * ptr
+    cdef cc.Group * ptr
     def __cinit__(self):
-        self.ptr = new Model_cc.Group()
+        self.ptr = new cc.Group()
     def __dealloc__(self):
         del self.ptr
 
@@ -122,10 +75,10 @@ cdef class Group:
 
 
 cdef class Mixture:
-    cdef Model_cc.Mixture * ptr
+    cdef cc.Mixture * ptr
     cdef VectorFloat scores
     def __cinit__(self):
-        self.ptr = new Model_cc.Mixture()
+        self.ptr = new cc.Mixture()
     def __dealloc__(self):
         del self.ptr
 
@@ -163,9 +116,9 @@ cdef class Mixture:
 
 
 cdef class Model_cy:
-    cdef Model_cc * ptr
+    cdef cc.Model * ptr
     def __cinit__(self):
-        self.ptr = new Model_cc()
+        self.ptr = new cc.Model()
     def __dealloc__(self):
         del self.ptr
 
@@ -192,7 +145,7 @@ cdef class Model_cy:
 
     def sample_group(self, int size):
         cdef Group group = Group()
-        cdef Model_cc.Sampler sampler
+        cdef cc.Sampler sampler
         sampler.init(self.ptr[0], group.ptr[0], get_rng()[0])
         cdef list result = []
         cdef int i
