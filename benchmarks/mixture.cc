@@ -38,19 +38,19 @@ using namespace distributions;
 
 rng_t rng;
 
-template<class Model>
+template<class Mixture>
 struct Scorers
 {
     struct Group {
-        typename Model::Group group;
-        typename Model::Scorer scorer;
+        typename Mixture::Group group;
+        typename Mixture::Scorer scorer;
     };
 
     std::vector<Group> groups;
 
     Scorers (
-            const Model & model,
-            const typename Model::Mixture & mixture)
+            const typename Mixture::Model & model,
+            const Mixture & mixture)
     {
         const size_t group_count = mixture.groups.size();
         groups.resize(group_count);
@@ -64,8 +64,8 @@ struct Scorers
     }
 
     void score (
-            const Model & model,
-            const typename Model::Value & value,
+            const typename Mixture::Model & model,
+            const typename Mixture::Value & value,
             VectorFloat & scores) const
     {
         const size_t group_count = groups.size();
@@ -76,30 +76,30 @@ struct Scorers
     }
 };
 
-template<class Model>
+template<class Mixture>
 void speedtest (
-        const Model & model,
+        const typename Mixture::Model & model,
         size_t group_count,
         size_t iters)
 {
-    typename Model::Mixture mixture;
+    Mixture mixture;
     mixture.groups.resize(group_count);
-    std::vector<typename Model::Value> values;
+    std::vector<typename Mixture::Value> values;
     std::vector<size_t> assignments;
     for (size_t groupid = 0; groupid < group_count; ++groupid) {
-        typename Model::Group & group = mixture.groups[groupid];
+        typename Mixture::Group & group = mixture.groups[groupid];
         group.init(model, rng);
     }
     for (size_t i = 0; i < 4 * group_count; ++i) {
         size_t groupid = sample_int(rng, 0, group_count - 1);
-        typename Model::Group & group = mixture.groups[groupid];
-        typename Model::Value value = model.sample_value(group, rng);
+        typename Mixture::Group & group = mixture.groups[groupid];
+        typename Mixture::Value value = model.sample_value(group, rng);
         group.add_value(model, value, rng);
         values.push_back(value);
         assignments.push_back(groupid);
     }
     mixture.init(model, rng);
-    Scorers<Model> scorers(model, mixture);
+    Scorers<Mixture> scorers(model, mixture);
     VectorFloat scores(group_count);
 
     int64_t time = -current_time_us();
@@ -107,7 +107,7 @@ void speedtest (
         vector_zero(scores.size(), scores.data());
         for (size_t j = 0; j < 8; ++j) {
             size_t k = (8 * i + j) % values.size();
-            typename Model::Value value = values[k];
+            typename Mixture::Value value = values[k];
             size_t groupid = assignments[k];
             mixture.remove_value(model, groupid, value, rng);
             mixture.score_value(model, value, scores, rng);
@@ -122,9 +122,9 @@ void speedtest (
         vector_zero(scores.size(), scores.data());
         for (size_t j = 0; j < 8; ++j) {
             size_t k = (8 * i + j) % values.size();
-            typename Model::Value value = values[k];
+            typename Mixture::Value value = values[k];
             size_t groupid = assignments[k];
-            typename Scorers<Model>::Group & group = scorers.groups[groupid];
+            typename Scorers<Mixture>::Group & group = scorers.groups[groupid];
             group.group.remove_value(model, value, rng);
             group.scorer.init(model, group.group, rng);
             scorers.score(model, value, scores);
@@ -137,7 +137,7 @@ void speedtest (
 
 
     std::cout <<
-        Model::short_name() << '\t' <<
+        Mixture::Model::short_name() << '\t' <<
         group_count << '\t' <<
         std::right << std::setw(7) << std::fixed << std::setprecision(2) <<
         scorers_rate << '\t' <<
@@ -145,12 +145,12 @@ void speedtest (
         mixture_rate << '\n';
 }
 
-template<class Model>
-void speedtests (const Model & model)
+template<class Mixture>
+void speedtests (const typename Mixture::Model & model)
 {
     for (int group_count = 1; group_count <= 1000; group_count *= 10) {
         int iters = 500000 / group_count;
-        speedtest(model, group_count, iters);
+        speedtest<Mixture>(model, group_count, iters);
     }
 }
 
@@ -162,10 +162,10 @@ int main()
         "Scorers" << '\t' <<
         "Mixture (cells/us)" << '\n';
 
-    speedtests(DirichletDiscrete<4>::EXAMPLE());
-    speedtests(DirichletProcessDiscrete::EXAMPLE());
-    speedtests(GammaPoisson::EXAMPLE());
-    speedtests(NormalInverseChiSq::EXAMPLE());
+    speedtests<dirichlet_discrete::Mixture<4>>(DirichletDiscrete<4>::EXAMPLE());
+    speedtests<dirichlet_process_discrete::Mixture>(DirichletProcessDiscrete::EXAMPLE());
+    speedtests<gamma_poisson::Mixture>(GammaPoisson::EXAMPLE());
+    speedtests<normal_inverse_chi_sq::Mixture>(NormalInverseChiSq::EXAMPLE());
 
     return 0;
 }

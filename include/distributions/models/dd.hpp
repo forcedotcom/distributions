@@ -181,13 +181,18 @@ struct Scorer
 template<int max_dim>
 struct Mixture
 {
-    std::vector<Group<max_dim>> groups;
+    typedef dirichlet_discrete::Value Value;
+    typedef dirichlet_discrete::Model<max_dim> Model;
+    typedef dirichlet_discrete::Group<max_dim> Group;
+    typedef dirichlet_discrete::Scorer<max_dim> Scorer;
+
+    std::vector<Group> groups;
     float alpha_sum;
     std::vector<VectorFloat> scores;
     VectorFloat scores_shift;
 
     void init (
-            const Model<max_dim> & model,
+            const Model & model,
             rng_t &)
     {
         const size_t group_count = groups.size();
@@ -199,7 +204,7 @@ struct Mixture
             scores[value].resize(group_count);
         }
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
-            const Group<max_dim> & group = groups[groupid];
+            const Group & group = groups[groupid];
             for (Value value = 0; value < model.dim; ++value) {
                 scores[value][groupid] =
                     model.alphas[value] + group.counts[value];
@@ -214,7 +219,7 @@ struct Mixture
     }
 
     void add_group (
-            const Model<max_dim> & model,
+            const Model & model,
             rng_t & rng)
     {
         const size_t group_count = groups.size() + 1;
@@ -227,7 +232,7 @@ struct Mixture
     }
 
     void remove_group (
-            const Model<max_dim> & model,
+            const Model & model,
             size_t groupid)
     {
         DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
@@ -248,14 +253,14 @@ struct Mixture
     }
 
     void add_value (
-            const Model<max_dim> & model,
+            const Model & model,
             size_t groupid,
             const Value & value,
             rng_t &)
     {
         DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
         DIST_ASSERT1(value < model.dim, "value out of bounds: " << value);
-        Group<max_dim> & group = groups[groupid];
+        Group & group = groups[groupid];
         count_t count_sum = group.count_sum += 1;
         count_t count = group.counts[value] += 1;
         scores[value][groupid] = fast_log(model.alphas[value] + count);
@@ -264,14 +269,14 @@ struct Mixture
     }
 
     void remove_value (
-            const Model<max_dim> & model,
+            const Model & model,
             size_t groupid,
             const Value & value,
             rng_t &)
     {
         DIST_ASSERT2(groupid < groups.size(), "bad groupid: " << groupid);
         DIST_ASSERT1(value < model.dim, "value out of bounds: " << value);
-        Group<max_dim> & group = groups[groupid];
+        Group & group = groups[groupid];
         count_t count_sum = group.count_sum -= 1;
         count_t count = group.counts[value] -= 1;
         scores[value][groupid] = fast_log(model.alphas[value] + count);
@@ -280,7 +285,7 @@ struct Mixture
     }
 
     void score_value (
-            const Model<max_dim> & model,
+            const Model & model,
             const Value & value,
             VectorFloat & scores_accum,
             rng_t &) const

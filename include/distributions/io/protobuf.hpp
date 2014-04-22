@@ -80,7 +80,7 @@ inline void clustering_load (
 
 template<int max_dim>
 inline void model_load (
-        DirichletDiscrete<max_dim> & model,
+        dirichlet_discrete::Model<max_dim> & model,
         const protobuf::DirichletDiscrete & message)
 {
     model.dim = message.alphas_size();
@@ -91,7 +91,7 @@ inline void model_load (
 }
 
 inline void model_load (
-        DirichletProcessDiscrete & model,
+        dirichlet_process_discrete::Model & model,
         const protobuf::DirichletProcessDiscrete & message)
 {
     model.gamma = message.gamma();
@@ -105,7 +105,7 @@ inline void model_load (
 }
 
 inline void model_load (
-        GammaPoisson & model,
+        gamma_poisson::Model & model,
         const protobuf::GammaPoisson & message)
 {
     model.alpha = message.alpha();
@@ -113,7 +113,7 @@ inline void model_load (
 }
 
 inline void model_load (
-        NormalInverseChiSq & model,
+        normal_inverse_chi_sq::Model & model,
         const protobuf::NormalInverseChiSq & message)
 {
     model.mu = message.mu();
@@ -127,8 +127,8 @@ inline void model_load (
 
 template<int max_dim>
 inline void group_load (
-        const DirichletDiscrete<max_dim> & model,
-        typename DirichletDiscrete<max_dim>::Group & group,
+        const dirichlet_discrete::Model<max_dim> & model,
+        dirichlet_discrete::Group<max_dim> & group,
         const protobuf::DirichletDiscrete::Group & message)
 {
     if (DIST_DEBUG_LEVEL >= 1) {
@@ -142,8 +142,8 @@ inline void group_load (
 
 template<int max_dim>
 inline void group_dump (
-        const DirichletDiscrete<max_dim> & model,
-        const typename DirichletDiscrete<max_dim>::Group & group,
+        const dirichlet_discrete::Model<max_dim> & model,
+        const dirichlet_discrete::Group<max_dim> & group,
         protobuf::DirichletDiscrete::Group & message)
 {
     message.Clear();
@@ -154,8 +154,8 @@ inline void group_dump (
 }
 
 inline void group_load (
-        const DirichletProcessDiscrete &,
-        DirichletProcessDiscrete::Group & group,
+        const dirichlet_process_discrete::Model &,
+        dirichlet_process_discrete::Group & group,
         const protobuf::DirichletProcessDiscrete::Group & message)
 {
     if (DIST_DEBUG_LEVEL >= 1) {
@@ -168,8 +168,8 @@ inline void group_load (
 }
 
 inline void group_dump (
-        const DirichletProcessDiscrete &,
-        const DirichletProcessDiscrete::Group & group,
+        const dirichlet_process_discrete::Model &,
+        const dirichlet_process_discrete::Group & group,
         protobuf::DirichletProcessDiscrete::Group & message)
 {
     message.Clear();
@@ -182,8 +182,8 @@ inline void group_dump (
 }
 
 inline void group_load (
-        const GammaPoisson &,
-        GammaPoisson::Group & group,
+        const gamma_poisson::Model &,
+        gamma_poisson::Group & group,
         const protobuf::GammaPoisson::Group & message)
 {
     group.count = message.count();
@@ -192,8 +192,8 @@ inline void group_load (
 }
 
 inline void group_dump (
-        const GammaPoisson &,
-        const GammaPoisson::Group & group,
+        const gamma_poisson::Model &,
+        const gamma_poisson::Group & group,
         protobuf::GammaPoisson::Group & message)
 {
     message.set_count(group.count);
@@ -202,8 +202,8 @@ inline void group_dump (
 }
 
 inline void group_load (
-        const NormalInverseChiSq &,
-        NormalInverseChiSq::Group & group,
+        const normal_inverse_chi_sq::Model &,
+        normal_inverse_chi_sq::Group & group,
         const protobuf::NormalInverseChiSq::Group & message)
 {
     group.count = message.count();
@@ -212,8 +212,8 @@ inline void group_load (
 }
 
 inline void group_dump (
-        const NormalInverseChiSq &,
-        const NormalInverseChiSq::Group & group,
+        const normal_inverse_chi_sq::Model &,
+        const normal_inverse_chi_sq::Group & group,
         protobuf::NormalInverseChiSq::Group & message)
 {
     message.set_count(group.count);

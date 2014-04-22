@@ -187,6 +187,11 @@ struct Scorer
 
 struct Mixture
 {
+    typedef dirichlet_process_discrete::Value Value;
+    typedef dirichlet_process_discrete::Model Model;
+    typedef dirichlet_process_discrete::Group Group;
+    typedef dirichlet_process_discrete::Scorer Scorer;
+
     std::vector<Group> groups;
     std::vector<VectorFloat> scores;  // dense
     VectorFloat scores_shift;

@@ -196,6 +196,11 @@ struct Scorer
 
 struct Mixture
 {
+    typedef normal_inverse_chi_sq::Value Value;
+    typedef normal_inverse_chi_sq::Model Model;
+    typedef normal_inverse_chi_sq::Group Group;
+    typedef normal_inverse_chi_sq::Scorer Scorer;
+
     std::vector<Group> groups;
     VectorFloat score;
     VectorFloat log_coeff;

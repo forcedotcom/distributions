@@ -168,6 +168,11 @@ struct Scorer
 
 struct Mixture
 {
+    typedef gamma_poisson::Value Value;
+    typedef gamma_poisson::Model Model;
+    typedef gamma_poisson::Group Group;
+    typedef gamma_poisson::Scorer Scorer;
+
     std::vector<Group> groups;
     VectorFloat score;
     VectorFloat post_alpha;
