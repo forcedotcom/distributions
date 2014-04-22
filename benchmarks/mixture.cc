@@ -27,6 +27,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <typeinfo>
 #include <distributions/vector.hpp>
 #include <distributions/models/dd.hpp>
 #include <distributions/models/dpd.hpp>
@@ -137,7 +138,7 @@ void speedtest (
 
 
     std::cout <<
-        Mixture::Model::short_name() << '\t' <<
+        typeid(typename Mixture::Model).name() << '\t' <<
         group_count << '\t' <<
         std::right << std::setw(7) << std::fixed << std::setprecision(2) <<
         scorers_rate << '\t' <<

@@ -42,9 +42,6 @@ struct Mixture;
 
 struct Model
 {
-static const char * name () { return "GammaPoisson"; }
-static const char * short_name () { return "gp"; }
-
 float alpha;
 float inv_beta;
 

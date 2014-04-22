@@ -45,9 +45,6 @@ struct Mixture;
 
 struct Model
 {
-static const char * name () { return "DirichletProcessDiscrete"; }
-static const char * short_name () { return "dpd"; }
-
 float gamma;
 float alpha;
 float beta0;

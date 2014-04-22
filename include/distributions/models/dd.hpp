@@ -50,9 +50,6 @@ typedef typename dirichlet_discrete::Group<max_dim> Group;
 typedef typename dirichlet_discrete::Scorer<max_dim> Scorer;
 typedef typename dirichlet_discrete::Sampler<max_dim> Sampler;
 
-static const char * name () { return "DirichletDiscrete"; }
-static const char * short_name () { return "dd"; }
-
 int dim;  // fixed parameter
 float alphas[max_dim];  // hyperparamter
 
