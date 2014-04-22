@@ -55,7 +55,7 @@ float score_group(const Group & group, rng_t &) const;
 
 static Model EXAMPLE ();
 
-}; // struct Model
+};
 
 inline Model Model::EXAMPLE ()
 {
@@ -325,8 +325,4 @@ inline float Model::score_group (
 }
 
 } // namespace gamma_poisson
-
-// backwards compatibility
-typedef gamma_poisson::Model GammaPoisson;
-
 } // namespace distributions

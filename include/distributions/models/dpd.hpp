@@ -60,7 +60,6 @@ float score_value(const Group & group, const Value & value, rng_t & rng) const;
 float score_group(const Group & group, rng_t &) const;
 
 static Model EXAMPLE ();
-
 };
 
 inline Model Model::EXAMPLE ()
@@ -342,7 +341,4 @@ inline float Model::score_group (
 }
 
 } // namespace dirichlet_process_discrete
-
-typedef dirichlet_process_discrete::Model DirichletProcessDiscrete;
-
 } // namespace distributions

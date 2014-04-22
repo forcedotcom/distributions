@@ -61,8 +61,7 @@ float score_value(const Group & group, const Value & value, rng_t & rng) const;
 float score_group(const Group & group, rng_t &) const;
 
 static Model<max_dim> EXAMPLE ();
-
-}; // struct DirichletDiscrete<max_dim>
+};
 
 template<int max_dim>
 inline Model<max_dim> Model<max_dim>::EXAMPLE ()
@@ -341,13 +340,5 @@ float Model<max_dim>::score_group (
     return score;
 }
 
-
-
 } // namespace dirichlet_discrete
-
-// g++4.6 doesn't support template aliases, so use this ugly hack
-template <int max_dim>
-struct DirichletDiscrete : public dirichlet_discrete::Model<max_dim>
-{};
-
 } // namespace distributions

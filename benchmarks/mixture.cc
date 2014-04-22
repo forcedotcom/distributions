@@ -162,10 +162,10 @@ int main()
         "Scorers" << '\t' <<
         "Mixture (cells/us)" << '\n';
 
-    speedtests<dirichlet_discrete::Mixture<4>>(DirichletDiscrete<4>::EXAMPLE());
-    speedtests<dirichlet_process_discrete::Mixture>(DirichletProcessDiscrete::EXAMPLE());
-    speedtests<gamma_poisson::Mixture>(GammaPoisson::EXAMPLE());
-    speedtests<normal_inverse_chi_sq::Mixture>(NormalInverseChiSq::EXAMPLE());
+    speedtests<dirichlet_discrete::Mixture<4>>(dirichlet_discrete::Model<4>::EXAMPLE());
+    speedtests<dirichlet_process_discrete::Mixture>(dirichlet_process_discrete::Model::EXAMPLE());
+    speedtests<gamma_poisson::Mixture>(gamma_poisson::Model::EXAMPLE());
+    speedtests<normal_inverse_chi_sq::Mixture>(normal_inverse_chi_sq::Model::EXAMPLE());
 
     return 0;
 }

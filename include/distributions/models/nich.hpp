@@ -56,8 +56,7 @@ float score_value(const Group & group, const Value & value, rng_t & rng) const;
 float score_group(const Group & group, rng_t &) const;
 
 static Model EXAMPLE ();
-
-}; // struct NormalInverseChiSq
+};
 
 inline Model Model::EXAMPLE ()
 {
@@ -363,10 +362,4 @@ inline float Model::score_group (
 }
 
 } // namespace normal_inverse_chi_sq
-
-// backwards compatibility
-typedef normal_inverse_chi_sq::Model NormalInverseChiSq;
-
-
-
 } // namespace distributions
