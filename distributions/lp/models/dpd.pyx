@@ -37,98 +37,138 @@ from distributions.lp.vector cimport (
     vector_float_to_ndarray,
 )
 from distributions.sparse_counter cimport SparseCounter
-from distributions.mixins import ComponentModel, Serializable
+from distributions.mixins import GroupIoMixin, SharedIoMixin
 
 cimport dpd_cc as cc
-ctypedef cc.Value Value
 
 
-cdef class Group:
-    cdef cc.Group * ptr
+cdef class __Shared:
+    cdef cc.Model * ptr
+
     def __cinit__(self):
-        self.ptr = new cc.Group()
+        self.ptr = new cc.Model()
+
     def __dealloc__(self):
         del self.ptr
 
-    def load(self, dict raw):
-        cdef SparseCounter * counts = & self.ptr.counts
-        counts.clear()
-        cdef dict raw_counts = raw['counts']
-        cdef str i
-        cdef int count
-        for i, count in raw_counts.iteritems():
-            counts.init_count(int(i), count)
 
-    def dump(self):
-        cdef dict counts = {}
-        cdef SparseCounter.iterator it = self.ptr.counts.begin()
-        cdef SparseCounter.iterator end = self.ptr.counts.end()
-        while it != end:
-            counts[str(deref(it).first)] = deref(it).second
-            inc(it)
-        return {'counts': counts}
+cdef class __Group:
+    cdef cc.Group * ptr
 
-    def init(self, Model_cy model):
-        self.ptr.init(model.ptr[0], get_rng()[0])
+    def __cinit__(self):
+        self.ptr = new cc.Group()
 
-    def add_value(self, Model_cy model, Value value):
-        self.ptr.add_value(model.ptr[0], value, get_rng()[0])
+    def __dealloc__(self):
+        del self.ptr
 
-    def remove_value(self, Model_cy model, Value value):
-        self.ptr.remove_value(model.ptr[0], value, get_rng()[0])
+    def init(self, __Shared shared):
+        self.ptr.init(shared.ptr[0], get_rng()[0])
 
-    def merge(self, Model_cy model, Group source):
-        self.ptr.merge(model.ptr[0], source.ptr[0], get_rng()[0])
+    def add_value(self, __Shared shared, cc.Value value):
+        self.ptr.add_value(shared.ptr[0], value, get_rng()[0])
+
+    def remove_value(self, __Shared shared, cc.Value value):
+        self.ptr.remove_value(shared.ptr[0], value, get_rng()[0])
+
+    def merge(self, __Shared shared, __Group source):
+        self.ptr.merge(shared.ptr[0], source.ptr[0], get_rng()[0])
 
 
-cdef class Mixture:
+cdef class __Mixture:
     cdef cc.Mixture * ptr
     cdef VectorFloat scores
+
     def __cinit__(self):
         self.ptr = new cc.Mixture()
+
     def __dealloc__(self):
         del self.ptr
 
     def __len__(self):
         return self.ptr.groups.size()
 
-    def append(self, Group group):
+    def __getitem__(self, int groupid):
+        assert groupid < len(self), "groupid out of bounds"
+        group = __Group()
+        group.ptr[0] = self.ptr.groups[groupid]
+        return group
+
+    def append(self, __Group group):
         self.ptr.groups.push_back(group.ptr[0])
 
     def clear(self):
         self.ptr.groups.clear()
 
-    def init(self, Model_cy model):
-        self.ptr.init(model.ptr[0], get_rng()[0])
+    def init(self, __Shared shared):
+        self.ptr.init(shared.ptr[0], get_rng()[0])
 
-    def add_group(self, Model_cy model):
-        self.ptr.add_group(model.ptr[0], get_rng()[0])
+    def add_group(self, __Shared shared):
+        self.ptr.add_group(shared.ptr[0], get_rng()[0])
 
-    def remove_group(self, Model_cy model, int groupid):
-        self.ptr.remove_group(model.ptr[0], groupid)
+    def remove_group(self, __Shared shared, int groupid):
+        self.ptr.remove_group(shared.ptr[0], groupid)
 
-    def add_value(self, Model_cy model, int groupid, Value value):
-        self.ptr.add_value(model.ptr[0], groupid, value, get_rng()[0])
+    def add_value(self, __Shared shared, int groupid, cc.Value value):
+        self.ptr.add_value(shared.ptr[0], groupid, value, get_rng()[0])
 
-    def remove_value(self, Model_cy model, int groupid, Value value):
-        self.ptr.remove_value(model.ptr[0], groupid, value, get_rng()[0])
+    def remove_value(self, __Shared shared, int groupid, cc.Value value):
+        self.ptr.remove_value(shared.ptr[0], groupid, value, get_rng()[0])
 
-    def score_value(self, Model_cy model, Value value,
+    def score_value(self, __Shared shared, cc.Value value,
               numpy.ndarray[numpy.float32_t, ndim=1] scores_accum):
         assert len(scores_accum) == self.ptr.groups.size(), \
             "scores_accum != len(mixture)"
         vector_float_from_ndarray(self.scores, scores_accum)
-        self.ptr.score_value(model.ptr[0], value, self.scores, get_rng()[0])
+        self.ptr.score_value(shared.ptr[0], value, self.scores, get_rng()[0])
         vector_float_to_ndarray(self.scores, scores_accum)
 
 
-cdef class Model_cy:
-    cdef cc.Model * ptr
-    def __cinit__(self):
-        self.ptr = new cc.Model()
-    def __dealloc__(self):
-        del self.ptr
+def __sample_value(__Shared shared, __Group group):
+    cdef cc.Value value = cc.sample_value(
+        shared.ptr[0], group.ptr[0], get_rng()[0])
+    return value
 
+def __sample_group(__Shared shared, int size):
+    cdef __Group group = __Group()
+    cdef cc.Sampler sampler
+    sampler.init(shared.ptr[0], group.ptr[0], get_rng()[0])
+    cdef list result = []
+    cdef int i
+    cdef cc.Value value
+    for i in xrange(size):
+        value = sampler.eval(shared.ptr[0], get_rng()[0])
+        result.append(value)
+    return result
+
+def __score_value(__Shared shared, __Group group, cc.Value value):
+    return cc.score_value(shared.ptr[0], group.ptr[0], value, get_rng()[0])
+
+def __score_group(__Shared shared, __Group group):
+    return cc.score_group(shared.ptr[0], group.ptr[0], get_rng()[0])
+
+
+##################################################
+
+
+NAME = 'DirichletProcessDiscrete'
+EXAMPLES = [
+    {
+        'shared': {
+            'gamma': 0.5,
+            'alpha': 0.5,
+            'betas': {  # beta0 must be zero for unit tests
+                '0': 0.25,
+                '1': 0.5,
+                '2': 0.25,
+            },
+        },
+        'values': [0, 1, 0, 2, 0, 1, 0],
+    },
+]
+Value = int
+
+
+cdef class _Shared(__Shared):
     def load(self, dict raw):
         self.ptr.gamma = raw['gamma']
         self.ptr.alpha = raw['alpha']
@@ -154,63 +194,37 @@ cdef class Model_cy:
             'betas': betas,
         }
 
-    #-------------------------------------------------------------------------
-    # Sampling
 
-    def sample_value(self, Group group):
-        cdef Value value = cc.sample_value(self.ptr[0], group.ptr[0], get_rng()[0])
-        return value
-
-    def sample_group(self, int size):
-        cdef Group group = Group()
-        cdef cc.Sampler sampler
-        sampler.init(self.ptr[0], group.ptr[0], get_rng()[0])
-        cdef list result = []
-        cdef int i
-        cdef Value value
-        for i in xrange(size):
-            value = sampler.eval(self.ptr[0], get_rng()[0])
-            result.append(value)
-        return result
-
-    #-------------------------------------------------------------------------
-    # Scoring
-
-    def score_value(self, Group group, Value value):
-        return cc.score_value(self.ptr[0], group.ptr[0], value, get_rng()[0])
-
-    def score_group(self, Group group):
-        return cc.score_group(self.ptr[0], group.ptr[0], get_rng()[0])
-
-    #-------------------------------------------------------------------------
-    # Examples
-
-    EXAMPLES = [
-        {
-            'model': {
-                'gamma': 0.5,
-                'alpha': 0.5,
-                'betas': {  # beta0 must be zero for unit tests
-                    '0': 0.25,
-                    '1': 0.5,
-                    '2': 0.25,
-                },
-            },
-            'values': [0, 1, 0, 2, 0, 1, 0],
-        },
-    ]
+class Shared(_Shared, SharedIoMixin):
+    pass
 
 
-class DirichletProcessDiscrete(Model_cy, ComponentModel, Serializable):
+cdef class _Group(__Group):
+    def load(self, dict raw):
+        cdef SparseCounter * counts = & self.ptr.counts
+        counts.clear()
+        cdef dict raw_counts = raw['counts']
+        cdef str i
+        cdef int count
+        for i, count in raw_counts.iteritems():
+            counts.init_count(int(i), count)
 
-    #-------------------------------------------------------------------------
-    # Datatypes
+    def dump(self):
+        cdef dict counts = {}
+        cdef SparseCounter.iterator it = self.ptr.counts.begin()
+        cdef SparseCounter.iterator end = self.ptr.counts.end()
+        while it != end:
+            counts[str(deref(it).first)] = deref(it).second
+            inc(it)
+        return {'counts': counts}
 
-    Value = int
 
-    Group = Group
-
-    Mixture = Mixture
+class Group(_Group, GroupIoMixin):
+    pass
 
 
-Model = DirichletProcessDiscrete
+Mixture = __Mixture
+sample_value = __sample_value
+sample_group = __sample_group
+score_value = __score_value
+score_group = __score_group

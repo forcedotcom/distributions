@@ -32,7 +32,7 @@ import scipy
 import scipy.misc
 import scipy.ndimage
 from distributions.dbg.random import sample_discrete, sample_discrete_log
-from distributions.lp.models.nich import NormalInverseChiSq
+from distributions.lp.models import nich
 from distributions.lp.clustering import PitmanYor
 from distributions.lp.mixture import MixtureIdTracker
 from distributions.io.stream import json_stream_load, json_stream_dump
@@ -62,7 +62,7 @@ class ImageModel(object):
             'alpha': 100.0,
             'd': 0.1,
         })
-        self.feature = NormalInverseChiSq.from_dict({
+        self.feature = nich.Shared.from_dict({
             'mu': 0.0,
             'kappa': 0.1,
             'sigmasq': 0.01,
@@ -72,8 +72,8 @@ class ImageModel(object):
     class Mixture(object):
         def __init__(self):
             self.clustering = PitmanYor.Mixture()
-            self.feature_x = NormalInverseChiSq.Mixture()
-            self.feature_y = NormalInverseChiSq.Mixture()
+            self.feature_x = nich.Mixture()
+            self.feature_y = nich.Mixture()
             self.id_tracker = MixtureIdTracker()
 
         def __len__(self):

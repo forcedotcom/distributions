@@ -28,9 +28,8 @@
 from distributions.dbg.special import log, factorial, gammaln
 from distributions.dbg.random import sample_gamma, sample_poisson
 from distributions.mixins import (
-    GroupIo,
-    SharedIo,
-    ProtobufSerializable,
+    GroupIoMixin,
+    SharedIoMixin,
 )
 
 NAME = 'GammaPoisson'
@@ -43,11 +42,7 @@ EXAMPLES = [
 Value = int
 
 
-class Shared(SharedIo, ProtobufSerializable):
-    def __init__(self):
-        self.alpha = None
-        self.inv_beta = None
-
+class SharedIo(SharedIoMixin):
     def load(self, raw):
         self.alpha = float(raw['alpha'])
         self.inv_beta = float(raw['inv_beta'])
@@ -67,6 +62,12 @@ class Shared(SharedIo, ProtobufSerializable):
         message.alpha = self.alpha
         message.inv_beta = self.inv_beta
 
+
+class Shared(SharedIo):
+    def __init__(self):
+        self.alpha = None
+        self.inv_beta = None
+
     def plus_group(self, group):
         post = self.__class__()
         post.alpha = self.alpha + group.sum
@@ -74,12 +75,7 @@ class Shared(SharedIo, ProtobufSerializable):
         return post
 
 
-class Group(GroupIo, ProtobufSerializable):
-    def __init__(self):
-        self.count = None
-        self.sum = None
-        self.log_prod = None
-
+class GroupIo(GroupIoMixin):
     def load(self, raw):
         self.count = int(raw['count'])
         self.sum = int(raw['sum'])
@@ -101,6 +97,13 @@ class Group(GroupIo, ProtobufSerializable):
         message.count = self.count
         message.sum = self.sum
         message.log_prod = self.log_prod
+
+
+class Group(GroupIo):
+    def __init__(self):
+        self.count = None
+        self.sum = None
+        self.log_prod = None
 
     def init(self, model):
         self.count = 0
@@ -139,20 +142,20 @@ def score_group(model, group):
         - group.log_prod
 
 
-def sampler_create(model, group=None):
+def _sampler_create(model, group=None):
     post = model if group is None else model.plus_group(group)
     return sample_gamma(post.alpha, 1.0 / post.inv_beta)
 
 
-def sampler_eval(model, sampler):
+def _sampler_eval(model, sampler):
     return sample_poisson(sampler)
 
 
 def sample_value(model, group):
-    sampler = sampler_create(model, group)
-    return sampler_eval(model, sampler)
+    sampler = _sampler_create(model, group)
+    return _sampler_eval(model, sampler)
 
 
 def sample_group(model, size):
-    sampler = sampler_create(model)
-    return [sampler_eval(model, sampler) for _ in xrange(size)]
+    sampler = _sampler_create(model)
+    return [_sampler_eval(model, sampler) for _ in xrange(size)]

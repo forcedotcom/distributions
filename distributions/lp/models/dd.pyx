@@ -36,22 +36,159 @@ from distributions.lp.vector cimport (
     vector_float_from_ndarray,
     vector_float_to_ndarray,
 )
-from distributions.mixins import ComponentModel, Serializable
-
-cpdef int MAX_DIM = 256
+from distributions.mixins import GroupIoMixin, SharedIoMixin
 
 cimport dd_cc as cc
-ctypedef cc.Value Value
 
 
-cdef class Group:
-    cdef cc.Group * ptr
-    cdef int dim  # only required for dumping
+cdef class __Shared:
+    cdef cc.Model * ptr
+
     def __cinit__(self):
-        self.ptr = new cc.Group()
-        self.dim = 0
+        self.ptr = new cc.Model()
+
     def __dealloc__(self):
         del self.ptr
+
+
+cdef class __Group:
+    cdef cc.Group * ptr
+
+    def __cinit__(self):
+        self.ptr = new cc.Group()
+
+    def __dealloc__(self):
+        del self.ptr
+
+    def init(self, __Shared shared):
+        self.ptr.init(shared.ptr[0], get_rng()[0])
+
+    def add_value(self, __Shared shared, cc.Value value):
+        self.ptr.add_value(shared.ptr[0], value, get_rng()[0])
+
+    def remove_value(self, __Shared shared, cc.Value value):
+        self.ptr.remove_value(shared.ptr[0], value, get_rng()[0])
+
+    def merge(self, __Shared shared, __Group source):
+        self.ptr.merge(shared.ptr[0], source.ptr[0], get_rng()[0])
+
+
+cdef class __Mixture:
+    cdef cc.Mixture * ptr
+    cdef VectorFloat scores
+
+    def __cinit__(self):
+        self.ptr = new cc.Mixture()
+
+    def __dealloc__(self):
+        del self.ptr
+
+    def __len__(self):
+        return self.ptr.groups.size()
+
+    def __getitem__(self, int groupid):
+        assert groupid < len(self), "groupid out of bounds"
+        group = __Group()
+        group.ptr[0] = self.ptr.groups[groupid]
+        return group
+
+    def append(self, __Group group):
+        self.ptr.groups.push_back(group.ptr[0])
+
+    def clear(self):
+        self.ptr.groups.clear()
+
+    def init(self, __Shared shared):
+        self.ptr.init(shared.ptr[0], get_rng()[0])
+
+    def add_group(self, __Shared shared):
+        self.ptr.add_group(shared.ptr[0], get_rng()[0])
+
+    def remove_group(self, __Shared shared, int groupid):
+        self.ptr.remove_group(shared.ptr[0], groupid)
+
+    def add_value(self, __Shared shared, int groupid, cc.Value value):
+        self.ptr.add_value(shared.ptr[0], groupid, value, get_rng()[0])
+
+    def remove_value(self, __Shared shared, int groupid, cc.Value value):
+        self.ptr.remove_value(shared.ptr[0], groupid, value, get_rng()[0])
+
+    def score_value(self, __Shared shared, cc.Value value,
+              numpy.ndarray[numpy.float32_t, ndim=1] scores_accum):
+        assert len(scores_accum) == self.ptr.groups.size(), \
+            "scores_accum != len(mixture)"
+        vector_float_from_ndarray(self.scores, scores_accum)
+        self.ptr.score_value(shared.ptr[0], value, self.scores, get_rng()[0])
+        vector_float_to_ndarray(self.scores, scores_accum)
+
+
+def __sample_value(__Shared shared, __Group group):
+    cdef cc.Value value = cc.sample_value(
+        shared.ptr[0], group.ptr[0], get_rng()[0])
+    return value
+
+def __sample_group(__Shared shared, int size):
+    cdef __Group group = __Group()
+    cdef cc.Sampler sampler
+    sampler.init(shared.ptr[0], group.ptr[0], get_rng()[0])
+    cdef list result = []
+    cdef int i
+    cdef cc.Value value
+    for i in xrange(size):
+        value = sampler.eval(shared.ptr[0], get_rng()[0])
+        result.append(value)
+    return result
+
+def __score_value(__Shared shared, __Group group, cc.Value value):
+    return cc.score_value(shared.ptr[0], group.ptr[0], value, get_rng()[0])
+
+def __score_group(__Shared shared, __Group group):
+    return cc.score_group(shared.ptr[0], group.ptr[0], get_rng()[0])
+
+
+#############################################################################
+
+
+NAME = 'DirichletDiscrete'
+EXAMPLES = [
+    {
+        'shared': {'alphas': [1.0, 4.0]},
+        'values': [0, 1, 1, 1, 1, 0, 1],
+    },
+    {
+        'shared': {'alphas': [0.5, 0.5, 0.5, 0.5]},
+        'values': [0, 1, 0, 2, 0, 1, 0],
+    },
+]
+Value = int
+
+
+cdef class _Shared(__Shared):
+    def load(self, raw):
+        alphas = raw['alphas']
+        cdef int dim = len(alphas)
+        self.ptr.dim = dim
+        cdef int i
+        for i in xrange(dim):
+            self.ptr.alphas[i] = float(alphas[i])
+
+    def dump(self):
+        alphas = []
+        cdef int i
+        for i in xrange(self.ptr.dim):
+            alphas.append(float(self.ptr.alphas[i]))
+        return {'alphas': alphas}
+
+
+class Shared(_Shared, SharedIoMixin):
+    pass
+
+
+cdef class _Group(__Group):
+    cdef int dim  # only required for dumping
+
+    def __cinit__(self):
+        self.dim = 0
 
     def load(self, dict raw):
         counts = raw['counts']
@@ -69,136 +206,19 @@ cdef class Group:
             counts.append(self.ptr.counts[i])
         return {'counts': counts}
 
-    def init(self, Model_cy model):
-        self.dim = model.ptr.dim
-        self.ptr.init(model.ptr[0], get_rng()[0])
-
-    def add_value(self, Model_cy model, Value value):
-        self.ptr.add_value(model.ptr[0], value, get_rng()[0])
-
-    def remove_value(self, Model_cy model, Value value):
-        self.ptr.remove_value(model.ptr[0], value, get_rng()[0])
-
-    def merge(self, Model_cy model, Group source):
-        self.ptr.merge(model.ptr[0], source.ptr[0], get_rng()[0])
+    def init(self, __Shared shared):
+        self.dim = shared.ptr.dim
+        __Group.init(self, shared)
 
 
-cdef class Mixture:
-    cdef cc.Mixture * ptr
-    cdef VectorFloat scores
-    def __cinit__(self):
-        self.ptr = new cc.Mixture()
-    def __dealloc__(self):
-        del self.ptr
-
-    def __len__(self):
-        return self.ptr.groups.size()
-
-    def append(self, Group group):
-        self.ptr.groups.push_back(group.ptr[0])
-
-    def clear(self):
-        self.ptr.groups.clear()
-
-    def init(self, Model_cy model):
-        self.ptr.init(model.ptr[0], get_rng()[0])
-
-    def add_group(self, Model_cy model):
-        self.ptr.add_group(model.ptr[0], get_rng()[0])
-
-    def remove_group(self, Model_cy model, int groupid):
-        self.ptr.remove_group(model.ptr[0], groupid)
-
-    def add_value(self, Model_cy model, int groupid, Value value):
-        self.ptr.add_value(model.ptr[0], groupid, value, get_rng()[0])
-
-    def remove_value(self, Model_cy model, int groupid, Value value):
-        self.ptr.remove_value(model.ptr[0], groupid, value, get_rng()[0])
-
-    def score_value(self, Model_cy model, Value value,
-              numpy.ndarray[numpy.float32_t, ndim=1] scores_accum):
-        assert len(scores_accum) == self.ptr.groups.size(), \
-            "scores_accum != len(mixture)"
-        vector_float_from_ndarray(self.scores, scores_accum)
-        self.ptr.score_value(model.ptr[0], value, self.scores, get_rng()[0])
-        vector_float_to_ndarray(self.scores, scores_accum)
+class Group(_Group, GroupIoMixin):
+    pass
 
 
-cdef class Model_cy:
-    cdef cc.Model * ptr
-    def __cinit__(self):
-        self.ptr = new cc.Model()
-    def __dealloc__(self):
-        del self.ptr
-
-    def load(self, raw):
-        alphas = raw['alphas']
-        cdef int dim = len(alphas)
-        self.ptr.dim = dim
-        cdef int i
-        for i in xrange(dim):
-            self.ptr.alphas[i] = float(alphas[i])
-
-    def dump(self):
-        alphas = []
-        cdef int i
-        for i in xrange(self.ptr.dim):
-            alphas.append(float(self.ptr.alphas[i]))
-        return {'alphas': alphas}
-
-    #-------------------------------------------------------------------------
-    # Sampling
-
-    def sample_value(self, Group group):
-        cdef Value value = cc.sample_value(self.ptr[0], group.ptr[0], get_rng()[0])
-        return value
-
-    def sample_group(self, int size):
-        cdef Group group = Group()
-        cdef cc.Sampler sampler
-        sampler.init(self.ptr[0], group.ptr[0], get_rng()[0])
-        cdef list result = []
-        cdef int i
-        cdef Value value
-        for i in xrange(size):
-            value = sampler.eval(self.ptr[0], get_rng()[0])
-            result.append(value)
-        return result
-
-    #-------------------------------------------------------------------------
-    # Scoring
-
-    def score_value(self, Group group, Value value):
-        return cc.score_value(self.ptr[0], group.ptr[0], value, get_rng()[0])
-
-    def score_group(self, Group group):
-        return cc.score_group(self.ptr[0], group.ptr[0], get_rng()[0])
-
-    #-------------------------------------------------------------------------
-    # Examples
-
-    EXAMPLES = [
-        {
-            'model': {'alphas': [1.0, 4.0]},
-            'values': [0, 1, 1, 1, 1, 0, 1],
-        },
-        {
-            'model': {'alphas': [0.5, 0.5, 0.5, 0.5]},
-            'values': [0, 1, 0, 2, 0, 1, 0],
-        },
-    ]
+Mixture = __Mixture
 
 
-class DirichletDiscrete(Model_cy, ComponentModel, Serializable):
-
-    #-------------------------------------------------------------------------
-    # Datatypes
-
-    Value = int
-
-    Group = Group
-
-    Mixture = Mixture
-
-
-Model = DirichletDiscrete
+sample_value = __sample_value
+sample_group = __sample_group
+score_value = __score_value
+score_group = __score_group
