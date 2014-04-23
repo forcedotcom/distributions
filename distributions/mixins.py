@@ -27,36 +27,35 @@
 
 
 class ComponentModel(object):
+    pass
 
-    def group_create(self, values=[]):
-        group = self.Group()
-        group.init(self)
+
+class GroupIo(object):
+    @classmethod
+    def from_values(cls, model, values=[]):
+        group = cls()
+        group.init(model)
         for value in values:
-            group.add_value(self, value)
+            group.add_value(model, value)
+        return group
+
+    @classmethod
+    def from_dict(cls, raw):
+        group = cls()
+        group.load(raw)
         return group
 
 
-class Serializable(object):
-
+class SharedIo(object):
     @classmethod
-    def model_load(cls, raw):
+    def from_dict(cls, raw):
         model = cls()
         model.load(raw)
         return model
 
-    @staticmethod
-    def model_dump(model):
-        return model.dump()
 
-    @classmethod
-    def group_load(cls, raw):
-        group = cls.Group()
-        group.load(raw)
-        return group
-
-    @staticmethod
-    def group_dump(group):
-        return group.dump()
+# temporary refactoring kludge
+Serializable = SharedIo
 
 
 class ProtobufSerializable(object):

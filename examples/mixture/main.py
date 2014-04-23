@@ -58,11 +58,11 @@ for dirname in [DATA, RESULTS]:
 
 class ImageModel(object):
     def __init__(self):
-        self.clustering = PitmanYor.model_load({
+        self.clustering = PitmanYor.from_dict({
             'alpha': 100.0,
             'd': 0.1,
         })
-        self.feature = NormalInverseChiSq.model_load({
+        self.feature = NormalInverseChiSq.from_dict({
             'mu': 0.0,
             'kappa': 0.1,
             'sigmasq': 0.01,

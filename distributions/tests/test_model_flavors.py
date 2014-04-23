@@ -47,7 +47,7 @@ def _test_model(modules):
     EXAMPLES = [e for m in modules for e in m.EXAMPLES]
     for EXAMPLE in EXAMPLES:
         raw_model = EXAMPLE['shared']
-        models = [module.Shared.model_load(raw_model) for module in modules]
+        models = [module.Shared.from_dict(raw_model) for module in modules]
         dumped = [m.dump() for m in models]
         assert_all_close(dumped, err_msg='model_dump')
 
@@ -62,8 +62,10 @@ def _test_group(modules):
     for EXAMPLE in EXAMPLES:
         raw_model = EXAMPLE['shared']
         values = EXAMPLE['values'][:]
-        models = [module.Shared.model_load(raw_model) for module in modules]
-        groups = [model.group_create() for model in models]
+        models = [module.Shared.from_dict(raw_model) for module in modules]
+        groups = [
+            module.Group.from_values(model)
+            for module, model in zip(modules, models)]
         modules_models_groups = zip(modules, models, groups)
 
         for value in values:
@@ -73,7 +75,7 @@ def _test_group(modules):
             assert_all_close(dumped, err_msg='group_dump')
 
         for module, model, group in modules_models_groups:
-            values.append(model.sample_value(group))
+            values.append(module.sample_value(model, group))
 
         for value in values:
             scores = [
@@ -109,7 +111,9 @@ def _test_plus_group(modules):
     for EXAMPLE in EXAMPLES:
         raw_model = EXAMPLE['shared']
         values = EXAMPLE['values']
-        models = [module.Shared.model_load(raw_model) for module in modules]
-        groups = [model.group_create(values) for model in models]
+        models = [module.Shared.from_dict(raw_model) for module in modules]
+        groups = [
+            module.Group.from_values(model, values)
+            for module, model in zip(modules, models)]
         dumped = [m.plus_group(g).dump() for m, g in zip(models, groups)]
         assert_all_close(dumped, err_msg='model._plus_group(group)')

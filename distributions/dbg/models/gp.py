@@ -28,8 +28,8 @@
 from distributions.dbg.special import log, factorial, gammaln
 from distributions.dbg.random import sample_gamma, sample_poisson
 from distributions.mixins import (
-    ComponentModel,
-    Serializable,
+    GroupIo,
+    SharedIo,
     ProtobufSerializable,
 )
 
@@ -43,11 +43,7 @@ EXAMPLES = [
 Value = int
 
 
-class Shared(
-        ComponentModel,
-        Serializable,
-        ProtobufSerializable):
-
+class Shared(SharedIo, ProtobufSerializable):
     def __init__(self):
         self.alpha = None
         self.inv_beta = None
@@ -71,35 +67,14 @@ class Shared(
         message.alpha = self.alpha
         message.inv_beta = self.inv_beta
 
-    #-------------------------------------------------------------------------
-    # Mutation
-
     def plus_group(self, group):
         post = self.__class__()
         post.alpha = self.alpha + group.sum
         post.inv_beta = self.inv_beta + group.count
         return post
 
-    #-------------------------------------------------------------------------
-    # Sampling
 
-    def sampler_create(self, group=None):
-        post = self if group is None else self.plus_group(group)
-        return sample_gamma(post.alpha, 1.0 / post.inv_beta)
-
-    def sampler_eval(self, sampler):
-        return sample_poisson(sampler)
-
-    def sample_value(self, group):
-        sampler = self.sampler_create(group)
-        return self.sampler_eval(sampler)
-
-    def sample_group(self, size):
-        sampler = self.sampler_create()
-        return [self.sampler_eval(sampler) for _ in xrange(size)]
-
-
-class Group(ProtobufSerializable):
+class Group(GroupIo, ProtobufSerializable):
     def __init__(self):
         self.count = None
         self.sum = None
@@ -148,10 +123,6 @@ class Group(ProtobufSerializable):
         self.log_prod += source.log_prod
 
 
-# temporary refactoring kludge
-Shared.Group = Group
-
-
 def score_value(model, group, value):
     post = model.plus_group(group)
     return gammaln(post.alpha + value) - gammaln(post.alpha) \
@@ -166,3 +137,22 @@ def score_group(model, group):
         - post.alpha * log(post.inv_beta) \
         + model.alpha * log(model.inv_beta) \
         - group.log_prod
+
+
+def sampler_create(model, group=None):
+    post = model if group is None else model.plus_group(group)
+    return sample_gamma(post.alpha, 1.0 / post.inv_beta)
+
+
+def sampler_eval(model, sampler):
+    return sample_poisson(sampler)
+
+
+def sample_value(model, group):
+    sampler = sampler_create(model, group)
+    return sampler_eval(model, sampler)
+
+
+def sample_group(model, size):
+    sampler = sampler_create(model)
+    return [sampler_eval(model, sampler) for _ in xrange(size)]
