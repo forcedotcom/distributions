@@ -33,8 +33,17 @@ from distributions.mixins import (
     ProtobufSerializable,
 )
 
+NAME = 'GammaPoisson'
+EXAMPLES = [
+    {
+        'shared': {'alpha': 1., 'inv_beta': 1.},
+        'values': [0, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 2, 3],
+    }
+]
+Value = int
 
-class GammaPoisson(
+
+class Shared(
         ComponentModel,
         Serializable,
         ProtobufSerializable):
@@ -63,59 +72,6 @@ class GammaPoisson(
         message.inv_beta = self.inv_beta
 
     #-------------------------------------------------------------------------
-    # Datatypes
-
-    Value = int
-
-    class Group(ProtobufSerializable):
-        def __init__(self):
-            self.count = None
-            self.sum = None
-            self.log_prod = None
-
-        def load(self, raw):
-            self.count = int(raw['count'])
-            self.sum = int(raw['sum'])
-            self.log_prod = float(raw['log_prod'])
-
-        def dump(self):
-            return {
-                'count': self.count,
-                'sum': self.sum,
-                'log_prod': self.log_prod,
-            }
-
-        def load_protobuf(self, message):
-            self.count = int(message.count)
-            self.sum = int(message.sum)
-            self.log_prod = float(message.log_prod)
-
-        def dump_protobuf(self, message):
-            message.count = self.count
-            message.sum = self.sum
-            message.log_prod = self.log_prod
-
-        def init(self, model):
-            self.count = 0
-            self.sum = 0
-            self.log_prod = 0.
-
-        def add_value(self, model, value):
-            self.count += 1
-            self.sum += int(value)
-            self.log_prod += log(factorial(value))
-
-        def remove_value(self, model, value):
-            self.count -= 1
-            self.sum -= int(value)
-            self.log_prod -= log(factorial(value))
-
-        def merge(self, model, source):
-            self.count += source.count
-            self.sum += source.sum
-            self.log_prod += source.log_prod
-
-    #-------------------------------------------------------------------------
     # Mutation
 
     def plus_group(self, group):
@@ -142,32 +98,71 @@ class GammaPoisson(
         sampler = self.sampler_create()
         return [self.sampler_eval(sampler) for _ in xrange(size)]
 
-    #-------------------------------------------------------------------------
-    # Scoring
 
-    def score_value(self, group, value):
-        post = self.plus_group(group)
-        return gammaln(post.alpha + value) - gammaln(post.alpha) \
-            + post.alpha * log(post.inv_beta) \
-            - (post.alpha + value) * log(1. + post.inv_beta) \
-            - log(factorial(value))
+class Group(ProtobufSerializable):
+    def __init__(self):
+        self.count = None
+        self.sum = None
+        self.log_prod = None
 
-    def score_group(self, group):
-        post = self.plus_group(group)
-        return gammaln(post.alpha) - gammaln(self.alpha) \
-            - post.alpha * log(post.inv_beta) \
-            + self.alpha * log(self.inv_beta) \
-            - group.log_prod
+    def load(self, raw):
+        self.count = int(raw['count'])
+        self.sum = int(raw['sum'])
+        self.log_prod = float(raw['log_prod'])
 
-    #-------------------------------------------------------------------------
-    # Examples
-
-    EXAMPLES = [
-        {
-            'model': {'alpha': 1., 'inv_beta': 1.},
-            'values': [0, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 2, 3],
+    def dump(self):
+        return {
+            'count': self.count,
+            'sum': self.sum,
+            'log_prod': self.log_prod,
         }
-    ]
+
+    def load_protobuf(self, message):
+        self.count = int(message.count)
+        self.sum = int(message.sum)
+        self.log_prod = float(message.log_prod)
+
+    def dump_protobuf(self, message):
+        message.count = self.count
+        message.sum = self.sum
+        message.log_prod = self.log_prod
+
+    def init(self, model):
+        self.count = 0
+        self.sum = 0
+        self.log_prod = 0.
+
+    def add_value(self, model, value):
+        self.count += 1
+        self.sum += int(value)
+        self.log_prod += log(factorial(value))
+
+    def remove_value(self, model, value):
+        self.count -= 1
+        self.sum -= int(value)
+        self.log_prod -= log(factorial(value))
+
+    def merge(self, model, source):
+        self.count += source.count
+        self.sum += source.sum
+        self.log_prod += source.log_prod
 
 
-Model = GammaPoisson
+# temporary refactoring kludge
+Shared.Group = Group
+
+
+def score_value(model, group, value):
+    post = model.plus_group(group)
+    return gammaln(post.alpha + value) - gammaln(post.alpha) \
+        + post.alpha * log(post.inv_beta) \
+        - (post.alpha + value) * log(1. + post.inv_beta) \
+        - log(factorial(value))
+
+
+def score_group(model, group):
+    post = model.plus_group(group)
+    return gammaln(post.alpha) - gammaln(model.alpha) \
+        - post.alpha * log(post.inv_beta) \
+        + model.alpha * log(model.inv_beta) \
+        - group.log_prod

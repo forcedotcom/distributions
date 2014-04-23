@@ -68,14 +68,14 @@ MODULES = {
 }
 
 
-def iter_examples(Model):
-    assert_hasattr(Model, 'EXAMPLES')
-    EXAMPLES = Model.EXAMPLES
+def iter_examples(module):
+    assert_hasattr(module, 'EXAMPLES')
+    EXAMPLES = module.EXAMPLES
     assert_is_instance(EXAMPLES, list)
     assert_true(EXAMPLES, 'no examples provided')
     for i, EXAMPLE in enumerate(EXAMPLES):
-        print 'example {}/{}'.format(1 + i, len(Model.EXAMPLES))
-        assert_in('model', EXAMPLE)
+        print 'example {}/{}'.format(1 + i, len(EXAMPLES))
+        assert_in('shared', EXAMPLE)
         assert_in('values', EXAMPLE)
         values = EXAMPLE['values']
         assert_is_instance(values, list)
@@ -95,16 +95,15 @@ def for_each_model(*filters):
         @functools.wraps(test_fun)
         def test_one_model(name):
             module = MODULES[name]
-            assert_hasattr(module, 'Model')
-            Model = module.Model
-            for EXAMPLE in iter_examples(Model):
-                test_fun(Model, EXAMPLE)
+            assert_hasattr(module, 'Shared')
+            for EXAMPLE in iter_examples(module):
+                test_fun(module, EXAMPLE)
 
         @functools.wraps(test_fun)
         def test_all_models():
             for name in MODULES:
-                Model = MODULES[name].Model
-                if all(f(Model) for f in filters):
+                module = MODULES[name]
+                if all(f(module) for f in filters):
                     yield test_one_model, name
 
         return test_all_models
@@ -112,15 +111,15 @@ def for_each_model(*filters):
 
 
 @for_each_model()
-def test_interface(Model, EXAMPLE):
+def test_interface(module, EXAMPLE):
     for typename in ['Value', 'Group']:
-        assert_hasattr(Model, typename)
-        assert_is_instance(getattr(Model, typename), type)
+        assert_hasattr(module, typename)
+        assert_is_instance(getattr(module, typename), type)
 
-    model = Model.model_load(EXAMPLE['model'])
+    model = module.Shared.model_load(EXAMPLE['shared'])
     values = EXAMPLE['values']
     for value in values:
-        assert_is_instance(value, Model.Value)
+        assert_is_instance(value, module.Value)
 
     group1 = model.Group()
     group1.init(model)
@@ -141,38 +140,38 @@ def test_interface(Model, EXAMPLE):
     group2.merge(model, group1)
 
     for value in values:
-        model.score_value(group1, value)
+        module.score_value(model, group1, value)
     for _ in xrange(10):
         value = model.sample_value(group1)
-        model.score_value(group1, value)
+        module.score_value(model, group1, value)
         model.sample_group(10)
-    model.score_group(group1)
-    model.score_group(group2)
+    module.score_group(model, group1)
+    module.score_group(model, group2)
 
-    assert_close(model.dump(), EXAMPLE['model'])
-    assert_close(model.dump(), Model.model_dump(model))
-    assert_close(group1.dump(), Model.group_dump(group1))
+    assert_close(model.dump(), EXAMPLE['shared'])
+    assert_close(model.dump(), module.Shared.model_dump(model))
+    assert_close(group1.dump(), module.Shared.group_dump(group1))
 
 
-@for_each_model(lambda Model: hasattr(Model, 'load_protobuf'))
-def test_protbuf(Model, EXAMPLE):
+@for_each_model(lambda module: hasattr(module.Shared, 'load_protobuf'))
+def test_protbuf(module, EXAMPLE):
     if not has_protobuf:
         raise SkipTest('protobuf not available')
-    model = Model.model_load(EXAMPLE['model'])
+    model = module.Shared.model_load(EXAMPLE['shared'])
     values = EXAMPLE['values']
     group = model.group_create(values)
-    Message = getattr(distributions.io.schema_pb2, Model.__name__)
+    Message = getattr(distributions.io.schema_pb2, module.NAME)
 
     message = Message()
     model.dump_protobuf(message)
-    model2 = Model()
+    model2 = module.Shared()
     model2.load_protobuf(message)
     assert_close(model2.dump(), model.dump())
 
     message.Clear()
     dumped = model.dump()
-    Model.to_protobuf(dumped, message)
-    assert_close(Model.from_protobuf(message), dumped)
+    module.Shared.to_protobuf(dumped, message)
+    assert_close(module.Shared.from_protobuf(message), dumped)
 
     message = Message.Group()
     group.dump_protobuf(message)
@@ -182,33 +181,34 @@ def test_protbuf(Model, EXAMPLE):
 
     message.Clear()
     dumped = group.dump()
-    Model.Group.to_protobuf(dumped, message)
-    assert_close(Model.Group.from_protobuf(message), dumped)
+    module.Group.to_protobuf(dumped, message)
+    assert_close(module.Group.from_protobuf(message), dumped)
 
 
 @for_each_model()
-def test_add_remove(Model, EXAMPLE):
+def test_add_remove(module, EXAMPLE):
     # Test group_add_value, group_remove_value, score_group, score_value
 
-    model = Model.model_load(EXAMPLE['model'])
+    model = module.Shared.model_load(EXAMPLE['shared'])
     #model.realize()
     #values = model['values'][:]
 
     values = []
     group = model.group_create()
     score = 0.0
-    assert_close(model.score_group(group), score, err_msg='p(empty) != 1')
+    assert_close(
+        module.score_group(model, group), score, err_msg='p(empty) != 1')
 
     for _ in range(DATA_COUNT):
         value = model.sample_value(group)
         values.append(value)
-        score += model.score_value(group, value)
+        score += module.score_value(model, group, value)
         group.add_value(model, value)
 
     group_all = model.group_load(model.group_dump(group))
     assert_close(
         score,
-        model.score_group(group),
+        module.score_group(model, group),
         err_msg='p(x1,...,xn) != p(x1) p(x2|x1) p(xn|...)')
 
     numpy.random.shuffle(values)
@@ -232,9 +232,9 @@ def test_add_remove(Model, EXAMPLE):
 
 
 @for_each_model()
-def test_add_merge(Model, EXAMPLE):
+def test_add_merge(module, EXAMPLE):
     # Test group_add_value, group_merge
-    model = Model.model_load(EXAMPLE['model'])
+    model = module.Shared.model_load(EXAMPLE['shared'])
     values = EXAMPLE['values'][:]
     numpy.random.shuffle(values)
     group = model.group_create(values)
@@ -248,8 +248,8 @@ def test_add_merge(Model, EXAMPLE):
 
 
 @for_each_model()
-def test_group_merge(Model, EXAMPLE):
-    model = Model.model_load(EXAMPLE['model'])
+def test_group_merge(module, EXAMPLE):
+    model = module.Shared.model_load(EXAMPLE['shared'])
     group1 = model.group_create()
     group2 = model.group_create()
     expected = model.group_create()
@@ -269,8 +269,8 @@ def test_group_merge(Model, EXAMPLE):
 
 
 @for_each_model()
-def test_sample_seed(Model, EXAMPLE):
-    model = Model.model_load(EXAMPLE['model'])
+def test_sample_seed(module, EXAMPLE):
+    model = module.Shared.model_load(EXAMPLE['shared'])
 
     seed_all(0)
     group1 = model.group_create()
@@ -284,37 +284,37 @@ def test_sample_seed(Model, EXAMPLE):
 
 
 @for_each_model()
-def test_sample_value(Model, EXAMPLE):
+def test_sample_value(module, EXAMPLE):
     seed_all(0)
-    model = Model.model_load(EXAMPLE['model'])
+    model = module.Shared.model_load(EXAMPLE['shared'])
     for values in [[], EXAMPLE['values']]:
         group = model.group_create(values)
         samples = [model.sample_value(group) for _ in xrange(SAMPLE_COUNT)]
-        if Model.Value == int:
+        if module.Value == int:
             probs_dict = {
-                value: math.exp(model.score_value(group, value))
+                value: math.exp(module.score_value(model, group, value))
                 for value in set(samples)
             }
             gof = discrete_goodness_of_fit(samples, probs_dict, plot=True)
-        elif Model.Value == float:
+        elif module.Value == float:
             probs = numpy.exp([
-                model.score_value(group, value)
+                module.score_value(model, group, value)
                 for value in samples
             ])
             gof = density_goodness_of_fit(samples, probs, plot=True)
         else:
-            raise SkipTest('Not implemented for {}'.format(Model.Value))
-        print '{} gof = {:0.3g}'.format(Model.__name__, gof)
+            raise SkipTest('Not implemented for {}'.format(module.Value))
+        print '{} gof = {:0.3g}'.format(module.__name__, gof)
         assert_greater(gof, MIN_GOODNESS_OF_FIT)
 
 
 @for_each_model()
-def test_sample_group(Model, EXAMPLE):
+def test_sample_group(module, EXAMPLE):
     seed_all(0)
     SIZE = 2
-    model = Model.model_load(EXAMPLE['model'])
+    model = module.Shared.model_load(EXAMPLE['shared'])
     for values in [[], EXAMPLE['values']]:
-        if Model.Value == int:
+        if module.Value == int:
             samples = []
             probs_dict = {}
             for _ in xrange(SAMPLE_COUNT):
@@ -322,17 +322,17 @@ def test_sample_group(Model, EXAMPLE):
                 sample = tuple(values)
                 samples.append(sample)
                 group = model.group_create(values)
-                probs_dict[sample] = math.exp(model.score_group(group))
+                probs_dict[sample] = math.exp(module.score_group(model, group))
             gof = discrete_goodness_of_fit(samples, probs_dict, plot=True)
         else:
-            raise SkipTest('Not implemented for {}'.format(Model.Value))
-        print '{} gof = {:0.3g}'.format(Model.__name__, gof)
+            raise SkipTest('Not implemented for {}'.format(module.Value))
+        print '{} gof = {:0.3g}'.format(module.__name__, gof)
         assert_greater(gof, MIN_GOODNESS_OF_FIT)
 
 
-@for_each_model(lambda Model: hasattr(Model, 'scorer_create'))
-def test_scorer(Model, EXAMPLE):
-    model = Model.model_load(EXAMPLE['model'])
+@for_each_model(lambda module: hasattr(module.Shared, 'scorer_create'))
+def test_scorer(module, EXAMPLE):
+    model = module.Shared.model_load(EXAMPLE['shared'])
     values = EXAMPLE['values']
 
     group = model.group_create()
@@ -341,16 +341,16 @@ def test_scorer(Model, EXAMPLE):
     for value in values:
         score1 = model.scorer_eval(scorer1, value)
         score2 = model.scorer_eval(scorer2, value)
-        score3 = model.score_value(group, value)
+        score3 = module.score_value(model, group, value)
         assert_all_close([score1, score2, score3])
 
 
-@for_each_model(lambda Model: hasattr(Model, 'Mixture'))
-def test_mixture_runs(Model, EXAMPLE):
-    model = Model.model_load(EXAMPLE['model'])
+@for_each_model(lambda module: hasattr(module, 'Mixture'))
+def test_mixture_runs(module, EXAMPLE):
+    model = module.Shared.model_load(EXAMPLE['shared'])
     values = EXAMPLE['values']
 
-    mixture = Model.Mixture()
+    mixture = module.Mixture()
     for value in values:
         mixture.append(model.group_create([value]))
     mixture.init(model)
@@ -383,19 +383,20 @@ def test_mixture_runs(Model, EXAMPLE):
         mixture.add_value(model, groupid, value)
 
 
-@for_each_model(lambda Model: hasattr(Model, 'Mixture'))
-def test_mixture_score(Model, EXAMPLE):
-    model = Model.model_load(EXAMPLE['model'])
+@for_each_model(lambda module: hasattr(module, 'Mixture'))
+def test_mixture_score(module, EXAMPLE):
+    model = module.Shared.model_load(EXAMPLE['shared'])
     values = EXAMPLE['values']
 
     groups = [model.group_create([value]) for value in values]
-    mixture = Model.Mixture()
+    mixture = module.Mixture()
     for group in groups:
         mixture.append(group)
     mixture.init(model)
 
     def check_scores():
-        expected = [model.score_value(group, value) for group in groups]
+        expected = [
+            module.score_value(model, group, value) for group in groups]
         actual = numpy.zeros(len(mixture), dtype=numpy.float32)
         noise = numpy.random.randn(len(actual))
         actual += noise
