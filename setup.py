@@ -147,9 +147,13 @@ lp_extensions = make_extensions([
     'lp.random',
     'lp.vector',
     'lp.models.dd',
+    'lp.models._dd',
     'lp.models.gp',
+    'lp.models._gp',
     'lp.models.nich',
+    'lp.models._nich',
     'lp.models.dpd',
+    'lp.models._dpd',
     'lp.clustering',
     'lp.mixture',
 ])

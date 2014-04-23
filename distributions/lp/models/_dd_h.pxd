@@ -1,34 +1,41 @@
+from libc.stdint cimport uint32_t
 from libcpp.vector cimport vector
 
 from distributions.rng_cc cimport rng_t
 from distributions.lp.vector cimport VectorFloat
 from distributions.sparse_counter cimport SparseCounter
 
-cimport dpd_cc as cc
-ctypedef unsigned Value
 
-cdef extern from "distributions/models/dpd.hpp" namespace "distributions::dirichlet_process_discrete":
-    cppclass Model:
-        float gamma
-        float alpha
-        float beta0
-        vector[float] betas
-    cppclass Group:
-        SparseCounter counts
+ctypedef int Value
+
+
+cdef extern from "distributions/models/dd.hpp" namespace "distributions::dirichlet_discrete":
+    cppclass Model "distributions::dirichlet_discrete::Model<256>":
+        int dim
+        float alphas[256]
+
+
+    cppclass Group "distributions::dirichlet_discrete::Group<256>":
+        uint32_t count_sum
+        uint32_t counts[]
         void init (Model &, rng_t &) nogil except +
         void add_value (Model &, Value &, rng_t &) nogil except +
         void remove_value (Model &, Value &, rng_t &) nogil except +
         void merge (Model &, Group &, rng_t &) nogil except +
-    cppclass Sampler:
-        vector[float] probs
+
+
+
+    cppclass Sampler "distributions::dirichlet_discrete::Sampler<256>":
         void init (Model &, Group &, rng_t &) nogil except +
         Value eval (Model &, rng_t &) nogil except +
-    cppclass Scorer:
-        vector[float] scores
-    cppclass Mixture:
+
+
+    cppclass Mixture "distributions::dirichlet_discrete::Mixture<256>":
         vector[Group] groups
-        vector[VectorFloat] scores
-        VectorFloat scores_shift
+        VectorFloat score
+        VectorFloat post_alpha
+        VectorFloat score_coeff
+        VectorFloat temp
         void init (Model &, rng_t &) nogil except +
         void add_group (Model &, rng_t &) nogil except +
         void remove_group (Model &, size_t) nogil except +
@@ -40,7 +47,8 @@ cdef extern from "distributions/models/dpd.hpp" namespace "distributions::dirich
             (Model &, Value &, VectorFloat &, rng_t &) nogil except +
 
 
-cdef extern from "distributions/models/dpd.hpp" namespace "distributions":
+
+cdef extern from "distributions/models/dd.hpp" namespace "distributions":
     Value sample_value (Model &, Group &, rng_t &) nogil except +
     float score_value (Model &, Group &, Value &, rng_t &) nogil except +
     float score_group (Model &, Group &, rng_t &) nogil except +
