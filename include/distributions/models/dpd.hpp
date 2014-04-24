@@ -67,6 +67,8 @@ struct Shared
 
 struct Group
 {
+    typedef dirichlet_process_discrete::Value Value;
+
     SparseCounter<Value, count_t> counts;  // sparse
 
     void init (
@@ -291,32 +293,30 @@ struct Mixture
     }
 };
 
-} // namespace dirichlet_process_discrete
-
-inline dirichlet_process_discrete::Value sample_value (
-        const dirichlet_process_discrete::Shared & shared,
-        const dirichlet_process_discrete::Group & group,
+inline Value sample_value (
+        const Shared & shared,
+        const Group & group,
         rng_t & rng)
 {
-    dirichlet_process_discrete::Sampler sampler;
+    Sampler sampler;
     sampler.init(shared, group, rng);
     return sampler.eval(shared, rng);
 }
 
 inline float score_value (
-        const dirichlet_process_discrete::Shared & shared,
-        const dirichlet_process_discrete::Group & group,
-        const dirichlet_process_discrete::Value & value,
+        const Shared & shared,
+        const Group & group,
+        const Value & value,
         rng_t & rng)
 {
-    dirichlet_process_discrete::Scorer scorer;
+    Scorer scorer;
     scorer.init(shared, group, rng);
     return scorer.eval(shared, value, rng);
 }
 
 inline float score_group (
-        const dirichlet_process_discrete::Shared & shared,
-        const dirichlet_process_discrete::Group & group,
+        const Shared & shared,
+        const Group & group,
         rng_t &)
 {
     const size_t size = shared.betas.size();
@@ -324,7 +324,7 @@ inline float score_group (
 
     float score = 0;
     for (auto i : group.counts) {
-        dirichlet_process_discrete::Value value = i.first;
+        Value value = i.first;
         DIST_ASSERT(value < size,
             "unknown DPM value: " << value << " >= " << size);
         float prior_i = shared.betas[value] * shared.alpha;
@@ -337,4 +337,5 @@ inline float score_group (
     return score;
 }
 
+} // namespace dirichlet_process_discrete
 } // namespace distributions

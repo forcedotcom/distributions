@@ -68,6 +68,8 @@ struct Shared
 template<int max_dim>
 struct Group
 {
+    typedef dirichlet_discrete::Value Value;
+
     count_t count_sum;
     count_t counts[max_dim];
 
@@ -291,41 +293,39 @@ struct Mixture
     }
 };
 
-} // namespace dirichlet_discrete
-
 template<int max_dim>
-inline dirichlet_discrete::Value sample_value (
-        const dirichlet_discrete::Shared<max_dim> & shared,
-        const dirichlet_discrete::Group<max_dim> & group,
+inline Value sample_value (
+        const Shared<max_dim> & shared,
+        const Group<max_dim> & group,
         rng_t & rng)
 {
-    dirichlet_discrete::Sampler<max_dim> sampler;
+    Sampler<max_dim> sampler;
     sampler.init(shared, group, rng);
     return sampler.eval(shared, rng);
 }
 
 template<int max_dim>
 inline float score_value (
-        const dirichlet_discrete::Shared<max_dim> & shared,
-        const dirichlet_discrete::Group<max_dim> & group,
-        const dirichlet_discrete::Value & value,
+        const Shared<max_dim> & shared,
+        const Group<max_dim> & group,
+        const Value & value,
         rng_t & rng)
 {
-    dirichlet_discrete::Scorer<max_dim> scorer;
+    Scorer<max_dim> scorer;
     scorer.init(shared, group, rng);
     return scorer.eval(shared, value, rng);
 }
 
 template<int max_dim>
 inline float score_group (
-        const dirichlet_discrete::Shared<max_dim> & shared,
-        const dirichlet_discrete::Group<max_dim> & group,
+        const Shared<max_dim> & shared,
+        const Group<max_dim> & group,
         rng_t &)
 {
     float alpha_sum = 0;
     float score = 0;
 
-    for (dirichlet_discrete::Value value = 0; value < shared.dim; ++value) {
+    for (Value value = 0; value < shared.dim; ++value) {
         float alpha = shared.alphas[value];
         alpha_sum += alpha;
         score += fast_lgamma(alpha + group.counts[value]) - fast_lgamma(alpha);
@@ -336,4 +336,5 @@ inline float score_group (
     return score;
 }
 
+} // namespace dirichlet_discrete
 } // namespace distributions

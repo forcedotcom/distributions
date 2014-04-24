@@ -49,7 +49,6 @@ cdef extern from "distributions/models/gp.hpp" namespace "distributions::gamma_p
 
 
 
-cdef extern from "distributions/models/gp.hpp" namespace "distributions":
     Value sample_value (Shared &, Group &, rng_t &) nogil except +
     float score_value (Shared &, Group &, Value &, rng_t &) nogil except +
     float score_group (Shared &, Group &, rng_t &) nogil except +

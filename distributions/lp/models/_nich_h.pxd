@@ -51,7 +51,6 @@ cdef extern from "distributions/models/nich.hpp" namespace "distributions::norma
 
 
 
-cdef extern from "distributions/models/nich.hpp" namespace "distributions":
     Value sample_value (Shared &, Group &, rng_t &) nogil except +
     float score_value (Shared &, Group &, Value &, rng_t &) nogil except +
     float score_group (Shared &, Group &, rng_t &) nogil except +

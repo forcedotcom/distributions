@@ -60,6 +60,8 @@ struct Shared
 
 struct Group
 {
+    typedef gamma_poisson::Value Value;
+
     uint32_t count;
     uint32_t sum;
     float log_prod;
@@ -276,7 +278,6 @@ struct Mixture
             rng_t &) const;
 };
 
-
 inline Shared Shared::plus_group (const Group & group) const
 {
     Shared post;
@@ -285,39 +286,38 @@ inline Shared Shared::plus_group (const Group & group) const
     return post;
 }
 
-} // namespace gamma_poisson
-
-inline gamma_poisson::Value sample_value (
-        const gamma_poisson::Shared & shared,
-        const gamma_poisson::Group & group,
+inline Value sample_value (
+        const Shared & shared,
+        const Group & group,
         rng_t & rng)
 {
-    gamma_poisson::Sampler sampler;
+    Sampler sampler;
     sampler.init(shared, group, rng);
     return sampler.eval(shared, rng);
 }
 
 inline float score_value (
-        const gamma_poisson::Shared & shared,
-        const gamma_poisson::Group & group,
-        const gamma_poisson::Value & value,
+        const Shared & shared,
+        const Group & group,
+        const Value & value,
         rng_t & rng)
 {
-    gamma_poisson::Scorer scorer;
+    Scorer scorer;
     scorer.init(shared, group, rng);
     return scorer.eval(shared, value, rng);
 }
 
 inline float score_group (
-        const gamma_poisson::Shared & shared,
-        const gamma_poisson::Group & group,
+        const Shared & shared,
+        const Group & group,
         rng_t &)
 {
-    gamma_poisson::Shared post = shared.plus_group(group);
+    Shared post = shared.plus_group(group);
     float score = fast_lgamma(post.alpha) - fast_lgamma(shared.alpha);
     score += shared.alpha * fast_log(shared.inv_beta) - post.alpha * fast_log(post.inv_beta);
     score += -group.log_prod;
     return score;
 }
 
+} // namespace gamma_poisson
 } // namespace distributions

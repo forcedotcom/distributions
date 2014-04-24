@@ -64,6 +64,8 @@ struct Shared
 
 struct Group
 {
+    typedef normal_inverse_chi_sq::Value Value;
+
     uint32_t count;
     float mean;
     float count_times_variance;
@@ -322,35 +324,33 @@ inline Shared Shared::plus_group (const Group & group) const
     return post;
 }
 
-} // namespace normal_inverse_chi_sq
-
-inline normal_inverse_chi_sq::Value sample_value (
-        const normal_inverse_chi_sq::Shared & shared,
-        const normal_inverse_chi_sq::Group & group,
+inline Value sample_value (
+        const Shared & shared,
+        const Group & group,
         rng_t & rng)
 {
-    normal_inverse_chi_sq::Sampler sampler;
+    Sampler sampler;
     sampler.init(shared, group, rng);
     return sampler.eval(shared, rng);
 }
 
 inline float score_value (
-        const normal_inverse_chi_sq::Shared & shared,
-        const normal_inverse_chi_sq::Group & group,
-        const normal_inverse_chi_sq::Value & value,
+        const Shared & shared,
+        const Group & group,
+        const Value & value,
         rng_t & rng)
 {
-    normal_inverse_chi_sq::Scorer scorer;
+    Scorer scorer;
     scorer.init(shared, group, rng);
     return scorer.eval(shared, value, rng);
 }
 
 inline float score_group (
-        const normal_inverse_chi_sq::Shared & shared,
-        const normal_inverse_chi_sq::Group & group,
+        const Shared & shared,
+        const Group & group,
         rng_t &)
 {
-    normal_inverse_chi_sq::Shared post = shared.plus_group(group);
+    Shared post = shared.plus_group(group);
     float log_pi = 1.1447298858493991f;
     float score = fast_lgamma(0.5f * post.nu) - fast_lgamma(0.5f * shared.nu);
     score += 0.5f * fast_log(shared.kappa / post.kappa);
@@ -360,4 +360,5 @@ inline float score_group (
     return score;
 }
 
+} // namespace normal_inverse_chi_sq
 } // namespace distributions

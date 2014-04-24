@@ -48,7 +48,6 @@ cdef extern from "distributions/models/dd.hpp" namespace "distributions::dirichl
 
 
 
-cdef extern from "distributions/models/dd.hpp" namespace "distributions":
     Value sample_value (Shared &, Group &, rng_t &) nogil except +
     float score_value (Shared &, Group &, Value &, rng_t &) nogil except +
     float score_group (Shared &, Group &, rng_t &) nogil except +
