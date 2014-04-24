@@ -29,16 +29,26 @@ from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 cimport numpy
 numpy.import_array()
+from cython import address
 from cython.operator cimport dereference as deref, preincrement as inc
 from distributions.rng_cc cimport rng_t
 from distributions.global_rng cimport get_rng
-from distributions.lp.unordered_set cimport unordered_set
 from distributions.lp.vector cimport VectorFloat, vector_float_to_ndarray
 from distributions.mixins import Serializable, ProtobufSerializable
 
 
-cdef extern from 'distributions/clustering.hpp':
+cdef extern from 'distributions/mixture.hpp':
+    cppclass IdSet \
+            "std::unordered_set<size_t, distributions::TrivialHash<size_t>>":
+        cppclass iterator "const_iterator":
+            size_t & operator*()
+            iterator operator++() nogil
+            bint operator!=(iterator) nogil
+        iterator begin() nogil
+        iterator end() nogil
 
+
+cdef extern from 'distributions/clustering.hpp':
     cppclass Assignments "distributions::Clustering<int>::Assignments":
         Assignments() nogil except +
         cppclass iterator:
@@ -58,11 +68,12 @@ cdef extern from 'distributions/clustering.hpp':
         float d
         vector[int] sample_assignments(int size, rng_t & rng) nogil except +
         cppclass Mixture:
-            vector[int] counts
-            unordered_set[size_t] empty_groupids
-            int sample_size
-            VectorFloat shifted_scores
-            void init (PitmanYor_cc &) nogil except +
+            size_t size "counts().size" () nogil except +
+            IdSet.iterator empty_groupids_begin \
+                    "empty_groupids().begin" () nogil except +
+            IdSet.iterator empty_groupids_end \
+                    "empty_groupids().end" () nogil except +
+            void init (PitmanYor_cc &, vector[int] &) nogil except +
             bint add_value (PitmanYor_cc &, size_t) nogil except +
             bint remove_value (PitmanYor_cc &, size_t) nogil except +
             void score (PitmanYor_cc &, VectorFloat &) nogil except +
@@ -203,25 +214,20 @@ cdef class PitmanYorMixture:
         del self.ptr
 
     def __len__(self):
-        return self.ptr.counts.size()
+        return self.ptr.size()
 
     property empty_groupids:
         def __get__(self):
             cdef PitmanYor_cc.Mixture * ptr = self.ptr
-            cdef unordered_set[size_t].iterator i = ptr.empty_groupids.begin()
-            cdef unordered_set[size_t].iterator end = ptr.empty_groupids.end()
+            cdef IdSet.iterator i = ptr.empty_groupids_begin()
+            cdef IdSet.iterator end = ptr.empty_groupids_end()
             while i != end:
                 yield deref(i)
                 inc(i)
 
-    def append(self, int count):
-        self.ptr.counts.push_back(count)
-
-    def clear(self):
-        self.ptr.counts.clear()
-
-    def init(self, PitmanYor_cy model):
-        self.ptr.init(model.ptr[0])
+    def init(self, PitmanYor_cy model, list counts):
+        cdef vector[int] counts_cc = counts
+        self.ptr.init(model.ptr[0], counts_cc)
 
     def add_value(self, PitmanYor_cy model, int groupid):
         return self.ptr.add_value(model.ptr[0], groupid)
@@ -234,7 +240,7 @@ cdef class PitmanYorMixture:
             PitmanYor_cy model,
             numpy.ndarray[numpy.float32_t, ndim=1] scores):
         cdef VectorFloat scores_cc
-        scores_cc.resize(self.ptr.counts.size())
+        scores_cc.resize(self.ptr.size())
         self.ptr.score(model.ptr[0], scores_cc)
         vector_float_to_ndarray(scores_cc, scores)
 

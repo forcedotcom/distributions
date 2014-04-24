@@ -12,6 +12,7 @@
 #include <distributions/sparse_counter.hpp>
 #include <distributions/special.hpp>
 #include <distributions/timers.hpp>
+#include <distributions/trivial_hash.hpp>
 #include <distributions/vector.hpp>
 #include <distributions/vector_math.hpp>
 #include <distributions/vendor/fmath.hpp>
