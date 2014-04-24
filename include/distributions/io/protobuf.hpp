@@ -76,50 +76,50 @@ inline void clustering_load (
 }
 
 //----------------------------------------------------------------------------
-// Models
+// Shareds
 
 template<int max_dim>
-inline void model_load (
-        dirichlet_discrete::Model<max_dim> & model,
+inline void shared_load (
+        dirichlet_discrete::Shared<max_dim> & shared,
         const protobuf::DirichletDiscrete & message)
 {
-    model.dim = message.alphas_size();
-    DIST_ASSERT_LE(model.dim, max_dim);
-    for (size_t i = 0; i < model.dim; ++i) {
-        model.alphas[i] = message.alphas(i);
+    shared.dim = message.alphas_size();
+    DIST_ASSERT_LE(shared.dim, max_dim);
+    for (size_t i = 0; i < shared.dim; ++i) {
+        shared.alphas[i] = message.alphas(i);
     }
 }
 
-inline void model_load (
-        dirichlet_process_discrete::Model & model,
+inline void shared_load (
+        dirichlet_process_discrete::Shared & shared,
         const protobuf::DirichletProcessDiscrete & message)
 {
-    model.gamma = message.gamma();
-    model.alpha = message.alpha();
-    model.betas.resize(message.betas_size());
+    shared.gamma = message.gamma();
+    shared.alpha = message.alpha();
+    shared.betas.resize(message.betas_size());
     double beta_sum = 0;
-    for (size_t i = 0; i < model.betas.size(); ++i) {
-        beta_sum += model.betas[i] = message.betas(i);
+    for (size_t i = 0; i < shared.betas.size(); ++i) {
+        beta_sum += shared.betas[i] = message.betas(i);
     }
-    model.beta0 = 1 - beta_sum;
+    shared.beta0 = 1 - beta_sum;
 }
 
-inline void model_load (
-        gamma_poisson::Model & model,
+inline void shared_load (
+        gamma_poisson::Shared & shared,
         const protobuf::GammaPoisson & message)
 {
-    model.alpha = message.alpha();
-    model.inv_beta = message.inv_beta();
+    shared.alpha = message.alpha();
+    shared.inv_beta = message.inv_beta();
 }
 
-inline void model_load (
-        normal_inverse_chi_sq::Model & model,
+inline void shared_load (
+        normal_inverse_chi_sq::Shared & shared,
         const protobuf::NormalInverseChiSq & message)
 {
-    model.mu = message.mu();
-    model.kappa = message.kappa();
-    model.sigmasq = message.sigmasq();
-    model.nu = message.nu();
+    shared.mu = message.mu();
+    shared.kappa = message.kappa();
+    shared.sigmasq = message.sigmasq();
+    shared.nu = message.nu();
 }
 
 //----------------------------------------------------------------------------
@@ -127,34 +127,34 @@ inline void model_load (
 
 template<int max_dim>
 inline void group_load (
-        const dirichlet_discrete::Model<max_dim> & model,
+        const dirichlet_discrete::Shared<max_dim> & shared,
         dirichlet_discrete::Group<max_dim> & group,
         const protobuf::DirichletDiscrete::Group & message)
 {
     if (DIST_DEBUG_LEVEL >= 1) {
-        DIST_ASSERT_EQ(message.counts_size(), model.dim);
+        DIST_ASSERT_EQ(message.counts_size(), shared.dim);
     }
     group.count_sum = 0;
-    for (size_t i = 0; i < model.dim; ++i) {
+    for (size_t i = 0; i < shared.dim; ++i) {
         group.count_sum += group.counts[i] = message.counts(i);
     }
 }
 
 template<int max_dim>
 inline void group_dump (
-        const dirichlet_discrete::Model<max_dim> & model,
+        const dirichlet_discrete::Shared<max_dim> & shared,
         const dirichlet_discrete::Group<max_dim> & group,
         protobuf::DirichletDiscrete::Group & message)
 {
     message.Clear();
     auto & counts = * message.mutable_counts();
-    for (size_t i = 0; i < model.dim; ++i) {
+    for (size_t i = 0; i < shared.dim; ++i) {
         counts.Add(group.counts[i]);
     }
 }
 
 inline void group_load (
-        const dirichlet_process_discrete::Model &,
+        const dirichlet_process_discrete::Shared &,
         dirichlet_process_discrete::Group & group,
         const protobuf::DirichletProcessDiscrete::Group & message)
 {
@@ -168,7 +168,7 @@ inline void group_load (
 }
 
 inline void group_dump (
-        const dirichlet_process_discrete::Model &,
+        const dirichlet_process_discrete::Shared &,
         const dirichlet_process_discrete::Group & group,
         protobuf::DirichletProcessDiscrete::Group & message)
 {
@@ -182,7 +182,7 @@ inline void group_dump (
 }
 
 inline void group_load (
-        const gamma_poisson::Model &,
+        const gamma_poisson::Shared &,
         gamma_poisson::Group & group,
         const protobuf::GammaPoisson::Group & message)
 {
@@ -192,7 +192,7 @@ inline void group_load (
 }
 
 inline void group_dump (
-        const gamma_poisson::Model &,
+        const gamma_poisson::Shared &,
         const gamma_poisson::Group & group,
         protobuf::GammaPoisson::Group & message)
 {
@@ -202,7 +202,7 @@ inline void group_dump (
 }
 
 inline void group_load (
-        const normal_inverse_chi_sq::Model &,
+        const normal_inverse_chi_sq::Shared &,
         normal_inverse_chi_sq::Group & group,
         const protobuf::NormalInverseChiSq::Group & message)
 {
@@ -212,7 +212,7 @@ inline void group_load (
 }
 
 inline void group_dump (
-        const normal_inverse_chi_sq::Model &,
+        const normal_inverse_chi_sq::Shared &,
         const normal_inverse_chi_sq::Group & group,
         protobuf::NormalInverseChiSq::Group & message)
 {

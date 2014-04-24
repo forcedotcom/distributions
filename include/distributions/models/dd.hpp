@@ -44,7 +44,7 @@ template<int max_dim> struct Mixture;
 
 
 template<int max_dim>
-struct Model
+struct Shared
 {
     typedef typename dirichlet_discrete::Group<max_dim> Group;
     typedef typename dirichlet_discrete::Scorer<max_dim> Scorer;
@@ -53,14 +53,14 @@ struct Model
     int dim;  // fixed parameter
     float alphas[max_dim];  // hyperparamter
 
-    static Model<max_dim> EXAMPLE ()
+    static Shared<max_dim> EXAMPLE ()
     {
-        Model<max_dim> model;
-        model.dim = max_dim;
+        Shared<max_dim> shared;
+        shared.dim = max_dim;
         for (int i = 0; i < max_dim; ++i) {
-            model.alphas[i] = 0.5;
+            shared.alphas[i] = 0.5;
         }
-        return model;
+        return shared;
     }
 };
 
@@ -72,41 +72,41 @@ struct Group
     count_t counts[max_dim];
 
     void init (
-            const Model<max_dim> & model,
+            const Shared<max_dim> & shared,
             rng_t &)
     {
         count_sum = 0;
-        for (Value value = 0; value < model.dim; ++value) {
+        for (Value value = 0; value < shared.dim; ++value) {
             counts[value] = 0;
         }
     }
 
     void add_value (
-            const Model<max_dim> & model,
+            const Shared<max_dim> & shared,
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(value < model.dim, "bad value: out of bounds: " << value);
+        DIST_ASSERT1(value < shared.dim, "bad value: out of bounds: " << value);
         count_sum += 1;
         counts[value] += 1;
     }
 
     void remove_value (
-            const Model<max_dim> & model,
+            const Shared<max_dim> & shared,
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(value < model.dim, "value out of bounds: " << value);
+        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         count_sum -= 1;
         counts[value] -= 1;
     }
 
     void merge (
-            const Model<max_dim> & model,
+            const Shared<max_dim> & shared,
             const Group<max_dim> & source,
             rng_t &)
     {
-        for (Value value = 0; value < model.dim; ++value) {
+        for (Value value = 0; value < shared.dim; ++value) {
             counts[value] += source.counts[value];
         }
     }
@@ -118,22 +118,22 @@ struct Sampler
     float ps[max_dim];
 
     void init (
-            const Model<max_dim> & model,
+            const Shared<max_dim> & shared,
             const Group<max_dim> & group,
             rng_t & rng)
     {
-        for (Value value = 0; value < model.dim; ++value) {
-            ps[value] = model.alphas[value] + group.counts[value];
+        for (Value value = 0; value < shared.dim; ++value) {
+            ps[value] = shared.alphas[value] + group.counts[value];
         }
 
-        sample_dirichlet(rng, model.dim, ps, ps);
+        sample_dirichlet(rng, shared.dim, ps, ps);
     }
 
     Value eval (
-            const Model<max_dim> & model,
+            const Shared<max_dim> & shared,
             rng_t & rng) const
     {
-        return sample_discrete(rng, model.dim, ps);
+        return sample_discrete(rng, shared.dim, ps);
     }
 };
 
@@ -144,24 +144,24 @@ struct Scorer
     float alphas[max_dim];
 
     void init (
-            const Model<max_dim> & model,
+            const Shared<max_dim> & shared,
             const Group<max_dim> & group,
             rng_t &)
     {
         alpha_sum = 0;
-        for (Value value = 0; value < model.dim; ++value) {
-            float alpha = model.alphas[value] + group.counts[value];
+        for (Value value = 0; value < shared.dim; ++value) {
+            float alpha = shared.alphas[value] + group.counts[value];
             alphas[value] = alpha;
             alpha_sum += alpha;
         }
     }
 
     float eval (
-            const Model<max_dim> & model,
+            const Shared<max_dim> & shared,
             const Value & value,
             rng_t &) const
     {
-        DIST_ASSERT1(value < model.dim, "value out of bounds: " << value);
+        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         return fast_log(alphas[value] / alpha_sum);
     }
 };
@@ -170,7 +170,7 @@ template<int max_dim>
 struct Mixture
 {
     typedef dirichlet_discrete::Value Value;
-    typedef dirichlet_discrete::Model<max_dim> Model;
+    typedef dirichlet_discrete::Shared<max_dim> Shared;
     typedef dirichlet_discrete::Group<max_dim> Group;
     typedef dirichlet_discrete::Scorer<max_dim> Scorer;
 
@@ -180,47 +180,47 @@ struct Mixture
     VectorFloat scores_shift;
 
     void init (
-            const Model & model,
+            const Shared & shared,
             rng_t &)
     {
         const size_t group_count = groups.size();
         scores_shift.resize(group_count);
         alpha_sum = 0;
-        scores.resize(model.dim);
-        for (Value value = 0; value < model.dim; ++value) {
-            alpha_sum += model.alphas[value];
+        scores.resize(shared.dim);
+        for (Value value = 0; value < shared.dim; ++value) {
+            alpha_sum += shared.alphas[value];
             scores[value].resize(group_count);
         }
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
             const Group & group = groups[groupid];
-            for (Value value = 0; value < model.dim; ++value) {
+            for (Value value = 0; value < shared.dim; ++value) {
                 scores[value][groupid] =
-                    model.alphas[value] + group.counts[value];
+                    shared.alphas[value] + group.counts[value];
             }
             scores_shift[groupid] =
                 alpha_sum + group.count_sum;
         }
         vector_log(group_count, scores_shift.data());
-        for (Value value = 0; value < model.dim; ++value) {
+        for (Value value = 0; value < shared.dim; ++value) {
             vector_log(group_count, scores[value].data());
         }
     }
 
     void add_group (
-            const Model & model,
+            const Shared & shared,
             rng_t & rng)
     {
         const size_t group_count = groups.size() + 1;
         groups.resize(group_count);
-        groups.back().init(model, rng);
+        groups.back().init(shared, rng);
         scores_shift.resize(group_count, 0);
-        for (Value value = 0; value < model.dim; ++value) {
+        for (Value value = 0; value < shared.dim; ++value) {
             scores[value].resize(group_count, 0);
         }
     }
 
     void remove_group (
-            const Model & model,
+            const Shared & shared,
             size_t groupid)
     {
         DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
@@ -228,57 +228,57 @@ struct Mixture
         if (groupid != group_count) {
             std::swap(groups[groupid], groups.back());
             scores_shift[groupid] = scores_shift.back();
-            for (Value value = 0; value < model.dim; ++value) {
+            for (Value value = 0; value < shared.dim; ++value) {
                 VectorFloat & vscores = scores[value];
                 vscores[groupid] = vscores.back();
             }
         }
         groups.resize(group_count);
         scores_shift.resize(group_count);
-        for (Value value = 0; value < model.dim; ++value) {
+        for (Value value = 0; value < shared.dim; ++value) {
             scores[value].resize(group_count);
         }
     }
 
     void add_value (
-            const Model & model,
+            const Shared & shared,
             size_t groupid,
             const Value & value,
             rng_t &)
     {
         DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
-        DIST_ASSERT1(value < model.dim, "value out of bounds: " << value);
+        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         Group & group = groups[groupid];
         count_t count_sum = group.count_sum += 1;
         count_t count = group.counts[value] += 1;
-        scores[value][groupid] = fast_log(model.alphas[value] + count);
+        scores[value][groupid] = fast_log(shared.alphas[value] + count);
         scores_shift[groupid] =
             fast_log(alpha_sum + count_sum);
     }
 
     void remove_value (
-            const Model & model,
+            const Shared & shared,
             size_t groupid,
             const Value & value,
             rng_t &)
     {
         DIST_ASSERT2(groupid < groups.size(), "bad groupid: " << groupid);
-        DIST_ASSERT1(value < model.dim, "value out of bounds: " << value);
+        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         Group & group = groups[groupid];
         count_t count_sum = group.count_sum -= 1;
         count_t count = group.counts[value] -= 1;
-        scores[value][groupid] = fast_log(model.alphas[value] + count);
+        scores[value][groupid] = fast_log(shared.alphas[value] + count);
         scores_shift[groupid] =
             fast_log(alpha_sum + count_sum);
     }
 
     void score_value (
-            const Model & model,
+            const Shared & shared,
             const Value & value,
             VectorFloat & scores_accum,
             rng_t &) const
     {
-        DIST_ASSERT1(value < model.dim, "value out of bounds: " << value);
+        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         if (DIST_DEBUG_LEVEL >= 2) {
             DIST_ASSERT_EQ(scores_accum.size(), groups.size());
         }
@@ -295,38 +295,38 @@ struct Mixture
 
 template<int max_dim>
 inline dirichlet_discrete::Value sample_value (
-        const dirichlet_discrete::Model<max_dim> & model,
+        const dirichlet_discrete::Shared<max_dim> & shared,
         const dirichlet_discrete::Group<max_dim> & group,
         rng_t & rng)
 {
     dirichlet_discrete::Sampler<max_dim> sampler;
-    sampler.init(model, group, rng);
-    return sampler.eval(model, rng);
+    sampler.init(shared, group, rng);
+    return sampler.eval(shared, rng);
 }
 
 template<int max_dim>
 inline float score_value (
-        const dirichlet_discrete::Model<max_dim> & model,
+        const dirichlet_discrete::Shared<max_dim> & shared,
         const dirichlet_discrete::Group<max_dim> & group,
         const dirichlet_discrete::Value & value,
         rng_t & rng)
 {
     dirichlet_discrete::Scorer<max_dim> scorer;
-    scorer.init(model, group, rng);
-    return scorer.eval(model, value, rng);
+    scorer.init(shared, group, rng);
+    return scorer.eval(shared, value, rng);
 }
 
 template<int max_dim>
 inline float score_group (
-        const dirichlet_discrete::Model<max_dim> & model,
+        const dirichlet_discrete::Shared<max_dim> & shared,
         const dirichlet_discrete::Group<max_dim> & group,
         rng_t &)
 {
     float alpha_sum = 0;
     float score = 0;
 
-    for (dirichlet_discrete::Value value = 0; value < model.dim; ++value) {
-        float alpha = model.alphas[value];
+    for (dirichlet_discrete::Value value = 0; value < shared.dim; ++value) {
+        float alpha = shared.alphas[value];
         alpha_sum += alpha;
         score += fast_lgamma(alpha + group.counts[value]) - fast_lgamma(alpha);
     }

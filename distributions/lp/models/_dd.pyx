@@ -3,7 +3,7 @@ ctypedef _h.Value Value
 
 cdef class Shared:
     def __cinit__(self):
-        self.ptr = new _h.Model()
+        self.ptr = new _h.Shared()
 
     def __dealloc__(self):
         del self.ptr

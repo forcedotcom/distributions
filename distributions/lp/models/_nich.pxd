@@ -15,7 +15,7 @@ from distributions.lp.vector cimport (
 
 
 cdef class Shared:
-    cdef _h.Model * ptr
+    cdef _h.Shared * ptr
 
 
 cdef class Group:
