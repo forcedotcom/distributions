@@ -27,10 +27,8 @@
 
 from distributions.dbg.special import log, factorial, gammaln
 from distributions.dbg.random import sample_gamma, sample_poisson
-from distributions.mixins import (
-    GroupIoMixin,
-    SharedIoMixin,
-)
+from distributions.mixins import GroupIoMixin, SharedIoMixin
+
 
 NAME = 'GammaPoisson'
 EXAMPLES = [
@@ -42,7 +40,17 @@ EXAMPLES = [
 Value = int
 
 
-class SharedIo(SharedIoMixin):
+class Shared(SharedIoMixin):
+    def __init__(self):
+        self.alpha = None
+        self.inv_beta = None
+
+    def plus_group(self, group):
+        post = self.__class__()
+        post.alpha = self.alpha + group.sum
+        post.inv_beta = self.inv_beta + group.count
+        return post
+
     def load(self, raw):
         self.alpha = float(raw['alpha'])
         self.inv_beta = float(raw['inv_beta'])
@@ -63,43 +71,7 @@ class SharedIo(SharedIoMixin):
         message.inv_beta = self.inv_beta
 
 
-class Shared(SharedIo):
-    def __init__(self):
-        self.alpha = None
-        self.inv_beta = None
-
-    def plus_group(self, group):
-        post = self.__class__()
-        post.alpha = self.alpha + group.sum
-        post.inv_beta = self.inv_beta + group.count
-        return post
-
-
-class GroupIo(GroupIoMixin):
-    def load(self, raw):
-        self.count = int(raw['count'])
-        self.sum = int(raw['sum'])
-        self.log_prod = float(raw['log_prod'])
-
-    def dump(self):
-        return {
-            'count': self.count,
-            'sum': self.sum,
-            'log_prod': self.log_prod,
-        }
-
-    def load_protobuf(self, message):
-        self.count = int(message.count)
-        self.sum = int(message.sum)
-        self.log_prod = float(message.log_prod)
-
-    def dump_protobuf(self, message):
-        message.count = self.count
-        message.sum = self.sum
-        message.log_prod = self.log_prod
-
-
-class Group(GroupIo):
+class Group(GroupIoMixin):
     def __init__(self):
         self.count = None
         self.sum = None
@@ -124,6 +96,28 @@ class Group(GroupIo):
         self.count += source.count
         self.sum += source.sum
         self.log_prod += source.log_prod
+
+    def load(self, raw):
+        self.count = int(raw['count'])
+        self.sum = int(raw['sum'])
+        self.log_prod = float(raw['log_prod'])
+
+    def dump(self):
+        return {
+            'count': self.count,
+            'sum': self.sum,
+            'log_prod': self.log_prod,
+        }
+
+    def load_protobuf(self, message):
+        self.count = int(message.count)
+        self.sum = int(message.sum)
+        self.log_prod = float(message.log_prod)
+
+    def dump_protobuf(self, message):
+        message.count = self.count
+        message.sum = self.sum
+        message.log_prod = self.log_prod
 
 
 def score_value(model, group, value):

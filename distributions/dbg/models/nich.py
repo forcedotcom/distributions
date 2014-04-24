@@ -37,11 +37,7 @@ Equation numbers referenced below are from this paper.
 
 from distributions.dbg.special import sqrt, log, pi, gammaln
 from distributions.dbg.random import sample_chi2, sample_normal
-from distributions.mixins import (
-    ComponentModel,
-    Serializable,
-    ProtobufSerializable,
-)
+from distributions.mixins import GroupIoMixin, SharedIoMixin
 
 
 # FIXME how does this relate to distributions.dbg.random.score_student_t
@@ -57,119 +53,22 @@ def score_student_t(x, nu, mu, sigmasq):
     return score
 
 
-class NormalInverseChiSq(
-        ComponentModel,
-        Serializable,
-        ProtobufSerializable):
+NAME = 'NormalInverseChiSq'
+EXAMPLES = [
+    {
+        'shared': {'mu': 0., 'kappa': 1., 'sigmasq': 1., 'nu': 1.},
+        'values': [-4.0, -2.0, -1.0, -0.5, 0.0, 0.5, 1.0, 2.0, 4.0],
+    },
+]
+Value = float
 
+
+class Shared(SharedIoMixin):
     def __init__(self):
         self.mu = None
         self.kappa = None
         self.sigmasq = None
         self.nu = None
-
-    def load(self, raw):
-        self.mu = float(raw['mu'])
-        self.kappa = float(raw['kappa'])
-        self.sigmasq = float(raw['sigmasq'])
-        self.nu = float(raw['nu'])
-
-    def dump(self):
-        return {
-            'mu': self.mu,
-            'kappa': self.kappa,
-            'sigmasq': self.sigmasq,
-            'nu': self.nu,
-        }
-
-        def load_protobuf(self, message):
-            raise NotImplementedError('TODO')
-
-        def dump_protobuf(self, message):
-            raise NotImplementedError('TODO')
-
-    def load_protobuf(self, message):
-        self.mu = float(message.mu)
-        self.kappa = float(message.kappa)
-        self.sigmasq = float(message.sigmasq)
-        self.nu = float(message.nu)
-
-    def dump_protobuf(self, message):
-        message.Clear()
-        message.mu = self.mu
-        message.kappa = self.kappa
-        message.sigmasq = self.sigmasq
-        message.nu = self.nu
-
-    #-------------------------------------------------------------------------
-    # Datatypes
-
-    Value = float
-
-    class Group(ProtobufSerializable):
-        def __init__(self):
-            self.count = None
-            self.mean = None
-            self.count_times_variance = None  # = count * variance
-
-        def load(self, raw):
-            self.count = int(raw['count'])
-            self.mean = float(raw['mean'])
-            self.count_times_variance = float(raw['count_times_variance'])
-
-        def dump(self):
-            return {
-                'count': self.count,
-                'mean': self.mean,
-                'count_times_variance': self.count_times_variance,
-            }
-
-        def load_protobuf(self, message):
-            self.count = int(message.count)
-            self.mean = float(message.mean)
-            self.count_times_variance = float(message.count_times_variance)
-
-        def dump_protobuf(self, message):
-            message.count = self.count
-            message.mean = self.mean
-            message.count_times_variance = self.count_times_variance
-
-        def init(self, model):
-            self.count = 0
-            self.mean = 0.
-            self.count_times_variance = 0.
-
-        def add_value(self, model, value):
-            self.count += 1
-            delta = value - self.mean
-            self.mean += delta / self.count
-            self.count_times_variance += delta * (value - self.mean)
-
-        def remove_value(self, model, value):
-            total = self.mean * self.count
-            delta = value - self.mean
-            self.count -= 1
-            if self.count == 0:
-                self.mean = 0.
-            else:
-                self.mean = (total - value) / self.count
-            if self.count <= 1:
-                self.count_times_variance = 0.
-            else:
-                self.count_times_variance -= delta * (value - self.mean)
-
-        def merge(self, model, source):
-            count = self.count + source.count
-            delta = source.mean - self.mean
-            source_part = float(source.count) / count
-            cross_part = self.count * source_part
-            self.count = count
-            self.mean += source_part * delta
-            self.count_times_variance += \
-                source.count_times_variance + cross_part * delta * delta
-
-    #-------------------------------------------------------------------------
-    # Mutation
 
     def plus_group(self, group):
         """
@@ -192,67 +91,144 @@ class NormalInverseChiSq(
         post.sigmasq = sigmasq_n
         return post
 
-    #-------------------------------------------------------------------------
-    # Sampling
+    def load(self, raw):
+        self.mu = float(raw['mu'])
+        self.kappa = float(raw['kappa'])
+        self.sigmasq = float(raw['sigmasq'])
+        self.nu = float(raw['nu'])
 
-    def sampler_create(self, group=None):
-        """
-        Draw samples from the marginal posteriors of mu and sigmasq
+    def dump(self):
+        return {
+            'mu': self.mu,
+            'kappa': self.kappa,
+            'sigmasq': self.sigmasq,
+            'nu': self.nu,
+        }
 
-        \cite{murphy2007conjugate}, Eqs. 156 & 167
-        """
-        post = self if group is None else self.plus_group(group)
-        # Sample from the inverse-chi^2 using the transform from the chi^2
-        sigmasq_star = post.nu * post.sigmasq / sample_chi2(post.nu)
-        mu_star = sample_normal(post.mu, sqrt(sigmasq_star / post.kappa))
-        return (mu_star, sigmasq_star)
+    def load_protobuf(self, message):
+        self.mu = float(message.mu)
+        self.kappa = float(message.kappa)
+        self.sigmasq = float(message.sigmasq)
+        self.nu = float(message.nu)
 
-    def sampler_eval(self, sampler):
-        mu, sigmasq = sampler
-        return sample_normal(mu, sqrt(sigmasq))
-
-    def sample_value(self, group):
-        sampler = self.sampler_create(group)
-        return self.sampler_eval(sampler)
-
-    def sample_group(self, size):
-        sampler = self.sampler_create()
-        return [self.sampler_eval(sampler) for _ in xrange(size)]
-
-    #-------------------------------------------------------------------------
-    # Scoring
-
-    def score_value(self, group, value):
-        """
-        \cite{murphy2007conjugate}, Eq. 176
-        """
-        post = self.plus_group(group)
-        return score_student_t(
-            value,
-            post.nu,
-            post.mu,
-            ((1 + post.kappa) * post.sigmasq) / post.kappa)
-
-    def score_group(self, group):
-        """
-        \cite{murphy2007conjugate}, Eq. 171
-        """
-        post = self.plus_group(group)
-        return gammaln(post.nu / 2.) - gammaln(self.nu / 2.) \
-            + 0.5 * log(self.kappa / post.kappa) \
-            + (0.5 * self.nu) * log(self.nu * self.sigmasq) \
-            - (0.5 * post.nu) * log(post.nu * post.sigmasq) \
-            - group.count / 2. * 1.1447298858493991
-
-    #-------------------------------------------------------------------------
-    # Examples
-
-    EXAMPLES = [
-        {
-            'model': {'mu': 0., 'kappa': 1., 'sigmasq': 1., 'nu': 1.},
-            'values': [-4.0, -2.0, -1.0, -0.5, 0.0, 0.5, 1.0, 2.0, 4.0],
-        },
-    ]
+    def dump_protobuf(self, message):
+        message.Clear()
+        message.mu = self.mu
+        message.kappa = self.kappa
+        message.sigmasq = self.sigmasq
+        message.nu = self.nu
 
 
-Model = NormalInverseChiSq
+class Group(GroupIoMixin):
+    def __init__(self):
+        self.count = None
+        self.mean = None
+        self.count_times_variance = None  # = count * variance
+
+    def init(self, shared):
+        self.count = 0
+        self.mean = 0.
+        self.count_times_variance = 0.
+
+    def add_value(self, shared, value):
+        self.count += 1
+        delta = value - self.mean
+        self.mean += delta / self.count
+        self.count_times_variance += delta * (value - self.mean)
+
+    def remove_value(self, shared, value):
+        total = self.mean * self.count
+        delta = value - self.mean
+        self.count -= 1
+        if self.count == 0:
+            self.mean = 0.
+        else:
+            self.mean = (total - value) / self.count
+        if self.count <= 1:
+            self.count_times_variance = 0.
+        else:
+            self.count_times_variance -= delta * (value - self.mean)
+
+    def merge(self, shared, source):
+        count = self.count + source.count
+        delta = source.mean - self.mean
+        source_part = float(source.count) / count
+        cross_part = self.count * source_part
+        self.count = count
+        self.mean += source_part * delta
+        self.count_times_variance += \
+            source.count_times_variance + cross_part * delta * delta
+
+    def load(self, raw):
+        self.count = int(raw['count'])
+        self.mean = float(raw['mean'])
+        self.count_times_variance = float(raw['count_times_variance'])
+
+    def dump(self):
+        return {
+            'count': self.count,
+            'mean': self.mean,
+            'count_times_variance': self.count_times_variance,
+        }
+
+    def load_protobuf(self, message):
+        self.count = int(message.count)
+        self.mean = float(message.mean)
+        self.count_times_variance = float(message.count_times_variance)
+
+    def dump_protobuf(self, message):
+        message.count = self.count
+        message.mean = self.mean
+        message.count_times_variance = self.count_times_variance
+
+
+def _sampler_create(shared, group=None):
+    """
+    Draw samples from the marginal posteriors of mu and sigmasq
+
+    \cite{murphy2007conjugate}, Eqs. 156 & 167
+    """
+    post = shared if group is None else shared.plus_group(group)
+    # Sample from the inverse-chi^2 using the transform from the chi^2
+    sigmasq_star = post.nu * post.sigmasq / sample_chi2(post.nu)
+    mu_star = sample_normal(post.mu, sqrt(sigmasq_star / post.kappa))
+    return (mu_star, sigmasq_star)
+
+
+def _sampler_eval(shared, sampler):
+    mu, sigmasq = sampler
+    return sample_normal(mu, sqrt(sigmasq))
+
+
+def sample_value(shared, group):
+    sampler = _sampler_create(shared, group)
+    return _sampler_eval(shared, sampler)
+
+
+def sample_group(shared, size):
+    sampler = _sampler_create(shared)
+    return [_sampler_eval(shared, sampler) for _ in xrange(size)]
+
+
+def score_value(shared, group, value):
+    """
+    \cite{murphy2007conjugate}, Eq. 176
+    """
+    post = shared.plus_group(group)
+    return score_student_t(
+        value,
+        post.nu,
+        post.mu,
+        ((1 + post.kappa) * post.sigmasq) / post.kappa)
+
+
+def score_group(shared, group):
+    """
+    \cite{murphy2007conjugate}, Eq. 171
+    """
+    post = shared.plus_group(group)
+    return gammaln(post.nu / 2.) - gammaln(shared.nu / 2.) \
+        + 0.5 * log(shared.kappa / post.kappa) \
+        + (0.5 * shared.nu) * log(shared.nu * shared.sigmasq) \
+        - (0.5 * post.nu) * log(post.nu * post.sigmasq) \
+        - group.count / 2. * 1.1447298858493991
