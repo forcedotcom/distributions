@@ -136,20 +136,20 @@ def score_group(model, group):
         - group.log_prod
 
 
-def _sampler_create(model, group=None):
+def sampler_create(model, group=None):
     post = model if group is None else model.plus_group(group)
     return sample_gamma(post.alpha, 1.0 / post.inv_beta)
 
 
-def _sampler_eval(model, sampler):
+def sampler_eval(model, sampler):
     return sample_poisson(sampler)
 
 
 def sample_value(model, group):
-    sampler = _sampler_create(model, group)
-    return _sampler_eval(model, sampler)
+    sampler = sampler_create(model, group)
+    return sampler_eval(model, sampler)
 
 
 def sample_group(model, size):
-    sampler = _sampler_create(model)
-    return [_sampler_eval(model, sampler) for _ in xrange(size)]
+    sampler = sampler_create(model)
+    return [sampler_eval(model, sampler) for _ in xrange(size)]

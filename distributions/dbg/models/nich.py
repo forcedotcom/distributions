@@ -182,7 +182,7 @@ class Group(GroupIoMixin):
         message.count_times_variance = self.count_times_variance
 
 
-def _sampler_create(shared, group=None):
+def sampler_create(shared, group=None):
     """
     Draw samples from the marginal posteriors of mu and sigmasq
 
@@ -195,19 +195,19 @@ def _sampler_create(shared, group=None):
     return (mu_star, sigmasq_star)
 
 
-def _sampler_eval(shared, sampler):
+def sampler_eval(shared, sampler):
     mu, sigmasq = sampler
     return sample_normal(mu, sqrt(sigmasq))
 
 
 def sample_value(shared, group):
-    sampler = _sampler_create(shared, group)
-    return _sampler_eval(shared, sampler)
+    sampler = sampler_create(shared, group)
+    return sampler_eval(shared, sampler)
 
 
 def sample_group(shared, size):
-    sampler = _sampler_create(shared)
-    return [_sampler_eval(shared, sampler) for _ in xrange(size)]
+    sampler = sampler_create(shared)
+    return [sampler_eval(shared, sampler) for _ in xrange(size)]
 
 
 def score_value(shared, group, value):
