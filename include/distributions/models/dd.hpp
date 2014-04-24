@@ -37,35 +37,33 @@ namespace distributions {
 namespace dirichlet_discrete {
 typedef uint32_t count_t;
 typedef int Value;
-
 template<int max_dim> struct Group;
 template<int max_dim> struct Scorer;
 template<int max_dim> struct Sampler;
 template<int max_dim> struct Mixture;
 
+
 template<int max_dim>
 struct Model
 {
-typedef typename dirichlet_discrete::Group<max_dim> Group;
-typedef typename dirichlet_discrete::Scorer<max_dim> Scorer;
-typedef typename dirichlet_discrete::Sampler<max_dim> Sampler;
+    typedef typename dirichlet_discrete::Group<max_dim> Group;
+    typedef typename dirichlet_discrete::Scorer<max_dim> Scorer;
+    typedef typename dirichlet_discrete::Sampler<max_dim> Sampler;
 
-int dim;  // fixed parameter
-float alphas[max_dim];  // hyperparamter
+    int dim;  // fixed parameter
+    float alphas[max_dim];  // hyperparamter
 
-static Model<max_dim> EXAMPLE ();
+    static Model<max_dim> EXAMPLE ()
+    {
+        Model<max_dim> model;
+        model.dim = max_dim;
+        for (int i = 0; i < max_dim; ++i) {
+            model.alphas[i] = 0.5;
+        }
+        return model;
+    }
 };
 
-template<int max_dim>
-inline Model<max_dim> Model<max_dim>::EXAMPLE ()
-{
-    Model<max_dim> model;
-    model.dim = max_dim;
-    for (int i = 0; i < max_dim; ++i) {
-        model.alphas[i] = 0.5;
-    }
-    return model;
-}
 
 template<int max_dim>
 struct Group

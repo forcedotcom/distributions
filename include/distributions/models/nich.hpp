@@ -40,27 +40,27 @@ struct Scorer;
 struct Sampler;
 struct Mixture;
 
+
 struct Model
 {
-float mu;
-float kappa;
-float sigmasq;
-float nu;
+    float mu;
+    float kappa;
+    float sigmasq;
+    float nu;
 
-Model plus_group(const Group & group) const;
+    Model plus_group(const Group & group) const;
 
-static Model EXAMPLE ();
+    static Model EXAMPLE ()
+    {
+        Model model;
+        model.mu = 0.0;
+        model.kappa = 1.0;
+        model.sigmasq = 1.0;
+        model.nu = 1.0;
+        return model;
+    }
 };
 
-inline Model Model::EXAMPLE ()
-{
-    Model model;
-    model.mu = 0.0;
-    model.kappa = 1.0;
-    model.sigmasq = 1.0;
-    model.nu = 1.0;
-    return model;
-}
 
 struct Group
 {

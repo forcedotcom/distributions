@@ -40,24 +40,23 @@ struct Scorer;
 struct Sampler;
 struct Mixture;
 
+
 struct Model
 {
-float alpha;
-float inv_beta;
+    float alpha;
+    float inv_beta;
 
-Model plus_group(const Group & group) const;
+    Model plus_group(const Group & group) const;
 
-static Model EXAMPLE ();
-
+    static Model EXAMPLE ()
+    {
+        Model model;
+        model.alpha = 1.0;
+        model.inv_beta = 1.0;
+        return model;
+    }
 };
 
-inline Model Model::EXAMPLE ()
-{
-    Model model;
-    model.alpha = 1.0;
-    model.inv_beta = 1.0;
-    return model;
-}
 
 struct Group
 {

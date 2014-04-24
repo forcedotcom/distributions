@@ -43,28 +43,27 @@ struct Scorer;
 struct Sampler;
 struct Mixture;
 
+
 struct Model
 {
-float gamma;
-float alpha;
-float beta0;
-std::vector<float> betas;  // dense
+    float gamma;
+    float alpha;
+    float beta0;
+    std::vector<float> betas;  // dense
 
-static constexpr Value OTHER () { return -1; }
+    static constexpr Value OTHER () { return -1; }
 
-static Model EXAMPLE ();
+    static Model EXAMPLE () {
+        Model model;
+        size_t dim = 100;
+        model.gamma = 0.5;
+        model.alpha = 0.5;
+        model.beta0 = 0.0;  // must be zero for testing
+        model.betas.resize(dim, 1.0 / dim);
+        return model;
+    }
 };
 
-inline Model Model::EXAMPLE ()
-{
-    Model model;
-    size_t dim = 100;
-    model.gamma = 0.5;
-    model.alpha = 0.5;
-    model.beta0 = 0.0;  // must be zero for testing
-    model.betas.resize(dim, 1.0 / dim);
-    return model;
-}
 
 struct Group
 {
