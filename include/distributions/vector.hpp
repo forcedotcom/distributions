@@ -27,37 +27,15 @@
 
 #pragma once
 
-#include <distributions/common.hpp>
 #include <distributions/aligned_allocator.hpp>
 #include <vector>
-
-#if __GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 7
-#define DIST_ASSUME_ALIGNED(data) (float *)__builtin_assume_aligned(data, distributions::default_alignment)
-#else
-#define DIST_ASSUME_ALIGNED(data) (data)
-#endif
-
-#define DIST_ASSERT_ALIGNED(ptr) { ::distributions::assert_aligned(ptr); }
 
 #define VectorFloat_data(vf) (DIST_ASSUME_ALIGNED(vf.data()))
 
 namespace distributions
 {
 
-static const size_t default_alignment = 32;
-
-template<class T>
-inline void assert_aligned (const T * data)
-{
-    const T * base = nullptr;
-    size_t offset = (data - base) & (default_alignment - 1);
-    DIST_ASSERT(offset == 0,
-        "expected " << default_alignment << "-aligned data,"
-        "actual offset = " << offset);
-}
-
-typedef std::vector<float, aligned_allocator<float, default_alignment>>
-    VectorFloatBase;
+typedef std::vector<float, aligned_allocator<float>> VectorFloatBase;
 
 class ArrayFloat
 {
@@ -74,7 +52,7 @@ public:
         data_(source.data()),
         size_(source.size())
     {
-        if (DIST_DEBUG_LEVEL >= 1) {
+        if (DIST_DEBUG_LEVEL >= 3) {
             DIST_ASSERT_ALIGNED(data_);
         }
     }
