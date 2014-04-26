@@ -44,11 +44,17 @@
 #define DIST_ASSUME_ALIGNED(data) \
     (DIST_ASSUME_ALIGNED_TO((data), ::distributions::default_alignment))
 
-#define DIST_ASSERT_ALIGNED_TO(data, alignment) \
-    { ::distributions::assert_aligned((data), (alignment)); }
+#define DIST_ASSERT_ALIGNED_TO(data, alignment) {           \
+    decltype((data)) base = nullptr;                        \
+    const size_t mask = (alignment) - 1UL;                  \
+    const size_t offset = ((data) - base) & mask;           \
+    DIST_ASSERT(offset == 0,                                \
+        "expected " << (alignment) << "-byte-aligned data," \
+        "actual offset = " << offset);                      \
+}
 
 #define DIST_ASSERT_ALIGNED(data) \
-    { ::distributions::assert_aligned((data)); }
+    { DIST_ASSERT_ALIGNED_TO((data), ::distributions::default_alignment); }
 
 namespace distributions
 {
@@ -56,19 +62,6 @@ namespace distributions
 // sse instructions require alignment of 16 bytes
 // avx instructions require alignment of 32 bytes
 static const size_t default_alignment = 32;
-
-template<class T>
-inline void assert_aligned (
-        const T * data,
-        size_t alignment = default_alignment)
-{
-    const T * base = nullptr;
-    const size_t mask = alignment - 1UL;
-    const size_t offset = (data - base) & mask;
-    DIST_ASSERT(offset == 0,
-        "expected " << alignment << "-byte-aligned data,"
-        "actual offset = " << offset);
-}
 
 template<class T, size_t alignment = default_alignment>
 class aligned_allocator
@@ -114,7 +107,7 @@ public:
             throw std::bad_alloc();
         }
         if (DIST_DEBUG_LEVEL >= 3) {
-            assert_aligned(static_cast<pointer>(result), alignment);
+            DIST_ASSERT_ALIGNED_TO(static_cast<pointer>(result), alignment);
         }
         return static_cast<pointer>(result);
     }
