@@ -27,23 +27,101 @@
 
 #pragma once
 
+#include <distributions/common.hpp>
 #include <distributions/aligned_allocator.hpp>
 #include <vector>
 
 #if __GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 7
-#define VectorFloat_data(vf) (float *)__builtin_assume_aligned((vf).data(), 32)
+#define DIST_ASSUME_ALIGNED(data) (float *)__builtin_assume_aligned(data, distributions::default_alignment)
 #else
-#define VectorFloat_data(vf) ((vf).data())
+#define DIST_ASSUME_ALIGNED(data) (data)
 #endif
+
+#define DIST_ASSERT_ALIGNED(ptr) { ::distributions::assert_aligned(ptr); }
+
+#define VectorFloat_data(vf) (DIST_ASSUME_ALIGNED(vf.data()))
 
 namespace distributions
 {
 
-typedef std::vector<float, aligned_allocator<float, 32>> VectorFloat;
+static const size_t default_alignment = 32;
 
-inline void VectorFloat_resize(VectorFloat & vect, size_t size, float fill = 0)
+template<class T>
+inline void assert_aligned (const T * data)
 {
-    vect.resize((size + 7) / 8 * 8, fill);
+    const T * base = nullptr;
+    size_t offset = (data - base) & (default_alignment - 1);
+    DIST_ASSERT(offset == 0,
+        "expected " << default_alignment << "-aligned data,"
+        "actual offset = " << offset);
 }
+
+typedef std::vector<float, aligned_allocator<float, default_alignment>>
+    VectorFloatBase;
+
+class ArrayFloat
+{
+public:
+
+    ArrayFloat (float * data, size_t size) :
+        data_(data),
+        size_(size)
+    {
+        DIST_ASSERT_ALIGNED(data_);
+    }
+
+    ArrayFloat (VectorFloatBase & source) :
+        data_(source.data()),
+        size_(source.size())
+    {
+        if (DIST_DEBUG_LEVEL >= 1) {
+            DIST_ASSERT_ALIGNED(data_);
+        }
+    }
+
+    size_t size () const { return size_; }
+    float * data () { return data_; }
+
+private:
+
+    float * const data_;
+    const size_t size_;
+};
+
+struct VectorFloat : VectorFloatBase
+{
+    typedef VectorFloatBase Base;
+
+    VectorFloat () {}
+    VectorFloat (size_t size) : Base(size) {}
+    VectorFloat (size_t size, float value) : Base(size, value) {}
+
+    operator ArrayFloat () { return ArrayFloat(* this); }
+
+    void packed_remove (size_t pos)
+    {
+        DIST_ASSERT1(pos < Base::size(), "bad pos: " << pos);
+        if (DIST_LIKELY(pos != Base::size() - 1)) {
+            Base::operator[](pos) = Base::back();
+        }
+        Base::pop_back();
+    }
+
+    void packed_add (const float & value)
+    {
+        Base::push_back(value);
+    }
+
+    float & packed_add ()
+    {
+        Base::push_back(0);
+        return Base::back();
+    }
+
+    void padded_resize (size_t size, float fill = 0)
+    {
+        Base::resize((size + 7) / 8 * 8, fill);
+    }
+};
 
 } // namespace distributions

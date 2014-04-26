@@ -204,11 +204,11 @@ struct Mixture
             size_t group_count)
     {
         groups.resize(group_count);
-        VectorFloat_resize(score, group_count);
-        VectorFloat_resize(log_coeff, group_count);
-        VectorFloat_resize(precision, group_count);
-        VectorFloat_resize(mean, group_count);
-        VectorFloat_resize(temp, group_count);
+        score.padded_resize(group_count);
+        log_coeff.padded_resize(group_count);
+        precision.padded_resize(group_count);
+        mean.padded_resize(group_count);
+        temp.padded_resize(group_count);
     }
 
     public:
@@ -278,7 +278,7 @@ struct Mixture
     void score_value (
             const Model & model,
             const Value & value,
-            VectorFloat & scores_accum,
+            ArrayFloat scores_accum,
             rng_t & rng) const
     {
         if (DIST_DEBUG_LEVEL >= 2) {
@@ -292,7 +292,7 @@ struct Mixture
     void _score_value (
             const Model & model,
             const Value & value,
-            VectorFloat & scores_accum,
+            ArrayFloat scores_accum,
             rng_t &) const;
 };
 
