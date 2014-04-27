@@ -45,9 +45,8 @@
     (DIST_ASSUME_ALIGNED_TO((data), ::distributions::default_alignment))
 
 #define DIST_ASSERT_ALIGNED_TO(data, alignment) {           \
-    decltype((data)) base = nullptr;                        \
-    const size_t mask = (alignment) - 1UL;                  \
-    const size_t offset = ((data) - base) & mask;           \
+    size_t mask = (alignment) - 1UL;                        \
+    size_t offset = reinterpret_cast<size_t>(data) & mask;  \
     DIST_ASSERT(offset == 0,                                \
         "expected " << (alignment) << "-byte-aligned data," \
         "actual offset = " << offset);                      \
