@@ -71,7 +71,6 @@ import os
 from collections import defaultdict
 import numpy
 from numpy import log, exp
-from scipy.special import gammaln
 import math
 import matplotlib
 matplotlib.use('Agg')
@@ -245,36 +244,18 @@ def priors(N=100):
         Y -= numpy.logaddexp.reduce(Y)
         pyplot.plot(X, Y, *args, **kwargs)
 
-    plot_energy = False
-    if plot_energy:
+    def crp(alpha):
+        assert 0 < alpha
+        prob = numpy.zeros(len(X))
+        prob[1:] = log(X[1:] - 1)
+        prob[0] = log(alpha)
+        return prob
 
-        ylabel = 'energy per object'
-
-        def crp(alpha):
-            assert 0 < alpha
-            prob = log(alpha) + gammaln(X)
-            prob /= X
-            return prob
-
-        def entropy():
-            return log(X)
-
-    else:
-
-        ylabel = 'log(probability)'
-
-        def crp(alpha):
-            assert 0 < alpha
-            prob = numpy.zeros(len(X))
-            prob[1:] = log(X[1:] - 1)
-            prob[0] = log(alpha)
-            return prob
-
-        def entropy():
-            prob = numpy.zeros(len(X))
-            n_log_n = lambda n: n * log(n)
-            prob[1:] = n_log_n(X[1:]) - n_log_n(X[1:] - 1)
-            return prob
+    def entropy():
+        prob = numpy.zeros(len(X))
+        n_log_n = lambda n: n * log(n)
+        prob[1:] = n_log_n(X[1:]) - n_log_n(X[1:] - 1)
+        return prob
 
     def plot_crp(alpha):
         plot(crp(eval(alpha)), label='CRP({})'.format(alpha))
@@ -293,7 +274,7 @@ def priors(N=100):
 
     pyplot.title('Posterior Predictive Curves of Clustering Priors')
     pyplot.xlabel('category size')
-    pyplot.ylabel(ylabel)
+    pyplot.ylabel('log(probability)')
     pyplot.xscale('log')
     pyplot.legend(loc='best')
 
