@@ -30,6 +30,7 @@
 #include <distributions/aligned_allocator.hpp>
 #include <vector>
 
+// DEPRECATED, use DIST_ASSUME_ALIGNED directly
 #define VectorFloat_data(vf) (DIST_ASSUME_ALIGNED(vf.data()))
 
 namespace distributions
@@ -57,8 +58,8 @@ public:
         }
     }
 
-    size_t size () const { return size_; }
     float * data () { return data_; }
+    size_t size () const { return size_; }
 
 private:
 
