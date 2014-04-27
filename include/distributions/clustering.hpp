@@ -181,8 +181,8 @@ struct PitmanYor
                 driver_.remove_value(model, groupid, count);
 
             if (DIST_UNLIKELY(remove_group)) {
-                _update_empty_groups(model);
                 shifted_scores_.packed_remove(groupid);
+                _update_empty_groups(model);
             } else {
                 _update_nonempty_group(model, groupid);
             }
@@ -231,8 +231,9 @@ struct PitmanYor
         VectorFloat shifted_scores_;
     };
 
-    //typedef CachedMixture Mixture;
-    typedef MixtureDriver<PitmanYor, count_t> Mixture;
+    // The uncached version is useful for debugging
+    //typedef MixtureDriver<PitmanYor, count_t> Mixture;
+    typedef CachedMixture Mixture;
 };
 
 

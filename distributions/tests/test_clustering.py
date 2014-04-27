@@ -239,8 +239,8 @@ def test_score_add_value_matches_score_counts(Model, EXAMPLE, sample_count):
 
 
 @for_each_model(lambda Model: hasattr(Model, 'Mixture'))
-def test_mixture_score_matches_score_add_value(Model, EXAMPLE, sample_count):
-    sample_count = 200  # DEBUG
+def test_mixture_score_matches_score_add_value(Model, EXAMPLE, *unused):
+    sample_count = 200
     model = Model()
     model.load(EXAMPLE)
 
@@ -251,7 +251,7 @@ def test_mixture_score_matches_score_add_value(Model, EXAMPLE, sample_count):
     assert_greater(nonempty_group_count, 1, "test is inaccurate")
 
     def check_counts(mixture, counts, empty_group_count):
-        print 'counts =', counts
+        #print 'counts =', counts
         empty_groupids = frozenset(mixture.empty_groupids)
         assert_equal(len(empty_groupids), empty_group_count)
         for groupid in empty_groupids:
