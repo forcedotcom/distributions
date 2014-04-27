@@ -116,7 +116,7 @@ struct PitmanYor
     }
 
     // HACK gcc doesn't want Mixture defined outside of PitmanYor
-    class Mixture
+    class CachedMixture
     {
     public:
 
@@ -164,9 +164,10 @@ struct PitmanYor
             const bool add_group = driver_.add_value(model, groupid, count);
 
             if (DIST_UNLIKELY(add_group)) {
-                shifted_scores_.push_back(0);
+                shifted_scores_.packed_add();
                 _update_empty_groups(model);
             }
+            _update_nonempty_group(model, groupid);
 
             return add_group;
         }
@@ -181,7 +182,7 @@ struct PitmanYor
 
             if (DIST_UNLIKELY(remove_group)) {
                 _update_empty_groups(model);
-                shifted_scores_.pop_back();
+                shifted_scores_.packed_remove(groupid);
             } else {
                 _update_nonempty_group(model, groupid);
             }
@@ -209,7 +210,7 @@ struct PitmanYor
 
         void _update_nonempty_group (const Model & model, size_t groupid)
         {
-            const auto group_size = counts()[groupid];
+            const auto group_size = counts(groupid);
             DIST_ASSERT2(group_size, "expected nonempty group");
             shifted_scores_[groupid] = fast_log(group_size - model.d);
         }
@@ -229,6 +230,9 @@ struct PitmanYor
         MixtureDriver<PitmanYor, count_t> driver_;
         VectorFloat shifted_scores_;
     };
+
+    //typedef CachedMixture Mixture;
+    typedef MixtureDriver<PitmanYor, count_t> Mixture;
 };
 
 

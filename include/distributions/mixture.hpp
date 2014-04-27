@@ -111,11 +111,10 @@ public:
         if (DIST_UNLIKELY(remove_group)) {
             const size_t group_count = counts_.size() - 1;
             if (groupid != group_count) {
+                counts_[groupid] = counts_.back();
                 if (counts_.back() == 0) {
                     empty_groupids_.erase(group_count);
                     empty_groupids_.insert(groupid);
-                } else {
-                    counts_[groupid] = counts_.back();
                 }
             }
             counts_.pop_back();
