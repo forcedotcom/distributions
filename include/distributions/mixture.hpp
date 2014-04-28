@@ -32,6 +32,7 @@
 #include <distributions/common.hpp>
 #include <distributions/vector.hpp>
 #include <distributions/trivial_hash.hpp>
+#include <distributions/random_fwd.hpp>
 
 namespace distributions
 {
@@ -124,6 +125,7 @@ public:
         return remove_group;
     }
 
+    // this slow uncached version should be overridden
     void score (const Model & model, VectorFloat & scores) const
     {
         if (DIST_DEBUG_LEVEL >= 1) {
@@ -160,6 +162,85 @@ private:
             }
         }
     }
+};
+
+
+//----------------------------------------------------------------------------
+// Mixture Slave
+
+template<class Model>
+struct MixtureSlave
+{
+    typedef typename Model::Group Group;
+    typedef typename Model::Value Value;
+
+    std::vector<Group> & groups () { return groups_; }
+    Group & groups (size_t groupid)
+    {
+        DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
+        return groups_[groupid];
+    }
+
+    const std::vector<Group> & groups () const { return groups_; }
+    const Group & groups (size_t groupid) const
+    {
+        DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
+        return groups_[groupid];
+    }
+
+    // add_group is called whenever driver.add_value returns true
+    void add_group (
+            const Model & model,
+            rng_t & rng)
+    {
+        groups_.packed_add().init(model, rng);
+    }
+
+    // remove_group is called whenever driver.remove_value returns true
+    void remove_group (size_t groupid)
+    {
+        groups_.packed_remove(groupid);
+    }
+
+    void add_value (
+            const Model & model,
+            size_t groupid,
+            const Value & value,
+            rng_t & rng)
+    {
+        groups(groupid).add_value(model, value, rng);
+    }
+
+    void remove_value (
+            const Model & model,
+            size_t groupid,
+            const Value & value,
+            rng_t & rng)
+    {
+        groups(groupid).remove_value(model, value, rng);
+    }
+
+    // this slow uncached version should be overridden
+    void score_value (
+            const Model & model,
+            const Value & value,
+            AlignedFloats scores_accum,
+            rng_t & rng) const
+    {
+        if (DIST_DEBUG_LEVEL >= 2) {
+            DIST_ASSERT_EQ(scores_accum.size(), groups_.size());
+        }
+
+        const size_t group_count = groups_.size();
+        float * scores = scores_accum.data();
+        for (size_t i = 0; i < group_count; ++i) {
+            scores[i] += groups_[i].score(model, value, rng);
+        }
+    }
+
+private:
+
+    Packed_<Group> groups_;
 };
 
 

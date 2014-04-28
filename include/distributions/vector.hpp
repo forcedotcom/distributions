@@ -61,7 +61,7 @@ struct Packed_ : std::vector<Value, Alloc>
 
     Value & packed_add ()
     {
-        Base::push_back(0);
+        Base::push_back(Value());
         return Base::back();
     }
 };
