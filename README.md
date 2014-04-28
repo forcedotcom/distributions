@@ -1,14 +1,16 @@
 # Distributions [![Build Status](https://travis-ci.org/forcedotcom/distributions.svg?branch=master)](https://travis-ci.org/forcedotcom/distributions)
 
-Distributions implements low-level primitives for Bayesian MCMC
-inference in Python and C++ including:
-* special numerical functions `distributions.<flavor>.special`,
+Distributions provides low-level primitives for Bayesian MCMC
+inference in Python adn C++ including:
+
+* special numerical functions,
 * samplers and density functions from a variety of distributions,
-  `distributions.<flavor>.random`,
-* conjugate component models (e.g., gamma-Poisson,
-  normal-inverse-chi-squared) `distributions.<flavor>.models`, and
-* clustering models (e.g., CRP, Pitman-Yor)
-  `distributions.<flavor>.clustering`.
+* conjugate component models (e.g., gamma-Poisson, normal-inverse-chi-squared),
+* clustering models (e.g., CRP, Pitman-Yor), and
+* efficient wrappers for mixture models.
+
+Distributions powered a machine-learning-as-a-service for Prior Knowledge Inc.,
+and now powers machine learning infrastructure at Salesforce.com.
 
 
 ## Installation
@@ -25,6 +27,11 @@ For help with other builds, see
 ## Documentation
 
 The official documentation lives at http://distributions.readthedocs.org/.
+
+Branch-specific documentation lives at
+
+* [/doc/overview.rst](Overview)
+* [/doc/installation.rst](Installation)
 
 
 ## Authors (alphabetically)

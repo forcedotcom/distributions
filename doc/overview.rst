@@ -1,6 +1,20 @@
 Overview
 ========
 
+Distributions implements low-level primitives for Bayesian MCMC
+inference in Python and C++ including:
+
+* special numerical functions ``distributions.<flavor>.special``,
+
+* samplers and density functions from a variety of distributions,
+  ``distributions.<flavor>.random``,
+
+* conjugate component models (e.g., gamma-Poisson,
+  normal-inverse-chi-squared) ``distributions.<flavor>.models``, and
+
+* clustering models (e.g., CRP, Pitman-Yor)
+  ``distributions.<flavor>.clustering``.
+
 Python implementations are provided in up to three flavors:
 
 * Debug ``distributions.dbg`` are pure-python implementations for
@@ -52,18 +66,18 @@ Each component model API consist of:
     These should be simple and fast::
 
         model.group_create(values=[]) -> group         # python only
-        model.group_init(group)
-        model.group_add_value(group, value)
-        model.group_remove_value(group, value)
-        model.group_merge(destin_group, source_group)
+        group.init(model)
+        group.add_value(model, value)
+        group.remove_value(model, value)
+        group.merge(model, other_group)
         model.plus_group(group) -> model               # optional
 
 *   Sampling functions (optional in python).
     These consume explicit entropy sources in C++ or ``global_rng`` in python::
 
-        model.sampler_init(sampler, group)            # c++ only
         model.sampler_create(group=empty) -> sampler  # python only, optional
-        model.sampler_eval(sampler) -> value          # python only, optional
+        sampler.init(model, group)                    # c++ only
+        sampler.eval(sampler) -> value                # python only, optional
         model.sample_value(group) -> value
         model.sample_group(group_size) -> group
 
@@ -71,23 +85,35 @@ Each component model API consist of:
     These may also consume entropy,
     e.g. when implemented using monte carlo integration)::
 
-        model.scorer_init(scorer, group)            # c++ only
         model.scorer_create(group=empty) -> scorer  # python only, optional
-        model.scorer_eval(scorer, value) -> float   # python only, optional
+        scorer.init(model, group)                   # c++ only
+        scorer.eval(model, value) -> float          # python only, optional
         model.score_value(group, value) -> float
         model.score_group(group) -> float
 
-*   Classification functions (optional in python).
-    These provide batch evaluation of ``score_value`` on a collection of groups::
+*   Mixture slave (optional in python).
+    These provide batch operations on a collection of groups.
 
-        classifier.groups.push_back(group)          # c++ only
-        classifier.append(group)                    # python only
-        model.classifier_init(classifier)
-        model.classifier_add_group(classifier)
-        model.classifier_remove_group(classifier, groupid)
-        model.classifier_add_value(classifier, groupid, value)
-        model.classifier_remove_value(classifier, groupid, value)
-        model.classifier_score(classifier, value, scores_accum)
+    Clustering mixture drivers::
+
+        mixture.sample_assignments(sample_size)
+        mixture.score_counts(model)
+        mixture.add_group(model)
+        mixture.remove_group(model, groupid)
+        mixture.add_value(model, groupid, value)
+        mixture.remove_value(model, groupid, value)
+        mixture.score(model, value, scores_accum)
+
+    Component model mixture slaves::
+
+        mixture.groups.push_back(group)          # c++ only
+        mixture.append(group)                    # python only
+        mixture.init(model)
+        mixture.add_group(model)
+        mixture.remove_group(model, groupid)
+        mixture.add_value(model, groupid, value)
+        mixture.remove_value(model, groupid, value)
+        mixture.score(model, value, scores_accum)
 
 *   Serialization to JSON (python only)::
 
@@ -108,6 +134,31 @@ Each component model API consist of:
             {'model': ..., 'values': [...]},
             ...
         ]
+
+
+Clustering Model API
+--------------------
+
+*   Sampling and scoring::
+
+        model.sample_assignments(sample_size)
+        model.score_counts(counts)
+        model.score_add_value(...)
+        model.score_remove_value(...)
+
+*   Mixture driver (optional in python).
+    These provide batch operations on a collection of groups.::
+
+        mixture.init(model, counts)
+        mixture.add_value(model, groupid, count)
+        mixture.remove_value(model, groupid, count)
+        mixture.score(model, scores)
+
+*   Testing metadata (python only).
+    Example model parameters and datasets are automatically discovered by
+    unit test infrastructures, reducing the cost of per-model test-writing::
+
+        ExampleModel.EXAMPLES = [ ...model specific... ]
 
 
 Source of Entropy
