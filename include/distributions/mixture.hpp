@@ -232,9 +232,8 @@ struct MixtureSlave
         }
 
         const size_t group_count = groups_.size();
-        float * scores = scores_accum.data();
         for (size_t i = 0; i < group_count; ++i) {
-            scores[i] += groups_[i].score(model, value, rng);
+            scores_accum[i] += groups(i).score(model, value, rng);
         }
     }
 

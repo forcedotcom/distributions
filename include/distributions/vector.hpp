@@ -89,6 +89,7 @@ public:
 
     Value * data () { return data_; }
     size_t size () const { return size_; }
+    Value & operator[] (size_t i) { return data_[i]; }
 
 private:
 
