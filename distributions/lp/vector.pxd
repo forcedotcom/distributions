@@ -91,6 +91,11 @@ cdef extern from "distributions/vector.hpp" namespace "distributions":
         void swap(VectorFloat&) nogil
         float * data() nogil
 
+    cdef cppclass AlignedFloats:
+        AlignedFloats (float *, size_t) nogil
+        float * data () nogil
+        size_t size () nogil
+
 
 cdef void vector_float_from_ndarray(
         VectorFloat & vector_float,

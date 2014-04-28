@@ -34,7 +34,7 @@ namespace distributions
 void NormalInverseChiSq::Mixture::_score_value (
         const Model & model,
         const Value & value,
-        VectorFloat & scores_accum,
+        AlignedFloats scores_accum,
         rng_t &) const
 {
     const size_t size = groups.size();

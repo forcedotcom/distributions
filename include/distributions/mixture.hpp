@@ -32,6 +32,7 @@
 #include <distributions/common.hpp>
 #include <distributions/vector.hpp>
 #include <distributions/trivial_hash.hpp>
+#include <distributions/random_fwd.hpp>
 
 namespace distributions
 {
@@ -111,11 +112,10 @@ public:
         if (DIST_UNLIKELY(remove_group)) {
             const size_t group_count = counts_.size() - 1;
             if (groupid != group_count) {
+                counts_[groupid] = counts_.back();
                 if (counts_.back() == 0) {
                     empty_groupids_.erase(group_count);
                     empty_groupids_.insert(groupid);
-                } else {
-                    counts_[groupid] = counts_.back();
                 }
             }
             counts_.pop_back();
@@ -125,7 +125,8 @@ public:
         return remove_group;
     }
 
-    void score (const Model & model, VectorFloat & scores) const
+    // this slow uncached version should be overridden
+    void score_value (const Model & model, AlignedFloats scores) const
     {
         if (DIST_DEBUG_LEVEL >= 1) {
             DIST_ASSERT_EQ(scores.size(), counts_.size());
@@ -141,6 +142,11 @@ public:
                 sample_size_,
                 empty_group_count);
         }
+    }
+
+    float score_mixture (const Model & model) const
+    {
+        return model.score_counts(counts_);
     }
 
 private:
@@ -161,6 +167,94 @@ private:
             }
         }
     }
+};
+
+
+//----------------------------------------------------------------------------
+// Mixture Slave
+
+template<class Model>
+struct MixtureSlave
+{
+    typedef typename Model::Group Group;
+    typedef typename Model::Value Value;
+
+    std::vector<Group> & groups () { return groups_; }
+    Group & groups (size_t groupid)
+    {
+        DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
+        return groups_[groupid];
+    }
+
+    const std::vector<Group> & groups () const { return groups_; }
+    const Group & groups (size_t groupid) const
+    {
+        DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
+        return groups_[groupid];
+    }
+
+    // add_group is called whenever driver.add_value returns true
+    void add_group (
+            const Model & model,
+            rng_t & rng)
+    {
+        groups_.packed_add().init(model, rng);
+    }
+
+    // remove_group is called whenever driver.remove_value returns true
+    void remove_group (size_t groupid)
+    {
+        groups_.packed_remove(groupid);
+    }
+
+    void add_value (
+            const Model & model,
+            size_t groupid,
+            const Value & value,
+            rng_t & rng)
+    {
+        groups(groupid).add_value(model, value, rng);
+    }
+
+    void remove_value (
+            const Model & model,
+            size_t groupid,
+            const Value & value,
+            rng_t & rng)
+    {
+        groups(groupid).remove_value(model, value, rng);
+    }
+
+    // this slow uncached version should be overridden
+    void score_value (
+            const Model & model,
+            const Value & value,
+            AlignedFloats scores_accum,
+            rng_t & rng) const
+    {
+        if (DIST_DEBUG_LEVEL >= 2) {
+            DIST_ASSERT_EQ(scores_accum.size(), groups_.size());
+        }
+
+        const size_t group_count = groups_.size();
+        for (size_t i = 0; i < group_count; ++i) {
+            scores_accum[i] += groups(i).score(model, value, rng);
+        }
+    }
+
+    // this slow version should be overridden
+    float score_mixture (const Model & model, rng_t & rng) const
+    {
+        float score = 0;
+        for (const Group & group : groups_) {
+            score += model.score_group(group, rng);
+        }
+        return score;
+    }
+
+private:
+
+    Packed_<Group> groups_;
 };
 
 

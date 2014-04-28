@@ -37,6 +37,7 @@ from nose.tools import (
     assert_greater,
     assert_is_instance,
 )
+from distributions.dbg.random import sample_discrete
 from distributions.util import discrete_goodness_of_fit
 from distributions.tests.util import (
     require_cython,
@@ -49,6 +50,7 @@ import distributions.dbg.clustering
 require_cython()
 import distributions.lp.clustering
 from distributions.lp.clustering import count_assignments
+from distributions.lp.mixture import MixtureIdTracker
 
 MODELS = {
     'dbg.LowEntropy': distributions.dbg.clustering.LowEntropy,
@@ -237,21 +239,27 @@ def test_score_add_value_matches_score_counts(Model, EXAMPLE, sample_count):
 
 
 @for_each_model(lambda Model: hasattr(Model, 'Mixture'))
-def test_mixture_score_matches_score_add_value(Model, EXAMPLE, sample_count):
+def test_mixture_score_matches_score_add_value(Model, EXAMPLE, *unused):
+    sample_count = 200
     model = Model()
     model.load(EXAMPLE)
 
-    value = model.sample_assignments(sample_count)
-    assignments = dict(enumerate(value))
+    assignment_vector = model.sample_assignments(sample_count)
+    assignments = dict(enumerate(assignment_vector))
     nonempty_counts = count_assignments(assignments)
     nonempty_group_count = len(nonempty_counts)
     assert_greater(nonempty_group_count, 1, "test is inaccurate")
 
-    for empty_group_count in [1, 10]:
-        print 'empty_group_count =', empty_group_count
-        counts = nonempty_counts + [0] * empty_group_count
-        numpy.random.shuffle(counts)
+    def check_counts(mixture, counts, empty_group_count):
+        #print 'counts =', counts
+        empty_groupids = frozenset(mixture.empty_groupids)
+        assert_equal(len(empty_groupids), empty_group_count)
+        for groupid in empty_groupids:
+            assert_equal(counts[groupid], 0)
 
+    def check_scores(mixture, counts, empty_group_count):
+        sample_count = sum(counts)
+        nonempty_group_count = len(counts) - empty_group_count
         expected = [
             model.score_add_value(
                 group_size,
@@ -260,18 +268,56 @@ def test_mixture_score_matches_score_add_value(Model, EXAMPLE, sample_count):
                 empty_group_count)
             for group_size in counts
         ]
-
-        mixture = Model.Mixture()
-        mixture.init(model, counts)
         noise = numpy.random.randn(len(counts))
         actual = numpy.zeros(len(counts), dtype=numpy.float32)
         actual[:] = noise
         mixture.score(model, actual)
-
-        print 'counts =', counts
         assert_close(actual, expected)
+        return actual
 
-        empty_groupids = frozenset(mixture.empty_groupids)
-        assert_equal(len(empty_groupids), empty_group_count)
-        for groupid in empty_groupids:
-            assert_equal(counts[groupid], 0)
+    for empty_group_count in [1, 10]:
+        print 'empty_group_count =', empty_group_count
+        counts = nonempty_counts + [0] * empty_group_count
+        numpy.random.shuffle(counts)
+        mixture = Model.Mixture()
+        id_tracker = MixtureIdTracker()
+
+        print 'init'
+        mixture.init(model, counts)
+        id_tracker.init(len(counts))
+        check_counts(mixture, counts, empty_group_count)
+        check_scores(mixture, counts, empty_group_count)
+
+        print 'adding'
+        groupids = []
+        for _ in xrange(sample_count):
+            check_counts(mixture, counts, empty_group_count)
+            scores = check_scores(mixture, counts, empty_group_count)
+            probs = scores_to_probs(scores)
+            groupid = sample_discrete(probs)
+            expected_group_added = (counts[groupid] == 0)
+            counts[groupid] += 1
+            actual_group_added = mixture.add_value(model, groupid)
+            assert_equal(actual_group_added, expected_group_added)
+            groupids.append(groupid)
+            if actual_group_added:
+                id_tracker.add_group()
+                counts.append(0)
+
+        check_counts(mixture, counts, empty_group_count)
+        check_scores(mixture, counts, empty_group_count)
+
+        print 'removing'
+        for global_groupid in groupids:
+            groupid = id_tracker.global_to_packed(global_groupid)
+            counts[groupid] -= 1
+            expected_group_removed = (counts[groupid] == 0)
+            actual_group_removed = mixture.remove_value(model, groupid)
+            assert_equal(actual_group_removed, expected_group_removed)
+            if expected_group_removed:
+                id_tracker.remove_group(groupid)
+                back = counts.pop()
+                if groupid < len(counts):
+                    counts[groupid] = back
+            check_counts(mixture, counts, empty_group_count)
+            check_scores(mixture, counts, empty_group_count)

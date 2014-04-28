@@ -32,13 +32,37 @@
 #include <cstdlib>
 #include <limits>
 #include <new>
+#include <distributions/common.hpp>
+
+#if __GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 7
+#define DIST_ASSUME_ALIGNED_TO(data, alignment) \
+    (decltype(data))__builtin_assume_aligned((data), (alignment))
+#else
+#define DIST_ASSUME_ALIGNED_TO(data, alignment) (data)
+#endif
+
+#define DIST_ASSUME_ALIGNED(data) \
+    (DIST_ASSUME_ALIGNED_TO((data), ::distributions::default_alignment))
+
+#define DIST_ASSERT_ALIGNED_TO(data, alignment) {           \
+    size_t mask = (alignment) - 1UL;                        \
+    size_t offset = reinterpret_cast<size_t>(data) & mask;  \
+    DIST_ASSERT(offset == 0,                                \
+        "expected " << (alignment) << "-byte-aligned data," \
+        "actual offset = " << offset);                      \
+}
+
+#define DIST_ASSERT_ALIGNED(data) \
+    { DIST_ASSERT_ALIGNED_TO((data), ::distributions::default_alignment); }
 
 namespace distributions
 {
 
 // sse instructions require alignment of 16 bytes
 // avx instructions require alignment of 32 bytes
-template<class T, int alignment = 32>
+static const size_t default_alignment = 32;
+
+template<class T, size_t alignment = default_alignment>
 class aligned_allocator
 {
 public:
@@ -54,7 +78,7 @@ public:
     typedef const T & const_reference;
 
     template <class U>
-    aligned_allocator(const aligned_allocator<U, alignment> &) throw() {}
+    aligned_allocator (const aligned_allocator<U, alignment> &) throw() {}
     aligned_allocator (const aligned_allocator &) throw() {}
     aligned_allocator () throw() {}
     ~aligned_allocator () throw() {}
@@ -77,9 +101,12 @@ public:
 
     pointer allocate (size_t n, const void * /* hint */ = 0)
     {
-        void * result = NULL;
+        void * result = nullptr;
         if (posix_memalign(& result, alignment, n * sizeof(T))) {
             throw std::bad_alloc();
+        }
+        if (DIST_DEBUG_LEVEL >= 3) {
+            DIST_ASSERT_ALIGNED_TO(static_cast<pointer>(result), alignment);
         }
         return static_cast<pointer>(result);
     }
