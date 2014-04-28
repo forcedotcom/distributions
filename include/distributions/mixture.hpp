@@ -126,7 +126,7 @@ public:
     }
 
     // this slow uncached version should be overridden
-    void score (const Model & model, VectorFloat & scores) const
+    void score_value (const Model & model, AlignedFloats scores) const
     {
         if (DIST_DEBUG_LEVEL >= 1) {
             DIST_ASSERT_EQ(scores.size(), counts_.size());
@@ -142,6 +142,11 @@ public:
                 sample_size_,
                 empty_group_count);
         }
+    }
+
+    float score_mixture (const Model & model) const
+    {
+        return model.score_counts(counts_);
     }
 
 private:
@@ -235,6 +240,16 @@ struct MixtureSlave
         for (size_t i = 0; i < group_count; ++i) {
             scores_accum[i] += groups(i).score(model, value, rng);
         }
+    }
+
+    // this slow version should be overridden
+    float score_mixture (const Model & model, rng_t & rng) const
+    {
+        float score = 0;
+        for (const Group & group : groups_) {
+            score += model.score_group(group, rng);
+        }
+        return score;
     }
 
 private:
