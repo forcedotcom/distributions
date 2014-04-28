@@ -91,8 +91,8 @@ cdef extern from "distributions/vector.hpp" namespace "distributions":
         void swap(VectorFloat&) nogil
         float * data() nogil
 
-    cdef cppclass ArrayFloat:
-        ArrayFloat (float *, size_t) nogil
+    cdef cppclass AlignedFloats:
+        AlignedFloats (float *, size_t) nogil
         float * data () nogil
         size_t size () nogil
 

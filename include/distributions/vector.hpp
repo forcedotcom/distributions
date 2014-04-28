@@ -36,46 +36,14 @@
 namespace distributions
 {
 
-typedef std::vector<float, aligned_allocator<float>> VectorFloatBase;
-
-class ArrayFloat
+template<class Value, class Alloc = std::allocator<Value>>
+struct Packed_ : std::vector<Value, Alloc>
 {
-public:
+    typedef std::vector<Value, Alloc> Base;
 
-    ArrayFloat (float * data, size_t size) :
-        data_(data),
-        size_(size)
-    {
-        DIST_ASSERT_ALIGNED(data_);
-    }
-
-    ArrayFloat (VectorFloatBase & source) :
-        data_(source.data()),
-        size_(source.size())
-    {
-        if (DIST_DEBUG_LEVEL >= 3) {
-            DIST_ASSERT_ALIGNED(data_);
-        }
-    }
-
-    float * data () { return data_; }
-    size_t size () const { return size_; }
-
-private:
-
-    float * const data_;
-    const size_t size_;
-};
-
-struct VectorFloat : VectorFloatBase
-{
-    typedef VectorFloatBase Base;
-
-    VectorFloat () {}
-    VectorFloat (size_t size) : Base(size) {}
-    VectorFloat (size_t size, float value) : Base(size, value) {}
-
-    operator ArrayFloat () { return ArrayFloat(* this); }
+    Packed_ () {}
+    Packed_ (size_t size) : Base(size) {}
+    Packed_ (size_t size, const Value & value) : Base(size, value) {}
 
     void packed_remove (size_t pos)
     {
@@ -86,21 +54,49 @@ struct VectorFloat : VectorFloatBase
         Base::pop_back();
     }
 
-    void packed_add (const float & value)
+    void packed_add (const Value & value)
     {
         Base::push_back(value);
     }
 
-    float & packed_add ()
+    Value & packed_add ()
     {
         Base::push_back(0);
         return Base::back();
     }
-
-    void padded_resize (size_t size, float fill = 0)
-    {
-        Base::resize((size + 7) / 8 * 8, fill);
-    }
 };
+
+template<class Value>
+class Aligned_
+{
+public:
+
+    Aligned_ (Value * data, size_t size) :
+        data_(data),
+        size_(size)
+    {
+        DIST_ASSERT_ALIGNED(data_);
+    }
+
+    Aligned_ (Packed_<Value, aligned_allocator<Value>> & source) :
+        data_(source.data()),
+        size_(source.size())
+    {
+        if (DIST_DEBUG_LEVEL >= 3) {
+            DIST_ASSERT_ALIGNED(data_);
+        }
+    }
+
+    Value * data () { return data_; }
+    size_t size () const { return size_; }
+
+private:
+
+    Value * const data_;
+    const size_t size_;
+};
+
+typedef Packed_<float, aligned_allocator<float>> VectorFloat;
+typedef Aligned_<float> AlignedFloats;
 
 } // namespace distributions
