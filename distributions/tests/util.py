@@ -106,9 +106,10 @@ def assert_close(lhs, rhs, tol=TOL, err_msg=None):
             100 * diff / norm,
             diff)
         assert_less(diff, tol * norm, msg)
-    elif isinstance(lhs, numpy.ndarray) or isinstance(lhs, list):
+    elif isinstance(lhs, numpy.ndarray) or isinstance(rhs, numpy.ndarray):
         assert_true(
-            isinstance(rhs, numpy.ndarray) or isinstance(rhs, list),
+            (isinstance(lhs, numpy.ndarray) or isinstance(lhs, list)) and
+            (isinstance(rhs, numpy.ndarray) or isinstance(rhs, list)),
             'type mismatch: {} vs {}'.format(type(lhs), type(rhs)))
         decimal = int(round(-math.log10(tol)))
         assert_array_almost_equal(
@@ -116,6 +117,12 @@ def assert_close(lhs, rhs, tol=TOL, err_msg=None):
             rhs,
             decimal=decimal,
             err_msg=(err_msg or ''))
+    elif isinstance(lhs, list) or isinstance(lhs, tuple):
+        assert_true(
+            isinstance(rhs, list) or isinstance(rhs, tuple),
+            'type mismatch: {} vs {}'.format(type(lhs), type(rhs)))
+        for x, y in izip(lhs, rhs):
+            assert_close(x, y, tol, err_msg)
     else:
         assert_equal(lhs, rhs, err_msg)
 
