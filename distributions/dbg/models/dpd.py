@@ -29,21 +29,29 @@ import numpy
 from itertools import izip
 from distributions.dbg.special import log, gammaln
 from distributions.dbg.random import sample_discrete, sample_dirichlet
-from distributions.mixins import (
-    ComponentModel,
-    Serializable,
-    ProtobufSerializable,
-)
+from distributions.mixins import GroupIoMixin, SharedIoMixin
 
 
+NAME = 'DirichletProcessDiscrete'
+EXAMPLES = [
+    {
+        'shared': {
+            'gamma': 0.5,
+            'alpha': 0.5,
+            'betas': {  # beta0 must be zero for unit tests
+                '0': 0.25,
+                '1': 0.5,
+                '2': 0.25,
+            },
+        },
+        'values': [0, 1, 0, 2, 0, 1, 0],
+    },
+]
 OTHER = -1
+Value = int
 
 
-class DirichletProcessDiscrete(
-        ComponentModel,
-        Serializable,
-        ProtobufSerializable):
-
+class Shared(SharedIoMixin):
     def __init__(self):
         self.gamma = None
         self.alpha = None
@@ -85,143 +93,118 @@ class DirichletProcessDiscrete(
         for beta in self.betas:
             message.betas.append(beta)
 
-    #-------------------------------------------------------------------------
-    # Datatypes
 
-    Value = int
+class Group(GroupIoMixin):
+    def __init__(self):
+        self.counts = None
+        self.total = None
 
-    class Group(ProtobufSerializable):
-        def __init__(self):
-            self.counts = None
-            self.total = None
+    def init(self, model):
+        self.counts = {}  # sparse
+        self.total = 0
 
-        def load(self, raw):
-            self.counts = {}
-            self.total = 0
-            for i, count in raw['counts'].iteritems():
-                if count:
-                    self.counts[int(i)] = int(count)
-                    self.total += count
+    def add_value(self, model, value):
+        assert value != OTHER, 'tried to add OTHER to suffstats'
+        try:
+            self.counts[value] += 1
+        except KeyError:
+            self.counts[value] = 1
+        self.total += 1
 
-        def dump(self):
-            counts = {
-                str(i): count
-                for i, count in self.counts.iteritems()
-                if count
-            }
-            return {'counts': counts}
-
-        def load_protobuf(self, message):
-            self.counts = {}
-            self.total = 0
-            for i, count in izip(message.keys, message.values):
-                if count:
-                    self.counts[int(i)] = int(count)
-                    self.total += count
-
-        def dump_protobuf(self, message):
-            message.Clear()
-            for i, count in self.counts.iteritems():
-                if count:
-                    message.keys.append(i)
-                    message.values.append(count)
-
-        def init(self, model):
-            self.counts = {}  # sparse
-            self.total = 0
-
-        def add_value(self, model, value):
-            assert value != OTHER, 'tried to add OTHER to suffstats'
-            try:
-                self.counts[value] += 1
-            except KeyError:
-                self.counts[value] = 1
-            self.total += 1
-
-        def remove_value(self, model, value):
-            assert value != OTHER, 'tried to remove OTHER to suffstats'
-            new_count = self.counts[value] - 1
-            if new_count == 0:
-                del self.counts[value]
-            else:
-                self.counts[value] = new_count
-            self.total -= 1
-
-        def merge(self, model, source):
-            for i, count in source.counts.iteritems():
-                self.counts[i] = self.counts.get(i, 0) + count
-            self.total += source.total
-
-    #-------------------------------------------------------------------------
-    # Sampling
-
-    def sampler_create(self, group=None):
-        probs = (self.betas * self.alpha).tolist()
-        if group is not None:
-            for i, count in group.counts.iteritems():
-                probs[i] += count
-        probs.append(self.beta0 * self.alpha)
-        return sample_dirichlet(probs)
-
-    def sampler_eval(self, sampler):
-        index = sample_discrete(sampler)
-        if index == len(self.betas):
-            return OTHER
+    def remove_value(self, model, value):
+        assert value != OTHER, 'tried to remove OTHER to suffstats'
+        new_count = self.counts[value] - 1
+        if new_count == 0:
+            del self.counts[value]
         else:
-            return index
+            self.counts[value] = new_count
+        self.total -= 1
 
-    def sample_value(self, group):
-        sampler = self.sampler_create(group)
-        return self.sampler_eval(sampler)
+    def merge(self, model, source):
+        for i, count in source.counts.iteritems():
+            self.counts[i] = self.counts.get(i, 0) + count
+        self.total += source.total
 
-    def sample_group(self, size):
-        sampler = self.sampler_create()
-        return [self.sampler_eval(sampler) for _ in xrange(size)]
+    def load(self, raw):
+        self.counts = {}
+        self.total = 0
+        for i, count in raw['counts'].iteritems():
+            if count:
+                self.counts[int(i)] = int(count)
+                self.total += count
 
-    #-------------------------------------------------------------------------
-    # Scoring
+    def dump(self):
+        counts = {
+            str(i): count
+            for i, count in self.counts.iteritems()
+            if count
+        }
+        return {'counts': counts}
 
-    def score_value(self, group, value):
-        """
-        Adapted from dd.py, which was adapted from:
-        McCallum, et. al, 'Rethinking LDA: Why Priors Matter' eqn 4
-        """
-        denom = self.alpha + group.total
-        if value == OTHER:
-            numer = self.beta0 * self.alpha
-        else:
-            numer = self.betas[value] * self.alpha + group.counts.get(value, 0)
-        return log(numer / denom)
+    def load_protobuf(self, message):
+        self.counts = {}
+        self.total = 0
+        for i, count in izip(message.keys, message.values):
+            if count:
+                self.counts[int(i)] = int(count)
+                self.total += count
 
-    def score_group(self, group):
-        assert len(self.betas), 'betas is empty'
-        """
-        See doc/dpd.pdf Equation (3)
-        """
-        score = 0.
+    def dump_protobuf(self, message):
+        message.Clear()
+        for i, count in self.counts.iteritems():
+            if count:
+                message.keys.append(i)
+                message.values.append(count)
+
+
+def sampler_create(shared, group=None):
+    probs = (shared.betas * shared.alpha).tolist()
+    if group is not None:
         for i, count in group.counts.iteritems():
-            prior_i = self.betas[i] * self.alpha
-            score += gammaln(prior_i + count) - gammaln(prior_i)
-        score += gammaln(self.alpha) - gammaln(self.alpha + group.total)
-        return score
-
-    #-------------------------------------------------------------------------
-    # Examples
-
-    EXAMPLES = [
-        {
-            'model': {
-                'gamma': 0.5,
-                'alpha': 0.5,
-                'betas': {  # beta0 must be zero for unit tests
-                    '0': 0.25,
-                    '1': 0.5,
-                    '2': 0.25,
-                },
-            },
-            'values': [0, 1, 0, 2, 0, 1, 0],
-        },
-    ]
+            probs[i] += count
+    probs.append(shared.beta0 * shared.alpha)
+    return sample_dirichlet(probs)
 
 
-Model = DirichletProcessDiscrete
+def sampler_eval(shared, sampler):
+    index = sample_discrete(sampler)
+    if index == len(shared.betas):
+        return OTHER
+    else:
+        return index
+
+
+def sample_value(shared, group):
+    sampler = sampler_create(shared, group)
+    return sampler_eval(shared, sampler)
+
+
+def sample_group(shared, size):
+    sampler = sampler_create(shared)
+    return [sampler_eval(shared, sampler) for _ in xrange(size)]
+
+
+def score_value(shared, group, value):
+    """
+    Adapted from dd.py, which was adapted from:
+    McCallum, et. al, 'Rethinking LDA: Why Priors Matter' eqn 4
+    """
+    denom = shared.alpha + group.total
+    if value == OTHER:
+        numer = shared.beta0 * shared.alpha
+    else:
+        numer = shared.betas[value] * shared.alpha + group.counts.get(value, 0)
+    return log(numer / denom)
+
+
+def score_group(shared, group):
+    assert len(shared.betas), 'betas is empty'
+    """
+    See doc/dpd.pdf Equation (3)
+    """
+    score = 0.
+    for i, count in group.counts.iteritems():
+        prior_i = shared.betas[i] * shared.alpha
+        score += gammaln(prior_i + count) - gammaln(prior_i)
+    score += gammaln(shared.alpha) - gammaln(shared.alpha + group.total)
+    return score

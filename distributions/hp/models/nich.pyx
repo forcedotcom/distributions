@@ -40,7 +40,7 @@ cimport numpy
 numpy.import_array()
 from distributions.hp.special cimport sqrt, log, gammaln, M_PI
 from distributions.hp.random cimport sample_normal, sample_chisq
-from distributions.mixins import ComponentModel, Serializable
+from distributions.mixins import GroupIoMixin, SharedIoMixin
 
 
 # FIXME how does this relate to distributions.dbg.random.score_student_t
@@ -55,74 +55,46 @@ cdef double score_student_t(double x, double nu, double mu, double sigmasq):
     cdef double d = -(.5 * (nu + 1.)) * log(1. + s / nu)
     return c + d
 
-#-------------------------------------------------------------------------
-# Datatypes
 
-ctypedef double Value
-
-
-cdef class Group:
-    cdef size_t count
-    cdef double mean
-    cdef double count_times_variance
-
-    def load(self, dict raw):
-        self.count = raw['count']
-        self.mean = raw['mean']
-        self.count_times_variance = raw['count_times_variance']
-
-    def dump(self):
-        return {
-            'count': self.count,
-            'mean': self.mean,
-            'count_times_variance': self.count_times_variance,
-        }
-
-    def init(self, Model_cy model):
-        self.count = 0
-        self.mean = 0.
-        self.count_times_variance = 0.
-
-    def add_value(self, Model_cy model, double value):
-        self.count += 1
-        cdef double delta = value - self.mean
-        self.mean += delta / self.count
-        self.count_times_variance += delta * (value - self.mean)
+NAME = 'NormalInverseChiSq'
+EXAMPLES = [
+    {
+        'shared': {'mu': 0., 'kappa': 1., 'sigmasq': 1., 'nu': 1.},
+        'values': [-4.0, -2.0, -1.0, -0.5, 0.0, 0.5, 1.0, 2.0, 4.0],
+    },
+]
+Value = float
 
 
-    def remove_value(self, Model_cy model, double value):
-        cdef double total = self.mean * self.count
-        cdef double delta = value - self.mean
-        self.count -= 1
-        if self.count == 0:
-            self.mean = 0.
-        else:
-            self.mean = (total - value) / self.count
-        if self.count <= 1:
-            self.count_times_variance = 0.
-        else:
-            self.count_times_variance -= delta * (value - self.mean)
-
-    def merge(self, Model_cy model, Group source):
-        cdef size_t count = self.count + source.count
-        cdef double delta = source.mean - self.mean
-        cdef double source_part = <double> source.count / count
-        cdef double cross_part = self.count * source_part
-        self.count = count
-        self.mean += source_part * delta
-        self.count_times_variance += \
-            source.count_times_variance + cross_part * delta * delta
+ctypedef double _Value
 
 
-ctypedef tuple Sampler
-
-
-cdef class Model_cy:
-
+cdef class _Shared:
     cdef double mu
     cdef double kappa
     cdef double sigmasq
     cdef double nu
+
+    cdef _Shared plus_group(self, _Group group):
+        """
+        \cite{murphy2007conjugate}, Eqs.141-144
+        """
+        cdef double mu_1 = self.mu - group.mean
+        cdef double kappa_n = self.kappa + group.count
+        cdef double mu_n = (
+            self.kappa * self.mu + group.mean * group.count) / kappa_n
+        cdef double nu_n = self.nu + group.count
+        cdef double sigmasq_n = 1. / nu_n * (
+            self.nu * self.sigmasq
+            + group.count_times_variance
+            + (group.count * self.kappa * mu_1 * mu_1) / kappa_n)
+
+        cdef _Shared post = _Shared()
+        post.mu = mu_n
+        post.kappa = kappa_n
+        post.nu = nu_n
+        post.sigmasq = sigmasq_n
+        return post
 
     def load(self, dict raw):
         self.mu = raw['mu']
@@ -138,105 +110,122 @@ cdef class Model_cy:
             'nu': self.nu,
         }
 
-    #-------------------------------------------------------------------------
-    # Mutation
 
-    cdef Model_cy plus_group(self, Group group):
-        """
-        \cite{murphy2007conjugate}, Eqs.141-144
-        """
-        cdef double mu_1 = self.mu - group.mean
-        cdef double kappa_n = self.kappa + group.count
-        cdef double mu_n = (
-            self.kappa * self.mu + group.mean * group.count) / kappa_n
-        cdef double nu_n = self.nu + group.count
-        cdef double sigmasq_n = 1. / nu_n * (
-            self.nu * self.sigmasq
-            + group.count_times_variance
-            + (group.count * self.kappa * mu_1 * mu_1) / kappa_n)
-
-        cdef Model_cy post = Model_cy()
-        post.mu = mu_n
-        post.kappa = kappa_n
-        post.nu = nu_n
-        post.sigmasq = sigmasq_n
-        return post
-
-    #-------------------------------------------------------------------------
-    # Sampling
-
-    cpdef Sampler sampler_create(self, Group group=None):
-        """
-        Draw samples from the marginal posteriors of mu and sigmasq
-
-        \cite{murphy2007conjugate}, Eqs. 156 & 167
-        """
-        cdef Model_cy post = self if group is None else self.plus_group(group)
-        cdef double sigmasq_star = post.nu * post.sigmasq / sample_chisq(post.nu)
-        cdef double mu_star = sample_normal(post.mu, sigmasq_star / post.kappa)
-        return (mu_star, sigmasq_star)
-
-    cpdef Value sampler_eval(self, Sampler sampler):
-        cdef double mu = sampler[0]
-        cdef double sigmasq = sampler[1]
-        return sample_normal(mu, sigmasq)
-
-    def sample_value(self, Group group):
-        cdef Sampler sampler = self.sampler_create(group)
-        return self.sampler_eval(sampler)
-
-    def sample_group(self, int size):
-        cdef Sampler sampler = self.sampler_create()
-        cdef list result = []
-        cdef int i
-        for i in xrange(size):
-            result.append(self.sampler_eval(sampler))
-        return result
-
-    #-------------------------------------------------------------------------
-    # Scoring
-
-    cpdef double score_value(self, Group group, Value value):
-        """
-        \cite{murphy2007conjugate}, Eq. 176
-        """
-        cdef Model_cy post = self.plus_group(group)
-        return score_student_t(
-            value,
-            post.nu,
-            post.mu,
-            ((1 + post.kappa) * post.sigmasq) / post.kappa)
-
-    def score_group(self, Group group):
-        """
-        \cite{murphy2007conjugate}, Eq. 171
-        """
-        cdef Model_cy post = self.plus_group(group)
-        return gammaln(post.nu / 2.) - gammaln(self.nu / 2.) + \
-            0.5 * log(self.kappa / post.kappa) + \
-            (0.5 * self.nu) * log(self.nu * self.sigmasq) - \
-            (0.5 * post.nu) * log(post.nu * post.sigmasq) - \
-            group.count / 2. * 1.1447298858493991
-
-    #-------------------------------------------------------------------------
-    # Examples
-
-    EXAMPLES = [
-        {
-            'model': {'mu': 0., 'kappa': 1., 'sigmasq': 1., 'nu': 1.},
-            'values': [-4.0, -2.0, -1.0, -0.5, 0.0, 0.5, 1.0, 2.0, 4.0],
-        },
-    ]
+class Shared(_Shared, SharedIoMixin):
+    pass
 
 
-class NormalInverseChiSq(Model_cy, ComponentModel, Serializable):
+cdef class _Group:
+    cdef size_t count
+    cdef double mean
+    cdef double count_times_variance
 
-    #-------------------------------------------------------------------------
-    # Datatypes
+    def init(self, _Shared shared):
+        self.count = 0
+        self.mean = 0.
+        self.count_times_variance = 0.
 
-    Value = float
+    def add_value(self, _Shared shared, double value):
+        self.count += 1
+        cdef double delta = value - self.mean
+        self.mean += delta / self.count
+        self.count_times_variance += delta * (value - self.mean)
 
-    Group = Group
+
+    def remove_value(self, _Shared shared, double value):
+        cdef double total = self.mean * self.count
+        cdef double delta = value - self.mean
+        self.count -= 1
+        if self.count == 0:
+            self.mean = 0.
+        else:
+            self.mean = (total - value) / self.count
+        if self.count <= 1:
+            self.count_times_variance = 0.
+        else:
+            self.count_times_variance -= delta * (value - self.mean)
+
+    def merge(self, _Shared shared, _Group source):
+        cdef size_t count = self.count + source.count
+        cdef double delta = source.mean - self.mean
+        cdef double source_part = <double> source.count / count
+        cdef double cross_part = self.count * source_part
+        self.count = count
+        self.mean += source_part * delta
+        self.count_times_variance += \
+            source.count_times_variance + cross_part * delta * delta
+
+    def load(self, dict raw):
+        self.count = raw['count']
+        self.mean = raw['mean']
+        self.count_times_variance = raw['count_times_variance']
+
+    def dump(self):
+        return {
+            'count': self.count,
+            'mean': self.mean,
+            'count_times_variance': self.count_times_variance,
+        }
 
 
-Model = NormalInverseChiSq
+class Group(_Group, GroupIoMixin):
+    pass
+
+
+ctypedef tuple _Sampler
+
+
+def sampler_create(_Shared shared, _Group group=None):
+    """
+    Draw samples from the marginal posteriors of mu and sigmasq
+
+    \cite{murphy2007conjugate}, Eqs. 156 & 167
+    """
+    cdef _Shared post = shared if group is None else shared.plus_group(group)
+    cdef double sigmasq_star = post.nu * post.sigmasq / sample_chisq(post.nu)
+    cdef double mu_star = sample_normal(post.mu, sigmasq_star / post.kappa)
+    return (mu_star, sigmasq_star)
+
+
+def sampler_eval(_Shared shared, _Sampler sampler):
+    cdef double mu = sampler[0]
+    cdef double sigmasq = sampler[1]
+    return sample_normal(mu, sigmasq)
+
+
+def sample_value(_Shared shared, _Group group):
+    cdef _Sampler sampler = sampler_create(shared, group)
+    return sampler_eval(shared, sampler)
+
+
+def sample_group(_Shared shared, int size):
+    cdef _Sampler sampler = sampler_create(shared)
+    cdef list result = []
+    cdef int i
+    for i in xrange(size):
+        result.append(sampler_eval(shared, sampler))
+    return result
+
+
+def score_value(_Shared shared, _Group group, _Value value):
+    """
+    \cite{murphy2007conjugate}, Eq. 176
+    """
+    cdef _Shared post = shared.plus_group(group)
+    return score_student_t(
+        value,
+        post.nu,
+        post.mu,
+        ((1 + post.kappa) * post.sigmasq) / post.kappa)
+
+
+def score_group(_Shared shared, _Group group):
+    """
+    \cite{murphy2007conjugate}, Eq. 171
+    """
+    cdef _Shared post = shared.plus_group(group)
+    return gammaln(post.nu / 2.) - gammaln(shared.nu / 2.) + \
+        0.5 * log(shared.kappa / post.kappa) + \
+        (0.5 * shared.nu) * log(shared.nu * shared.sigmasq) - \
+        (0.5 * post.nu) * log(post.nu * post.sigmasq) - \
+        group.count / 2. * 1.1447298858493991

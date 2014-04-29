@@ -30,59 +30,31 @@ cimport numpy
 numpy.import_array()
 from distributions.hp.special cimport log, gammaln
 from distributions.hp.random cimport sample_dirichlet, sample_discrete
-from distributions.mixins import ComponentModel, Serializable
+from distributions.mixins import GroupIoMixin, SharedIoMixin
 
 cpdef int MAX_DIM = 256
 
-#-------------------------------------------------------------------------
-# Datatypes
-
-ctypedef int Value
-
-
-cdef class Group:
-    cdef int counts[256]
-    cdef int dim  # only required for dumping
-    def __cinit__(self):
-        self.dim = 0
-
-    def load(self, raw):
-        counts = raw['counts']
-        self.dim = len(counts)
-        assert self.dim <= MAX_DIM
-        cdef int i
-        for i in xrange(self.dim):
-            self.counts[i] = counts[i]
-
-    def dump(self):
-        return {'counts': [self.counts[i] for i in xrange(self.dim)]}
-
-    def init(self, Model_cy model):
-        self.dim = model.dim
-        cdef int i
-        for i in xrange(self.dim):
-            self.counts[i] = 0
-
-    def add_value(self, Model_cy model, int value):
-        self.counts[value] += 1
-
-    def remove_value(self, Model_cy model, int value):
-        self.counts[value] -= 1
-
-    def merge(self, Model_cy model, Group source):
-        cdef int i
-        for i in xrange(self.dim):
-            self.counts[i] += source.counts[i]
+NAME = 'DirichletDiscrete'
+EXAMPLES = [
+    {
+        'shared': {'alphas': [1.0, 4.0]},
+        'values': [0, 1, 1, 1, 1, 0, 1],
+    },
+    {
+        'shared': {'alphas': [0.5, 0.5, 0.5, 0.5]},
+        'values': [0, 1, 0, 2, 0, 1, 0],
+    },
+]
+Value = int
 
 
-# Buffer types only allowed as function local variables
-#ctypedef numpy.ndarray[numpy.float64_t, ndim=1] Sampler
-ctypedef numpy.ndarray Sampler
+ctypedef int _Value
 
 
-cdef class Model_cy:
+cdef class _Shared:
     cdef double[256] alphas
     cdef int dim
+
     def __cinit__(self):
         self.dim = 0
 
@@ -97,93 +69,110 @@ cdef class Model_cy:
     def dump(self):
         return {'alphas': [self.alphas[i] for i in xrange(self.dim)]}
 
-    #-------------------------------------------------------------------------
-    # Sampling
 
-    cpdef Sampler sampler_create(self, Group group=None):
-        cdef Sampler sampler = numpy.zeros(self.dim, dtype=numpy.float64)
-        cdef double * ps = <double *> sampler.data
-        cdef int i
-        if group is None:
-            for i in xrange(self.dim):
-                sampler[i] = self.alphas[i]
-        else:
-            for i in xrange(self.dim):
-                sampler[i] = group.counts[i] + self.alphas[i]
-        sample_dirichlet(self.dim, ps, ps)
-        return sampler
+class Shared(_Shared, SharedIoMixin):
+    pass
 
-    cpdef Value sampler_eval(self, Sampler sampler):
-        cdef double * ps = <double *> sampler.data
-        return sample_discrete(self.dim, ps)
 
-    def sample_value(self, Group group):
-        cdef Sampler sampler = self.sampler_create(group)
-        return self.sampler_eval(sampler)
+cdef class _Group:
+    cdef int counts[256]
+    cdef int dim  # only required for dumping
 
-    def sample_group(self, int size):
-        cdef Sampler sampler = self.sampler_create()
-        cdef list result = []
-        cdef int i
-        for i in xrange(size):
-            result.append(self.sampler_eval(sampler))
-        return result
+    def __cinit__(self):
+        self.dim = 0
 
-    #-------------------------------------------------------------------------
-    # Scoring
-
-    def score_value(self, Group group, Value value):
-        """
-        McCallum, et. al, 'Rethinking LDA: Why Priors Matter' eqn 4
-        """
-        cdef double total = 0.0
+    def init(self, _Shared shared):
+        self.dim = shared.dim
         cdef int i
         for i in xrange(self.dim):
-            total += group.counts[i] + self.alphas[i]
-        return log((group.counts[value] + self.alphas[value]) / total)
+            self.counts[i] = 0
 
-    def score_group(self, Group group):
-        """
-        From equation 22 of Michael Jordan's CS281B/Stat241B
-        Advanced Topics in Learning and Decision Making course,
-        'More on Marginal Likelihood'
-        """
+    def add_value(self, _Shared shared, int value):
+        self.counts[value] += 1
+
+    def remove_value(self, _Shared shared, int value):
+        self.counts[value] -= 1
+
+    def merge(self, _Shared shared, _Group source):
         cdef int i
-        cdef double alpha_sum = 0.0
-        cdef int count_sum = 0
-        cdef double sum = 0.0
         for i in xrange(self.dim):
-            alpha_sum += self.alphas[i]
+            self.counts[i] += source.counts[i]
+
+    def load(self, raw):
+        counts = raw['counts']
+        self.dim = len(counts)
+        assert self.dim <= MAX_DIM
+        cdef int i
         for i in xrange(self.dim):
-            count_sum += group.counts[i]
-        for i in xrange(self.dim):
-            sum += (gammaln(self.alphas[i] + group.counts[i])
-                    - gammaln(self.alphas[i]))
-        return sum + gammaln(alpha_sum) - gammaln(alpha_sum + count_sum)
+            self.counts[i] = counts[i]
 
-    #-------------------------------------------------------------------------
-    # Examples
-
-    EXAMPLES = [
-        {
-            'model': {'alphas': [1.0, 4.0]},
-            'values': [0, 1, 1, 1, 1, 0, 1],
-        },
-        {
-            'model': {'alphas': [0.5, 0.5, 0.5, 0.5]},
-            'values': [0, 1, 0, 2, 0, 1, 0],
-        },
-    ]
+    def dump(self):
+        return {'counts': [self.counts[i] for i in xrange(self.dim)]}
 
 
-class DirichletDiscrete(Model_cy, ComponentModel, Serializable):
-
-    #-------------------------------------------------------------------------
-    # Datatypes
-
-    Value = int
-
-    Group = Group
+class Group(_Group, GroupIoMixin):
+    pass
 
 
-Model = DirichletDiscrete
+# Buffer types only allowed as function local variables
+#ctypedef numpy.ndarray[numpy.float64_t, ndim=1] _Sampler
+ctypedef numpy.ndarray _Sampler
+
+
+def sampler_create(_Shared shared, _Group group=None):
+    cdef _Sampler sampler = numpy.zeros(shared.dim, dtype=numpy.float64)
+    cdef double * ps = <double *> sampler.data
+    cdef int i
+    if group is None:
+        for i in xrange(shared.dim):
+            sampler[i] = shared.alphas[i]
+    else:
+        for i in xrange(shared.dim):
+            sampler[i] = group.counts[i] + shared.alphas[i]
+    sample_dirichlet(shared.dim, ps, ps)
+    return sampler
+
+def sampler_eval(_Shared shared, _Sampler sampler):
+    cdef double * ps = <double *> sampler.data
+    return sample_discrete(shared.dim, ps)
+
+def sample_value(_Shared shared, _Group group):
+    cdef _Sampler sampler = sampler_create(shared, group)
+    return sampler_eval(shared, sampler)
+
+def sample_group(_Shared shared, int size):
+    cdef _Sampler sampler = sampler_create(shared)
+    cdef list result = []
+    cdef int i
+    for i in xrange(size):
+        result.append(sampler_eval(shared, sampler))
+    return result
+
+def score_value(_Shared shared, _Group group, _Value value):
+    """
+    McCallum, et. al, 'Rethinking LDA: Why Priors Matter' eqn 4
+    """
+    cdef double total = 0.0
+    cdef int i
+    for i in xrange(shared.dim):
+        total += group.counts[i] + shared.alphas[i]
+    return log((group.counts[value] + shared.alphas[value]) / total)
+
+def score_group(_Shared shared, _Group group):
+    """
+    From equation 22 of Michael Jordan's CS281B/Stat241B
+    Advanced Topics in Learning and Decision Making course,
+    'More on Marginal Likelihood'
+    """
+    cdef int i
+    cdef double alpha_sum = 0.0
+    cdef int count_sum = 0
+    cdef double sum = 0.0
+    for i in xrange(shared.dim):
+        alpha_sum += shared.alphas[i]
+    for i in xrange(shared.dim):
+        count_sum += group.counts[i]
+    for i in xrange(shared.dim):
+        sum += (gammaln(shared.alphas[i] + group.counts[i])
+                - gammaln(shared.alphas[i]))
+    return sum + gammaln(alpha_sum) - gammaln(alpha_sum + count_sum)

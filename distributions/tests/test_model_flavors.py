@@ -43,14 +43,14 @@ def test_model():
 
 
 def _test_model(name):
-    MODELS = [m.Model for m in MODULES[name]]
-    assert_all_close([m.__name__ for m in MODELS], err_msg='Model.__name__')
-    EXAMPLES = [e for m in MODELS for e in m.EXAMPLES]
+    modules = MODULES[name]
+    assert_all_close([m.NAME for m in modules], err_msg='Model.__name__')
+    EXAMPLES = [e for m in modules for e in m.EXAMPLES]
     for EXAMPLE in EXAMPLES:
-        raw_model = EXAMPLE['model']
-        models = [Model.model_load(raw_model) for Model in MODELS]
-        dumped = [m.dump() for m in models]
-        assert_all_close(dumped, err_msg='model_dump')
+        raw_shared = EXAMPLE['shared']
+        shareds = [module.Shared.from_dict(raw_shared) for module in modules]
+        dumped = [m.dump() for m in shareds]
+        assert_all_close(dumped, err_msg='shared_dump')
 
 
 def test_group():
@@ -59,41 +59,46 @@ def test_group():
 
 
 def _test_group(name):
-    MODELS = [m.Model for m in MODULES[name]]
-    EXAMPLES = [e for m in MODELS for e in m.EXAMPLES]
+    modules = MODULES[name]
+    EXAMPLES = [e for m in modules for e in m.EXAMPLES]
     for EXAMPLE in EXAMPLES:
-        raw_model = EXAMPLE['model']
+        raw_shared = EXAMPLE['shared']
         values = EXAMPLE['values'][:]
-        models = [Model.model_load(raw_model) for Model in MODELS]
-
-        groups = [model.group_create() for model in models]
-        models_groups = zip(models, groups)
+        shareds = [module.Shared.from_dict(raw_shared) for module in modules]
+        groups = [
+            module.Group.from_values(shared)
+            for module, shared in zip(modules, shareds)]
+        modules_shareds_groups = zip(modules, shareds, groups)
 
         for value in values:
-            for model, group in models_groups:
-                group.add_value(model, value)
+            for module, shared, group in modules_shareds_groups:
+                group.add_value(shared, value)
             dumped = [g.dump() for g in groups]
             assert_all_close(dumped, err_msg='group_dump')
 
-        for model, group in models_groups:
-            values.append(model.sample_value(group))
+        for module, shared, group in modules_shareds_groups:
+            values.append(module.sample_value(shared, group))
 
         for value in values:
             scores = [
-                model.score_value(group, value)
-                for model, group in models_groups
+                module.score_value(shared, group, value)
+                for module, shared, group in modules_shareds_groups
             ]
             assert_all_close(scores, err_msg='score_value')
 
-        scores = [model.score_group(group) for model, group in models_groups]
+        scores = [
+            module.score_group(shared, group)
+            for module, shared, group in modules_shareds_groups]
         assert_all_close(scores, err_msg='score_group')
 
-        for model, group in models_groups:
+        for module, shared, group in modules_shareds_groups:
             dumped = group.dump()
-            group.init(model)
+            group.init(shared)
             group.load(dumped)
 
-        scores = [model.score_group(group) for model, group in models_groups]
+        scores = [
+            module.score_group(shared, group)
+            for module, shared, group in modules_shareds_groups]
         assert_all_close(scores, err_msg='score_group')
 
 
@@ -103,12 +108,15 @@ def test_plus_group():
 
 
 def _test_plus_group(name):
-    MODELS = [m.Model for m in MODULES[name] if hasattr(m.Model, 'plus_group')]
-    EXAMPLES = [e for m in MODELS for e in m.EXAMPLES]
+    modules = MODULES[name]
+    modules = [m for m in modules if hasattr(m.Shared, 'plus_group')]
+    EXAMPLES = [e for m in modules for e in m.EXAMPLES]
     for EXAMPLE in EXAMPLES:
-        raw_model = EXAMPLE['model']
+        raw_shared = EXAMPLE['shared']
         values = EXAMPLE['values']
-        models = [Model.model_load(raw_model) for Model in MODELS]
-        groups = [model.group_create(values) for model in models]
-        dumped = [m.plus_group(g).dump() for m, g in zip(models, groups)]
-        assert_all_close(dumped, err_msg='model._plus_group(group)')
+        shareds = [module.Shared.from_dict(raw_shared) for module in modules]
+        groups = [
+            module.Group.from_values(shared, values)
+            for module, shared in zip(modules, shareds)]
+        dumped = [m.plus_group(g).dump() for m, g in zip(shareds, groups)]
+        assert_all_close(dumped, err_msg='shared._plus_group(group)')

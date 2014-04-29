@@ -32,37 +32,46 @@
 #include <distributions/random.hpp>
 #include <distributions/vector.hpp>
 
-namespace distributions
-{
-
-struct NormalInverseChiSq
-{
-typedef NormalInverseChiSq Model;
-
-static const char * name () { return "NormalInverseChiSq"; }
-static const char * short_name () { return "nich"; }
-
-//----------------------------------------------------------------------------
-// Data
-
-float mu;
-float kappa;
-float sigmasq;
-float nu;
-
-//----------------------------------------------------------------------------
-// Datatypes
-
+namespace distributions {
+namespace normal_inverse_chi_sq {
 typedef float Value;
+struct Group;
+struct Scorer;
+struct Sampler;
+struct Mixture;
+
+
+struct Shared
+{
+    float mu;
+    float kappa;
+    float sigmasq;
+    float nu;
+
+    Shared plus_group(const Group & group) const;
+
+    static Shared EXAMPLE ()
+    {
+        Shared shared;
+        shared.mu = 0.0;
+        shared.kappa = 1.0;
+        shared.sigmasq = 1.0;
+        shared.nu = 1.0;
+        return shared;
+    }
+};
+
 
 struct Group
 {
+    typedef normal_inverse_chi_sq::Value Value;
+
     uint32_t count;
     float mean;
     float count_times_variance;
 
     void init (
-            const Model &,
+            const Shared &,
             rng_t &)
     {
         count = 0;
@@ -71,7 +80,7 @@ struct Group
     }
 
     void add_value (
-            const Model &,
+            const Shared &,
             const Value & value,
             rng_t &)
     {
@@ -82,7 +91,7 @@ struct Group
     }
 
     void remove_value (
-            const Model &,
+            const Shared &,
             const Value & value,
             rng_t &)
     {
@@ -104,7 +113,7 @@ struct Group
     }
 
     void merge (
-            const Model &,
+            const Shared &,
             const Group & source,
             rng_t &)
     {
@@ -125,17 +134,17 @@ struct Sampler
     float sigmasq;
 
     void init (
-            const Model & model,
+            const Shared & shared,
             const Group & group,
             rng_t & rng)
     {
-        Model post = model.plus_group(group);
+        Shared post = shared.plus_group(group);
         sigmasq = post.nu * post.sigmasq / sample_chisq(rng, post.nu);
         mu = sample_normal(rng, post.mu, sigmasq / post.kappa);
     }
 
     Value eval (
-            const Model & model,
+            const Shared & shared,
             rng_t & rng) const
     {
         return sample_normal(rng, mu, sigmasq);
@@ -150,11 +159,11 @@ struct Scorer
     float mean;
 
     void init (
-            const Model & model,
+            const Shared & shared,
             const Group & group,
             rng_t &)
     {
-        Model post = model.plus_group(group);
+        Shared post = shared.plus_group(group);
         float lambda = post.kappa / ((post.kappa + 1.f) * post.sigmasq);
         score =
             fast_lgamma_nu(post.nu) + 0.5f * fast_log(lambda / (M_PIf * post.nu));
@@ -164,7 +173,7 @@ struct Scorer
     }
 
     float eval (
-            const Model & model,
+            const Shared & shared,
             const Value & value,
             rng_t &) const
     {
@@ -176,6 +185,11 @@ struct Scorer
 
 struct Mixture
 {
+    typedef normal_inverse_chi_sq::Value Value;
+    typedef normal_inverse_chi_sq::Shared Shared;
+    typedef normal_inverse_chi_sq::Group Group;
+    typedef normal_inverse_chi_sq::Scorer Scorer;
+
     std::vector<Group> groups;
     VectorFloat score;
     VectorFloat log_coeff;
@@ -186,13 +200,13 @@ struct Mixture
     private:
 
     void _update_group (
-            const Model & model,
+            const Shared & shared,
             size_t groupid,
             rng_t & rng)
     {
         const Group & group = groups[groupid];
         Scorer scorer;
-        scorer.init(model, group, rng);
+        scorer.init(shared, group, rng);
         score[groupid] = scorer.score;
         log_coeff[groupid] = scorer.log_coeff;
         precision[groupid] = scorer.precision;
@@ -200,7 +214,7 @@ struct Mixture
     }
 
     void _resize (
-            const Model & model,
+            const Shared & shared,
             size_t group_count)
     {
         groups.resize(group_count);
@@ -214,29 +228,29 @@ struct Mixture
     public:
 
     void init (
-            const Model & model,
+            const Shared & shared,
             rng_t & rng)
     {
         const size_t group_count = groups.size();
-        _resize(model, group_count);
+        _resize(shared, group_count);
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
-            _update_group(model, groupid, rng);
+            _update_group(shared, groupid, rng);
         }
     }
 
     void add_group (
-            const Model & model,
+            const Shared & shared,
             rng_t & rng)
     {
         const size_t groupid = groups.size();
         const size_t group_count = groupid + 1;
-        _resize(model, group_count);
-        groups.back().init(model, rng);
-        _update_group(model, groupid, rng);
+        _resize(shared, group_count);
+        groups.back().init(shared, rng);
+        _update_group(shared, groupid, rng);
     }
 
     void remove_group (
-            const Model & model,
+            const Shared & shared,
             size_t groupid)
     {
         DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
@@ -248,35 +262,35 @@ struct Mixture
             precision[groupid] = precision.back();
             mean[groupid] = mean.back();
         }
-        _resize(model, group_count);
+        _resize(shared, group_count);
     }
 
     void add_value (
-            const Model & model,
+            const Shared & shared,
             size_t groupid,
             const Value & value,
             rng_t & rng)
     {
         DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
         Group & group = groups[groupid];
-        group.add_value(model, value, rng);
-        _update_group(model, groupid, rng);
+        group.add_value(shared, value, rng);
+        _update_group(shared, groupid, rng);
     }
 
     void remove_value (
-            const Model & model,
+            const Shared & shared,
             size_t groupid,
             const Value & value,
             rng_t & rng)
     {
         DIST_ASSERT2(groupid < groups.size(), "bad groupid: " << groupid);
         Group & group = groups[groupid];
-        group.remove_value(model, value, rng);
-        _update_group(model, groupid, rng);
+        group.remove_value(shared, value, rng);
+        _update_group(shared, groupid, rng);
     }
 
     void score_value (
-            const Model & model,
+            const Shared & shared,
             const Value & value,
             AlignedFloats scores_accum,
             rng_t & rng) const
@@ -284,25 +298,21 @@ struct Mixture
         if (DIST_DEBUG_LEVEL >= 2) {
             DIST_ASSERT_EQ(scores_accum.size(), groups.size());
         }
-        _score_value(model, value, scores_accum, rng);
+        _score_value(shared, value, scores_accum, rng);
     }
 
     private:
 
     void _score_value (
-            const Model & model,
+            const Shared & shared,
             const Value & value,
             AlignedFloats scores_accum,
             rng_t &) const;
 };
 
-//----------------------------------------------------------------------------
-// Mutation
-
-
-Model plus_group (const Group & group) const
+inline Shared Shared::plus_group (const Group & group) const
 {
-    Model post;
+    Shared post;
     float mu_1 = mu - group.mean;
     post.kappa = kappa + group.count;
     post.mu = (kappa * mu + group.mean * group.count) / post.kappa;
@@ -314,54 +324,41 @@ Model plus_group (const Group & group) const
     return post;
 }
 
-Value sample_value (
+inline Value sample_value (
+        const Shared & shared,
         const Group & group,
-        rng_t & rng) const
+        rng_t & rng)
 {
     Sampler sampler;
-    sampler.init(*this, group, rng);
-    return sampler.eval(*this, rng);
+    sampler.init(shared, group, rng);
+    return sampler.eval(shared, rng);
 }
 
-float score_value (
+inline float score_value (
+        const Shared & shared,
         const Group & group,
         const Value & value,
-        rng_t & rng) const
+        rng_t & rng)
 {
     Scorer scorer;
-    scorer.init(*this, group, rng);
-    return scorer.eval(*this, value, rng);
+    scorer.init(shared, group, rng);
+    return scorer.eval(shared, value, rng);
 }
 
-float score_group (
+inline float score_group (
+        const Shared & shared,
         const Group & group,
-        rng_t &) const
+        rng_t &)
 {
-    Model post = plus_group(group);
+    Shared post = shared.plus_group(group);
     float log_pi = 1.1447298858493991f;
-    float score = fast_lgamma(0.5f * post.nu) - fast_lgamma(0.5f * nu);
-    score += 0.5f * fast_log(kappa / post.kappa);
-    score += 0.5f * nu * (fast_log(nu * sigmasq))
+    float score = fast_lgamma(0.5f * post.nu) - fast_lgamma(0.5f * shared.nu);
+    score += 0.5f * fast_log(shared.kappa / post.kappa);
+    score += 0.5f * shared.nu * (fast_log(shared.nu * shared.sigmasq))
            - 0.5f * post.nu * fast_log(post.nu * post.sigmasq);
     score += -0.5f * group.count * log_pi;
     return score;
 }
 
-//----------------------------------------------------------------------------
-// Examples
-
-static NormalInverseChiSq EXAMPLE ();
-
-}; // struct NormalInverseChiSq
-
-inline NormalInverseChiSq NormalInverseChiSq::EXAMPLE ()
-{
-    NormalInverseChiSq model;
-    model.mu = 0.0;
-    model.kappa = 1.0;
-    model.sigmasq = 1.0;
-    model.nu = 1.0;
-    return model;
-}
-
+} // namespace normal_inverse_chi_sq
 } // namespace distributions

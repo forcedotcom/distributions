@@ -27,36 +27,7 @@
 
 
 class ComponentModel(object):
-
-    def group_create(self, values=[]):
-        group = self.Group()
-        group.init(self)
-        for value in values:
-            group.add_value(self, value)
-        return group
-
-
-class Serializable(object):
-
-    @classmethod
-    def model_load(cls, raw):
-        model = cls()
-        model.load(raw)
-        return model
-
-    @staticmethod
-    def model_dump(model):
-        return model.dump()
-
-    @classmethod
-    def group_load(cls, raw):
-        group = cls.Group()
-        group.load(raw)
-        return group
-
-    @staticmethod
-    def group_dump(group):
-        return group.dump()
+    pass
 
 
 class ProtobufSerializable(object):
@@ -72,3 +43,31 @@ class ProtobufSerializable(object):
         model = cls()
         model.load_protobuf(message)
         return model.dump()
+
+
+class GroupIoMixin(ProtobufSerializable):
+    @classmethod
+    def from_values(cls, model, values=[]):
+        group = cls()
+        group.init(model)
+        for value in values:
+            group.add_value(model, value)
+        return group
+
+    @classmethod
+    def from_dict(cls, raw):
+        group = cls()
+        group.load(raw)
+        return group
+
+
+class SharedIoMixin(ProtobufSerializable):
+    @classmethod
+    def from_dict(cls, raw):
+        model = cls()
+        model.load(raw)
+        return model
+
+
+# temporary refactoring kludge
+Serializable = SharedIoMixin
