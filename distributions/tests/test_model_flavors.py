@@ -39,10 +39,11 @@ for spec in list_models():
 
 def test_model():
     for name in MODULES:
-        yield _test_model, MODULES[name]
+        yield _test_model, name
 
 
-def _test_model(modules):
+def _test_model(name):
+    modules = MODULES[name]
     assert_all_close([m.NAME for m in modules], err_msg='Model.__name__')
     EXAMPLES = [e for m in modules for e in m.EXAMPLES]
     for EXAMPLE in EXAMPLES:
@@ -54,10 +55,11 @@ def _test_model(modules):
 
 def test_group():
     for name in MODULES:
-        yield _test_group, MODULES[name]
+        yield _test_group, name
 
 
-def _test_group(modules):
+def _test_group(name):
+    modules = MODULES[name]
     EXAMPLES = [e for m in modules for e in m.EXAMPLES]
     for EXAMPLE in EXAMPLES:
         raw_shared = EXAMPLE['shared']
@@ -102,10 +104,11 @@ def _test_group(modules):
 
 def test_plus_group():
     for name in MODULES:
-        yield _test_plus_group, MODULES[name]
+        yield _test_plus_group, name
 
 
-def _test_plus_group(modules):
+def _test_plus_group(name):
+    modules = MODULES[name]
     modules = [m for m in modules if hasattr(m.Shared, 'plus_group')]
     EXAMPLES = [e for m in modules for e in m.EXAMPLES]
     for EXAMPLE in EXAMPLES:
