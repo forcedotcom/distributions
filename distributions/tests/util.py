@@ -121,8 +121,9 @@ def assert_close(lhs, rhs, tol=TOL, err_msg=None):
         assert_true(
             isinstance(rhs, list) or isinstance(rhs, tuple),
             'type mismatch: {} vs {}'.format(type(lhs), type(rhs)))
-        for x, y in izip(lhs, rhs):
-            assert_close(x, y, tol, err_msg)
+        for pos, (x, y) in enumerate(izip(lhs, rhs)):
+            msg = '{}[{}]'.format(err_msg or '', pos)
+            assert_close(x, y, tol, msg)
     else:
         assert_equal(lhs, rhs, err_msg)
 
