@@ -111,9 +111,9 @@ def make_extension(name):
             ]
             if name == 'lp.clustering':
                 sources.append('src/clustering.cc')
-            elif name == 'lp.models.nich':
+            elif name in ('lp.models.nich', 'lp.models._nich'):
                 sources.append('src/models/nich.cc')
-            elif name == 'lp.models.gp':
+            elif name in ('lp.models.gp', 'lp.models._gp'):
                 sources.append('src/models/gp.cc')
     return Extension(
         module,
