@@ -32,61 +32,32 @@ from cython.operator cimport dereference as deref, preincrement as inc
 from distributions.hp.special cimport log, gammaln
 from distributions.hp.random cimport sample_dirichlet, sample_discrete
 from distributions.sparse_counter cimport SparseCounter
-from distributions.mixins import ComponentModel, Serializable
-
-#-------------------------------------------------------------------------
-# Datatypes
-
-ctypedef int Value
-
-cpdef Value OTHER = -1
-
-cdef class Group:
-    cdef SparseCounter * counts
-    def __cinit__(self):
-        self.counts = new SparseCounter()
-    def __dealloc__(self):
-        del self.counts
-
-    def load(self, dict raw):
-        cdef SparseCounter * counts = self.counts
-        counts.clear()
-        cdef dict raw_counts = raw['counts']
-        cdef str i
-        cdef int count
-        for i, count in raw_counts.iteritems():
-            self.counts.init_count(int(i), count)
-
-    def dump(self):
-        cdef dict counts = {}
-        cdef SparseCounter.iterator it = self.counts.begin()
-        cdef SparseCounter.iterator end = self.counts.end()
-        while it != end:
-            counts[str(deref(it).first)] = deref(it).second
-            inc(it)
-        return {'counts': counts}
-
-    def init(self, Model_cy model):
-        self.counts.clear()
-
-    def add_value(self, Model_cy model, Value value):
-        assert value != OTHER, 'tried to add OTHER to group'
-        self.counts.add(value)
-
-    def remove_value(self, Model_cy model, Value value):
-        assert value != OTHER, 'tried to remove OTHER to group'
-        self.counts.remove(value)
-
-    def merge(self, Model_cy model, Group source):
-        self.counts.merge(source.counts[0])
+from distributions.mixins import GroupIoMixin, SharedIoMixin
 
 
-# Buffer types only allowed as function local variables
-#ctypedef numpy.ndarray[numpy.float64_t, ndim=1] Sampler
-ctypedef numpy.ndarray Sampler
+NAME = 'DirichletProcessDiscrete'
+EXAMPLES = [
+    {
+        'shared': {
+            'gamma': 0.5,
+            'alpha': 0.5,
+            'betas': {  # beta0 must be zero for unit tests
+                '0': 0.25,
+                '1': 0.5,
+                '2': 0.25,
+            },
+        },
+        'values': [0, 1, 0, 2, 0, 1, 0],
+    },
+]
+Value = int
 
 
-cdef class Model_cy:
+ctypedef int _Value
+cpdef _Value OTHER = -1
+
+
+cdef class _Shared:
     cdef double gamma
     cdef double alpha
     cdef double beta0
@@ -109,111 +80,130 @@ cdef class Model_cy:
             'betas': {str(i): beta for i, beta in enumerate(self.betas)},
         }
 
-    #-------------------------------------------------------------------------
-    # Sampling
 
-    cpdef Sampler sampler_create(self, Group group=None):
-        cdef int size = self.betas.shape[0]
-        cdef numpy.ndarray[double, ndim=1] probs = \
-            numpy.zeros(size + 1, dtype=numpy.double)
-        probs[:-1] = self.betas * self.alpha
-        probs[-1] = self.beta0 * self.alpha
-        cdef SparseCounter.iterator it
-        cdef SparseCounter.iterator end
-        if group is not None:
-            counts = group.counts
-            it = group.counts.begin()
-            end = group.counts.end()
-            while it != end:
-                probs[deref(it).first] += deref(it).second
-                inc(it)
-        cdef numpy.ndarray[double, ndim=1] sampler = \
-            numpy.zeros(size + 1, dtype=numpy.double)
-        sample_dirichlet(
-            size + 1,
-            <double *> probs.data,
-            <double *> sampler.data)
-        return sampler
+class Shared(_Shared, SharedIoMixin):
+    pass
 
-    cpdef Value sampler_eval(self, Sampler sampler):
-        cdef int size = len(sampler)
-        cdef int index = sample_discrete(size + 1, <double *> sampler.data)
-        if index == size:
-            return OTHER
-        else:
-            return index
 
-    def sample_value(self, Group group):
-        cdef Sampler sampler = self.sampler_create(group)
-        return self.sampler_eval(sampler)
+cdef class _Group:
+    cdef SparseCounter * counts
 
-    def sample_group(self, int size):
-        cdef Sampler sampler = self.sampler_create()
-        cdef list result = []
-        cdef int i
-        for i in xrange(size):
-            result.append(self.sampler_eval(sampler))
-        return result
+    def __cinit__(self):
+        self.counts = new SparseCounter()
 
-    #-------------------------------------------------------------------------
-    # Scoring
+    def __dealloc__(self):
+        del self.counts
 
-    def score_value(self, Group group, Value value):
-        cdef SparseCounter * counts = group.counts
-        cdef double denom = self.alpha + counts.get_total()
-        cdef double numer
-        if value == OTHER:
-            numer = self.beta0 * self.alpha
-        else:
-            numer = self.betas[value] * self.alpha + counts.get_count(value)
-        return log(numer / denom)
+    def init(self, _Shared shared):
+        self.counts.clear()
 
-    def score_group(self, Group group):
-        assert len(self.betas), 'betas is empty'
-        cdef double score = 0.
-        cdef SparseCounter * counts = group.counts
-        cdef SparseCounter.iterator it = counts.begin()
-        cdef SparseCounter.iterator end = counts.end()
-        cdef int i
+    def add_value(self, _Shared shared, _Value value):
+        assert value != OTHER, 'tried to add OTHER to group'
+        self.counts.add(value)
+
+    def remove_value(self, _Shared shared, _Value value):
+        assert value != OTHER, 'tried to remove OTHER to group'
+        self.counts.remove(value)
+
+    def merge(self, _Shared shared, _Group source):
+        self.counts.merge(source.counts[0])
+
+    def load(self, dict raw):
+        cdef SparseCounter * counts = self.counts
+        counts.clear()
+        cdef dict raw_counts = raw['counts']
+        cdef str i
         cdef int count
-        cdef double prior_i
+        for i, count in raw_counts.iteritems():
+            self.counts.init_count(int(i), count)
+
+    def dump(self):
+        cdef dict counts = {}
+        cdef SparseCounter.iterator it = self.counts.begin()
+        cdef SparseCounter.iterator end = self.counts.end()
         while it != end:
-            i = deref(it).first
-            count = deref(it).second
-            prior_i = self.betas[i] * self.alpha
-            score += gammaln(prior_i + count) - gammaln(prior_i)
+            counts[str(deref(it).first)] = deref(it).second
             inc(it)
-        score += gammaln(self.alpha) - gammaln(self.alpha + counts.get_total())
-
-        return score
-
-    #-------------------------------------------------------------------------
-    # Examples
-
-    EXAMPLES = [
-        {
-            'model': {
-                'gamma': 0.5,
-                'alpha': 0.5,
-                'betas': {  # beta0 must be zero for unit tests
-                    '0': 0.25,
-                    '1': 0.5,
-                    '2': 0.25,
-                },
-            },
-            'values': [0, 1, 0, 2, 0, 1, 0],
-        },
-    ]
+        return {'counts': counts}
 
 
-class DirichletProcessDiscrete(Model_cy, ComponentModel, Serializable):
-
-    #-------------------------------------------------------------------------
-    # Datatypes
-
-    Value = int
-
-    Group = Group
+class Group(_Group, GroupIoMixin):
+    pass
 
 
-Model = DirichletProcessDiscrete
+# Buffer types only allowed as function local variables
+#ctypedef numpy.ndarray[numpy.float64_t, ndim=1] Sampler
+ctypedef numpy.ndarray _Sampler
+
+
+def sampler_create(_Shared shared, _Group group=None):
+    cdef int size = shared.betas.shape[0]
+    cdef numpy.ndarray[double, ndim=1] probs = \
+        numpy.zeros(size + 1, dtype=numpy.double)
+    probs[:-1] = shared.betas * shared.alpha
+    probs[-1] = shared.beta0 * shared.alpha
+    cdef SparseCounter.iterator it
+    cdef SparseCounter.iterator end
+    if group is not None:
+        counts = group.counts
+        it = group.counts.begin()
+        end = group.counts.end()
+        while it != end:
+            probs[deref(it).first] += deref(it).second
+            inc(it)
+    cdef numpy.ndarray[double, ndim=1] sampler = \
+        numpy.zeros(size + 1, dtype=numpy.double)
+    sample_dirichlet(
+        size + 1,
+        <double *> probs.data,
+        <double *> sampler.data)
+    return sampler
+
+def sampler_eval(_Shared shared, _Sampler sampler):
+    cdef int size = len(sampler)
+    cdef int index = sample_discrete(size + 1, <double *> sampler.data)
+    if index == size:
+        return OTHER
+    else:
+        return index
+
+def sample_value(_Shared shared, _Group group):
+    cdef _Sampler sampler = sampler_create(shared, group)
+    return sampler_eval(shared, sampler)
+
+def sample_group(_Shared shared, int size):
+    cdef _Sampler sampler = sampler_create(shared)
+    cdef list result = []
+    cdef int i
+    for i in xrange(size):
+        result.append(sampler_eval(shared, sampler))
+    return result
+
+def score_value(_Shared shared, _Group group, _Value value):
+    cdef SparseCounter * counts = group.counts
+    cdef double denom = shared.alpha + counts.get_total()
+    cdef double numer
+    if value == OTHER:
+        numer = shared.beta0 * shared.alpha
+    else:
+        numer = shared.betas[value] * shared.alpha + counts.get_count(value)
+    return log(numer / denom)
+
+def score_group(_Shared shared, _Group group):
+    assert len(shared.betas), 'betas is empty'
+    cdef double score = 0.
+    cdef SparseCounter * counts = group.counts
+    cdef SparseCounter.iterator it = counts.begin()
+    cdef SparseCounter.iterator end = counts.end()
+    cdef int i
+    cdef int count
+    cdef double prior_i
+    while it != end:
+        i = deref(it).first
+        count = deref(it).second
+        prior_i = shared.betas[i] * shared.alpha
+        score += gammaln(prior_i + count) - gammaln(prior_i)
+        inc(it)
+    score += gammaln(shared.alpha) - gammaln(shared.alpha + counts.get_total())
+
+    return score

@@ -30,16 +30,71 @@ cimport numpy
 numpy.import_array()
 from distributions.hp.special cimport sqrt, log, gammaln, log_factorial
 from distributions.hp.random cimport sample_poisson, sample_gamma
-from distributions.mixins import ComponentModel, Serializable
+from distributions.mixins import GroupIoMixin, SharedIoMixin
 
 
-ctypedef int Value
+NAME = 'GammaPoisson'
+EXAMPLES = [
+    {
+        'shared': {'alpha': 1., 'inv_beta': 1.},
+        'values': [0, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 2, 3],
+    }
+]
+Value = int
 
 
-cdef class Group:
+ctypedef int _Value
+
+
+cdef class _Shared:
+    cdef double alpha
+    cdef double inv_beta
+
+    cdef _Shared plus_group(self, _Group group):
+        cdef _Shared post = self.__class__()
+        post.alpha = self.alpha + group.sum
+        post.inv_beta = self.inv_beta + group.count
+        return post
+
+    def load(self, raw):
+        self.alpha = raw['alpha']
+        self.inv_beta = raw['inv_beta']
+
+    def dump(self):
+        return {
+            'alpha': self.alpha,
+            'inv_beta': self.inv_beta,
+        }
+
+
+class Shared(_Shared, SharedIoMixin):
+    pass
+
+
+cdef class _Group:
     cdef int count
     cdef int sum
     cdef double log_prod
+
+    def init(self, _Shared shared):
+        self.count = 0
+        self.sum = 0
+        self.log_prod = 0.
+
+    def add_value(self, _Shared shared, int value):
+        self.count += 1
+        self.sum += value
+        self.log_prod += log_factorial(value)
+
+    def remove_value(self, _Shared shared, int value):
+        self.count -= 1
+        self.sum -= value
+        self.log_prod -= log_factorial(value)
+
+    def merge(self, _Shared shared, _Group source):
+        self.count += source.count
+        self.sum += source.sum
+        self.log_prod += source.log_prod
 
     def load(self, raw):
         self.count = raw['count']
@@ -53,111 +108,48 @@ cdef class Group:
             'log_prod': self.log_prod,
         }
 
-    def init(self, Model_cy model):
-        self.count = 0
-        self.sum = 0
-        self.log_prod = 0.
 
-    def add_value(self, Model_cy model, int value):
-        self.count += 1
-        self.sum += value
-        self.log_prod += log_factorial(value)
-
-    def remove_value(self, Model_cy model, int value):
-        self.count -= 1
-        self.sum -= value
-        self.log_prod -= log_factorial(value)
-
-    def merge(self, Model_cy model, Group source):
-        self.count += source.count
-        self.sum += source.sum
-        self.log_prod += source.log_prod
+class Group(_Group, GroupIoMixin):
+    pass
 
 
-ctypedef double Sampler
+ctypedef double _Sampler
 
 
-cdef class Model_cy:
-    cdef double alpha
-    cdef double inv_beta
-
-    def load(self, raw):
-        self.alpha = raw['alpha']
-        self.inv_beta = raw['inv_beta']
-
-    def dump(self):
-        return {
-            'alpha': self.alpha,
-            'inv_beta': self.inv_beta,
-        }
-
-    #-------------------------------------------------------------------------
-    # Mutation
-
-    cdef Model_cy plus_group(self, Group group):
-        cdef Model_cy post = Model_cy()
-        post.alpha = self.alpha + group.sum
-        post.inv_beta = self.inv_beta + group.count
-        return post
-
-    #-------------------------------------------------------------------------
-    # Sampling
-
-    cpdef Sampler sampler_create(Model_cy self, Group group=None):
-        cdef Model_cy post = self if group is None else self.plus_group(group)
-        return sample_gamma(post.alpha, 1.0 / post.inv_beta)
-
-    cpdef Value sampler_eval(self, Sampler sampler):
-        return sample_poisson(sampler)
-
-    def sample_value(self, Group group):
-        cdef Sampler sampler = self.sampler_create(group)
-        return self.sampler_eval(sampler)
-
-    def sample_group(self, int size):
-        cdef Sampler sampler = self.sampler_create()
-        cdef list result = []
-        cdef int i
-        for i in xrange(size):
-            result.append(self.sampler_eval(sampler))
-        return result
-
-    #-------------------------------------------------------------------------
-    # Scoring
-
-    cpdef double score_value(self, Group group, Value value):
-        cdef Model_cy post = self.plus_group(group)
-        return gammaln(post.alpha + value) - gammaln(post.alpha) \
-            + post.alpha * log(post.inv_beta) \
-            - (post.alpha + value) * log(1. + post.inv_beta) \
-            - log_factorial(value)
-
-    def score_group(self, Group group):
-        cdef Model_cy post = self.plus_group(group)
-        return gammaln(post.alpha) - gammaln(self.alpha) \
-            + self.alpha * log(self.inv_beta) \
-            - post.alpha * log(post.inv_beta) \
-            - group.log_prod
-
-    #-------------------------------------------------------------------------
-    # Examples
-
-    EXAMPLES = [
-        {
-            'model': {'alpha': 1., 'inv_beta': 1.},
-            'values': [0, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 2, 3],
-        }
-    ]
+def sampler_create(_Shared shared, _Group group=None):
+    cdef _Shared post = shared if group is None else shared.plus_group(group)
+    return sample_gamma(post.alpha, 1.0 / post.inv_beta)
 
 
-class GammaPoisson(Model_cy, ComponentModel, Serializable):
-
-    #-------------------------------------------------------------------------
-    # Datatypes
-
-    Value = int
-
-    Group = Group
+def sampler_eval(_Shared shared, _Sampler sampler):
+    return sample_poisson(sampler)
 
 
-Model = GammaPoisson
+def sample_value(_Shared shared, _Group group):
+    cdef _Sampler sampler = sampler_create(shared, group)
+    return sampler_eval(shared, sampler)
+
+
+def sample_group(_Shared shared, int size):
+    cdef _Sampler sampler = sampler_create(shared)
+    cdef list result = []
+    cdef int i
+    for i in xrange(size):
+        result.append(sampler_eval(shared, sampler))
+    return result
+
+
+def score_value(_Shared shared, _Group group, _Value value):
+    cdef _Shared post = shared.plus_group(group)
+    return gammaln(post.alpha + value) - gammaln(post.alpha) \
+        + post.alpha * log(post.inv_beta) \
+        - (post.alpha + value) * log(1. + post.inv_beta) \
+        - log_factorial(value)
+
+
+def score_group(_Shared shared, _Group group):
+    cdef _Shared post = shared.plus_group(group)
+    return gammaln(post.alpha) - gammaln(shared.alpha) \
+        + shared.alpha * log(shared.inv_beta) \
+        - post.alpha * log(post.inv_beta) \
+        - group.log_prod

@@ -67,6 +67,8 @@ def list_models():
             result.add((name, flavor))
     for name, flavor in sorted(result):
         spec = {'flavor': flavor, 'name': name}
+        if name.startswith('_'):
+            continue
         try:
             import_model(spec)
             yield spec
