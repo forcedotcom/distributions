@@ -30,8 +30,8 @@ The official documentation lives at http://distributions.readthedocs.org/.
 
 Branch-specific documentation lives at
 
-* [/doc/overview.rst](Overview)
-* [/doc/installation.rst](Installation)
+* [Overview](/doc/overview.rst)
+* [Installation](/doc/installation.rst)
 
 
 ## Authors (alphabetically)
