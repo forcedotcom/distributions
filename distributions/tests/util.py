@@ -88,46 +88,59 @@ def assert_hasattr(thing, attr):
         "{} is missing attribute '{}'".format(thing.__name__, attr))
 
 
+def print_short(x, size=64):
+    string = str(x)
+    if len(string) > size:
+        string = string[:size - 3] + '...'
+    return string
+
+
 def assert_close(lhs, rhs, tol=TOL, err_msg=None):
-    if isinstance(lhs, dict):
-        assert_true(
-            isinstance(rhs, dict),
-            'type mismatch: {} vs {}'.format(type(lhs), type(rhs)))
-        assert_equal(set(lhs.keys()), set(rhs.keys()))
-        for key, val in lhs.iteritems():
-            msg = '{}[{}]'.format(err_msg or '', key)
-            assert_close(val, rhs[key], tol, msg)
-    elif isinstance(lhs, float) or isinstance(lhs, numpy.float64):
-        assert_true(
-            isinstance(rhs, float) or isinstance(rhs, numpy.float64),
-            'type mismatch: {} vs {}'.format(type(lhs), type(rhs)))
-        diff = abs(lhs - rhs)
-        norm = 1 + abs(lhs) + abs(rhs)
-        msg = '{} off by {}% = {}'.format(
-            err_msg or '',
-            100 * diff / norm,
-            diff)
-        assert_less(diff, tol * norm, msg)
-    elif isinstance(lhs, numpy.ndarray) or isinstance(rhs, numpy.ndarray):
-        assert_true(
-            (isinstance(lhs, numpy.ndarray) or isinstance(lhs, list)) and
-            (isinstance(rhs, numpy.ndarray) or isinstance(rhs, list)),
-            'type mismatch: {} vs {}'.format(type(lhs), type(rhs)))
-        decimal = int(round(-math.log10(tol)))
-        assert_array_almost_equal(
-            lhs,
-            rhs,
-            decimal=decimal,
-            err_msg=(err_msg or ''))
-    elif isinstance(lhs, list) or isinstance(lhs, tuple):
-        assert_true(
-            isinstance(rhs, list) or isinstance(rhs, tuple),
-            'type mismatch: {} vs {}'.format(type(lhs), type(rhs)))
-        for pos, (x, y) in enumerate(izip(lhs, rhs)):
-            msg = '{}[{}]'.format(err_msg or '', pos)
-            assert_close(x, y, tol, msg)
-    else:
-        assert_equal(lhs, rhs, err_msg)
+    try:
+        if isinstance(lhs, dict):
+            assert_true(
+                isinstance(rhs, dict),
+                'type mismatch: {} vs {}'.format(type(lhs), type(rhs)))
+            assert_equal(set(lhs.keys()), set(rhs.keys()))
+            for key, val in lhs.iteritems():
+                msg = '{}[{}]'.format(err_msg or '', key)
+                assert_close(val, rhs[key], tol, msg)
+        elif isinstance(lhs, float) or isinstance(lhs, numpy.float64):
+            assert_true(
+                isinstance(rhs, float) or isinstance(rhs, numpy.float64),
+                'type mismatch: {} vs {}'.format(type(lhs), type(rhs)))
+            diff = abs(lhs - rhs)
+            norm = 1 + abs(lhs) + abs(rhs)
+            msg = '{} off by {}% = {}'.format(
+                err_msg or '',
+                100 * diff / norm,
+                diff)
+            assert_less(diff, tol * norm, msg)
+        elif isinstance(lhs, numpy.ndarray) or isinstance(rhs, numpy.ndarray):
+            assert_true(
+                (isinstance(lhs, numpy.ndarray) or isinstance(lhs, list)) and
+                (isinstance(rhs, numpy.ndarray) or isinstance(rhs, list)),
+                'type mismatch: {} vs {}'.format(type(lhs), type(rhs)))
+            decimal = int(round(-math.log10(tol)))
+            assert_array_almost_equal(
+                lhs,
+                rhs,
+                decimal=decimal,
+                err_msg=(err_msg or ''))
+        elif isinstance(lhs, list) or isinstance(lhs, tuple):
+            assert_true(
+                isinstance(rhs, list) or isinstance(rhs, tuple),
+                'type mismatch: {} vs {}'.format(type(lhs), type(rhs)))
+            for pos, (x, y) in enumerate(izip(lhs, rhs)):
+                msg = '{}[{}]'.format(err_msg or '', pos)
+                assert_close(x, y, tol, msg)
+        else:
+            assert_equal(lhs, rhs, err_msg)
+    except Exception:
+        print err_msg or ''
+        print 'actual = {}'.format(print_short(lhs))
+        print 'expected = {}'.format(print_short(rhs))
+        raise
 
 
 def assert_all_close(collection, **kwargs):
