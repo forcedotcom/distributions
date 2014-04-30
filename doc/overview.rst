@@ -88,8 +88,8 @@ Each component model API consist of:
         model.scorer_create(group=empty) -> scorer  # python only, optional
         scorer.init(model, group)                   # c++ only
         scorer.eval(model, value) -> float          # python only, optional
-        model.score_value(group, value) -> float
-        model.score_group(group) -> float
+        group.score_value(shared, value) -> float
+        score_group(shared, group) -> float
 
 *   Mixture slave (optional in python).
     These provide batch operations on a collection of groups.
