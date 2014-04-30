@@ -44,11 +44,12 @@ namespace distributions
 // while maintaining a fixed number of empty groups.
 // Specific models may use this class, or maintain custom cached scores. 
 
-template<class Model, class count_t>
+template<class ModelT, class count_t>
 class MixtureDriver
 {
 public:
 
+    typedef ModelT Model;
     typedef std::unordered_set<size_t, TrivialHash<size_t>> IdSet;
 
     const std::vector<count_t> & counts () const { return counts_; }

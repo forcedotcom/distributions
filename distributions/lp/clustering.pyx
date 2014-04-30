@@ -76,7 +76,7 @@ cdef extern from 'distributions/clustering.hpp':
             void init (PitmanYor_cc &, vector[int] &) nogil except +
             bint add_value (PitmanYor_cc &, size_t) nogil except +
             bint remove_value (PitmanYor_cc &, size_t) nogil except +
-            void score (PitmanYor_cc &, VectorFloat &) nogil except +
+            void score_value (PitmanYor_cc &, VectorFloat &) nogil except +
         float score_counts(vector[int] & counts) nogil except +
         float score_add_value (
                 int group_size,
@@ -235,13 +235,13 @@ cdef class PitmanYorMixture:
     def remove_value(self, PitmanYor_cy model, int groupid):
         return self.ptr.remove_value(model.ptr[0], groupid)
 
-    def score(
+    def score_value(
             self,
             PitmanYor_cy model,
             numpy.ndarray[numpy.float32_t, ndim=1] scores):
         cdef VectorFloat scores_cc
         scores_cc.resize(self.ptr.size())
-        self.ptr.score(model.ptr[0], scores_cc)
+        self.ptr.score_value(model.ptr[0], scores_cc)
         vector_float_to_ndarray(scores_cc, scores)
 
 

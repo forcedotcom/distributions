@@ -96,7 +96,7 @@ class ImageModel(object):
 
         def score_value(self, model, xy, scores):
             x, y = xy
-            self.clustering.score(model.clustering, scores)
+            self.clustering.score_value(model.clustering, scores)
             self.feature_x.score_value(model.feature, x, scores)
             self.feature_y.score_value(model.feature, y, scores)
 
@@ -226,7 +226,7 @@ def compress_gibbs(passes=PASSES):
 
     for i, xy in enumerate(json_stream_load(SAMPLES)):
         scores.resize(len(mixture))
-        mixture.clustering.score(model.clustering, scores)
+        mixture.clustering.score_value(model.clustering, scores)
         groupid = sample_discrete_log(scores)
         mixture.add_value(model, groupid, xy)
         assignments[i] = mixture.id_tracker.packed_to_global(groupid)

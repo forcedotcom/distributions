@@ -190,7 +190,7 @@ struct PitmanYor
             return remove_group;
         }
 
-        void score (const Model & model, VectorFloat & scores) const
+        void score_value (const Model & model, AlignedFloats scores) const
         {
             if (DIST_DEBUG_LEVEL >= 1) {
                 DIST_ASSERT_EQ(scores.size(), counts().size());

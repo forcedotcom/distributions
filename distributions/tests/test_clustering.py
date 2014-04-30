@@ -271,7 +271,7 @@ def test_mixture_score_matches_score_add_value(Model, EXAMPLE, *unused):
         noise = numpy.random.randn(len(counts))
         actual = numpy.zeros(len(counts), dtype=numpy.float32)
         actual[:] = noise
-        mixture.score(model, actual)
+        mixture.score_value(model, actual)
         assert_close(actual, expected)
         return actual
 
