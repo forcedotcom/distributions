@@ -169,15 +169,20 @@ public:
     typedef gamma_poisson::Group Group;
     typedef gamma_poisson::Scorer Scorer;
 
-    std::vector<Group> & groups () { return groups_; }
-    const std::vector<Group> & groups () const { return groups_; }
+    std::vector<Group> & groups () { return slave_.groups(); }
+    Group & groups (size_t i) { return slave_.groups(i); }
+    const std::vector<Group> & groups () const { return slave_.groups(); }
+    const Group & groups (size_t i) const { return slave_.groups(i); }
 
     void init (
             const Shared & shared,
             rng_t & rng)
     {
-        const size_t group_count = groups_.size();
-        _resize(shared, group_count);
+        const size_t group_count = slave_.groups().size();
+        score.resize(group_count);
+        post_alpha.resize(group_count);
+        score_coeff.resize(group_count);
+        temp.resize(group_count);
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
             _update_group(shared, groupid, rng);
         }
@@ -187,10 +192,12 @@ public:
             const Shared & shared,
             rng_t & rng)
     {
-        const size_t groupid = groups_.size();
-        const size_t group_count = groupid + 1;
-        _resize(shared, group_count);
-        groups_.back().init(shared, rng);
+        const size_t groupid = slave_.groups().size();
+        slave_.add_group(shared, rng);
+        score.packed_add();
+        post_alpha.packed_add();
+        score_coeff.packed_add();
+        temp.packed_add();
         _update_group(shared, groupid, rng);
     }
 
@@ -198,15 +205,11 @@ public:
             const Shared & shared,
             size_t groupid)
     {
-        DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
-        const size_t group_count = groups_.size() - 1;
-        if (groupid != group_count) {
-            std::swap(groups_[groupid], groups_.back());
-            score[groupid] = score.back();
-            post_alpha[groupid] = post_alpha.back();
-            score_coeff[groupid] = score_coeff.back();
-        }
-        _resize(shared, group_count);
+        slave_.remove_group(shared, groupid);
+        score.packed_remove(groupid);
+        post_alpha.packed_remove(groupid);
+        score_coeff.packed_remove(groupid);
+        temp.packed_remove(groupid);
     }
 
     void add_value (
@@ -215,9 +218,7 @@ public:
             const Value & value,
             rng_t & rng)
     {
-        DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
-        Group & group = groups_[groupid];
-        group.add_value(shared, value, rng);
+        slave_.add_value(shared, groupid, value, rng);
         _update_group(shared, groupid, rng);
     }
 
@@ -227,9 +228,7 @@ public:
             const Value & value,
             rng_t & rng)
     {
-        DIST_ASSERT2(groupid < groups_.size(), "bad groupid: " << groupid);
-        Group & group = groups_[groupid];
-        group.remove_value(shared, value, rng);
+        slave_.remove_value(shared, groupid, value, rng);
         _update_group(shared, groupid, rng);
     }
 
@@ -240,9 +239,16 @@ public:
             rng_t & rng) const
     {
         if (DIST_DEBUG_LEVEL >= 2) {
-            DIST_ASSERT_EQ(scores_accum.size(), groups_.size());
+            DIST_ASSERT_EQ(scores_accum.size(), slave_.groups().size());
         }
         _score_value(shared, value, scores_accum, rng);
+    }
+
+    float score_mixture (
+            const Shared & shared,
+            rng_t & rng) const
+    {
+        return slave_.score_mixture(shared, rng);
     }
 
 private:
@@ -252,23 +258,12 @@ private:
             size_t groupid,
             rng_t & rng)
     {
-        const Group & group = groups_[groupid];
+        const Group & group = slave_.groups(groupid);
         Scorer scorer;
         scorer.init(shared, group, rng);
         score[groupid] = scorer.score;
         post_alpha[groupid] = scorer.post_alpha;
         score_coeff[groupid] = scorer.score_coeff;
-    }
-
-    void _resize (
-            const Shared & shared,
-            size_t group_count)
-    {
-        groups_.resize(group_count);
-        score.resize(group_count);
-        post_alpha.resize(group_count);
-        score_coeff.resize(group_count);
-        temp.resize(group_count);
     }
 
     void _score_value (
@@ -277,7 +272,7 @@ private:
             VectorFloat & scores_accum,
             rng_t &) const;
 
-    std::vector<Group> groups_;
+    MixtureSlave<Shared> slave_;
     VectorFloat score;
     VectorFloat post_alpha;
     VectorFloat score_coeff;

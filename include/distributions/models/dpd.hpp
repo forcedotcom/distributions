@@ -291,6 +291,13 @@ public:
             scores_shift.data());
     }
 
+    float score_mixture (
+            const Shared & shared,
+            rng_t & rng) const
+    {
+        return slave_.score_mixture(shared, rng);
+    }
+
 private:
 
     MixtureSlave<Shared> slave_;
