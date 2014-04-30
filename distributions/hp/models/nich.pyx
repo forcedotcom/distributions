@@ -155,6 +155,17 @@ cdef class _Group:
         self.count_times_variance += \
             source.count_times_variance + cross_part * delta * delta
 
+    def score_value(self, _Shared shared, _Value value):
+        """
+        \cite{murphy2007conjugate}, Eq. 176
+        """
+        cdef _Shared post = shared.plus_group(self)
+        return score_student_t(
+            value,
+            post.nu,
+            post.mu,
+            ((1 + post.kappa) * post.sigmasq) / post.kappa)
+
     def load(self, dict raw):
         self.count = raw['count']
         self.mean = raw['mean']
@@ -205,18 +216,6 @@ def sample_group(_Shared shared, int size):
     for i in xrange(size):
         result.append(sampler_eval(shared, sampler))
     return result
-
-
-def score_value(_Shared shared, _Group group, _Value value):
-    """
-    \cite{murphy2007conjugate}, Eq. 176
-    """
-    cdef _Shared post = shared.plus_group(group)
-    return score_student_t(
-        value,
-        post.nu,
-        post.mu,
-        ((1 + post.kappa) * post.sigmasq) / post.kappa)
 
 
 def score_group(_Shared shared, _Group group):

@@ -96,6 +96,13 @@ cdef class _Group:
         self.sum += source.sum
         self.log_prod += source.log_prod
 
+    def score_value(self, _Shared shared, _Value value):
+        cdef _Shared post = shared.plus_group(self)
+        return gammaln(post.alpha + value) - gammaln(post.alpha) \
+            + post.alpha * log(post.inv_beta) \
+            - (post.alpha + value) * log(1. + post.inv_beta) \
+            - log_factorial(value)
+
     def load(self, raw):
         self.count = raw['count']
         self.sum = raw['sum']
@@ -137,14 +144,6 @@ def sample_group(_Shared shared, int size):
     for i in xrange(size):
         result.append(sampler_eval(shared, sampler))
     return result
-
-
-def score_value(_Shared shared, _Group group, _Value value):
-    cdef _Shared post = shared.plus_group(group)
-    return gammaln(post.alpha + value) - gammaln(post.alpha) \
-        + post.alpha * log(post.inv_beta) \
-        - (post.alpha + value) * log(1. + post.inv_beta) \
-        - log_factorial(value)
 
 
 def score_group(_Shared shared, _Group group):

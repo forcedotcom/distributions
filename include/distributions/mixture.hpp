@@ -246,7 +246,7 @@ public:
 
         const size_t group_count = groups_.size();
         for (size_t i = 0; i < group_count; ++i) {
-            scores_accum[i] += groups_[i].score(shared, value, rng);
+            scores_accum[i] += groups_[i].score_value(shared, value, rng);
         }
     }
 

@@ -140,10 +140,10 @@ def test_interface(module, EXAMPLE):
     group2.merge(shared, group1)
 
     for value in values:
-        module.score_value(shared, group1, value)
+        group1.score_value(shared, value)
     for _ in xrange(10):
         value = module.sample_value(shared, group1)
-        module.score_value(shared, group1, value)
+        group1.score_value(shared, value)
         module.sample_group(shared, 10)
     module.score_group(shared, group1)
     module.score_group(shared, group2)
@@ -200,7 +200,7 @@ def test_add_remove(module, EXAMPLE):
     for _ in range(DATA_COUNT):
         value = module.sample_value(shared, group)
         values.append(value)
-        score += module.score_value(shared, group, value)
+        score += group.score_value(shared, value)
         group.add_value(shared, value)
 
     group_all = module.Group.from_dict(group.dump())
@@ -291,13 +291,13 @@ def test_sample_value(module, EXAMPLE):
             module.sample_value(shared, group) for _ in xrange(SAMPLE_COUNT)]
         if module.Value == int:
             probs_dict = {
-                value: math.exp(module.score_value(shared, group, value))
+                value: math.exp(group.score_value(shared, value))
                 for value in set(samples)
             }
             gof = discrete_goodness_of_fit(samples, probs_dict, plot=True)
         elif module.Value == float:
             probs = numpy.exp([
-                module.score_value(shared, group, value)
+                group.score_value(shared, value)
                 for value in samples
             ])
             gof = density_goodness_of_fit(samples, probs, plot=True)
@@ -341,7 +341,7 @@ def test_scorer(module, EXAMPLE):
     for value in values:
         score1 = shared.scorer_eval(scorer1, value)
         score2 = shared.scorer_eval(scorer2, value)
-        score3 = module.score_value(shared, group, value)
+        score3 = group.score_value(shared, value)
         assert_all_close([score1, score2, score3])
 
 
@@ -396,7 +396,7 @@ def test_mixture_score(module, EXAMPLE):
 
     def check_scores():
         expected = [
-            module.score_value(shared, group, value) for group in groups]
+            group.score_value(shared, value) for group in groups]
         actual = numpy.zeros(len(mixture), dtype=numpy.float32)
         noise = numpy.random.randn(len(actual))
         actual += noise

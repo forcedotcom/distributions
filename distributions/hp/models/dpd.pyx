@@ -108,6 +108,16 @@ cdef class _Group:
     def merge(self, _Shared shared, _Group source):
         self.counts.merge(source.counts[0])
 
+    def score_value(self, _Shared shared, _Value value):
+        cdef SparseCounter * counts = self.counts
+        cdef double denom = shared.alpha + counts.get_total()
+        cdef double numer
+        if value == OTHER:
+            numer = shared.beta0 * shared.alpha
+        else:
+            numer = shared.betas[value] * shared.alpha + counts.get_count(value)
+        return log(numer / denom)
+
     def load(self, dict raw):
         cdef SparseCounter * counts = self.counts
         counts.clear()
@@ -178,16 +188,6 @@ def sample_group(_Shared shared, int size):
     for i in xrange(size):
         result.append(sampler_eval(shared, sampler))
     return result
-
-def score_value(_Shared shared, _Group group, _Value value):
-    cdef SparseCounter * counts = group.counts
-    cdef double denom = shared.alpha + counts.get_total()
-    cdef double numer
-    if value == OTHER:
-        numer = shared.beta0 * shared.alpha
-    else:
-        numer = shared.betas[value] * shared.alpha + counts.get_count(value)
-    return log(numer / denom)
 
 def score_group(_Shared shared, _Group group):
     assert len(shared.betas), 'betas is empty'

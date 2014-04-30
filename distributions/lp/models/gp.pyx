@@ -51,5 +51,4 @@ class Group(_Group, GroupIoMixin):
 Mixture = _gp.Mixture
 sample_value = _gp.sample_value
 sample_group = _gp.sample_group
-score_value = _gp.score_value
 score_group = _gp.score_group

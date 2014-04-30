@@ -120,6 +120,20 @@ class Group(GroupIoMixin):
             self.counts[value] = new_count
         self.total -= 1
 
+    def score_value(self, shared, value):
+        """
+        Adapted from dd.py, which was adapted from:
+        McCallum, et. al, 'Rethinking LDA: Why Priors Matter' eqn 4
+        """
+        denom = shared.alpha + self.total
+        if value == OTHER:
+            numer = shared.beta0 * shared.alpha
+        else:
+            numer = (
+                shared.betas[value] * shared.alpha +
+                self.counts.get(value, 0))
+        return log(numer / denom)
+
     def merge(self, model, source):
         for i, count in source.counts.iteritems():
             self.counts[i] = self.counts.get(i, 0) + count
@@ -182,19 +196,6 @@ def sample_value(shared, group):
 def sample_group(shared, size):
     sampler = sampler_create(shared)
     return [sampler_eval(shared, sampler) for _ in xrange(size)]
-
-
-def score_value(shared, group, value):
-    """
-    Adapted from dd.py, which was adapted from:
-    McCallum, et. al, 'Rethinking LDA: Why Priors Matter' eqn 4
-    """
-    denom = shared.alpha + group.total
-    if value == OTHER:
-        numer = shared.beta0 * shared.alpha
-    else:
-        numer = shared.betas[value] * shared.alpha + group.counts.get(value, 0)
-    return log(numer / denom)
 
 
 def score_group(shared, group):

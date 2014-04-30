@@ -88,6 +88,15 @@ class Group(GroupIoMixin):
     def merge(self, shared, source):
         self.counts += source.counts
 
+    def score_value(self, shared, value):
+        """
+        \cite{wallach2009rethinking} Eqn 4.
+        McCallum, et. al, 'Rething LDA: Why Priors Matter'
+        """
+        numer = self.counts[value] + shared.alphas[value]
+        denom = self.counts.sum() + shared.alphas.sum()
+        return log(numer / denom)
+
     def load(self, raw):
         self.counts = numpy.array(raw['counts'], dtype=numpy.int)
 
@@ -122,16 +131,6 @@ def sample_value(shared, group):
 def sample_group(shared, size):
     sampler = sampler_create(shared)
     return [sampler_eval(shared, sampler) for _ in xrange(size)]
-
-
-def score_value(shared, group, value):
-    """
-    \cite{wallach2009rethinking} Eqn 4.
-    McCallum, et. al, 'Rething LDA: Why Priors Matter'
-    """
-    numer = group.counts[value] + shared.alphas[value]
-    denom = group.counts.sum() + shared.alphas.sum()
-    return log(numer / denom)
 
 
 def score_group(shared, group):

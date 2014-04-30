@@ -107,6 +107,11 @@ struct Group
         sum += source.sum;
         log_prod += source.log_prod;
     }
+
+    float score_value (
+            const Shared & shared,
+            const Value & value,
+            rng_t & rng);
 };
 
 struct Sampler
@@ -159,6 +164,16 @@ struct Scorer
              + score_coeff * value;
     }
 };
+
+inline float Group::score_value (
+        const Shared & shared,
+        const Value & value,
+        rng_t & rng)
+{
+    Scorer scorer;
+    scorer.init(shared, * this, rng);
+    return scorer.eval(shared, value, rng);
+}
 
 class Mixture
 {
@@ -296,17 +311,6 @@ inline Value sample_value (
     Sampler sampler;
     sampler.init(shared, group, rng);
     return sampler.eval(shared, rng);
-}
-
-inline float score_value (
-        const Shared & shared,
-        const Group & group,
-        const Value & value,
-        rng_t & rng)
-{
-    Scorer scorer;
-    scorer.init(shared, group, rng);
-    return scorer.eval(shared, value, rng);
 }
 
 inline float score_group (

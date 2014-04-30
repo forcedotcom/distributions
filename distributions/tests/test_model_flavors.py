@@ -81,7 +81,7 @@ def _test_group(name):
 
         for value in values:
             scores = [
-                module.score_value(shared, group, value)
+                group.score_value(shared, value)
                 for module, shared, group in modules_shareds_groups
             ]
             assert_all_close(scores, err_msg='score_value')

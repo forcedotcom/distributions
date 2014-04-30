@@ -82,5 +82,4 @@ class Group(_Group, GroupIoMixin):
 Mixture = _dpd.Mixture
 sample_value = _dpd.sample_value
 sample_group = _dpd.sample_group
-score_value = _dpd.score_value
 score_group = _dpd.score_group

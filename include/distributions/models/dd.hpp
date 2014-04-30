@@ -115,6 +115,11 @@ struct Group
             counts[value] += source.counts[value];
         }
     }
+
+    float score_value (
+            const Shared<max_dim> & shared,
+            const Value & value,
+            rng_t & rng);
 };
 
 template<int max_dim>
@@ -170,6 +175,18 @@ struct Scorer
         return fast_log(alphas[value] / alpha_sum);
     }
 };
+
+template<int max_dim>
+inline float Group<max_dim>::score_value (
+        const Shared<max_dim> & shared,
+        const Value & value,
+        rng_t & rng)
+{
+    Scorer<max_dim> scorer;
+    scorer.init(shared, * this, rng);
+    return scorer.eval(shared, value, rng);
+}
+
 
 template<int max_dim>
 class Mixture
@@ -306,18 +323,6 @@ inline Value sample_value (
     Sampler<max_dim> sampler;
     sampler.init(shared, group, rng);
     return sampler.eval(shared, rng);
-}
-
-template<int max_dim>
-inline float score_value (
-        const Shared<max_dim> & shared,
-        const Group<max_dim> & group,
-        const Value & value,
-        rng_t & rng)
-{
-    Scorer<max_dim> scorer;
-    scorer.init(shared, group, rng);
-    return scorer.eval(shared, value, rng);
 }
 
 template<int max_dim>

@@ -98,6 +98,16 @@ cdef class _Group:
         for i in xrange(self.dim):
             self.counts[i] += source.counts[i]
 
+    def score_value(self, _Shared shared, _Value value):
+        """
+        McCallum, et. al, 'Rethinking LDA: Why Priors Matter' eqn 4
+        """
+        cdef double total = 0.0
+        cdef int i
+        for i in xrange(shared.dim):
+            total += self.counts[i] + shared.alphas[i]
+        return log((self.counts[value] + shared.alphas[value]) / total)
+
     def load(self, raw):
         counts = raw['counts']
         self.dim = len(counts)
@@ -147,16 +157,6 @@ def sample_group(_Shared shared, int size):
     for i in xrange(size):
         result.append(sampler_eval(shared, sampler))
     return result
-
-def score_value(_Shared shared, _Group group, _Value value):
-    """
-    McCallum, et. al, 'Rethinking LDA: Why Priors Matter' eqn 4
-    """
-    cdef double total = 0.0
-    cdef int i
-    for i in xrange(shared.dim):
-        total += group.counts[i] + shared.alphas[i]
-    return log((group.counts[value] + shared.alphas[value]) / total)
 
 def score_group(_Shared shared, _Group group):
     """

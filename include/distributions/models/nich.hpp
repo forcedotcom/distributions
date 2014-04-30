@@ -131,6 +131,11 @@ struct Group
         count_times_variance +=
             source.count_times_variance + cross_part * sqr(delta);
     }
+
+    float score_value (
+            const Shared & shared,
+            const Value & value,
+            rng_t & rng);
 };
 
 struct Sampler
@@ -187,6 +192,16 @@ struct Scorer
                  1.f + precision * sqr(value - mean));
     }
 };
+
+inline float Group::score_value (
+        const Shared & shared,
+        const Value & value,
+        rng_t & rng)
+{
+    Scorer scorer;
+    scorer.init(shared, * this, rng);
+    return scorer.eval(shared, value, rng);
+}
 
 class Mixture
 {
@@ -328,17 +343,6 @@ inline Value sample_value (
     Sampler sampler;
     sampler.init(shared, group, rng);
     return sampler.eval(shared, rng);
-}
-
-inline float score_value (
-        const Shared & shared,
-        const Group & group,
-        const Value & value,
-        rng_t & rng)
-{
-    Scorer scorer;
-    scorer.init(shared, group, rng);
-    return scorer.eval(shared, value, rng);
 }
 
 inline float score_group (

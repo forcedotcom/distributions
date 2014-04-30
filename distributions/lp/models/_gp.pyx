@@ -28,6 +28,9 @@ cdef class Group:
     def merge(self, Shared shared, Group source):
         self.ptr.merge(shared.ptr[0], source.ptr[0], get_rng()[0])
 
+    def score_value(self, Shared shared, Value value):
+        return self.ptr.score_value(shared.ptr[0], value, get_rng()[0])
+
 
 cdef class Mixture:
     def __cinit__(self):
@@ -92,10 +95,6 @@ def sample_group(Shared shared, int size):
         value = sampler.eval(shared.ptr[0], get_rng()[0])
         result.append(value)
     return result
-
-
-def score_value(Shared shared, Group group, Value value):
-    return _h.score_value(shared.ptr[0], group.ptr[0], value, get_rng()[0])
 
 
 def score_group(Shared shared, Group group):

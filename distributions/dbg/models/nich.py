@@ -159,6 +159,17 @@ class Group(GroupIoMixin):
         self.count_times_variance += \
             source.count_times_variance + cross_part * delta * delta
 
+    def score_value(self, shared, value):
+        """
+        \cite{murphy2007conjugate}, Eq. 176
+        """
+        post = shared.plus_group(self)
+        return score_student_t(
+            value,
+            post.nu,
+            post.mu,
+            ((1 + post.kappa) * post.sigmasq) / post.kappa)
+
     def load(self, raw):
         self.count = int(raw['count'])
         self.mean = float(raw['mean'])
@@ -208,18 +219,6 @@ def sample_value(shared, group):
 def sample_group(shared, size):
     sampler = sampler_create(shared)
     return [sampler_eval(shared, sampler) for _ in xrange(size)]
-
-
-def score_value(shared, group, value):
-    """
-    \cite{murphy2007conjugate}, Eq. 176
-    """
-    post = shared.plus_group(group)
-    return score_student_t(
-        value,
-        post.nu,
-        post.mu,
-        ((1 + post.kappa) * post.sigmasq) / post.kappa)
 
 
 def score_group(shared, group):

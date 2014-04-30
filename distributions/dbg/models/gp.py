@@ -97,6 +97,13 @@ class Group(GroupIoMixin):
         self.sum += source.sum
         self.log_prod += source.log_prod
 
+    def score_value(self, model, value):
+        post = model.plus_group(self)
+        return gammaln(post.alpha + value) - gammaln(post.alpha) \
+            + post.alpha * log(post.inv_beta) \
+            - (post.alpha + value) * log(1. + post.inv_beta) \
+            - log(factorial(value))
+
     def load(self, raw):
         self.count = int(raw['count'])
         self.sum = int(raw['sum'])
@@ -118,14 +125,6 @@ class Group(GroupIoMixin):
         message.count = self.count
         message.sum = self.sum
         message.log_prod = self.log_prod
-
-
-def score_value(model, group, value):
-    post = model.plus_group(group)
-    return gammaln(post.alpha + value) - gammaln(post.alpha) \
-        + post.alpha * log(post.inv_beta) \
-        - (post.alpha + value) * log(1. + post.inv_beta) \
-        - log(factorial(value))
 
 
 def score_group(model, group):
