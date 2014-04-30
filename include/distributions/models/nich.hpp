@@ -31,6 +31,7 @@
 #include <distributions/special.hpp>
 #include <distributions/random.hpp>
 #include <distributions/vector.hpp>
+#include <distributions/mixture.hpp>
 
 namespace distributions {
 namespace normal_inverse_chi_sq {

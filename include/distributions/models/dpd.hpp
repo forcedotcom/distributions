@@ -33,6 +33,7 @@
 #include <distributions/sparse_counter.hpp>
 #include <distributions/vector.hpp>
 #include <distributions/vector_math.hpp>
+#include <distributions/mixture.hpp>
 
 namespace distributions {
 namespace dirichlet_process_discrete {
@@ -185,25 +186,28 @@ public:
     typedef dirichlet_process_discrete::Group Group;
     typedef dirichlet_process_discrete::Scorer Scorer;
 
-    std::vector<Group> & groups () { return groups_; }
-    const std::vector<Group> & groups () const { return groups_; }
+    std::vector<Group> & groups () { return slave_.groups(); }
+    Group & groups (size_t i) { return slave_.groups(i); }
+    const std::vector<Group> & groups () const { return slave_.groups(); }
+    const Group & groups (size_t i) const { return slave_.groups(i); }
 
     void init (
             const Shared & shared,
-            rng_t &)
+            rng_t & rng)
     {
         const Value dim = shared.betas.size();
-        const size_t group_count = groups_.size();
+        const size_t group_count = slave_.groups().size();
         scores_shift.resize(group_count);
         scores.resize(dim);
         for (Value value = 0; value < dim; ++value) {
             scores[value].resize(group_count);
         }
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
-            const Group & group = groups_[groupid];
+            const Group & group = slave_.groups(groupid);
             for (Value value = 0; value < dim; ++value) {
                 scores[value][groupid] =
-                    shared.alpha * shared.betas[value] + group.counts.get_count(value);
+                    shared.alpha * shared.betas[value]
+                    + group.counts.get_count(value);
             }
             scores_shift[groupid] = shared.alpha + group.counts.get_total();
         }
@@ -217,13 +221,11 @@ public:
             const Shared & shared,
             rng_t & rng)
     {
+        slave_.add_group(shared, rng);
+        scores_shift.packed_add(0);
         const Value dim = shared.betas.size();
-        const size_t group_count = groups_.size() + 1;
-        groups_.resize(group_count);
-        groups_.back().init(shared, rng);
-        scores_shift.resize(group_count, 0);
         for (Value value = 0; value < dim; ++value) {
-            scores[value].resize(group_count, 0);
+            scores[value].packed_add(0);
         }
     }
 
@@ -231,21 +233,11 @@ public:
             const Shared & shared,
             size_t groupid)
     {
-        DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
+        slave_.remove_group(shared, groupid);
+        scores_shift.packed_remove(groupid);
         const Value dim = shared.betas.size();
-        const size_t group_count = groups_.size() - 1;
-        if (groupid != group_count) {
-            std::swap(groups_[groupid], groups_.back());
-            scores_shift[groupid] = scores_shift.back();
-            for (Value value = 0; value < dim; ++value) {
-                VectorFloat & vscores = scores[value];
-                vscores[groupid] = vscores.back();
-            }
-        }
-        groups_.resize(group_count);
-        scores_shift.resize(group_count);
         for (Value value = 0; value < dim; ++value) {
-            scores[value].resize(group_count);
+            scores[value].packed_remove(groupid);
         }
     }
 
@@ -253,14 +245,15 @@ public:
             const Shared & shared,
             size_t groupid,
             const Value & value,
-            rng_t &)
+            rng_t & rng)
     {
-        DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
         DIST_ASSERT1(value < shared.betas.size(), "value out of bounds");
-        Group & group = groups_[groupid];
-        count_t count = group.counts.add(value);
+        slave_.add_value(shared, groupid, value, rng);
+        const Group & group = slave_.groups(groupid);
+        count_t count = group.counts.get_count(value);
         count_t count_sum = group.counts.get_total();
-        scores[value][groupid] = fast_log(shared.alpha * shared.betas[value] + count);
+        scores[value][groupid] =
+            fast_log(shared.alpha * shared.betas[value] + count);
         scores_shift[groupid] = fast_log(shared.alpha + count_sum);
     }
 
@@ -268,14 +261,15 @@ public:
             const Shared & shared,
             size_t groupid,
             const Value & value,
-            rng_t &)
+            rng_t & rng)
     {
-        DIST_ASSERT2(groupid < groups_.size(), "bad groupid: " << groupid);
         DIST_ASSERT1(value < shared.betas.size(), "value out of bounds");
-        Group & group = groups_[groupid];
-        count_t count = group.counts.remove(value);
+        slave_.remove_value(shared, groupid, value, rng);
+        const Group & group = slave_.groups(groupid);
+        count_t count = group.counts.get_count(value);
         count_t count_sum = group.counts.get_total();
-        scores[value][groupid] = fast_log(shared.alpha * shared.betas[value] + count);
+        scores[value][groupid] =
+            fast_log(shared.alpha * shared.betas[value] + count);
         scores_shift[groupid] = fast_log(shared.alpha + count_sum);
     }
 
@@ -287,9 +281,9 @@ public:
     {
         DIST_ASSERT1(value < shared.betas.size(), "value out of bounds");
         if (DIST_DEBUG_LEVEL >= 2) {
-            DIST_ASSERT_EQ(scores_accum.size(), groups_.size());
+            DIST_ASSERT_EQ(scores_accum.size(), slave_.groups().size());
         }
-        const size_t group_count = groups_.size();
+        const size_t group_count = slave_.groups().size();
         vector_add_subtract(
             group_count,
             scores_accum.data(),
@@ -299,7 +293,7 @@ public:
 
 private:
 
-    std::vector<Group> groups_;
+    MixtureSlave<Shared> slave_;
     std::vector<VectorFloat> scores;  // dense
     VectorFloat scores_shift;
 };
