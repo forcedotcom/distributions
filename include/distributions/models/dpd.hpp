@@ -172,30 +172,31 @@ struct Scorer
     }
 };
 
-struct Mixture
+class Mixture
 {
+public:
+
     typedef dirichlet_process_discrete::Value Value;
     typedef dirichlet_process_discrete::Shared Shared;
     typedef dirichlet_process_discrete::Group Group;
     typedef dirichlet_process_discrete::Scorer Scorer;
 
-    std::vector<Group> groups;
-    std::vector<VectorFloat> scores;  // dense
-    VectorFloat scores_shift;
+    std::vector<Group> & groups () { return groups_; }
+    const std::vector<Group> & groups () const { return groups_; }
 
     void init (
             const Shared & shared,
             rng_t &)
     {
         const Value dim = shared.betas.size();
-        const size_t group_count = groups.size();
+        const size_t group_count = groups_.size();
         scores_shift.resize(group_count);
         scores.resize(dim);
         for (Value value = 0; value < dim; ++value) {
             scores[value].resize(group_count);
         }
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
-            const Group & group = groups[groupid];
+            const Group & group = groups_[groupid];
             for (Value value = 0; value < dim; ++value) {
                 scores[value][groupid] =
                     shared.alpha * shared.betas[value] + group.counts.get_count(value);
@@ -213,9 +214,9 @@ struct Mixture
             rng_t & rng)
     {
         const Value dim = shared.betas.size();
-        const size_t group_count = groups.size() + 1;
-        groups.resize(group_count);
-        groups.back().init(shared, rng);
+        const size_t group_count = groups_.size() + 1;
+        groups_.resize(group_count);
+        groups_.back().init(shared, rng);
         scores_shift.resize(group_count, 0);
         for (Value value = 0; value < dim; ++value) {
             scores[value].resize(group_count, 0);
@@ -226,18 +227,18 @@ struct Mixture
             const Shared & shared,
             size_t groupid)
     {
-        DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
+        DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
         const Value dim = shared.betas.size();
-        const size_t group_count = groups.size() - 1;
+        const size_t group_count = groups_.size() - 1;
         if (groupid != group_count) {
-            std::swap(groups[groupid], groups.back());
+            std::swap(groups_[groupid], groups_.back());
             scores_shift[groupid] = scores_shift.back();
             for (Value value = 0; value < dim; ++value) {
                 VectorFloat & vscores = scores[value];
                 vscores[groupid] = vscores.back();
             }
         }
-        groups.resize(group_count);
+        groups_.resize(group_count);
         scores_shift.resize(group_count);
         for (Value value = 0; value < dim; ++value) {
             scores[value].resize(group_count);
@@ -250,9 +251,9 @@ struct Mixture
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
+        DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
         DIST_ASSERT1(value < shared.betas.size(), "value out of bounds");
-        Group & group = groups[groupid];
+        Group & group = groups_[groupid];
         count_t count = group.counts.add(value);
         count_t count_sum = group.counts.get_total();
         scores[value][groupid] = fast_log(shared.alpha * shared.betas[value] + count);
@@ -265,9 +266,9 @@ struct Mixture
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT2(groupid < groups.size(), "bad groupid: " << groupid);
+        DIST_ASSERT2(groupid < groups_.size(), "bad groupid: " << groupid);
         DIST_ASSERT1(value < shared.betas.size(), "value out of bounds");
-        Group & group = groups[groupid];
+        Group & group = groups_[groupid];
         count_t count = group.counts.remove(value);
         count_t count_sum = group.counts.get_total();
         scores[value][groupid] = fast_log(shared.alpha * shared.betas[value] + count);
@@ -282,15 +283,21 @@ struct Mixture
     {
         DIST_ASSERT1(value < shared.betas.size(), "value out of bounds");
         if (DIST_DEBUG_LEVEL >= 2) {
-            DIST_ASSERT_EQ(scores_accum.size(), groups.size());
+            DIST_ASSERT_EQ(scores_accum.size(), groups_.size());
         }
-        const size_t group_count = groups.size();
+        const size_t group_count = groups_.size();
         vector_add_subtract(
             group_count,
             scores_accum.data(),
             scores[value].data(),
             scores_shift.data());
     }
+
+private:
+
+    std::vector<Group> groups_;
+    std::vector<VectorFloat> scores;  // dense
+    VectorFloat scores_shift;
 };
 
 inline Value sample_value (

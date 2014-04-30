@@ -183,55 +183,23 @@ struct Scorer
     }
 };
 
-struct Mixture
+class Mixture
 {
+public:
+
     typedef normal_inverse_chi_sq::Value Value;
     typedef normal_inverse_chi_sq::Shared Shared;
     typedef normal_inverse_chi_sq::Group Group;
     typedef normal_inverse_chi_sq::Scorer Scorer;
 
-    std::vector<Group> groups;
-    VectorFloat score;
-    VectorFloat log_coeff;
-    VectorFloat precision;
-    VectorFloat mean;
-    mutable VectorFloat temp;
-
-    private:
-
-    void _update_group (
-            const Shared & shared,
-            size_t groupid,
-            rng_t & rng)
-    {
-        const Group & group = groups[groupid];
-        Scorer scorer;
-        scorer.init(shared, group, rng);
-        score[groupid] = scorer.score;
-        log_coeff[groupid] = scorer.log_coeff;
-        precision[groupid] = scorer.precision;
-        mean[groupid] = scorer.mean;
-    }
-
-    void _resize (
-            const Shared & shared,
-            size_t group_count)
-    {
-        groups.resize(group_count);
-        score.resize(group_count);
-        log_coeff.resize(group_count);
-        precision.resize(group_count);
-        mean.resize(group_count);
-        temp.resize(group_count);
-    }
-
-    public:
+    std::vector<Group> & groups () { return groups_; }
+    const std::vector<Group> & groups () const { return groups_; }
 
     void init (
             const Shared & shared,
             rng_t & rng)
     {
-        const size_t group_count = groups.size();
+        const size_t group_count = groups_.size();
         _resize(shared, group_count);
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
             _update_group(shared, groupid, rng);
@@ -242,10 +210,10 @@ struct Mixture
             const Shared & shared,
             rng_t & rng)
     {
-        const size_t groupid = groups.size();
+        const size_t groupid = groups_.size();
         const size_t group_count = groupid + 1;
         _resize(shared, group_count);
-        groups.back().init(shared, rng);
+        groups_.back().init(shared, rng);
         _update_group(shared, groupid, rng);
     }
 
@@ -253,10 +221,10 @@ struct Mixture
             const Shared & shared,
             size_t groupid)
     {
-        DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
-        const size_t group_count = groups.size() - 1;
+        DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
+        const size_t group_count = groups_.size() - 1;
         if (groupid != group_count) {
-            std::swap(groups[groupid], groups.back());
+            std::swap(groups_[groupid], groups_.back());
             score[groupid] = score.back();
             log_coeff[groupid] = log_coeff.back();
             precision[groupid] = precision.back();
@@ -271,8 +239,8 @@ struct Mixture
             const Value & value,
             rng_t & rng)
     {
-        DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
-        Group & group = groups[groupid];
+        DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
+        Group & group = groups_[groupid];
         group.add_value(shared, value, rng);
         _update_group(shared, groupid, rng);
     }
@@ -283,8 +251,8 @@ struct Mixture
             const Value & value,
             rng_t & rng)
     {
-        DIST_ASSERT2(groupid < groups.size(), "bad groupid: " << groupid);
-        Group & group = groups[groupid];
+        DIST_ASSERT2(groupid < groups_.size(), "bad groupid: " << groupid);
+        Group & group = groups_[groupid];
         group.remove_value(shared, value, rng);
         _update_group(shared, groupid, rng);
     }
@@ -296,18 +264,52 @@ struct Mixture
             rng_t & rng) const
     {
         if (DIST_DEBUG_LEVEL >= 2) {
-            DIST_ASSERT_EQ(scores_accum.size(), groups.size());
+            DIST_ASSERT_EQ(scores_accum.size(), groups_.size());
         }
         _score_value(shared, value, scores_accum, rng);
     }
 
-    private:
+private:
+
+    void _update_group (
+            const Shared & shared,
+            size_t groupid,
+            rng_t & rng)
+    {
+        const Group & group = groups_[groupid];
+        Scorer scorer;
+        scorer.init(shared, group, rng);
+        score[groupid] = scorer.score;
+        log_coeff[groupid] = scorer.log_coeff;
+        precision[groupid] = scorer.precision;
+        mean[groupid] = scorer.mean;
+    }
+
+    void _resize (
+            const Shared & shared,
+            size_t group_count)
+    {
+        groups_.resize(group_count);
+        score.resize(group_count);
+        log_coeff.resize(group_count);
+        precision.resize(group_count);
+        mean.resize(group_count);
+        temp.resize(group_count);
+    }
 
     void _score_value (
             const Shared & shared,
             const Value & value,
             AlignedFloats scores_accum,
             rng_t &) const;
+
+    std::vector<Group> groups_;
+    VectorFloat score;
+    VectorFloat log_coeff;
+    VectorFloat precision;
+    VectorFloat mean;
+    mutable VectorFloat temp;
+
 };
 
 inline Shared Shared::plus_group (const Group & group) const

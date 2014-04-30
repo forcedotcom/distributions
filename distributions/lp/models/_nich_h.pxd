@@ -34,11 +34,7 @@ cdef extern from "distributions/models/nich.hpp" namespace "distributions::norma
 
 
     cppclass Mixture:
-        vector[Group] groups
-        VectorFloat score
-        VectorFloat post_alpha
-        VectorFloat score_coeff
-        VectorFloat temp
+        vector[Group] groups "groups()"
         void init (Shared &, rng_t &) nogil except +
         void add_group (Shared &, rng_t &) nogil except +
         void remove_group (Shared &, size_t) nogil except +

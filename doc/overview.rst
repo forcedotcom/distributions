@@ -113,7 +113,7 @@ Each component model API consist of:
         mixture.remove_group(model, groupid)
         mixture.add_value(model, groupid, value)
         mixture.remove_value(model, groupid, value)
-        mixture.score(model, value, scores_accum)
+        mixture.score_value(model, value, scores_accum)
 
 *   Serialization to JSON (python only)::
 

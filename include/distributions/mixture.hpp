@@ -181,18 +181,7 @@ struct MixtureSlave
     typedef typename Model::Value Value;
 
     std::vector<Group> & groups () { return groups_; }
-    Group & groups (size_t groupid)
-    {
-        DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
-        return groups_[groupid];
-    }
-
     const std::vector<Group> & groups () const { return groups_; }
-    const Group & groups (size_t groupid) const
-    {
-        DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
-        return groups_[groupid];
-    }
 
     // add_group is called whenever driver.add_value returns true
     void add_group (

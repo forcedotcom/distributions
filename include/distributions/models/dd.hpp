@@ -169,23 +169,23 @@ struct Scorer
 };
 
 template<int max_dim>
-struct Mixture
+class Mixture
 {
+public:
+
     typedef dirichlet_discrete::Value Value;
     typedef dirichlet_discrete::Shared<max_dim> Shared;
     typedef dirichlet_discrete::Group<max_dim> Group;
     typedef dirichlet_discrete::Scorer<max_dim> Scorer;
 
-    std::vector<Group> groups;
-    float alpha_sum;
-    std::vector<VectorFloat> scores;
-    VectorFloat scores_shift;
+    std::vector<Group> & groups () { return groups_; }
+    const std::vector<Group> & groups () const { return groups_; }
 
     void init (
             const Shared & shared,
             rng_t &)
     {
-        const size_t group_count = groups.size();
+        const size_t group_count = groups_.size();
         scores_shift.resize(group_count);
         alpha_sum = 0;
         scores.resize(shared.dim);
@@ -194,7 +194,7 @@ struct Mixture
             scores[value].resize(group_count);
         }
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
-            const Group & group = groups[groupid];
+            const Group & group = groups_[groupid];
             for (Value value = 0; value < shared.dim; ++value) {
                 scores[value][groupid] =
                     shared.alphas[value] + group.counts[value];
@@ -212,9 +212,9 @@ struct Mixture
             const Shared & shared,
             rng_t & rng)
     {
-        const size_t group_count = groups.size() + 1;
-        groups.resize(group_count);
-        groups.back().init(shared, rng);
+        const size_t group_count = groups_.size() + 1;
+        groups_.resize(group_count);
+        groups_.back().init(shared, rng);
         scores_shift.resize(group_count, 0);
         for (Value value = 0; value < shared.dim; ++value) {
             scores[value].resize(group_count, 0);
@@ -225,17 +225,17 @@ struct Mixture
             const Shared & shared,
             size_t groupid)
     {
-        DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
-        const size_t group_count = groups.size() - 1;
+        DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
+        const size_t group_count = groups_.size() - 1;
         if (groupid != group_count) {
-            std::swap(groups[groupid], groups.back());
+            std::swap(groups_[groupid], groups_.back());
             scores_shift[groupid] = scores_shift.back();
             for (Value value = 0; value < shared.dim; ++value) {
                 VectorFloat & vscores = scores[value];
                 vscores[groupid] = vscores.back();
             }
         }
-        groups.resize(group_count);
+        groups_.resize(group_count);
         scores_shift.resize(group_count);
         for (Value value = 0; value < shared.dim; ++value) {
             scores[value].resize(group_count);
@@ -248,9 +248,9 @@ struct Mixture
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(groupid < groups.size(), "bad groupid: " << groupid);
+        DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
         DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
-        Group & group = groups[groupid];
+        Group & group = groups_[groupid];
         count_t count_sum = group.count_sum += 1;
         count_t count = group.counts[value] += 1;
         scores[value][groupid] = fast_log(shared.alphas[value] + count);
@@ -264,9 +264,9 @@ struct Mixture
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT2(groupid < groups.size(), "bad groupid: " << groupid);
+        DIST_ASSERT2(groupid < groups_.size(), "bad groupid: " << groupid);
         DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
-        Group & group = groups[groupid];
+        Group & group = groups_[groupid];
         count_t count_sum = group.count_sum -= 1;
         count_t count = group.counts[value] -= 1;
         scores[value][groupid] = fast_log(shared.alphas[value] + count);
@@ -282,15 +282,22 @@ struct Mixture
     {
         DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         if (DIST_DEBUG_LEVEL >= 2) {
-            DIST_ASSERT_EQ(scores_accum.size(), groups.size());
+            DIST_ASSERT_EQ(scores_accum.size(), groups_.size());
         }
-        const size_t group_count = groups.size();
+        const size_t group_count = groups_.size();
         vector_add_subtract(
             group_count,
             scores_accum.data(),
             scores[value].data(),
             scores_shift.data());
     }
+
+private:
+
+    std::vector<Group> groups_;
+    float alpha_sum;
+    std::vector<VectorFloat> scores;
+    VectorFloat scores_shift;
 };
 
 template<int max_dim>

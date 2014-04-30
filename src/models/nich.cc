@@ -37,7 +37,7 @@ void Mixture::_score_value (
         AlignedFloats scores_accum,
         rng_t &) const
 {
-    const size_t size = groups.size();
+    const size_t size = groups().size();
     const float value_noalias = value;
     float * __restrict__ scores_accum_noalias = VectorFloat_data(scores_accum);
     const float * __restrict__ _score =
