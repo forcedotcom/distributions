@@ -174,50 +174,66 @@ private:
 //----------------------------------------------------------------------------
 // Mixture Slave
 
-template<class Model>
-struct MixtureSlave
+template<class SharedT>
+class MixtureSlave
 {
-    typedef typename Model::Group Group;
-    typedef typename Model::Value Value;
+public:
+
+    typedef SharedT Shared;
+    typedef typename Shared::Group Group;
+    typedef typename Shared::Value Value;
 
     std::vector<Group> & groups () { return groups_; }
+    Group & groups (size_t groupid)
+    {
+        DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
+        return groups_[groupid];
+    }
+
     const std::vector<Group> & groups () const { return groups_; }
+    const Group & groups (size_t groupid) const
+    {
+        DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
+        return groups_[groupid];
+    }
 
     // add_group is called whenever driver.add_value returns true
     void add_group (
-            const Model & model,
+            const Shared & shared,
             rng_t & rng)
     {
-        groups_.packed_add().init(model, rng);
+        groups_.packed_add().init(shared, rng);
     }
 
     // remove_group is called whenever driver.remove_value returns true
-    void remove_group (size_t groupid)
+    void remove_group (
+            const Shared & shared,
+            size_t groupid)
     {
         groups_.packed_remove(groupid);
     }
 
     void add_value (
-            const Model & model,
+            const Shared & shared,
             size_t groupid,
             const Value & value,
             rng_t & rng)
     {
-        groups(groupid).add_value(model, value, rng);
+        groups(groupid).add_value(shared, value, rng);
     }
 
     void remove_value (
-            const Model & model,
+            const Shared & shared,
             size_t groupid,
             const Value & value,
             rng_t & rng)
     {
-        groups(groupid).remove_value(model, value, rng);
+        groups(groupid).remove_value(shared, value, rng);
     }
 
     // this slow uncached version should be overridden
     void score_value (
-            const Model & model,
+            const Shared & shared,
             const Value & value,
             AlignedFloats scores_accum,
             rng_t & rng) const
@@ -228,16 +244,16 @@ struct MixtureSlave
 
         const size_t group_count = groups_.size();
         for (size_t i = 0; i < group_count; ++i) {
-            scores_accum[i] += groups(i).score(model, value, rng);
+            scores_accum[i] += groups_[i].score(shared, value, rng);
         }
     }
 
     // this slow version should be overridden
-    float score_mixture (const Model & model, rng_t & rng) const
+    float score_mixture (const Shared & shared, rng_t & rng) const
     {
         float score = 0;
         for (const Group & group : groups_) {
-            score += model.score_group(group, rng);
+            score += score_group(shared, group, rng);
         }
         return score;
     }

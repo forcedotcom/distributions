@@ -24,7 +24,6 @@ cdef extern from "distributions/models/dd.hpp" namespace "distributions::dirichl
         void merge (Shared &, Group &, rng_t &) nogil except +
 
 
-
     cppclass Sampler "distributions::dirichlet_discrete::Sampler<256>":
         void init (Shared &, Group &, rng_t &) nogil except +
         Value eval (Shared &, rng_t &) nogil except +
@@ -41,7 +40,6 @@ cdef extern from "distributions/models/dd.hpp" namespace "distributions::dirichl
             (Shared &, size_t, Value &, rng_t &) nogil except +
         void score_value \
             (Shared &, Value &, VectorFloat &, rng_t &) nogil except +
-
 
 
     Value sample_value (Shared &, Group &, rng_t &) nogil except +

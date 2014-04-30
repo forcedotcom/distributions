@@ -53,10 +53,10 @@ struct Scorers
             const typename Mixture::Shared & shared,
             const Mixture & mixture)
     {
-        const size_t group_count = mixture.groups.size();
+        const size_t group_count = mixture.groups().size();
         groups.resize(group_count);
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
-            groups[groupid].group = mixture.groups[groupid];
+            groups[groupid].group = mixture.groups()[groupid];
             groups[groupid].scorer.init(
                     shared,
                     groups[groupid].group,
@@ -84,16 +84,16 @@ void speedtest (
         size_t iters)
 {
     Mixture mixture;
-    mixture.groups.resize(group_count);
+    mixture.groups().resize(group_count);
     std::vector<typename Mixture::Value> values;
     std::vector<size_t> assignments;
     for (size_t groupid = 0; groupid < group_count; ++groupid) {
-        typename Mixture::Group & group = mixture.groups[groupid];
+        typename Mixture::Group & group = mixture.groups()[groupid];
         group.init(shared, rng);
     }
     for (size_t i = 0; i < 4 * group_count; ++i) {
         size_t groupid = sample_int(rng, 0, group_count - 1);
-        typename Mixture::Group & group = mixture.groups[groupid];
+        typename Mixture::Group & group = mixture.groups()[groupid];
         typename Mixture::Value value = sample_value(shared, group, rng);
         group.add_value(shared, value, rng);
         values.push_back(value);

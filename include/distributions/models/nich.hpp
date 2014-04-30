@@ -34,6 +34,7 @@
 
 namespace distributions {
 namespace normal_inverse_chi_sq {
+
 typedef float Value;
 struct Group;
 struct Scorer;
@@ -43,6 +44,9 @@ struct Mixture;
 
 struct Shared
 {
+    typedef normal_inverse_chi_sq::Value Value;
+    typedef normal_inverse_chi_sq::Group Group;
+
     float mu;
     float kappa;
     float sigmasq;

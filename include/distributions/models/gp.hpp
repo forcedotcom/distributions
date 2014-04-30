@@ -34,6 +34,7 @@
 
 namespace distributions {
 namespace gamma_poisson {
+
 typedef uint32_t Value;
 struct Group;
 struct Scorer;
@@ -43,6 +44,9 @@ struct Mixture;
 
 struct Shared
 {
+    typedef gamma_poisson::Value Value;
+    typedef gamma_poisson::Group Group;
+
     float alpha;
     float inv_beta;
 

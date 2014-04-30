@@ -36,6 +36,7 @@
 
 namespace distributions {
 namespace dirichlet_process_discrete {
+
 typedef uint32_t count_t;
 typedef uint32_t Value;
 struct Group;
@@ -46,6 +47,9 @@ struct Mixture;
 
 struct Shared
 {
+    typedef dirichlet_process_discrete::Value Value;
+    typedef dirichlet_process_discrete::Group Group;
+
     float gamma;
     float alpha;
     float beta0;
