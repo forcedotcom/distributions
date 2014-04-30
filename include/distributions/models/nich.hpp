@@ -206,6 +206,7 @@ public:
             const Shared & shared,
             rng_t & rng)
     {
+        slave_.init(shared, rng);
         const size_t group_count = slave_.groups().size();
         score.resize(group_count);
         log_coeff.resize(group_count);

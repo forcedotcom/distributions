@@ -197,6 +197,8 @@ public:
         return groups_[groupid];
     }
 
+    void init (const Shared &, rng_t &) {}
+
     // add_group is called whenever driver.add_value returns true
     void add_group (
             const Shared & shared,

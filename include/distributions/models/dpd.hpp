@@ -195,6 +195,7 @@ public:
             const Shared & shared,
             rng_t & rng)
     {
+        slave_.init(shared, rng);
         const Value dim = shared.betas.size();
         const size_t group_count = slave_.groups().size();
         scores_shift.resize(group_count);

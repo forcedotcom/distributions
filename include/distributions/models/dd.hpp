@@ -188,8 +188,9 @@ public:
 
     void init (
             const Shared & shared,
-            rng_t &)
+            rng_t & rng)
     {
+        slave_.init(shared, rng);
         const auto & groups = slave_.groups();
         const size_t group_count = groups.size();
         scores_shift.resize(group_count);
