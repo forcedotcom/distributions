@@ -81,7 +81,7 @@ inline void clustering_load (
 template<int max_dim>
 inline void shared_load (
         dirichlet_discrete::Shared<max_dim> & shared,
-        const protobuf::DirichletDiscrete & message)
+        const protobuf::DirichletDiscrete_Shared & message)
 {
     shared.dim = message.alphas_size();
     DIST_ASSERT_LE(shared.dim, max_dim);
@@ -92,7 +92,7 @@ inline void shared_load (
 
 inline void shared_load (
         dirichlet_process_discrete::Shared & shared,
-        const protobuf::DirichletProcessDiscrete & message)
+        const protobuf::DirichletProcessDiscrete_Shared & message)
 {
     shared.gamma = message.gamma();
     shared.alpha = message.alpha();
@@ -106,7 +106,7 @@ inline void shared_load (
 
 inline void shared_load (
         gamma_poisson::Shared & shared,
-        const protobuf::GammaPoisson & message)
+        const protobuf::GammaPoisson_Shared & message)
 {
     shared.alpha = message.alpha();
     shared.inv_beta = message.inv_beta();
@@ -114,7 +114,7 @@ inline void shared_load (
 
 inline void shared_load (
         normal_inverse_chi_sq::Shared & shared,
-        const protobuf::NormalInverseChiSq & message)
+        const protobuf::NormalInverseChiSq_Shared & message)
 {
     shared.mu = message.mu();
     shared.kappa = message.kappa();

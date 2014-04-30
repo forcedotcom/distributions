@@ -51,8 +51,15 @@ message Clustering  // simulates a sum type
 // Models
 
 message BetaBernoulli {
-  required float alpha = 1;
-  required float beta = 2;
+  message Shared {
+    required float alpha = 1;
+    required float beta = 2;
+  }
+
+  message GridPrior {
+    repeated float alpha = 1;
+    repeated float beta = 2;
+  }
 
   message Group {
     required uint64 heads = 1;
@@ -61,7 +68,13 @@ message BetaBernoulli {
 }
 
 message DirichletDiscrete {
-  repeated float alphas = 1;
+  message Shared {
+    repeated float alphas = 1;
+  }
+
+  message GridPrior {
+    repeated float alpha = 1;
+  }
 
   message Group {
     repeated uint64 counts = 1;
@@ -69,9 +82,16 @@ message DirichletDiscrete {
 }
 
 message DirichletProcessDiscrete {
-  required float gamma = 1;
-  required float alpha = 2;
-  repeated float betas = 3;
+  message Shared {
+    required float gamma = 1;
+    required float alpha = 2;
+    repeated float betas = 3;
+  }
+
+  message GridPrior {
+    repeated float gamma = 1;
+    repeated float alpha = 2;
+  }
 
   message Group {
     repeated uint32 keys = 1;
@@ -80,8 +100,15 @@ message DirichletProcessDiscrete {
 }
 
 message GammaPoisson {
-  required float alpha = 1;
-  required float inv_beta = 2;
+  message Shared {
+    required float alpha = 1;
+    required float inv_beta = 2;
+  }
+
+  message GridPrior {
+    repeated float alpha = 1;
+    repeated float inv_beta = 2;
+  }
 
   message Group {
     required uint64 count = 1;
@@ -91,10 +118,19 @@ message GammaPoisson {
 }
 
 message NormalInverseChiSq {
-  required float mu = 1;
-  required float kappa = 2;
-  required float sigmasq = 3;
-  required float nu = 4;
+  message Shared {
+    required float mu = 1;
+    required float kappa = 2;
+    required float sigmasq = 3;
+    required float nu = 4;
+  }
+
+  message GridPrior {
+    required float mu = 1;
+    required float kappa = 2;
+    required float sigmasq = 3;
+    required float nu = 4;
+  }
 
   message Group {
     required uint64 count = 1;

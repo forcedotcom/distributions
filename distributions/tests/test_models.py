@@ -160,7 +160,7 @@ def test_protbuf(module, EXAMPLE):
     group = module.Group.from_values(shared, values)
     Message = getattr(distributions.io.schema_pb2, module.NAME)
 
-    message = Message()
+    message = Message.Shared()
     shared.dump_protobuf(message)
     shared2 = module.Shared()
     shared2.load_protobuf(message)

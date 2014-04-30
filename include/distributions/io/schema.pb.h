@@ -37,14 +37,24 @@ class Clustering;
 class Clustering_PitmanYor;
 class Clustering_LowEntropy;
 class BetaBernoulli;
+class BetaBernoulli_Shared;
+class BetaBernoulli_GridPrior;
 class BetaBernoulli_Group;
 class DirichletDiscrete;
+class DirichletDiscrete_Shared;
+class DirichletDiscrete_GridPrior;
 class DirichletDiscrete_Group;
 class DirichletProcessDiscrete;
+class DirichletProcessDiscrete_Shared;
+class DirichletProcessDiscrete_GridPrior;
 class DirichletProcessDiscrete_Group;
 class GammaPoisson;
+class GammaPoisson_Shared;
+class GammaPoisson_GridPrior;
 class GammaPoisson_Group;
 class NormalInverseChiSq;
+class NormalInverseChiSq_Shared;
+class NormalInverseChiSq_GridPrior;
 class NormalInverseChiSq_Group;
 
 // ===================================================================
@@ -320,6 +330,196 @@ class Clustering : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
+class BetaBernoulli_Shared : public ::google::protobuf::Message {
+ public:
+  BetaBernoulli_Shared();
+  virtual ~BetaBernoulli_Shared();
+  
+  BetaBernoulli_Shared(const BetaBernoulli_Shared& from);
+  
+  inline BetaBernoulli_Shared& operator=(const BetaBernoulli_Shared& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const BetaBernoulli_Shared& default_instance();
+  
+  void Swap(BetaBernoulli_Shared* other);
+  
+  // implements Message ----------------------------------------------
+  
+  BetaBernoulli_Shared* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const BetaBernoulli_Shared& from);
+  void MergeFrom(const BetaBernoulli_Shared& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required float alpha = 1;
+  inline bool has_alpha() const;
+  inline void clear_alpha();
+  static const int kAlphaFieldNumber = 1;
+  inline float alpha() const;
+  inline void set_alpha(float value);
+  
+  // required float beta = 2;
+  inline bool has_beta() const;
+  inline void clear_beta();
+  static const int kBetaFieldNumber = 2;
+  inline float beta() const;
+  inline void set_beta(float value);
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.BetaBernoulli.Shared)
+ private:
+  inline void set_has_alpha();
+  inline void clear_has_alpha();
+  inline void set_has_beta();
+  inline void clear_has_beta();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  float alpha_;
+  float beta_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static BetaBernoulli_Shared* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class BetaBernoulli_GridPrior : public ::google::protobuf::Message {
+ public:
+  BetaBernoulli_GridPrior();
+  virtual ~BetaBernoulli_GridPrior();
+  
+  BetaBernoulli_GridPrior(const BetaBernoulli_GridPrior& from);
+  
+  inline BetaBernoulli_GridPrior& operator=(const BetaBernoulli_GridPrior& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const BetaBernoulli_GridPrior& default_instance();
+  
+  void Swap(BetaBernoulli_GridPrior* other);
+  
+  // implements Message ----------------------------------------------
+  
+  BetaBernoulli_GridPrior* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const BetaBernoulli_GridPrior& from);
+  void MergeFrom(const BetaBernoulli_GridPrior& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // repeated float alpha = 1;
+  inline int alpha_size() const;
+  inline void clear_alpha();
+  static const int kAlphaFieldNumber = 1;
+  inline float alpha(int index) const;
+  inline void set_alpha(int index, float value);
+  inline void add_alpha(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      alpha() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_alpha();
+  
+  // repeated float beta = 2;
+  inline int beta_size() const;
+  inline void clear_beta();
+  static const int kBetaFieldNumber = 2;
+  inline float beta(int index) const;
+  inline void set_beta(int index, float value);
+  inline void add_beta(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      beta() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_beta();
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.BetaBernoulli.GridPrior)
+ private:
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::RepeatedField< float > alpha_;
+  ::google::protobuf::RepeatedField< float > beta_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static BetaBernoulli_GridPrior* default_instance_;
+};
+// -------------------------------------------------------------------
+
 class BetaBernoulli_Group : public ::google::protobuf::Message {
  public:
   BetaBernoulli_Group();
@@ -464,38 +664,20 @@ class BetaBernoulli : public ::google::protobuf::Message {
   
   // nested types ----------------------------------------------------
   
+  typedef BetaBernoulli_Shared Shared;
+  typedef BetaBernoulli_GridPrior GridPrior;
   typedef BetaBernoulli_Group Group;
   
   // accessors -------------------------------------------------------
   
-  // required float alpha = 1;
-  inline bool has_alpha() const;
-  inline void clear_alpha();
-  static const int kAlphaFieldNumber = 1;
-  inline float alpha() const;
-  inline void set_alpha(float value);
-  
-  // required float beta = 2;
-  inline bool has_beta() const;
-  inline void clear_beta();
-  static const int kBetaFieldNumber = 2;
-  inline float beta() const;
-  inline void set_beta(float value);
-  
   // @@protoc_insertion_point(class_scope:protobuf.distributions.BetaBernoulli)
  private:
-  inline void set_has_alpha();
-  inline void clear_has_alpha();
-  inline void set_has_beta();
-  inline void clear_has_beta();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
-  float alpha_;
-  float beta_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[1];
   
   friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
   friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
@@ -503,6 +685,176 @@ class BetaBernoulli : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static BetaBernoulli* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class DirichletDiscrete_Shared : public ::google::protobuf::Message {
+ public:
+  DirichletDiscrete_Shared();
+  virtual ~DirichletDiscrete_Shared();
+  
+  DirichletDiscrete_Shared(const DirichletDiscrete_Shared& from);
+  
+  inline DirichletDiscrete_Shared& operator=(const DirichletDiscrete_Shared& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const DirichletDiscrete_Shared& default_instance();
+  
+  void Swap(DirichletDiscrete_Shared* other);
+  
+  // implements Message ----------------------------------------------
+  
+  DirichletDiscrete_Shared* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const DirichletDiscrete_Shared& from);
+  void MergeFrom(const DirichletDiscrete_Shared& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // repeated float alphas = 1;
+  inline int alphas_size() const;
+  inline void clear_alphas();
+  static const int kAlphasFieldNumber = 1;
+  inline float alphas(int index) const;
+  inline void set_alphas(int index, float value);
+  inline void add_alphas(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      alphas() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_alphas();
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.DirichletDiscrete.Shared)
+ private:
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::RepeatedField< float > alphas_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static DirichletDiscrete_Shared* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class DirichletDiscrete_GridPrior : public ::google::protobuf::Message {
+ public:
+  DirichletDiscrete_GridPrior();
+  virtual ~DirichletDiscrete_GridPrior();
+  
+  DirichletDiscrete_GridPrior(const DirichletDiscrete_GridPrior& from);
+  
+  inline DirichletDiscrete_GridPrior& operator=(const DirichletDiscrete_GridPrior& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const DirichletDiscrete_GridPrior& default_instance();
+  
+  void Swap(DirichletDiscrete_GridPrior* other);
+  
+  // implements Message ----------------------------------------------
+  
+  DirichletDiscrete_GridPrior* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const DirichletDiscrete_GridPrior& from);
+  void MergeFrom(const DirichletDiscrete_GridPrior& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // repeated float alpha = 1;
+  inline int alpha_size() const;
+  inline void clear_alpha();
+  static const int kAlphaFieldNumber = 1;
+  inline float alpha(int index) const;
+  inline void set_alpha(int index, float value);
+  inline void add_alpha(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      alpha() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_alpha();
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.DirichletDiscrete.GridPrior)
+ private:
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::RepeatedField< float > alpha_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static DirichletDiscrete_GridPrior* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -643,31 +995,20 @@ class DirichletDiscrete : public ::google::protobuf::Message {
   
   // nested types ----------------------------------------------------
   
+  typedef DirichletDiscrete_Shared Shared;
+  typedef DirichletDiscrete_GridPrior GridPrior;
   typedef DirichletDiscrete_Group Group;
   
   // accessors -------------------------------------------------------
-  
-  // repeated float alphas = 1;
-  inline int alphas_size() const;
-  inline void clear_alphas();
-  static const int kAlphasFieldNumber = 1;
-  inline float alphas(int index) const;
-  inline void set_alphas(int index, float value);
-  inline void add_alphas(float value);
-  inline const ::google::protobuf::RepeatedField< float >&
-      alphas() const;
-  inline ::google::protobuf::RepeatedField< float >*
-      mutable_alphas();
   
   // @@protoc_insertion_point(class_scope:protobuf.distributions.DirichletDiscrete)
  private:
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
-  ::google::protobuf::RepeatedField< float > alphas_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[1];
   
   friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
   friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
@@ -675,6 +1016,209 @@ class DirichletDiscrete : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static DirichletDiscrete* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class DirichletProcessDiscrete_Shared : public ::google::protobuf::Message {
+ public:
+  DirichletProcessDiscrete_Shared();
+  virtual ~DirichletProcessDiscrete_Shared();
+  
+  DirichletProcessDiscrete_Shared(const DirichletProcessDiscrete_Shared& from);
+  
+  inline DirichletProcessDiscrete_Shared& operator=(const DirichletProcessDiscrete_Shared& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const DirichletProcessDiscrete_Shared& default_instance();
+  
+  void Swap(DirichletProcessDiscrete_Shared* other);
+  
+  // implements Message ----------------------------------------------
+  
+  DirichletProcessDiscrete_Shared* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const DirichletProcessDiscrete_Shared& from);
+  void MergeFrom(const DirichletProcessDiscrete_Shared& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required float gamma = 1;
+  inline bool has_gamma() const;
+  inline void clear_gamma();
+  static const int kGammaFieldNumber = 1;
+  inline float gamma() const;
+  inline void set_gamma(float value);
+  
+  // required float alpha = 2;
+  inline bool has_alpha() const;
+  inline void clear_alpha();
+  static const int kAlphaFieldNumber = 2;
+  inline float alpha() const;
+  inline void set_alpha(float value);
+  
+  // repeated float betas = 3;
+  inline int betas_size() const;
+  inline void clear_betas();
+  static const int kBetasFieldNumber = 3;
+  inline float betas(int index) const;
+  inline void set_betas(int index, float value);
+  inline void add_betas(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      betas() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_betas();
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.DirichletProcessDiscrete.Shared)
+ private:
+  inline void set_has_gamma();
+  inline void clear_has_gamma();
+  inline void set_has_alpha();
+  inline void clear_has_alpha();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  float gamma_;
+  float alpha_;
+  ::google::protobuf::RepeatedField< float > betas_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static DirichletProcessDiscrete_Shared* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class DirichletProcessDiscrete_GridPrior : public ::google::protobuf::Message {
+ public:
+  DirichletProcessDiscrete_GridPrior();
+  virtual ~DirichletProcessDiscrete_GridPrior();
+  
+  DirichletProcessDiscrete_GridPrior(const DirichletProcessDiscrete_GridPrior& from);
+  
+  inline DirichletProcessDiscrete_GridPrior& operator=(const DirichletProcessDiscrete_GridPrior& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const DirichletProcessDiscrete_GridPrior& default_instance();
+  
+  void Swap(DirichletProcessDiscrete_GridPrior* other);
+  
+  // implements Message ----------------------------------------------
+  
+  DirichletProcessDiscrete_GridPrior* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const DirichletProcessDiscrete_GridPrior& from);
+  void MergeFrom(const DirichletProcessDiscrete_GridPrior& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // repeated float gamma = 1;
+  inline int gamma_size() const;
+  inline void clear_gamma();
+  static const int kGammaFieldNumber = 1;
+  inline float gamma(int index) const;
+  inline void set_gamma(int index, float value);
+  inline void add_gamma(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      gamma() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_gamma();
+  
+  // repeated float alpha = 2;
+  inline int alpha_size() const;
+  inline void clear_alpha();
+  static const int kAlphaFieldNumber = 2;
+  inline float alpha(int index) const;
+  inline void set_alpha(int index, float value);
+  inline void add_alpha(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      alpha() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_alpha();
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.DirichletProcessDiscrete.GridPrior)
+ private:
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::RepeatedField< float > gamma_;
+  ::google::protobuf::RepeatedField< float > alpha_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static DirichletProcessDiscrete_GridPrior* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -828,51 +1372,20 @@ class DirichletProcessDiscrete : public ::google::protobuf::Message {
   
   // nested types ----------------------------------------------------
   
+  typedef DirichletProcessDiscrete_Shared Shared;
+  typedef DirichletProcessDiscrete_GridPrior GridPrior;
   typedef DirichletProcessDiscrete_Group Group;
   
   // accessors -------------------------------------------------------
   
-  // required float gamma = 1;
-  inline bool has_gamma() const;
-  inline void clear_gamma();
-  static const int kGammaFieldNumber = 1;
-  inline float gamma() const;
-  inline void set_gamma(float value);
-  
-  // required float alpha = 2;
-  inline bool has_alpha() const;
-  inline void clear_alpha();
-  static const int kAlphaFieldNumber = 2;
-  inline float alpha() const;
-  inline void set_alpha(float value);
-  
-  // repeated float betas = 3;
-  inline int betas_size() const;
-  inline void clear_betas();
-  static const int kBetasFieldNumber = 3;
-  inline float betas(int index) const;
-  inline void set_betas(int index, float value);
-  inline void add_betas(float value);
-  inline const ::google::protobuf::RepeatedField< float >&
-      betas() const;
-  inline ::google::protobuf::RepeatedField< float >*
-      mutable_betas();
-  
   // @@protoc_insertion_point(class_scope:protobuf.distributions.DirichletProcessDiscrete)
  private:
-  inline void set_has_gamma();
-  inline void clear_has_gamma();
-  inline void set_has_alpha();
-  inline void clear_has_alpha();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
-  float gamma_;
-  float alpha_;
-  ::google::protobuf::RepeatedField< float > betas_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[1];
   
   friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
   friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
@@ -880,6 +1393,196 @@ class DirichletProcessDiscrete : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static DirichletProcessDiscrete* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class GammaPoisson_Shared : public ::google::protobuf::Message {
+ public:
+  GammaPoisson_Shared();
+  virtual ~GammaPoisson_Shared();
+  
+  GammaPoisson_Shared(const GammaPoisson_Shared& from);
+  
+  inline GammaPoisson_Shared& operator=(const GammaPoisson_Shared& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const GammaPoisson_Shared& default_instance();
+  
+  void Swap(GammaPoisson_Shared* other);
+  
+  // implements Message ----------------------------------------------
+  
+  GammaPoisson_Shared* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const GammaPoisson_Shared& from);
+  void MergeFrom(const GammaPoisson_Shared& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required float alpha = 1;
+  inline bool has_alpha() const;
+  inline void clear_alpha();
+  static const int kAlphaFieldNumber = 1;
+  inline float alpha() const;
+  inline void set_alpha(float value);
+  
+  // required float inv_beta = 2;
+  inline bool has_inv_beta() const;
+  inline void clear_inv_beta();
+  static const int kInvBetaFieldNumber = 2;
+  inline float inv_beta() const;
+  inline void set_inv_beta(float value);
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.GammaPoisson.Shared)
+ private:
+  inline void set_has_alpha();
+  inline void clear_has_alpha();
+  inline void set_has_inv_beta();
+  inline void clear_has_inv_beta();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  float alpha_;
+  float inv_beta_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static GammaPoisson_Shared* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class GammaPoisson_GridPrior : public ::google::protobuf::Message {
+ public:
+  GammaPoisson_GridPrior();
+  virtual ~GammaPoisson_GridPrior();
+  
+  GammaPoisson_GridPrior(const GammaPoisson_GridPrior& from);
+  
+  inline GammaPoisson_GridPrior& operator=(const GammaPoisson_GridPrior& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const GammaPoisson_GridPrior& default_instance();
+  
+  void Swap(GammaPoisson_GridPrior* other);
+  
+  // implements Message ----------------------------------------------
+  
+  GammaPoisson_GridPrior* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const GammaPoisson_GridPrior& from);
+  void MergeFrom(const GammaPoisson_GridPrior& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // repeated float alpha = 1;
+  inline int alpha_size() const;
+  inline void clear_alpha();
+  static const int kAlphaFieldNumber = 1;
+  inline float alpha(int index) const;
+  inline void set_alpha(int index, float value);
+  inline void add_alpha(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      alpha() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_alpha();
+  
+  // repeated float inv_beta = 2;
+  inline int inv_beta_size() const;
+  inline void clear_inv_beta();
+  static const int kInvBetaFieldNumber = 2;
+  inline float inv_beta(int index) const;
+  inline void set_inv_beta(int index, float value);
+  inline void add_inv_beta(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      inv_beta() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_inv_beta();
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.GammaPoisson.GridPrior)
+ private:
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::RepeatedField< float > alpha_;
+  ::google::protobuf::RepeatedField< float > inv_beta_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static GammaPoisson_GridPrior* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -1037,38 +1740,20 @@ class GammaPoisson : public ::google::protobuf::Message {
   
   // nested types ----------------------------------------------------
   
+  typedef GammaPoisson_Shared Shared;
+  typedef GammaPoisson_GridPrior GridPrior;
   typedef GammaPoisson_Group Group;
   
   // accessors -------------------------------------------------------
   
-  // required float alpha = 1;
-  inline bool has_alpha() const;
-  inline void clear_alpha();
-  static const int kAlphaFieldNumber = 1;
-  inline float alpha() const;
-  inline void set_alpha(float value);
-  
-  // required float inv_beta = 2;
-  inline bool has_inv_beta() const;
-  inline void clear_inv_beta();
-  static const int kInvBetaFieldNumber = 2;
-  inline float inv_beta() const;
-  inline void set_inv_beta(float value);
-  
   // @@protoc_insertion_point(class_scope:protobuf.distributions.GammaPoisson)
  private:
-  inline void set_has_alpha();
-  inline void clear_has_alpha();
-  inline void set_has_inv_beta();
-  inline void clear_has_inv_beta();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
-  float alpha_;
-  float inv_beta_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[1];
   
   friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
   friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
@@ -1076,6 +1761,230 @@ class GammaPoisson : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static GammaPoisson* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class NormalInverseChiSq_Shared : public ::google::protobuf::Message {
+ public:
+  NormalInverseChiSq_Shared();
+  virtual ~NormalInverseChiSq_Shared();
+  
+  NormalInverseChiSq_Shared(const NormalInverseChiSq_Shared& from);
+  
+  inline NormalInverseChiSq_Shared& operator=(const NormalInverseChiSq_Shared& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const NormalInverseChiSq_Shared& default_instance();
+  
+  void Swap(NormalInverseChiSq_Shared* other);
+  
+  // implements Message ----------------------------------------------
+  
+  NormalInverseChiSq_Shared* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const NormalInverseChiSq_Shared& from);
+  void MergeFrom(const NormalInverseChiSq_Shared& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required float mu = 1;
+  inline bool has_mu() const;
+  inline void clear_mu();
+  static const int kMuFieldNumber = 1;
+  inline float mu() const;
+  inline void set_mu(float value);
+  
+  // required float kappa = 2;
+  inline bool has_kappa() const;
+  inline void clear_kappa();
+  static const int kKappaFieldNumber = 2;
+  inline float kappa() const;
+  inline void set_kappa(float value);
+  
+  // required float sigmasq = 3;
+  inline bool has_sigmasq() const;
+  inline void clear_sigmasq();
+  static const int kSigmasqFieldNumber = 3;
+  inline float sigmasq() const;
+  inline void set_sigmasq(float value);
+  
+  // required float nu = 4;
+  inline bool has_nu() const;
+  inline void clear_nu();
+  static const int kNuFieldNumber = 4;
+  inline float nu() const;
+  inline void set_nu(float value);
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.NormalInverseChiSq.Shared)
+ private:
+  inline void set_has_mu();
+  inline void clear_has_mu();
+  inline void set_has_kappa();
+  inline void clear_has_kappa();
+  inline void set_has_sigmasq();
+  inline void clear_has_sigmasq();
+  inline void set_has_nu();
+  inline void clear_has_nu();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  float mu_;
+  float kappa_;
+  float sigmasq_;
+  float nu_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static NormalInverseChiSq_Shared* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class NormalInverseChiSq_GridPrior : public ::google::protobuf::Message {
+ public:
+  NormalInverseChiSq_GridPrior();
+  virtual ~NormalInverseChiSq_GridPrior();
+  
+  NormalInverseChiSq_GridPrior(const NormalInverseChiSq_GridPrior& from);
+  
+  inline NormalInverseChiSq_GridPrior& operator=(const NormalInverseChiSq_GridPrior& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const NormalInverseChiSq_GridPrior& default_instance();
+  
+  void Swap(NormalInverseChiSq_GridPrior* other);
+  
+  // implements Message ----------------------------------------------
+  
+  NormalInverseChiSq_GridPrior* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const NormalInverseChiSq_GridPrior& from);
+  void MergeFrom(const NormalInverseChiSq_GridPrior& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required float mu = 1;
+  inline bool has_mu() const;
+  inline void clear_mu();
+  static const int kMuFieldNumber = 1;
+  inline float mu() const;
+  inline void set_mu(float value);
+  
+  // required float kappa = 2;
+  inline bool has_kappa() const;
+  inline void clear_kappa();
+  static const int kKappaFieldNumber = 2;
+  inline float kappa() const;
+  inline void set_kappa(float value);
+  
+  // required float sigmasq = 3;
+  inline bool has_sigmasq() const;
+  inline void clear_sigmasq();
+  static const int kSigmasqFieldNumber = 3;
+  inline float sigmasq() const;
+  inline void set_sigmasq(float value);
+  
+  // required float nu = 4;
+  inline bool has_nu() const;
+  inline void clear_nu();
+  static const int kNuFieldNumber = 4;
+  inline float nu() const;
+  inline void set_nu(float value);
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.NormalInverseChiSq.GridPrior)
+ private:
+  inline void set_has_mu();
+  inline void clear_has_mu();
+  inline void set_has_kappa();
+  inline void clear_has_kappa();
+  inline void set_has_sigmasq();
+  inline void clear_has_sigmasq();
+  inline void set_has_nu();
+  inline void clear_has_nu();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  float mu_;
+  float kappa_;
+  float sigmasq_;
+  float nu_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static NormalInverseChiSq_GridPrior* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -1233,58 +2142,20 @@ class NormalInverseChiSq : public ::google::protobuf::Message {
   
   // nested types ----------------------------------------------------
   
+  typedef NormalInverseChiSq_Shared Shared;
+  typedef NormalInverseChiSq_GridPrior GridPrior;
   typedef NormalInverseChiSq_Group Group;
   
   // accessors -------------------------------------------------------
   
-  // required float mu = 1;
-  inline bool has_mu() const;
-  inline void clear_mu();
-  static const int kMuFieldNumber = 1;
-  inline float mu() const;
-  inline void set_mu(float value);
-  
-  // required float kappa = 2;
-  inline bool has_kappa() const;
-  inline void clear_kappa();
-  static const int kKappaFieldNumber = 2;
-  inline float kappa() const;
-  inline void set_kappa(float value);
-  
-  // required float sigmasq = 3;
-  inline bool has_sigmasq() const;
-  inline void clear_sigmasq();
-  static const int kSigmasqFieldNumber = 3;
-  inline float sigmasq() const;
-  inline void set_sigmasq(float value);
-  
-  // required float nu = 4;
-  inline bool has_nu() const;
-  inline void clear_nu();
-  static const int kNuFieldNumber = 4;
-  inline float nu() const;
-  inline void set_nu(float value);
-  
   // @@protoc_insertion_point(class_scope:protobuf.distributions.NormalInverseChiSq)
  private:
-  inline void set_has_mu();
-  inline void clear_has_mu();
-  inline void set_has_kappa();
-  inline void clear_has_kappa();
-  inline void set_has_sigmasq();
-  inline void clear_has_sigmasq();
-  inline void set_has_nu();
-  inline void clear_has_nu();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
-  float mu_;
-  float kappa_;
-  float sigmasq_;
-  float nu_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[1];
   
   friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
   friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
@@ -1434,6 +2305,108 @@ inline ::protobuf::distributions::Clustering_LowEntropy* Clustering::release_low
 
 // -------------------------------------------------------------------
 
+// BetaBernoulli_Shared
+
+// required float alpha = 1;
+inline bool BetaBernoulli_Shared::has_alpha() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void BetaBernoulli_Shared::set_has_alpha() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void BetaBernoulli_Shared::clear_has_alpha() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void BetaBernoulli_Shared::clear_alpha() {
+  alpha_ = 0;
+  clear_has_alpha();
+}
+inline float BetaBernoulli_Shared::alpha() const {
+  return alpha_;
+}
+inline void BetaBernoulli_Shared::set_alpha(float value) {
+  set_has_alpha();
+  alpha_ = value;
+}
+
+// required float beta = 2;
+inline bool BetaBernoulli_Shared::has_beta() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void BetaBernoulli_Shared::set_has_beta() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void BetaBernoulli_Shared::clear_has_beta() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void BetaBernoulli_Shared::clear_beta() {
+  beta_ = 0;
+  clear_has_beta();
+}
+inline float BetaBernoulli_Shared::beta() const {
+  return beta_;
+}
+inline void BetaBernoulli_Shared::set_beta(float value) {
+  set_has_beta();
+  beta_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// BetaBernoulli_GridPrior
+
+// repeated float alpha = 1;
+inline int BetaBernoulli_GridPrior::alpha_size() const {
+  return alpha_.size();
+}
+inline void BetaBernoulli_GridPrior::clear_alpha() {
+  alpha_.Clear();
+}
+inline float BetaBernoulli_GridPrior::alpha(int index) const {
+  return alpha_.Get(index);
+}
+inline void BetaBernoulli_GridPrior::set_alpha(int index, float value) {
+  alpha_.Set(index, value);
+}
+inline void BetaBernoulli_GridPrior::add_alpha(float value) {
+  alpha_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+BetaBernoulli_GridPrior::alpha() const {
+  return alpha_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+BetaBernoulli_GridPrior::mutable_alpha() {
+  return &alpha_;
+}
+
+// repeated float beta = 2;
+inline int BetaBernoulli_GridPrior::beta_size() const {
+  return beta_.size();
+}
+inline void BetaBernoulli_GridPrior::clear_beta() {
+  beta_.Clear();
+}
+inline float BetaBernoulli_GridPrior::beta(int index) const {
+  return beta_.Get(index);
+}
+inline void BetaBernoulli_GridPrior::set_beta(int index, float value) {
+  beta_.Set(index, value);
+}
+inline void BetaBernoulli_GridPrior::add_beta(float value) {
+  beta_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+BetaBernoulli_GridPrior::beta() const {
+  return beta_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+BetaBernoulli_GridPrior::mutable_beta() {
+  return &beta_;
+}
+
+// -------------------------------------------------------------------
+
 // BetaBernoulli_Group
 
 // required uint64 heads = 1;
@@ -1484,48 +2457,62 @@ inline void BetaBernoulli_Group::set_tails(::google::protobuf::uint64 value) {
 
 // BetaBernoulli
 
-// required float alpha = 1;
-inline bool BetaBernoulli::has_alpha() const {
-  return (_has_bits_[0] & 0x00000001u) != 0;
+// -------------------------------------------------------------------
+
+// DirichletDiscrete_Shared
+
+// repeated float alphas = 1;
+inline int DirichletDiscrete_Shared::alphas_size() const {
+  return alphas_.size();
 }
-inline void BetaBernoulli::set_has_alpha() {
-  _has_bits_[0] |= 0x00000001u;
+inline void DirichletDiscrete_Shared::clear_alphas() {
+  alphas_.Clear();
 }
-inline void BetaBernoulli::clear_has_alpha() {
-  _has_bits_[0] &= ~0x00000001u;
+inline float DirichletDiscrete_Shared::alphas(int index) const {
+  return alphas_.Get(index);
 }
-inline void BetaBernoulli::clear_alpha() {
-  alpha_ = 0;
-  clear_has_alpha();
+inline void DirichletDiscrete_Shared::set_alphas(int index, float value) {
+  alphas_.Set(index, value);
 }
-inline float BetaBernoulli::alpha() const {
-  return alpha_;
+inline void DirichletDiscrete_Shared::add_alphas(float value) {
+  alphas_.Add(value);
 }
-inline void BetaBernoulli::set_alpha(float value) {
-  set_has_alpha();
-  alpha_ = value;
+inline const ::google::protobuf::RepeatedField< float >&
+DirichletDiscrete_Shared::alphas() const {
+  return alphas_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+DirichletDiscrete_Shared::mutable_alphas() {
+  return &alphas_;
 }
 
-// required float beta = 2;
-inline bool BetaBernoulli::has_beta() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
+// -------------------------------------------------------------------
+
+// DirichletDiscrete_GridPrior
+
+// repeated float alpha = 1;
+inline int DirichletDiscrete_GridPrior::alpha_size() const {
+  return alpha_.size();
 }
-inline void BetaBernoulli::set_has_beta() {
-  _has_bits_[0] |= 0x00000002u;
+inline void DirichletDiscrete_GridPrior::clear_alpha() {
+  alpha_.Clear();
 }
-inline void BetaBernoulli::clear_has_beta() {
-  _has_bits_[0] &= ~0x00000002u;
+inline float DirichletDiscrete_GridPrior::alpha(int index) const {
+  return alpha_.Get(index);
 }
-inline void BetaBernoulli::clear_beta() {
-  beta_ = 0;
-  clear_has_beta();
+inline void DirichletDiscrete_GridPrior::set_alpha(int index, float value) {
+  alpha_.Set(index, value);
 }
-inline float BetaBernoulli::beta() const {
-  return beta_;
+inline void DirichletDiscrete_GridPrior::add_alpha(float value) {
+  alpha_.Add(value);
 }
-inline void BetaBernoulli::set_beta(float value) {
-  set_has_beta();
-  beta_ = value;
+inline const ::google::protobuf::RepeatedField< float >&
+DirichletDiscrete_GridPrior::alpha() const {
+  return alpha_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+DirichletDiscrete_GridPrior::mutable_alpha() {
+  return &alpha_;
 }
 
 // -------------------------------------------------------------------
@@ -1561,29 +2548,131 @@ DirichletDiscrete_Group::mutable_counts() {
 
 // DirichletDiscrete
 
-// repeated float alphas = 1;
-inline int DirichletDiscrete::alphas_size() const {
-  return alphas_.size();
+// -------------------------------------------------------------------
+
+// DirichletProcessDiscrete_Shared
+
+// required float gamma = 1;
+inline bool DirichletProcessDiscrete_Shared::has_gamma() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void DirichletDiscrete::clear_alphas() {
-  alphas_.Clear();
+inline void DirichletProcessDiscrete_Shared::set_has_gamma() {
+  _has_bits_[0] |= 0x00000001u;
 }
-inline float DirichletDiscrete::alphas(int index) const {
-  return alphas_.Get(index);
+inline void DirichletProcessDiscrete_Shared::clear_has_gamma() {
+  _has_bits_[0] &= ~0x00000001u;
 }
-inline void DirichletDiscrete::set_alphas(int index, float value) {
-  alphas_.Set(index, value);
+inline void DirichletProcessDiscrete_Shared::clear_gamma() {
+  gamma_ = 0;
+  clear_has_gamma();
 }
-inline void DirichletDiscrete::add_alphas(float value) {
-  alphas_.Add(value);
+inline float DirichletProcessDiscrete_Shared::gamma() const {
+  return gamma_;
+}
+inline void DirichletProcessDiscrete_Shared::set_gamma(float value) {
+  set_has_gamma();
+  gamma_ = value;
+}
+
+// required float alpha = 2;
+inline bool DirichletProcessDiscrete_Shared::has_alpha() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void DirichletProcessDiscrete_Shared::set_has_alpha() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void DirichletProcessDiscrete_Shared::clear_has_alpha() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void DirichletProcessDiscrete_Shared::clear_alpha() {
+  alpha_ = 0;
+  clear_has_alpha();
+}
+inline float DirichletProcessDiscrete_Shared::alpha() const {
+  return alpha_;
+}
+inline void DirichletProcessDiscrete_Shared::set_alpha(float value) {
+  set_has_alpha();
+  alpha_ = value;
+}
+
+// repeated float betas = 3;
+inline int DirichletProcessDiscrete_Shared::betas_size() const {
+  return betas_.size();
+}
+inline void DirichletProcessDiscrete_Shared::clear_betas() {
+  betas_.Clear();
+}
+inline float DirichletProcessDiscrete_Shared::betas(int index) const {
+  return betas_.Get(index);
+}
+inline void DirichletProcessDiscrete_Shared::set_betas(int index, float value) {
+  betas_.Set(index, value);
+}
+inline void DirichletProcessDiscrete_Shared::add_betas(float value) {
+  betas_.Add(value);
 }
 inline const ::google::protobuf::RepeatedField< float >&
-DirichletDiscrete::alphas() const {
-  return alphas_;
+DirichletProcessDiscrete_Shared::betas() const {
+  return betas_;
 }
 inline ::google::protobuf::RepeatedField< float >*
-DirichletDiscrete::mutable_alphas() {
-  return &alphas_;
+DirichletProcessDiscrete_Shared::mutable_betas() {
+  return &betas_;
+}
+
+// -------------------------------------------------------------------
+
+// DirichletProcessDiscrete_GridPrior
+
+// repeated float gamma = 1;
+inline int DirichletProcessDiscrete_GridPrior::gamma_size() const {
+  return gamma_.size();
+}
+inline void DirichletProcessDiscrete_GridPrior::clear_gamma() {
+  gamma_.Clear();
+}
+inline float DirichletProcessDiscrete_GridPrior::gamma(int index) const {
+  return gamma_.Get(index);
+}
+inline void DirichletProcessDiscrete_GridPrior::set_gamma(int index, float value) {
+  gamma_.Set(index, value);
+}
+inline void DirichletProcessDiscrete_GridPrior::add_gamma(float value) {
+  gamma_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+DirichletProcessDiscrete_GridPrior::gamma() const {
+  return gamma_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+DirichletProcessDiscrete_GridPrior::mutable_gamma() {
+  return &gamma_;
+}
+
+// repeated float alpha = 2;
+inline int DirichletProcessDiscrete_GridPrior::alpha_size() const {
+  return alpha_.size();
+}
+inline void DirichletProcessDiscrete_GridPrior::clear_alpha() {
+  alpha_.Clear();
+}
+inline float DirichletProcessDiscrete_GridPrior::alpha(int index) const {
+  return alpha_.Get(index);
+}
+inline void DirichletProcessDiscrete_GridPrior::set_alpha(int index, float value) {
+  alpha_.Set(index, value);
+}
+inline void DirichletProcessDiscrete_GridPrior::add_alpha(float value) {
+  alpha_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+DirichletProcessDiscrete_GridPrior::alpha() const {
+  return alpha_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+DirichletProcessDiscrete_GridPrior::mutable_alpha() {
+  return &alpha_;
 }
 
 // -------------------------------------------------------------------
@@ -1644,73 +2733,106 @@ DirichletProcessDiscrete_Group::mutable_values() {
 
 // DirichletProcessDiscrete
 
-// required float gamma = 1;
-inline bool DirichletProcessDiscrete::has_gamma() const {
+// -------------------------------------------------------------------
+
+// GammaPoisson_Shared
+
+// required float alpha = 1;
+inline bool GammaPoisson_Shared::has_alpha() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void DirichletProcessDiscrete::set_has_gamma() {
+inline void GammaPoisson_Shared::set_has_alpha() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void DirichletProcessDiscrete::clear_has_gamma() {
+inline void GammaPoisson_Shared::clear_has_alpha() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void DirichletProcessDiscrete::clear_gamma() {
-  gamma_ = 0;
-  clear_has_gamma();
-}
-inline float DirichletProcessDiscrete::gamma() const {
-  return gamma_;
-}
-inline void DirichletProcessDiscrete::set_gamma(float value) {
-  set_has_gamma();
-  gamma_ = value;
-}
-
-// required float alpha = 2;
-inline bool DirichletProcessDiscrete::has_alpha() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
-}
-inline void DirichletProcessDiscrete::set_has_alpha() {
-  _has_bits_[0] |= 0x00000002u;
-}
-inline void DirichletProcessDiscrete::clear_has_alpha() {
-  _has_bits_[0] &= ~0x00000002u;
-}
-inline void DirichletProcessDiscrete::clear_alpha() {
+inline void GammaPoisson_Shared::clear_alpha() {
   alpha_ = 0;
   clear_has_alpha();
 }
-inline float DirichletProcessDiscrete::alpha() const {
+inline float GammaPoisson_Shared::alpha() const {
   return alpha_;
 }
-inline void DirichletProcessDiscrete::set_alpha(float value) {
+inline void GammaPoisson_Shared::set_alpha(float value) {
   set_has_alpha();
   alpha_ = value;
 }
 
-// repeated float betas = 3;
-inline int DirichletProcessDiscrete::betas_size() const {
-  return betas_.size();
+// required float inv_beta = 2;
+inline bool GammaPoisson_Shared::has_inv_beta() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void DirichletProcessDiscrete::clear_betas() {
-  betas_.Clear();
+inline void GammaPoisson_Shared::set_has_inv_beta() {
+  _has_bits_[0] |= 0x00000002u;
 }
-inline float DirichletProcessDiscrete::betas(int index) const {
-  return betas_.Get(index);
+inline void GammaPoisson_Shared::clear_has_inv_beta() {
+  _has_bits_[0] &= ~0x00000002u;
 }
-inline void DirichletProcessDiscrete::set_betas(int index, float value) {
-  betas_.Set(index, value);
+inline void GammaPoisson_Shared::clear_inv_beta() {
+  inv_beta_ = 0;
+  clear_has_inv_beta();
 }
-inline void DirichletProcessDiscrete::add_betas(float value) {
-  betas_.Add(value);
+inline float GammaPoisson_Shared::inv_beta() const {
+  return inv_beta_;
+}
+inline void GammaPoisson_Shared::set_inv_beta(float value) {
+  set_has_inv_beta();
+  inv_beta_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// GammaPoisson_GridPrior
+
+// repeated float alpha = 1;
+inline int GammaPoisson_GridPrior::alpha_size() const {
+  return alpha_.size();
+}
+inline void GammaPoisson_GridPrior::clear_alpha() {
+  alpha_.Clear();
+}
+inline float GammaPoisson_GridPrior::alpha(int index) const {
+  return alpha_.Get(index);
+}
+inline void GammaPoisson_GridPrior::set_alpha(int index, float value) {
+  alpha_.Set(index, value);
+}
+inline void GammaPoisson_GridPrior::add_alpha(float value) {
+  alpha_.Add(value);
 }
 inline const ::google::protobuf::RepeatedField< float >&
-DirichletProcessDiscrete::betas() const {
-  return betas_;
+GammaPoisson_GridPrior::alpha() const {
+  return alpha_;
 }
 inline ::google::protobuf::RepeatedField< float >*
-DirichletProcessDiscrete::mutable_betas() {
-  return &betas_;
+GammaPoisson_GridPrior::mutable_alpha() {
+  return &alpha_;
+}
+
+// repeated float inv_beta = 2;
+inline int GammaPoisson_GridPrior::inv_beta_size() const {
+  return inv_beta_.size();
+}
+inline void GammaPoisson_GridPrior::clear_inv_beta() {
+  inv_beta_.Clear();
+}
+inline float GammaPoisson_GridPrior::inv_beta(int index) const {
+  return inv_beta_.Get(index);
+}
+inline void GammaPoisson_GridPrior::set_inv_beta(int index, float value) {
+  inv_beta_.Set(index, value);
+}
+inline void GammaPoisson_GridPrior::add_inv_beta(float value) {
+  inv_beta_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+GammaPoisson_GridPrior::inv_beta() const {
+  return inv_beta_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+GammaPoisson_GridPrior::mutable_inv_beta() {
+  return &inv_beta_;
 }
 
 // -------------------------------------------------------------------
@@ -1787,48 +2909,188 @@ inline void GammaPoisson_Group::set_log_prod(float value) {
 
 // GammaPoisson
 
-// required float alpha = 1;
-inline bool GammaPoisson::has_alpha() const {
+// -------------------------------------------------------------------
+
+// NormalInverseChiSq_Shared
+
+// required float mu = 1;
+inline bool NormalInverseChiSq_Shared::has_mu() const {
   return (_has_bits_[0] & 0x00000001u) != 0;
 }
-inline void GammaPoisson::set_has_alpha() {
+inline void NormalInverseChiSq_Shared::set_has_mu() {
   _has_bits_[0] |= 0x00000001u;
 }
-inline void GammaPoisson::clear_has_alpha() {
+inline void NormalInverseChiSq_Shared::clear_has_mu() {
   _has_bits_[0] &= ~0x00000001u;
 }
-inline void GammaPoisson::clear_alpha() {
-  alpha_ = 0;
-  clear_has_alpha();
+inline void NormalInverseChiSq_Shared::clear_mu() {
+  mu_ = 0;
+  clear_has_mu();
 }
-inline float GammaPoisson::alpha() const {
-  return alpha_;
+inline float NormalInverseChiSq_Shared::mu() const {
+  return mu_;
 }
-inline void GammaPoisson::set_alpha(float value) {
-  set_has_alpha();
-  alpha_ = value;
+inline void NormalInverseChiSq_Shared::set_mu(float value) {
+  set_has_mu();
+  mu_ = value;
 }
 
-// required float inv_beta = 2;
-inline bool GammaPoisson::has_inv_beta() const {
+// required float kappa = 2;
+inline bool NormalInverseChiSq_Shared::has_kappa() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void GammaPoisson::set_has_inv_beta() {
+inline void NormalInverseChiSq_Shared::set_has_kappa() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void GammaPoisson::clear_has_inv_beta() {
+inline void NormalInverseChiSq_Shared::clear_has_kappa() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void GammaPoisson::clear_inv_beta() {
-  inv_beta_ = 0;
-  clear_has_inv_beta();
+inline void NormalInverseChiSq_Shared::clear_kappa() {
+  kappa_ = 0;
+  clear_has_kappa();
 }
-inline float GammaPoisson::inv_beta() const {
-  return inv_beta_;
+inline float NormalInverseChiSq_Shared::kappa() const {
+  return kappa_;
 }
-inline void GammaPoisson::set_inv_beta(float value) {
-  set_has_inv_beta();
-  inv_beta_ = value;
+inline void NormalInverseChiSq_Shared::set_kappa(float value) {
+  set_has_kappa();
+  kappa_ = value;
+}
+
+// required float sigmasq = 3;
+inline bool NormalInverseChiSq_Shared::has_sigmasq() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void NormalInverseChiSq_Shared::set_has_sigmasq() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void NormalInverseChiSq_Shared::clear_has_sigmasq() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void NormalInverseChiSq_Shared::clear_sigmasq() {
+  sigmasq_ = 0;
+  clear_has_sigmasq();
+}
+inline float NormalInverseChiSq_Shared::sigmasq() const {
+  return sigmasq_;
+}
+inline void NormalInverseChiSq_Shared::set_sigmasq(float value) {
+  set_has_sigmasq();
+  sigmasq_ = value;
+}
+
+// required float nu = 4;
+inline bool NormalInverseChiSq_Shared::has_nu() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void NormalInverseChiSq_Shared::set_has_nu() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void NormalInverseChiSq_Shared::clear_has_nu() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void NormalInverseChiSq_Shared::clear_nu() {
+  nu_ = 0;
+  clear_has_nu();
+}
+inline float NormalInverseChiSq_Shared::nu() const {
+  return nu_;
+}
+inline void NormalInverseChiSq_Shared::set_nu(float value) {
+  set_has_nu();
+  nu_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// NormalInverseChiSq_GridPrior
+
+// required float mu = 1;
+inline bool NormalInverseChiSq_GridPrior::has_mu() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void NormalInverseChiSq_GridPrior::set_has_mu() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void NormalInverseChiSq_GridPrior::clear_has_mu() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void NormalInverseChiSq_GridPrior::clear_mu() {
+  mu_ = 0;
+  clear_has_mu();
+}
+inline float NormalInverseChiSq_GridPrior::mu() const {
+  return mu_;
+}
+inline void NormalInverseChiSq_GridPrior::set_mu(float value) {
+  set_has_mu();
+  mu_ = value;
+}
+
+// required float kappa = 2;
+inline bool NormalInverseChiSq_GridPrior::has_kappa() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void NormalInverseChiSq_GridPrior::set_has_kappa() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void NormalInverseChiSq_GridPrior::clear_has_kappa() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void NormalInverseChiSq_GridPrior::clear_kappa() {
+  kappa_ = 0;
+  clear_has_kappa();
+}
+inline float NormalInverseChiSq_GridPrior::kappa() const {
+  return kappa_;
+}
+inline void NormalInverseChiSq_GridPrior::set_kappa(float value) {
+  set_has_kappa();
+  kappa_ = value;
+}
+
+// required float sigmasq = 3;
+inline bool NormalInverseChiSq_GridPrior::has_sigmasq() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void NormalInverseChiSq_GridPrior::set_has_sigmasq() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void NormalInverseChiSq_GridPrior::clear_has_sigmasq() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void NormalInverseChiSq_GridPrior::clear_sigmasq() {
+  sigmasq_ = 0;
+  clear_has_sigmasq();
+}
+inline float NormalInverseChiSq_GridPrior::sigmasq() const {
+  return sigmasq_;
+}
+inline void NormalInverseChiSq_GridPrior::set_sigmasq(float value) {
+  set_has_sigmasq();
+  sigmasq_ = value;
+}
+
+// required float nu = 4;
+inline bool NormalInverseChiSq_GridPrior::has_nu() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void NormalInverseChiSq_GridPrior::set_has_nu() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void NormalInverseChiSq_GridPrior::clear_has_nu() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void NormalInverseChiSq_GridPrior::clear_nu() {
+  nu_ = 0;
+  clear_has_nu();
+}
+inline float NormalInverseChiSq_GridPrior::nu() const {
+  return nu_;
+}
+inline void NormalInverseChiSq_GridPrior::set_nu(float value) {
+  set_has_nu();
+  nu_ = value;
 }
 
 // -------------------------------------------------------------------
@@ -1904,94 +3166,6 @@ inline void NormalInverseChiSq_Group::set_count_times_variance(float value) {
 // -------------------------------------------------------------------
 
 // NormalInverseChiSq
-
-// required float mu = 1;
-inline bool NormalInverseChiSq::has_mu() const {
-  return (_has_bits_[0] & 0x00000001u) != 0;
-}
-inline void NormalInverseChiSq::set_has_mu() {
-  _has_bits_[0] |= 0x00000001u;
-}
-inline void NormalInverseChiSq::clear_has_mu() {
-  _has_bits_[0] &= ~0x00000001u;
-}
-inline void NormalInverseChiSq::clear_mu() {
-  mu_ = 0;
-  clear_has_mu();
-}
-inline float NormalInverseChiSq::mu() const {
-  return mu_;
-}
-inline void NormalInverseChiSq::set_mu(float value) {
-  set_has_mu();
-  mu_ = value;
-}
-
-// required float kappa = 2;
-inline bool NormalInverseChiSq::has_kappa() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
-}
-inline void NormalInverseChiSq::set_has_kappa() {
-  _has_bits_[0] |= 0x00000002u;
-}
-inline void NormalInverseChiSq::clear_has_kappa() {
-  _has_bits_[0] &= ~0x00000002u;
-}
-inline void NormalInverseChiSq::clear_kappa() {
-  kappa_ = 0;
-  clear_has_kappa();
-}
-inline float NormalInverseChiSq::kappa() const {
-  return kappa_;
-}
-inline void NormalInverseChiSq::set_kappa(float value) {
-  set_has_kappa();
-  kappa_ = value;
-}
-
-// required float sigmasq = 3;
-inline bool NormalInverseChiSq::has_sigmasq() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
-}
-inline void NormalInverseChiSq::set_has_sigmasq() {
-  _has_bits_[0] |= 0x00000004u;
-}
-inline void NormalInverseChiSq::clear_has_sigmasq() {
-  _has_bits_[0] &= ~0x00000004u;
-}
-inline void NormalInverseChiSq::clear_sigmasq() {
-  sigmasq_ = 0;
-  clear_has_sigmasq();
-}
-inline float NormalInverseChiSq::sigmasq() const {
-  return sigmasq_;
-}
-inline void NormalInverseChiSq::set_sigmasq(float value) {
-  set_has_sigmasq();
-  sigmasq_ = value;
-}
-
-// required float nu = 4;
-inline bool NormalInverseChiSq::has_nu() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
-}
-inline void NormalInverseChiSq::set_has_nu() {
-  _has_bits_[0] |= 0x00000008u;
-}
-inline void NormalInverseChiSq::clear_has_nu() {
-  _has_bits_[0] &= ~0x00000008u;
-}
-inline void NormalInverseChiSq::clear_nu() {
-  nu_ = 0;
-  clear_has_nu();
-}
-inline float NormalInverseChiSq::nu() const {
-  return nu_;
-}
-inline void NormalInverseChiSq::set_nu(float value) {
-  set_has_nu();
-  nu_ = value;
-}
 
 
 // @@protoc_insertion_point(namespace_scope)
