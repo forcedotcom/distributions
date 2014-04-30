@@ -30,6 +30,7 @@ import functools
 from collections import defaultdict
 import numpy
 import numpy.random
+from nose import SkipTest
 from nose.tools import (
     assert_true,
     assert_equal,
@@ -243,6 +244,9 @@ def test_mixture_score_matches_score_add_value(Model, EXAMPLE, *unused):
     sample_count = 200
     model = Model()
     model.load(EXAMPLE)
+
+    if Model.__name__ == 'LowEntropy' and sample_count > model.dataset_size:
+        raise SkipTest('skipping trivial example')
 
     assignment_vector = model.sample_assignments(sample_count)
     assignments = dict(enumerate(assignment_vector))

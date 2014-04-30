@@ -92,6 +92,16 @@ cdef extern from 'distributions/clustering.hpp':
     cppclass LowEntropy_cc "distributions::Clustering<int>::LowEntropy":
         int dataset_size
         vector[int] sample_assignments(int size, rng_t & rng) nogil except +
+        cppclass Mixture:
+            size_t size "counts().size" () nogil except +
+            IdSet.iterator empty_groupids_begin \
+                    "empty_groupids().begin" () nogil except +
+            IdSet.iterator empty_groupids_end \
+                    "empty_groupids().end" () nogil except +
+            void init (LowEntropy_cc &, vector[int] &) nogil except +
+            bint add_value (LowEntropy_cc &, size_t) nogil except +
+            bint remove_value (LowEntropy_cc &, size_t) nogil except +
+            void score_value (LowEntropy_cc &, VectorFloat &) nogil except +
         float score_counts(vector[int] & counts) nogil except +
         float score_add_value (
                 int group_size,
@@ -123,6 +133,9 @@ cdef dict dump_assignments(Assignments & assignments):
         inc(i)
     return raw
 
+
+#-----------------------------------------------------------------------------
+# Pitman-Yor
 
 cdef class PitmanYor_cy:
     cdef PitmanYor_cc * ptr
@@ -193,10 +206,6 @@ cdef class PitmanYor_cy:
             sample_size,
             empty_group_count)
 
-
-    #-------------------------------------------------------------------------
-    # Examples
-
     EXAMPLES = [
         {'alpha': 1., 'd': 0.},
         {'alpha': 1., 'd': 0.1},
@@ -256,11 +265,11 @@ class PitmanYor(PitmanYor_cy, Serializable, ProtobufSerializable):
         message.alpha = dumped['alpha']
         message.d = dumped['d']
 
-    #-------------------------------------------------------------------------
-    # Datatypes
-
     Mixture = PitmanYorMixture
 
+
+#-----------------------------------------------------------------------------
+# Low Entropy
 
 cdef class LowEntropy_cy:
     cdef LowEntropy_cc * ptr
@@ -320,15 +329,51 @@ cdef class LowEntropy_cy:
             sample_size,
             empty_group_count)
 
-    #-------------------------------------------------------------------------
-    # Examples
-
     EXAMPLES = [
         {'dataset_size': 5},
         {'dataset_size': 10},
         {'dataset_size': 100},
         {'dataset_size': 1000},
     ]
+
+
+cdef class LowEntropyMixture:
+    cdef LowEntropy_cc.Mixture * ptr
+    def __cinit__(self):
+        self.ptr = new LowEntropy_cc.Mixture()
+    def __dealloc__(self):
+        del self.ptr
+
+    def __len__(self):
+        return self.ptr.size()
+
+    property empty_groupids:
+        def __get__(self):
+            cdef LowEntropy_cc.Mixture * ptr = self.ptr
+            cdef IdSet.iterator i = ptr.empty_groupids_begin()
+            cdef IdSet.iterator end = ptr.empty_groupids_end()
+            while i != end:
+                yield deref(i)
+                inc(i)
+
+    def init(self, LowEntropy_cy model, list counts):
+        cdef vector[int] counts_cc = counts
+        self.ptr.init(model.ptr[0], counts_cc)
+
+    def add_value(self, LowEntropy_cy model, int groupid):
+        return self.ptr.add_value(model.ptr[0], groupid)
+
+    def remove_value(self, LowEntropy_cy model, int groupid):
+        return self.ptr.remove_value(model.ptr[0], groupid)
+
+    def score_value(
+            self,
+            LowEntropy_cy model,
+            numpy.ndarray[numpy.float32_t, ndim=1] scores):
+        cdef VectorFloat scores_cc
+        scores_cc.resize(self.ptr.size())
+        self.ptr.score_value(model.ptr[0], scores_cc)
+        vector_float_to_ndarray(scores_cc, scores)
 
 
 class LowEntropy(LowEntropy_cy, Serializable, ProtobufSerializable):
@@ -340,3 +385,5 @@ class LowEntropy(LowEntropy_cy, Serializable, ProtobufSerializable):
         dumped = self.dump()
         message.Clear()
         message.datset_size = dumped['dataset_size']
+
+    Mixture = LowEntropyMixture
