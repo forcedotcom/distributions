@@ -119,7 +119,7 @@ struct Group
     float score_value (
             const Shared<max_dim> & shared,
             const Value & value,
-            rng_t & rng);
+            rng_t & rng) const;
 };
 
 template<int max_dim>
@@ -180,7 +180,7 @@ template<int max_dim>
 inline float Group<max_dim>::score_value (
         const Shared<max_dim> & shared,
         const Value & value,
-        rng_t & rng)
+        rng_t & rng) const
 {
     Scorer<max_dim> scorer;
     scorer.init(shared, * this, rng);

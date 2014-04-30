@@ -135,7 +135,7 @@ struct Group
     float score_value (
             const Shared & shared,
             const Value & value,
-            rng_t & rng);
+            rng_t & rng) const;
 };
 
 struct Sampler
@@ -196,7 +196,7 @@ struct Scorer
 inline float Group::score_value (
         const Shared & shared,
         const Value & value,
-        rng_t & rng)
+        rng_t & rng) const
 {
     Scorer scorer;
     scorer.init(shared, * this, rng);
