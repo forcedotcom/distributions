@@ -25,7 +25,6 @@ cdef extern from "distributions/models/dpd.hpp" namespace "distributions::dirich
         void merge (Shared &, Group &, rng_t &) nogil except +
 
 
-
     cppclass Sampler:
         void init (Shared &, Group &, rng_t &) nogil except +
         Value eval (Shared &, rng_t &) nogil except +
@@ -42,7 +41,6 @@ cdef extern from "distributions/models/dpd.hpp" namespace "distributions::dirich
             (Shared &, size_t, Value &, rng_t &) nogil except +
         void score_value \
             (Shared &, Value &, VectorFloat &, rng_t &) nogil except +
-
 
 
     Value sample_value (Shared &, Group &, rng_t &) nogil except +

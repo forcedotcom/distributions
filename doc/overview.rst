@@ -103,6 +103,7 @@ Each component model API consist of:
         mixture.add_value(model, groupid, value)
         mixture.remove_value(model, groupid, value)
         mixture.score_value(model, value, scores_accum)
+        mixture.score_mixture(model) -> float
 
     Component model mixture slaves::
 
@@ -114,6 +115,7 @@ Each component model API consist of:
         mixture.add_value(model, groupid, value)
         mixture.remove_value(model, groupid, value)
         mixture.score_value(model, value, scores_accum)
+        mixture.score_mixture(model) -> float
 
 *   Serialization to JSON (python only)::
 
