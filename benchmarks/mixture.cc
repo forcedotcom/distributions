@@ -138,7 +138,6 @@ void speedtest (
 
 
     std::cout <<
-        typeid(typename Mixture::Shared).name() << '\t' <<
         group_count << '\t' <<
         std::right << std::setw(7) << std::fixed << std::setprecision(2) <<
         scorers_rate << '\t' <<
@@ -147,8 +146,15 @@ void speedtest (
 }
 
 template<class Mixture>
-void speedtests (const typename Mixture::Shared & shared)
+void speedtests ()
 {
+    std::cout <<
+        typeid(typename Mixture::Shared).name() << '\n' <<
+        "Groups" << '\t' <<
+        "Scorers" << '\t' <<
+        "Mixture (cells/us)" << '\n';
+
+    const auto shared = Mixture::Shared::EXAMPLE();
     for (int group_count = 1; group_count <= 1000; group_count *= 10) {
         int iters = 500000 / group_count;
         speedtest<Mixture>(shared, group_count, iters);
@@ -157,16 +163,10 @@ void speedtests (const typename Mixture::Shared & shared)
 
 int main()
 {
-    std::cout <<
-        "Shared" << '\t' <<
-        "Groups" << '\t' <<
-        "Scorers" << '\t' <<
-        "Mixture (cells/us)" << '\n';
-
-    speedtests<dirichlet_discrete::Mixture<4>>(dirichlet_discrete::Shared<4>::EXAMPLE());
-    speedtests<dirichlet_process_discrete::Mixture>(dirichlet_process_discrete::Shared::EXAMPLE());
-    speedtests<gamma_poisson::Mixture>(gamma_poisson::Shared::EXAMPLE());
-    speedtests<normal_inverse_chi_sq::Mixture>(normal_inverse_chi_sq::Shared::EXAMPLE());
+    speedtests<dirichlet_discrete::Mixture<4>>();
+    speedtests<dirichlet_process_discrete::Mixture>();
+    speedtests<gamma_poisson::Mixture>();
+    speedtests<normal_inverse_chi_sq::Mixture>();
 
     return 0;
 }
