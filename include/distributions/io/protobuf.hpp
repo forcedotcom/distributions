@@ -43,7 +43,7 @@ namespace protobuf { using namespace ::protobuf::distributions; }
 //----------------------------------------------------------------------------
 // Clustering
 
-// FIXME g++ fails if these are made template<count_t>
+// FIXME gcc-4.6 fails if these are made template<count_t>
 
 inline void clustering_load (
         typename Clustering<int>::PitmanYor & model,
@@ -219,6 +219,86 @@ inline void group_dump (
     message.set_count(group.count);
     message.set_mean(group.mean);
     message.set_count_times_variance(group.count_times_variance);
+}
+
+//----------------------------------------------------------------------------
+// Grid Priors
+
+template<class Visitor>
+inline void for_each_gridpoint (
+        const protobuf::DirichletDiscrete_GridPrior & grid,
+        Visitor & visitor)
+{
+    int dim = visitor.shared().dim;
+
+    for (int i = 0; i < dim; ++i) {
+        for (auto alpha : grid.alpha()) {
+            visitor.add().alphas[i] = alpha;
+        }
+        visitor.done();
+    }
+}
+
+template<class Visitor>
+inline void for_each_gridpoint (
+        const protobuf::DirichletProcessDiscrete_GridPrior & grid,
+        Visitor & visitor)
+{
+    for (auto gamma : grid.gamma()) {
+        visitor.add().gamma = gamma;
+    }
+    visitor.done();
+
+    for (auto alpha : grid.alpha()) {
+        visitor.add().alpha = alpha;
+    }
+    visitor.done();
+}
+
+template<class Visitor>
+inline void for_each_gridpoint (
+        const protobuf::GammaPoisson_GridPrior & grid,
+        Visitor & visitor)
+{
+    gamma_poisson::Shared & shared = visitor.shared();
+
+    for (auto alpha : grid.alpha()) {
+        visitor.add().alpha = alpha;
+    }
+    visitor.done();
+
+    for (auto inv_beta : grid.inv_beta()) {
+        visitor.add().inv_beta = inv_beta;
+    }
+    visitor.done();
+}
+
+template<class Visitor>
+inline void for_each_gridpoint (
+        const protobuf::NormalInverseChiSq_GridPrior & grid,
+        Visitor & visitor)
+{
+    normal_inverse_chi_sq::Shared & shared = visitor.shared();
+
+    for (auto mu : grid.mu()) {
+        visitor.add().mu = mu;
+    }
+    visitor.done();
+
+    for (auto kappa : grid.kappa()) {
+        visitor.add().kappa = kappa;
+    }
+    visitor.done();
+
+    for (auto sigmasq : grid.sigmasq()) {
+        visitor.add().sigmasq = sigmasq;
+    }
+    visitor.done();
+
+    for (auto nu : grid.nu()) {
+        visitor.add().nu = nu;
+    }
+    visitor.done();
 }
 
 } // namespace distributions
