@@ -260,8 +260,6 @@ inline void for_each_gridpoint (
         const protobuf::GammaPoisson_GridPrior & grid,
         Visitor & visitor)
 {
-    gamma_poisson::Shared & shared = visitor.shared();
-
     for (auto alpha : grid.alpha()) {
         visitor.add().alpha = alpha;
     }
@@ -278,8 +276,6 @@ inline void for_each_gridpoint (
         const protobuf::NormalInverseChiSq_GridPrior & grid,
         Visitor & visitor)
 {
-    normal_inverse_chi_sq::Shared & shared = visitor.shared();
-
     for (auto mu : grid.mu()) {
         visitor.add().mu = mu;
     }

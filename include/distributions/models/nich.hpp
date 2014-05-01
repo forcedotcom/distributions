@@ -291,6 +291,13 @@ public:
         _score_value(shared, value, scores_accum, rng);
     }
 
+    float score_mixture (
+            const Shared & shared,
+            rng_t & rng) const
+    {
+        return slave_.score_mixture(shared, rng);
+    }
+
 private:
 
     void _update_group (

@@ -1930,51 +1930,63 @@ class NormalInverseChiSq_GridPrior : public ::google::protobuf::Message {
   
   // accessors -------------------------------------------------------
   
-  // required float mu = 1;
-  inline bool has_mu() const;
+  // repeated float mu = 1;
+  inline int mu_size() const;
   inline void clear_mu();
   static const int kMuFieldNumber = 1;
-  inline float mu() const;
-  inline void set_mu(float value);
+  inline float mu(int index) const;
+  inline void set_mu(int index, float value);
+  inline void add_mu(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      mu() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_mu();
   
-  // required float kappa = 2;
-  inline bool has_kappa() const;
+  // repeated float kappa = 2;
+  inline int kappa_size() const;
   inline void clear_kappa();
   static const int kKappaFieldNumber = 2;
-  inline float kappa() const;
-  inline void set_kappa(float value);
+  inline float kappa(int index) const;
+  inline void set_kappa(int index, float value);
+  inline void add_kappa(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      kappa() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_kappa();
   
-  // required float sigmasq = 3;
-  inline bool has_sigmasq() const;
+  // repeated float sigmasq = 3;
+  inline int sigmasq_size() const;
   inline void clear_sigmasq();
   static const int kSigmasqFieldNumber = 3;
-  inline float sigmasq() const;
-  inline void set_sigmasq(float value);
+  inline float sigmasq(int index) const;
+  inline void set_sigmasq(int index, float value);
+  inline void add_sigmasq(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      sigmasq() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_sigmasq();
   
-  // required float nu = 4;
-  inline bool has_nu() const;
+  // repeated float nu = 4;
+  inline int nu_size() const;
   inline void clear_nu();
   static const int kNuFieldNumber = 4;
-  inline float nu() const;
-  inline void set_nu(float value);
+  inline float nu(int index) const;
+  inline void set_nu(int index, float value);
+  inline void add_nu(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      nu() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_nu();
   
   // @@protoc_insertion_point(class_scope:protobuf.distributions.NormalInverseChiSq.GridPrior)
  private:
-  inline void set_has_mu();
-  inline void clear_has_mu();
-  inline void set_has_kappa();
-  inline void clear_has_kappa();
-  inline void set_has_sigmasq();
-  inline void clear_has_sigmasq();
-  inline void set_has_nu();
-  inline void clear_has_nu();
   
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
   
-  float mu_;
-  float kappa_;
-  float sigmasq_;
-  float nu_;
+  ::google::protobuf::RepeatedField< float > mu_;
+  ::google::protobuf::RepeatedField< float > kappa_;
+  ::google::protobuf::RepeatedField< float > sigmasq_;
+  ::google::protobuf::RepeatedField< float > nu_;
   
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
@@ -3005,92 +3017,104 @@ inline void NormalInverseChiSq_Shared::set_nu(float value) {
 
 // NormalInverseChiSq_GridPrior
 
-// required float mu = 1;
-inline bool NormalInverseChiSq_GridPrior::has_mu() const {
-  return (_has_bits_[0] & 0x00000001u) != 0;
-}
-inline void NormalInverseChiSq_GridPrior::set_has_mu() {
-  _has_bits_[0] |= 0x00000001u;
-}
-inline void NormalInverseChiSq_GridPrior::clear_has_mu() {
-  _has_bits_[0] &= ~0x00000001u;
+// repeated float mu = 1;
+inline int NormalInverseChiSq_GridPrior::mu_size() const {
+  return mu_.size();
 }
 inline void NormalInverseChiSq_GridPrior::clear_mu() {
-  mu_ = 0;
-  clear_has_mu();
+  mu_.Clear();
 }
-inline float NormalInverseChiSq_GridPrior::mu() const {
+inline float NormalInverseChiSq_GridPrior::mu(int index) const {
+  return mu_.Get(index);
+}
+inline void NormalInverseChiSq_GridPrior::set_mu(int index, float value) {
+  mu_.Set(index, value);
+}
+inline void NormalInverseChiSq_GridPrior::add_mu(float value) {
+  mu_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+NormalInverseChiSq_GridPrior::mu() const {
   return mu_;
 }
-inline void NormalInverseChiSq_GridPrior::set_mu(float value) {
-  set_has_mu();
-  mu_ = value;
+inline ::google::protobuf::RepeatedField< float >*
+NormalInverseChiSq_GridPrior::mutable_mu() {
+  return &mu_;
 }
 
-// required float kappa = 2;
-inline bool NormalInverseChiSq_GridPrior::has_kappa() const {
-  return (_has_bits_[0] & 0x00000002u) != 0;
-}
-inline void NormalInverseChiSq_GridPrior::set_has_kappa() {
-  _has_bits_[0] |= 0x00000002u;
-}
-inline void NormalInverseChiSq_GridPrior::clear_has_kappa() {
-  _has_bits_[0] &= ~0x00000002u;
+// repeated float kappa = 2;
+inline int NormalInverseChiSq_GridPrior::kappa_size() const {
+  return kappa_.size();
 }
 inline void NormalInverseChiSq_GridPrior::clear_kappa() {
-  kappa_ = 0;
-  clear_has_kappa();
+  kappa_.Clear();
 }
-inline float NormalInverseChiSq_GridPrior::kappa() const {
+inline float NormalInverseChiSq_GridPrior::kappa(int index) const {
+  return kappa_.Get(index);
+}
+inline void NormalInverseChiSq_GridPrior::set_kappa(int index, float value) {
+  kappa_.Set(index, value);
+}
+inline void NormalInverseChiSq_GridPrior::add_kappa(float value) {
+  kappa_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+NormalInverseChiSq_GridPrior::kappa() const {
   return kappa_;
 }
-inline void NormalInverseChiSq_GridPrior::set_kappa(float value) {
-  set_has_kappa();
-  kappa_ = value;
+inline ::google::protobuf::RepeatedField< float >*
+NormalInverseChiSq_GridPrior::mutable_kappa() {
+  return &kappa_;
 }
 
-// required float sigmasq = 3;
-inline bool NormalInverseChiSq_GridPrior::has_sigmasq() const {
-  return (_has_bits_[0] & 0x00000004u) != 0;
-}
-inline void NormalInverseChiSq_GridPrior::set_has_sigmasq() {
-  _has_bits_[0] |= 0x00000004u;
-}
-inline void NormalInverseChiSq_GridPrior::clear_has_sigmasq() {
-  _has_bits_[0] &= ~0x00000004u;
+// repeated float sigmasq = 3;
+inline int NormalInverseChiSq_GridPrior::sigmasq_size() const {
+  return sigmasq_.size();
 }
 inline void NormalInverseChiSq_GridPrior::clear_sigmasq() {
-  sigmasq_ = 0;
-  clear_has_sigmasq();
+  sigmasq_.Clear();
 }
-inline float NormalInverseChiSq_GridPrior::sigmasq() const {
+inline float NormalInverseChiSq_GridPrior::sigmasq(int index) const {
+  return sigmasq_.Get(index);
+}
+inline void NormalInverseChiSq_GridPrior::set_sigmasq(int index, float value) {
+  sigmasq_.Set(index, value);
+}
+inline void NormalInverseChiSq_GridPrior::add_sigmasq(float value) {
+  sigmasq_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+NormalInverseChiSq_GridPrior::sigmasq() const {
   return sigmasq_;
 }
-inline void NormalInverseChiSq_GridPrior::set_sigmasq(float value) {
-  set_has_sigmasq();
-  sigmasq_ = value;
+inline ::google::protobuf::RepeatedField< float >*
+NormalInverseChiSq_GridPrior::mutable_sigmasq() {
+  return &sigmasq_;
 }
 
-// required float nu = 4;
-inline bool NormalInverseChiSq_GridPrior::has_nu() const {
-  return (_has_bits_[0] & 0x00000008u) != 0;
-}
-inline void NormalInverseChiSq_GridPrior::set_has_nu() {
-  _has_bits_[0] |= 0x00000008u;
-}
-inline void NormalInverseChiSq_GridPrior::clear_has_nu() {
-  _has_bits_[0] &= ~0x00000008u;
+// repeated float nu = 4;
+inline int NormalInverseChiSq_GridPrior::nu_size() const {
+  return nu_.size();
 }
 inline void NormalInverseChiSq_GridPrior::clear_nu() {
-  nu_ = 0;
-  clear_has_nu();
+  nu_.Clear();
 }
-inline float NormalInverseChiSq_GridPrior::nu() const {
+inline float NormalInverseChiSq_GridPrior::nu(int index) const {
+  return nu_.Get(index);
+}
+inline void NormalInverseChiSq_GridPrior::set_nu(int index, float value) {
+  nu_.Set(index, value);
+}
+inline void NormalInverseChiSq_GridPrior::add_nu(float value) {
+  nu_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+NormalInverseChiSq_GridPrior::nu() const {
   return nu_;
 }
-inline void NormalInverseChiSq_GridPrior::set_nu(float value) {
-  set_has_nu();
-  nu_ = value;
+inline ::google::protobuf::RepeatedField< float >*
+NormalInverseChiSq_GridPrior::mutable_nu() {
+  return &nu_;
 }
 
 // -------------------------------------------------------------------

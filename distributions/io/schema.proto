@@ -126,10 +126,10 @@ message NormalInverseChiSq {
   }
 
   message GridPrior {
-    required float mu = 1;
-    required float kappa = 2;
-    required float sigmasq = 3;
-    required float nu = 4;
+    repeated float mu = 1;
+    repeated float kappa = 2;
+    repeated float sigmasq = 3;
+    repeated float nu = 4;
   }
 
   message Group {

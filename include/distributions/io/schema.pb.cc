@@ -599,8 +599,8 @@ void protobuf_AddDesc_distributions_2fio_2fschema_2eproto() {
     "\n\005count\030\001 \002(\004\022\013\n\003sum\030\002 \002(\004\022\020\n\010log_prod\030\003"
     " \002(\002\"\337\001\n\022NormalInverseChiSq\032@\n\006Shared\022\n\n"
     "\002mu\030\001 \002(\002\022\r\n\005kappa\030\002 \002(\002\022\017\n\007sigmasq\030\003 \002("
-    "\002\022\n\n\002nu\030\004 \002(\002\032C\n\tGridPrior\022\n\n\002mu\030\001 \002(\002\022\r"
-    "\n\005kappa\030\002 \002(\002\022\017\n\007sigmasq\030\003 \002(\002\022\n\n\002nu\030\004 \002"
+    "\002\022\n\n\002nu\030\004 \002(\002\032C\n\tGridPrior\022\n\n\002mu\030\001 \003(\002\022\r"
+    "\n\005kappa\030\002 \003(\002\022\017\n\007sigmasq\030\003 \003(\002\022\n\n\002nu\030\004 \003"
     "(\002\032B\n\005Group\022\r\n\005count\030\001 \002(\004\022\014\n\004mean\030\002 \002(\002"
     "\022\034\n\024count_times_variance\030\003 \002(\002", 1070);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
@@ -5291,10 +5291,6 @@ NormalInverseChiSq_GridPrior::NormalInverseChiSq_GridPrior(const NormalInverseCh
 
 void NormalInverseChiSq_GridPrior::SharedCtor() {
   _cached_size_ = 0;
-  mu_ = 0;
-  kappa_ = 0;
-  sigmasq_ = 0;
-  nu_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -5328,12 +5324,10 @@ NormalInverseChiSq_GridPrior* NormalInverseChiSq_GridPrior::New() const {
 }
 
 void NormalInverseChiSq_GridPrior::Clear() {
-  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    mu_ = 0;
-    kappa_ = 0;
-    sigmasq_ = 0;
-    nu_ = 0;
-  }
+  mu_.Clear();
+  kappa_.Clear();
+  sigmasq_.Clear();
+  nu_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -5344,65 +5338,90 @@ bool NormalInverseChiSq_GridPrior::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // required float mu = 1;
+      // repeated float mu = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+         parse_mu:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &mu_)));
-          set_has_mu();
+                 1, 13, input, this->mutable_mu())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, this->mutable_mu())));
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(13)) goto parse_mu;
         if (input->ExpectTag(21)) goto parse_kappa;
         break;
       }
       
-      // required float kappa = 2;
+      // repeated float kappa = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
          parse_kappa:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &kappa_)));
-          set_has_kappa();
+                 1, 21, input, this->mutable_kappa())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, this->mutable_kappa())));
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(21)) goto parse_kappa;
         if (input->ExpectTag(29)) goto parse_sigmasq;
         break;
       }
       
-      // required float sigmasq = 3;
+      // repeated float sigmasq = 3;
       case 3: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
          parse_sigmasq:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &sigmasq_)));
-          set_has_sigmasq();
+                 1, 29, input, this->mutable_sigmasq())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, this->mutable_sigmasq())));
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(29)) goto parse_sigmasq;
         if (input->ExpectTag(37)) goto parse_nu;
         break;
       }
       
-      // required float nu = 4;
+      // repeated float nu = 4;
       case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
          parse_nu:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &nu_)));
-          set_has_nu();
+                 1, 37, input, this->mutable_nu())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, this->mutable_nu())));
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(37)) goto parse_nu;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -5425,24 +5444,28 @@ bool NormalInverseChiSq_GridPrior::MergePartialFromCodedStream(
 
 void NormalInverseChiSq_GridPrior::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // required float mu = 1;
-  if (has_mu()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(1, this->mu(), output);
+  // repeated float mu = 1;
+  for (int i = 0; i < this->mu_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(
+      1, this->mu(i), output);
   }
   
-  // required float kappa = 2;
-  if (has_kappa()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->kappa(), output);
+  // repeated float kappa = 2;
+  for (int i = 0; i < this->kappa_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(
+      2, this->kappa(i), output);
   }
   
-  // required float sigmasq = 3;
-  if (has_sigmasq()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(3, this->sigmasq(), output);
+  // repeated float sigmasq = 3;
+  for (int i = 0; i < this->sigmasq_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(
+      3, this->sigmasq(i), output);
   }
   
-  // required float nu = 4;
-  if (has_nu()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(4, this->nu(), output);
+  // repeated float nu = 4;
+  for (int i = 0; i < this->nu_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(
+      4, this->nu(i), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -5453,24 +5476,28 @@ void NormalInverseChiSq_GridPrior::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* NormalInverseChiSq_GridPrior::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // required float mu = 1;
-  if (has_mu()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(1, this->mu(), target);
+  // repeated float mu = 1;
+  for (int i = 0; i < this->mu_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteFloatToArray(1, this->mu(i), target);
   }
   
-  // required float kappa = 2;
-  if (has_kappa()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->kappa(), target);
+  // repeated float kappa = 2;
+  for (int i = 0; i < this->kappa_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteFloatToArray(2, this->kappa(i), target);
   }
   
-  // required float sigmasq = 3;
-  if (has_sigmasq()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(3, this->sigmasq(), target);
+  // repeated float sigmasq = 3;
+  for (int i = 0; i < this->sigmasq_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteFloatToArray(3, this->sigmasq(i), target);
   }
   
-  // required float nu = 4;
-  if (has_nu()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(4, this->nu(), target);
+  // repeated float nu = 4;
+  for (int i = 0; i < this->nu_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteFloatToArray(4, this->nu(i), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -5483,28 +5510,34 @@ void NormalInverseChiSq_GridPrior::SerializeWithCachedSizes(
 int NormalInverseChiSq_GridPrior::ByteSize() const {
   int total_size = 0;
   
-  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    // required float mu = 1;
-    if (has_mu()) {
-      total_size += 1 + 4;
-    }
-    
-    // required float kappa = 2;
-    if (has_kappa()) {
-      total_size += 1 + 4;
-    }
-    
-    // required float sigmasq = 3;
-    if (has_sigmasq()) {
-      total_size += 1 + 4;
-    }
-    
-    // required float nu = 4;
-    if (has_nu()) {
-      total_size += 1 + 4;
-    }
-    
+  // repeated float mu = 1;
+  {
+    int data_size = 0;
+    data_size = 4 * this->mu_size();
+    total_size += 1 * this->mu_size() + data_size;
   }
+  
+  // repeated float kappa = 2;
+  {
+    int data_size = 0;
+    data_size = 4 * this->kappa_size();
+    total_size += 1 * this->kappa_size() + data_size;
+  }
+  
+  // repeated float sigmasq = 3;
+  {
+    int data_size = 0;
+    data_size = 4 * this->sigmasq_size();
+    total_size += 1 * this->sigmasq_size() + data_size;
+  }
+  
+  // repeated float nu = 4;
+  {
+    int data_size = 0;
+    data_size = 4 * this->nu_size();
+    total_size += 1 * this->nu_size() + data_size;
+  }
+  
   if (!unknown_fields().empty()) {
     total_size +=
       ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
@@ -5530,20 +5563,10 @@ void NormalInverseChiSq_GridPrior::MergeFrom(const ::google::protobuf::Message& 
 
 void NormalInverseChiSq_GridPrior::MergeFrom(const NormalInverseChiSq_GridPrior& from) {
   GOOGLE_CHECK_NE(&from, this);
-  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
-    if (from.has_mu()) {
-      set_mu(from.mu());
-    }
-    if (from.has_kappa()) {
-      set_kappa(from.kappa());
-    }
-    if (from.has_sigmasq()) {
-      set_sigmasq(from.sigmasq());
-    }
-    if (from.has_nu()) {
-      set_nu(from.nu());
-    }
-  }
+  mu_.MergeFrom(from.mu_);
+  kappa_.MergeFrom(from.kappa_);
+  sigmasq_.MergeFrom(from.sigmasq_);
+  nu_.MergeFrom(from.nu_);
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
 
@@ -5560,17 +5583,16 @@ void NormalInverseChiSq_GridPrior::CopyFrom(const NormalInverseChiSq_GridPrior& 
 }
 
 bool NormalInverseChiSq_GridPrior::IsInitialized() const {
-  if ((_has_bits_[0] & 0x0000000f) != 0x0000000f) return false;
   
   return true;
 }
 
 void NormalInverseChiSq_GridPrior::Swap(NormalInverseChiSq_GridPrior* other) {
   if (other != this) {
-    std::swap(mu_, other->mu_);
-    std::swap(kappa_, other->kappa_);
-    std::swap(sigmasq_, other->sigmasq_);
-    std::swap(nu_, other->nu_);
+    mu_.Swap(&other->mu_);
+    kappa_.Swap(&other->kappa_);
+    sigmasq_.Swap(&other->sigmasq_);
+    nu_.Swap(&other->nu_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);
