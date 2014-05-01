@@ -29,6 +29,7 @@
 
 #include <vector>
 #include <unordered_set>
+#include <unordered_map>
 #include <distributions/common.hpp>
 #include <distributions/vector.hpp>
 #include <distributions/trivial_hash.hpp>
@@ -283,6 +284,7 @@ public:
     {
         packed_to_global_.clear();
         global_to_packed_.clear();
+        global_size_ = 0;
         for (size_t i = 0; i < group_count; ++i) {
             add_group();
         }
@@ -291,27 +293,27 @@ public:
     void add_group ()
     {
         const Id packed = packed_to_global_.size();
-        const Id global = global_to_packed_.size();
-        packed_to_global_.push_back(global);
-        global_to_packed_.push_back(packed);
+        const Id global = global_size_++;
+        packed_to_global_.packed_add(global);
+        global_to_packed_.insert(std::make_pair(global, packed));
     }
 
     void remove_group (Id packed)
     {
-        if (DIST_DEBUG_LEVEL) {
-            DIST_ASSERT(packed < packed_size(), "bad packed id: " << packed);
+        DIST_ASSERT1(packed < packed_size(), "bad packed id: " << packed);
+        const Id global = packed_to_global_[packed];
+        DIST_ASSERT1(global < global_size(), "bad global id: " << global);
+        global_to_packed_.erase(global);
+        packed_to_global_.packed_remove(packed);
+        if (packed != packed_size()) {
             const Id global = packed_to_global_[packed];
-            DIST_ASSERT(global < global_size(), "bad global id: " << global);
-            global_to_packed_[global] = ~Id(0);
-        }
-        const size_t group_count = packed_size() - 1;
-        if (packed != group_count) {
-            const Id global = packed_to_global_.back();
             DIST_ASSERT1(global < global_size(), "bad global id: " << global);
-            packed_to_global_[packed] = global;
-            global_to_packed_[global] = packed;
+            auto i = global_to_packed_.find(global);
+            DIST_ASSERT1(
+                i != global_to_packed_.end(),
+                "stale global id: " << global);
+            i->second = packed;
         }
-        packed_to_global_.resize(group_count);;
     }
 
     Id packed_to_global (Id packed) const
@@ -325,18 +327,23 @@ public:
     Id global_to_packed (Id global) const
     {
         DIST_ASSERT1(global < global_size(), "bad global id: " << global);
-        Id packed = global_to_packed_[global];
+        auto i = global_to_packed_.find(global);
+        DIST_ASSERT1(
+            i != global_to_packed_.end(),
+            "stale global id: " << global);
+        Id packed = i->second;
         DIST_ASSERT1(packed < packed_size(), "bad packed id: " << packed);
         return packed;
     }
 
     size_t packed_size () const { return packed_to_global_.size(); }
-    size_t global_size () const { return global_to_packed_.size(); }
+    size_t global_size () const { return global_size_; }
 
 private:
 
-    std::vector<Id> packed_to_global_;
-    std::vector<Id> global_to_packed_;
+    Packed_<Id> packed_to_global_;
+    std::unordered_map<Id, Id, TrivialHash<Id>> global_to_packed_;
+    size_t global_size_;
 };
 
 } // namespace distributions

@@ -358,6 +358,7 @@ def clean():
 def run(sample_count=SAMPLE_COUNT, passes=PASSES):
     '''
     Generate all datasets and run all algorithms.
+    See index.html for results.
     '''
     create_dataset(sample_count)
 
