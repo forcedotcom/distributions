@@ -171,7 +171,7 @@ struct Scorer
     }
 
     float eval (
-            const Shared & shared,
+            const Shared &,
             const Value & value,
             rng_t &) const
     {
