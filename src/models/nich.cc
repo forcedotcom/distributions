@@ -32,7 +32,7 @@ namespace distributions {
 namespace normal_inverse_chi_sq {
 
 void Mixture::_score_value (
-        const Shared & shared,
+        const Shared &,
         const Value & value,
         AlignedFloats scores_accum,
         rng_t &) const

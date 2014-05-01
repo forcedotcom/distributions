@@ -128,7 +128,7 @@ struct Sampler
     }
 
     Value eval (
-            const Shared & shared,
+            const Shared &,
             rng_t & rng) const
     {
         return sample_poisson(rng, mean);
@@ -154,7 +154,7 @@ struct Scorer
     }
 
     float eval (
-            const Shared & shared,
+            const Shared &,
             const Value & value,
             rng_t &) const
     {

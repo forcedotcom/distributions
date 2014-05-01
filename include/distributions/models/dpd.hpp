@@ -136,7 +136,7 @@ struct Sampler
     }
 
     Value eval (
-            const Shared & shared,
+            const Shared &,
             rng_t & rng) const
     {
         return sample_discrete(rng, probs.size(), probs.data());

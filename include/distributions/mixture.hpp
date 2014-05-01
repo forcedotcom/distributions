@@ -58,7 +58,7 @@ public:
     const IdSet & empty_groupids () const { return empty_groupids_; }
     size_t sample_size () const { return sample_size_; }
 
-    void init (const Model & model, const std::vector<count_t> & counts)
+    void init (const Model &, const std::vector<count_t> & counts)
     {
         counts_ = counts;
         empty_groupids_.clear();
@@ -75,7 +75,7 @@ public:
     }
 
     bool add_value (
-            const Model & model,
+            const Model &,
             size_t groupid,
             count_t count = 1)
     {
@@ -97,7 +97,7 @@ public:
     }
 
     bool remove_value (
-            const Model & model,
+            const Model &,
             size_t groupid,
             count_t count = 1)
     {
@@ -210,7 +210,7 @@ public:
 
     // remove_group is called whenever driver.remove_value returns true
     void remove_group (
-            const Shared & shared,
+            const Shared &,
             size_t groupid)
     {
         groups_.packed_remove(groupid);

@@ -32,7 +32,7 @@ namespace distributions {
 namespace gamma_poisson {
 
 void Mixture::_score_value (
-        const Shared & shared,
+        const Shared &,
         const Value & value,
         VectorFloat & scores_accum,
         rng_t &) const
