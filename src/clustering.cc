@@ -103,7 +103,7 @@ std::vector<count_t> Clustering<count_t>::PitmanYor::sample_assignments (
 
 
     // add first entry
-    {
+    if (DIST_LIKELY(size)) {
         count_t i = 0;
         count_t assign = 0;
         assignments[i] = assign;

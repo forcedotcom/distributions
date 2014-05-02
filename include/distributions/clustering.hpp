@@ -259,6 +259,7 @@ struct LowEntropy
         if (DIST_DEBUG_LEVEL >= 1) {
             DIST_ASSERT_LT(sample_size, dataset_size);
             DIST_ASSERT_LT(0, empty_group_count);
+            DIST_ASSERT_LE(nonempty_group_count, sample_size);
         }
 
         if (group_size == 0) {
