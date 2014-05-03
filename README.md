@@ -1,7 +1,7 @@
 # Distributions [![Build Status](https://travis-ci.org/forcedotcom/distributions.svg?branch=master)](https://travis-ci.org/forcedotcom/distributions)
 
 Distributions provides low-level primitives for Bayesian MCMC
-inference in Python adn C++ including:
+inference in Python and C++ including:
 
 * special numerical functions,
 * samplers and density functions from a variety of distributions,
