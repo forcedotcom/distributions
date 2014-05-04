@@ -171,16 +171,17 @@ def test_protbuf(module, EXAMPLE):
     module.Shared.to_protobuf(dumped, message)
     assert_close(module.Shared.from_protobuf(message), dumped)
 
-    message = Message.Group()
-    group.dump_protobuf(message)
-    group2 = module.Group()
-    group2.load_protobuf(message)
-    assert_close(group2.dump(), group.dump())
+    if hasattr(module.Group, 'load_protobuf'):
+        message = Message.Group()
+        group.dump_protobuf(message)
+        group2 = module.Group()
+        group2.load_protobuf(message)
+        assert_close(group2.dump(), group.dump())
 
-    message.Clear()
-    dumped = group.dump()
-    module.Group.to_protobuf(dumped, message)
-    assert_close(module.Group.from_protobuf(message), dumped)
+        message.Clear()
+        dumped = group.dump()
+        module.Group.to_protobuf(dumped, message)
+        assert_close(module.Group.from_protobuf(message), dumped)
 
 
 @for_each_model()

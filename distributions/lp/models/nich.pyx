@@ -29,6 +29,19 @@ cdef class _Shared(_nich.Shared):
             'nu': self.ptr.nu,
         }
 
+    def load_protobuf(self, message):
+        self.ptr.mu = float(message.mu)
+        self.ptr.kappa = float(message.kappa)
+        self.ptr.sigmasq = float(message.sigmasq)
+        self.ptr.nu = float(message.nu)
+
+    def dump_protobuf(self, message):
+        message.Clear()
+        message.mu = self.ptr.mu
+        message.kappa = self.ptr.kappa
+        message.sigmasq = self.ptr.sigmasq
+        message.nu = self.ptr.nu
+
 
 class Shared(_Shared, SharedIoMixin):
     pass
