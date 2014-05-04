@@ -206,6 +206,11 @@ struct PitmanYor
             }
         }
 
+        float score_mixture (const Model & model) const
+        {
+            return driver_.score_mixture(model);
+        }
+
     private:
 
         void _update_nonempty_group (const Model & model, size_t groupid)
