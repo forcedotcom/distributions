@@ -32,6 +32,20 @@ cdef class Group:
         return self.ptr.score_value(shared.ptr[0], value, get_rng()[0])
 
 
+cdef class Sampler:
+    def __cinit__(self):
+        self.ptr = new _h.Sampler()
+
+    def __dealloc__(self):
+        del self.ptr
+
+    def init(self, Shared shared, Group group):
+        self.ptr.init(shared.ptr[0], group.ptr[0], get_rng()[0])
+
+    def eval(self, Shared shared):
+        return self.ptr.eval(shared.ptr[0], get_rng()[0])
+
+
 cdef class Mixture:
     def __cinit__(self):
         self.ptr = new _h.Mixture()

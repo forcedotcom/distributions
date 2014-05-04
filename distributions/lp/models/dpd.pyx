@@ -79,6 +79,10 @@ class Group(_Group, GroupIoMixin):
     pass
 
 
+class Sampler(_dpd.Sampler):
+    pass
+
+
 Mixture = _dpd.Mixture
 sample_value = _dpd.sample_value
 sample_group = _dpd.sample_group

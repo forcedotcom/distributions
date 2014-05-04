@@ -52,6 +52,10 @@ class Group(_Group, GroupIoMixin):
     pass
 
 
+class Sampler(_nich.Sampler):
+    pass
+
+
 Mixture = _nich.Mixture
 sample_value = _nich.sample_value
 sample_group = _nich.sample_group

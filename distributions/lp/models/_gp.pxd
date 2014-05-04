@@ -22,6 +22,10 @@ cdef class Group:
     cdef _h.Group * ptr
 
 
+cdef class Sampler:
+    cdef _h.Sampler * ptr
+
+
 cdef class Mixture:
     cdef _h.Mixture * ptr
     cdef VectorFloat scores
