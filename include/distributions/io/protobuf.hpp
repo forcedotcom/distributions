@@ -52,12 +52,27 @@ inline void clustering_load (
     model.alpha = message.alpha();
     model.d = message.d();
 }
+inline void clustering_dump (
+        const typename Clustering<int>::PitmanYor & model,
+        protobuf::Clustering::PitmanYor & message)
+{
+    message.set_alpha(model.alpha);
+    message.set_d(model.d);
+}
 
 inline void clustering_load (
         typename Clustering<int>::PitmanYor & model,
         const protobuf::Clustering & message)
 {
     clustering_load(model, message.pitman_yor());
+}
+
+inline void clustering_dump (
+        const typename Clustering<int>::PitmanYor & model,
+        protobuf::Clustering & message)
+{
+    message.Clear();
+    clustering_dump(model, * message.mutable_pitman_yor());
 }
 
 inline void clustering_load (
@@ -67,12 +82,25 @@ inline void clustering_load (
     model.dataset_size = message.dataset_size();
 }
 
-template<class count_t>
+inline void clustering_dump (
+        const typename Clustering<int>::LowEntropy & model,
+        protobuf::Clustering::LowEntropy & message)
+{
+    message.set_dataset_size(model.dataset_size);
+}
+
 inline void clustering_load (
         typename Clustering<int>::LowEntropy & model,
         const protobuf::Clustering & message)
 {
     clustering_load(model, message.low_entropy());
+}
+
+inline void clustering_dump (
+        const typename Clustering<int>::LowEntropy & model,
+        protobuf::Clustering & message)
+{
+    clustering_dump(model, * message.mutable_low_entropy());
 }
 
 //----------------------------------------------------------------------------
@@ -90,6 +118,17 @@ inline void shared_load (
     }
 }
 
+template<int max_dim>
+inline void shared_dump (
+        const dirichlet_discrete::Shared<max_dim> & shared,
+        protobuf::DirichletDiscrete_Shared & message)
+{
+    message.Clear();
+    for (size_t i = 0; i < shared.dim; ++i) {
+        message.add_alphas(shared.alphas[i]);
+    }
+}
+
 inline void shared_load (
         dirichlet_process_discrete::Shared & shared,
         const protobuf::DirichletProcessDiscrete_Shared & message)
@@ -104,12 +143,32 @@ inline void shared_load (
     shared.beta0 = 1 - beta_sum;
 }
 
+inline void shared_dump (
+        const dirichlet_process_discrete::Shared & shared,
+        protobuf::DirichletProcessDiscrete_Shared & message)
+{
+    message.Clear();
+    message.set_gamma(shared.gamma);
+    message.set_alpha(shared.alpha);
+    for (size_t i = 0; i < shared.betas.size(); ++i) {
+        message.add_betas(shared.betas[i]);
+    }
+}
+
 inline void shared_load (
         gamma_poisson::Shared & shared,
         const protobuf::GammaPoisson_Shared & message)
 {
     shared.alpha = message.alpha();
     shared.inv_beta = message.inv_beta();
+}
+
+inline void shared_dump (
+        const gamma_poisson::Shared & shared,
+        protobuf::GammaPoisson_Shared & message)
+{
+    message.set_alpha(shared.alpha);
+    message.set_inv_beta(shared.inv_beta);
 }
 
 inline void shared_load (
@@ -120,6 +179,16 @@ inline void shared_load (
     shared.kappa = message.kappa();
     shared.sigmasq = message.sigmasq();
     shared.nu = message.nu();
+}
+
+inline void shared_dump (
+        const normal_inverse_chi_sq::Shared & shared,
+        protobuf::NormalInverseChiSq_Shared & message)
+{
+    message.set_mu(shared.mu);
+    message.set_kappa(shared.kappa);
+    message.set_sigmasq(shared.sigmasq);
+    message.set_nu(shared.nu);
 }
 
 //----------------------------------------------------------------------------
