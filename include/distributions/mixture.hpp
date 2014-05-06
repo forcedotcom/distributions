@@ -355,39 +355,41 @@ struct GenericMixture
     typedef typename _Scorer::BaseScorer Scorer;
     typedef _Scorer VectorizedScorer;
 
-    MixtureSlave<Shared> slave;
-    VectorizedScorer scorer;
+private:
+    MixtureSlave<Shared> slave_;
+    VectorizedScorer scorer_;
 
-    std::vector<Group> & groups () { return slave.groups(); }
-    Group & groups (size_t i) { return slave.groups(i); }
-    const std::vector<Group> & groups () const { return slave.groups(); }
-    const Group & groups (size_t i) const { return slave.groups(i); }
+public:
+    std::vector<Group> & groups () { return slave_.groups(); }
+    Group & groups (size_t i) { return slave_.groups(i); }
+    const std::vector<Group> & groups () const { return slave_.groups(); }
+    const Group & groups (size_t i) const { return slave_.groups(i); }
 
     void init (
             const Shared & shared,
             rng_t & rng)
     {
-        slave.init(shared, rng);
-        scorer.resize(shared, slave.groups().size());
-        scorer.update_all(shared, slave, rng);
+        slave_.init(shared, rng);
+        scorer_.resize(shared, slave_.groups().size());
+        scorer_.update_all(shared, slave_, rng);
     }
 
     void add_group (
             const Shared & shared,
             rng_t & rng)
     {
-        const size_t groupid = slave.groups().size();
-        slave.add_group(shared, rng);
-        scorer.add_group(shared, rng);
-        scorer.update_group(shared, groupid, groups()[groupid], rng);
+        const size_t groupid = slave_.groups().size();
+        slave_.add_group(shared, rng);
+        scorer_.add_group(shared, rng);
+        scorer_.update_group(shared, groupid, groups()[groupid], rng);
     }
 
     void remove_group (
             const Shared & shared,
             size_t groupid)
     {
-        slave.remove_group(shared, groupid);
-        scorer.remove_group(shared, groupid);
+        slave_.remove_group(shared, groupid);
+        scorer_.remove_group(shared, groupid);
     }
 
     void add_value (
@@ -396,8 +398,8 @@ struct GenericMixture
             const Value & value,
             rng_t & rng)
     {
-        slave.add_value(shared, groupid, value, rng);
-        scorer.update_group(shared, groupid, groups()[groupid], value, rng);
+        slave_.add_value(shared, groupid, value, rng);
+        scorer_.update_group(shared, groupid, groups()[groupid], value, rng);
     }
 
     void remove_value (
@@ -406,8 +408,8 @@ struct GenericMixture
             const Value & value,
             rng_t & rng)
     {
-        slave.remove_value(shared, groupid, value, rng);
-        scorer.update_group(shared, groupid, groups()[groupid], value, rng);
+        slave_.remove_value(shared, groupid, value, rng);
+        scorer_.update_group(shared, groupid, groups()[groupid], value, rng);
     }
 
     void score_value (
@@ -417,16 +419,16 @@ struct GenericMixture
             rng_t & rng) const
     {
         if (DIST_DEBUG_LEVEL >= 2) {
-            DIST_ASSERT_EQ(scores_accum.size(), slave.groups().size());
+            DIST_ASSERT_EQ(scores_accum.size(), slave_.groups().size());
         }
-        scorer.score_value(shared, value, scores_accum, rng);
+        scorer_.score_value(shared, value, scores_accum, rng);
     }
 
     float score_data (
             const Shared & shared,
             rng_t & rng) const
     {
-        return slave.score_data(shared, rng);
+        return slave_.score_data(shared, rng);
     }
 };
 
