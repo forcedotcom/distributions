@@ -55,20 +55,27 @@ def costream_dump(stream, filename):
     costream.close()
 
 
-def test_dump_load():
-    valid_pairs = [
-        (io.stream.json_dump, io.stream.json_load),
-        (io.stream.json_stream_dump, io.stream.json_load),
-        (io.stream.json_stream_dump, io.stream.json_stream_load),
-        (costream_dump, io.stream.json_load),
-        (costream_dump, io.stream.json_stream_load),
-    ]
-    for dump, load in valid_pairs:
+valid_pairs = [
+    (io.stream.json_dump, io.stream.json_load),
+    (io.stream.json_stream_dump, io.stream.json_load),
+    (io.stream.json_stream_dump, io.stream.json_stream_load),
+    (costream_dump, io.stream.json_load),
+    (costream_dump, io.stream.json_stream_load),
+]
+named_pairs = {
+    (dump.__name__, load.__name__): (dump, load)
+    for dump, load in valid_pairs
+}
+
+
+def test_pair():
+    for dump, load in named_pairs:
         for filetype in ['', '.gz', '.bz2']:
-            yield _test_dump_load, dump, load, filetype
+            yield _test_pair, dump, load, filetype
 
 
-def _test_dump_load(dump, load, filetype):
+def _test_pair(dump, load, filetype):
+    dump, load = named_pairs[dump, load]
     for example in EXAMPLES:
         print example
         with fileutil.tempdir():
