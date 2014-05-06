@@ -209,7 +209,7 @@ struct VectorizedScorer
         }
     }
 
-    void add_group (const Shared & shared, rng_t & rng)
+    void add_group (const Shared & shared, rng_t &)
     {
         scores_shift.packed_add(0);
         for (Value value = 0; value < shared.dim; ++value) {
