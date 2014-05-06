@@ -189,36 +189,67 @@ inline float Group<max_dim>::score_value (
 
 
 template<int max_dim>
-class Mixture
+struct VectorizedScorer
 {
-public:
-
     typedef dirichlet_discrete::Value Value;
     typedef dirichlet_discrete::Shared<max_dim> Shared;
     typedef dirichlet_discrete::Group<max_dim> Group;
-    typedef dirichlet_discrete::Scorer<max_dim> Scorer;
+    typedef dirichlet_discrete::Scorer<max_dim> BaseScorer;
 
-    std::vector<Group> & groups () { return slave_.groups(); }
-    Group & groups (size_t i) { return slave_.groups(i); }
-    const std::vector<Group> & groups () const { return slave_.groups(); }
-    const Group & groups (size_t i) const { return slave_.groups(i); }
+    float alpha_sum;
+    std::vector<VectorFloat> scores;
+    VectorFloat scores_shift;
 
-    void init (
-            const Shared & shared,
-            rng_t & rng)
+    void resize(const Shared & shared, size_t size)
     {
-        slave_.init(shared, rng);
-        const auto & groups = slave_.groups();
-        const size_t group_count = groups.size();
-        scores_shift.resize(group_count);
-        alpha_sum = 0;
+        scores_shift.resize(size);
         scores.resize(shared.dim);
         for (Value value = 0; value < shared.dim; ++value) {
+            scores[value].resize(size);
+        }
+    }
+
+    void add_group (const Shared & shared, rng_t & rng)
+    {
+        scores_shift.packed_add(0);
+        for (Value value = 0; value < shared.dim; ++value) {
+            scores[value].packed_add(0);
+        }
+    }
+
+    void remove_group (const Shared & shared, size_t groupid)
+    {
+        scores_shift.packed_remove(groupid);
+        for (Value value = 0; value < shared.dim; ++value) {
+            scores[value].packed_remove(groupid);
+        }
+    }
+
+    void update_group (
+            const Shared & shared,
+            size_t groupid,
+            const Group & group,
+            const Value & value,
+            rng_t &)
+    {
+        scores[value][groupid] =
+            fast_log(shared.alphas[value] + group.counts[value]);
+        scores_shift[groupid] = fast_log(alpha_sum + group.count_sum);
+    }
+
+    void update_all (
+            const Shared & shared,
+            const MixtureSlave<Shared> & slave,
+            rng_t & rng)
+    {
+        const size_t group_count = slave.groups().size();
+
+        alpha_sum = 0;
+        for (Value value = 0; value < shared.dim; ++value) {
             alpha_sum += shared.alphas[value];
-            scores[value].resize(group_count);
         }
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
-            const Group & group = groups[groupid];
+            const Group & group = slave.groups()[groupid];
             for (Value value = 0; value < shared.dim; ++value) {
                 scores[value][groupid] =
                     shared.alphas[value] + group.counts[value];
@@ -231,15 +262,55 @@ public:
         }
     }
 
+    void score_value(
+            const Shared & shared,
+            const Value & value,
+            VectorFloat & scores_accum,
+            rng_t & rng) const
+    {
+        vector_add_subtract(
+            scores_accum.size(),
+            scores_accum.data(),
+            scores[value].data(),
+            scores_shift.data());
+    }
+};
+
+
+
+template<int max_dim>
+class Mixture
+{
+public:
+
+    typedef dirichlet_discrete::Value Value;
+    typedef dirichlet_discrete::Shared<max_dim> Shared;
+    typedef dirichlet_discrete::Group<max_dim> Group;
+    typedef dirichlet_discrete::Scorer<max_dim> Scorer;
+    typedef dirichlet_discrete::VectorizedScorer<max_dim> VectorizedScorer;
+
+    VectorizedScorer scorer;
+
+    std::vector<Group> & groups () { return slave_.groups(); }
+    Group & groups (size_t i) { return slave_.groups(i); }
+    const std::vector<Group> & groups () const { return slave_.groups(); }
+    const Group & groups (size_t i) const { return slave_.groups(i); }
+
+    void init (
+            const Shared & shared,
+            rng_t & rng)
+    {
+        slave_.init(shared, rng);
+        scorer.resize(shared, slave_.groups().size());
+        scorer.update_all(shared, slave_, rng);
+    }
+
     void add_group (
             const Shared & shared,
             rng_t & rng)
     {
         slave_.add_group(shared, rng);
-        scores_shift.packed_add(0);
-        for (Value value = 0; value < shared.dim; ++value) {
-            scores[value].packed_add(0);
-        }
+        scorer.add_group(shared, rng);
     }
 
     void remove_group (
@@ -247,10 +318,7 @@ public:
             size_t groupid)
     {
         slave_.remove_group(shared, groupid);
-        scores_shift.packed_remove(groupid);
-        for (Value value = 0; value < shared.dim; ++value) {
-            scores[value].packed_remove(groupid);
-        }
+        scorer.remove_group(shared, groupid);
     }
 
     void add_value (
@@ -261,10 +329,7 @@ public:
     {
         DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         slave_.add_value(shared, groupid, value, rng);
-        const Group & group = slave_.groups(groupid);
-        scores[value][groupid] =
-            fast_log(shared.alphas[value] + group.counts[value]);
-        scores_shift[groupid] = fast_log(alpha_sum + group.count_sum);
+        scorer.update_group(shared, groupid, groups()[groupid], value, rng);
     }
 
     void remove_value (
@@ -275,28 +340,20 @@ public:
     {
         DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         slave_.remove_value(shared, groupid, value, rng);
-        const Group & group = slave_.groups(groupid);
-        scores[value][groupid] =
-            fast_log(shared.alphas[value] + group.counts[value]);
-        scores_shift[groupid] = fast_log(alpha_sum + group.count_sum);
+        scorer.update_group(shared, groupid, groups()[groupid], value, rng);
     }
 
     void score_value (
             const Shared & shared,
             const Value & value,
             VectorFloat & scores_accum,
-            rng_t &) const
+            rng_t & rng) const
     {
         DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         if (DIST_DEBUG_LEVEL >= 2) {
             DIST_ASSERT_EQ(scores_accum.size(), slave_.groups().size());
         }
-        const size_t group_count = slave_.groups().size();
-        vector_add_subtract(
-            group_count,
-            scores_accum.data(),
-            scores[value].data(),
-            scores_shift.data());
+        scorer.score_value(shared, value, scores_accum, rng);
     }
 
     float score_mixture (
@@ -309,9 +366,6 @@ public:
 private:
 
     MixtureSlave<Shared> slave_;
-    float alpha_sum;
-    std::vector<VectorFloat> scores;
-    VectorFloat scores_shift;
 };
 
 template<int max_dim>

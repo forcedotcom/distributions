@@ -203,6 +203,79 @@ inline float Group::score_value (
     return scorer.eval(shared, value, rng);
 }
 
+struct VectorizedScorer
+{
+    typedef normal_inverse_chi_sq::Value Value;
+    typedef normal_inverse_chi_sq::Shared Shared;
+    typedef normal_inverse_chi_sq::Group Group;
+    typedef normal_inverse_chi_sq::Scorer BaseScorer;
+
+    VectorFloat score;
+    VectorFloat log_coeff;
+    VectorFloat precision;
+    VectorFloat mean;
+    mutable VectorFloat temp;
+
+    void resize(const Shared &, size_t size)
+    {
+        score.resize(size);
+        log_coeff.resize(size);
+        precision.resize(size);
+        mean.resize(size);
+        temp.resize(size);
+    }
+
+    void add_group (const Shared &, rng_t &)
+    {
+        score.packed_add();
+        log_coeff.packed_add();
+        precision.packed_add();
+        mean.packed_add();
+        temp.packed_add();
+    }
+
+    void remove_group (const Shared &, size_t groupid)
+    {
+        score.packed_remove(groupid);
+        log_coeff.packed_remove(groupid);
+        precision.packed_remove(groupid);
+        mean.packed_remove(groupid);
+        temp.packed_remove(groupid);
+    }
+
+    void update_group (
+            const Shared & shared,
+            size_t groupid,
+            const Group & group,
+            rng_t & rng)
+    {
+        BaseScorer base;
+        base.init(shared, group, rng);
+
+        score[groupid] = base.score;
+        log_coeff[groupid] = base.log_coeff;
+        precision[groupid] = base.precision;
+        mean[groupid] = base.mean;
+    }
+
+    void update_all (
+            const Shared & shared,
+            const MixtureSlave<Shared> & slave,
+            rng_t & rng)
+    {
+        const size_t group_count = slave.groups().size();
+        for (size_t groupid = 0; groupid < group_count; ++groupid) {
+            update_group(shared, groupid, slave.groups()[groupid], rng);
+        }
+    }
+
+    void score_value (
+            const Shared &,
+            const Value & value,
+            AlignedFloats scores_accum,
+            rng_t &) const;
+};
+
 class Mixture
 {
 public:
@@ -211,6 +284,9 @@ public:
     typedef normal_inverse_chi_sq::Shared Shared;
     typedef normal_inverse_chi_sq::Group Group;
     typedef normal_inverse_chi_sq::Scorer Scorer;
+    typedef normal_inverse_chi_sq::VectorizedScorer VectorizedScorer;
+
+    VectorizedScorer scorer;
 
     std::vector<Group> & groups () { return slave_.groups(); }
     Group & groups (size_t i) { return slave_.groups(i); }
@@ -222,15 +298,8 @@ public:
             rng_t & rng)
     {
         slave_.init(shared, rng);
-        const size_t group_count = slave_.groups().size();
-        score.resize(group_count);
-        log_coeff.resize(group_count);
-        precision.resize(group_count);
-        mean.resize(group_count);
-        temp.resize(group_count);
-        for (size_t groupid = 0; groupid < group_count; ++groupid) {
-            _update_group(shared, groupid, rng);
-        }
+        scorer.resize(shared, slave_.groups().size());
+        scorer.update_all(shared, slave_, rng);
     }
 
     void add_group (
@@ -239,12 +308,8 @@ public:
     {
         const size_t groupid = slave_.groups().size();
         slave_.add_group(shared, rng);
-        score.packed_add();
-        log_coeff.packed_add();
-        precision.packed_add();
-        mean.packed_add();
-        temp.packed_add();
-        _update_group(shared, groupid, rng);
+        scorer.add_group(shared, rng);
+        scorer.update_group(shared, groupid, groups()[groupid], rng);
     }
 
     void remove_group (
@@ -252,11 +317,7 @@ public:
             size_t groupid)
     {
         slave_.remove_group(shared, groupid);
-        score.packed_remove(groupid);
-        log_coeff.packed_remove(groupid);
-        precision.packed_remove(groupid);
-        mean.packed_remove(groupid);
-        temp.packed_remove(groupid);
+        scorer.remove_group(shared, groupid);
     }
 
     void add_value (
@@ -266,7 +327,7 @@ public:
             rng_t & rng)
     {
         slave_.add_value(shared, groupid, value, rng);
-        _update_group(shared, groupid, rng);
+        scorer.update_group(shared, groupid, groups()[groupid], rng);
     }
 
     void remove_value (
@@ -276,7 +337,7 @@ public:
             rng_t & rng)
     {
         slave_.remove_value(shared, groupid, value, rng);
-        _update_group(shared, groupid, rng);
+        scorer.update_group(shared, groupid, groups()[groupid], rng);
     }
 
     void score_value (
@@ -288,7 +349,7 @@ public:
         if (DIST_DEBUG_LEVEL >= 2) {
             DIST_ASSERT_EQ(scores_accum.size(), slave_.groups().size());
         }
-        _score_value(shared, value, scores_accum, rng);
+        scorer.score_value(shared, value, scores_accum, rng);
     }
 
     float score_mixture (
@@ -300,32 +361,7 @@ public:
 
 private:
 
-    void _update_group (
-            const Shared & shared,
-            size_t groupid,
-            rng_t & rng)
-    {
-        const Group & group = slave_.groups(groupid);
-        Scorer scorer;
-        scorer.init(shared, group, rng);
-        score[groupid] = scorer.score;
-        log_coeff[groupid] = scorer.log_coeff;
-        precision[groupid] = scorer.precision;
-        mean[groupid] = scorer.mean;
-    }
-
-    void _score_value (
-            const Shared & shared,
-            const Value & value,
-            AlignedFloats scores_accum,
-            rng_t &) const;
-
     MixtureSlave<Shared> slave_;
-    VectorFloat score;
-    VectorFloat log_coeff;
-    VectorFloat precision;
-    VectorFloat mean;
-    mutable VectorFloat temp;
 };
 
 inline Shared Shared::plus_group (const Group & group) const
