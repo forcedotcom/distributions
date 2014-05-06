@@ -84,19 +84,21 @@ struct Group
     }
 
     void add_value (
-            const Shared &,
+            const Shared & shared,
             const Value & value,
             rng_t &)
     {
-       counts.add(value);
+        DIST_ASSERT1(value < shared.betas.size(), "value out of bounds");
+        counts.add(value);
     }
 
     void remove_value (
-            const Shared &,
+            const Shared & shared,
             const Value & value,
             rng_t &)
     {
-       counts.remove(value);
+        DIST_ASSERT1(value < shared.betas.size(), "value out of bounds");
+        counts.remove(value);
     }
 
     void merge (
@@ -249,6 +251,7 @@ struct VectorizedScorer
             const Value & value,
             rng_t &)
     {
+        DIST_ASSERT1(value < shared.betas.size(), "value out of bounds");
         count_t count = group.counts.get_count(value);
         count_t count_sum = group.counts.get_total();
         scores[value][groupid] =
@@ -280,11 +283,12 @@ struct VectorizedScorer
     }
 
     void score_value (
-            const Shared &,
+            const Shared & shared,
             const Value & value,
             VectorFloat & scores_accum,
             rng_t &) const
     {
+        DIST_ASSERT1(value < shared.betas.size(), "value out of bounds");
         vector_add_subtract(
             scores_accum.size(),
             scores_accum.data(),
@@ -343,7 +347,6 @@ public:
             const Value & value,
             rng_t & rng)
     {
-        DIST_ASSERT1(value < shared.betas.size(), "value out of bounds");
         slave_.add_value(shared, groupid, value, rng);
         scorer.update_group(shared, groupid, groups()[groupid], value, rng);
     }
@@ -354,7 +357,6 @@ public:
             const Value & value,
             rng_t & rng)
     {
-        DIST_ASSERT1(value < shared.betas.size(), "value out of bounds");
         slave_.remove_value(shared, groupid, value, rng);
         scorer.update_group(shared, groupid, groups()[groupid], value, rng);
     }
@@ -365,7 +367,6 @@ public:
             VectorFloat & scores_accum,
             rng_t & rng) const
     {
-        DIST_ASSERT1(value < shared.betas.size(), "value out of bounds");
         if (DIST_DEBUG_LEVEL >= 2) {
             DIST_ASSERT_EQ(scores_accum.size(), slave_.groups().size());
         }

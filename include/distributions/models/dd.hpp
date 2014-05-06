@@ -91,7 +91,7 @@ struct Group
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(value < shared.dim, "bad value: out of bounds: " << value);
+        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         count_sum += 1;
         counts[value] += 1;
     }
@@ -243,6 +243,7 @@ struct VectorizedScorer
             const Value & value,
             rng_t &)
     {
+        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         scores[value][groupid] =
             fast_log(shared.alphas[value] + group.counts[value]);
         scores_shift[groupid] = fast_log(alpha_sum + group.count_sum);
@@ -274,11 +275,12 @@ struct VectorizedScorer
     }
 
     void score_value(
-            const Shared &,
+            const Shared & shared,
             const Value & value,
             VectorFloat & scores_accum,
             rng_t &) const
     {
+        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         vector_add_subtract(
             scores_accum.size(),
             scores_accum.data(),
@@ -340,7 +342,6 @@ public:
             const Value & value,
             rng_t & rng)
     {
-        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         slave_.add_value(shared, groupid, value, rng);
         scorer.update_group(shared, groupid, groups()[groupid], value, rng);
     }
@@ -351,7 +352,6 @@ public:
             const Value & value,
             rng_t & rng)
     {
-        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         slave_.remove_value(shared, groupid, value, rng);
         scorer.update_group(shared, groupid, groups()[groupid], value, rng);
     }
@@ -362,7 +362,6 @@ public:
             VectorFloat & scores_accum,
             rng_t & rng) const
     {
-        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         if (DIST_DEBUG_LEVEL >= 2) {
             DIST_ASSERT_EQ(scores_accum.size(), slave_.groups().size());
         }
