@@ -347,7 +347,7 @@ private:
 };
 
 template<class _Scorer>
-struct GenericMixture
+struct GroupScorerMixture
 {
     typedef typename _Scorer::Value Value;
     typedef typename _Scorer::Shared Shared;

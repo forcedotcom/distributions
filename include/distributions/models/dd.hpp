@@ -290,7 +290,7 @@ struct VectorizedScorer
 };
 
 template<int max_dim>
-struct Mixture : public GenericMixture<VectorizedScorer<max_dim>>
+struct Mixture : public GroupScorerMixture<VectorizedScorer<max_dim>>
 {};
 
 template<int max_dim>

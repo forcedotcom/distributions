@@ -41,7 +41,7 @@ struct Group;
 struct Scorer;
 struct Sampler;
 struct VectorizedScorer;
-typedef GenericMixture<VectorizedScorer> Mixture;
+typedef GroupScorerMixture<VectorizedScorer> Mixture;
 
 
 struct Shared
