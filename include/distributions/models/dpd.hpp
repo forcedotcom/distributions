@@ -89,7 +89,9 @@ struct Group
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(value < shared.betas.size(), "value out of bounds");
+        DIST_ASSERT1(
+            value < shared.betas.size(),
+            "value out of bounds: " << value);
         counts.add(value);
     }
 
@@ -98,7 +100,9 @@ struct Group
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(value < shared.betas.size(), "value out of bounds");
+        DIST_ASSERT1(
+            value < shared.betas.size(),
+            "value out of bounds: " << value);
         counts.remove(value);
     }
 
@@ -252,7 +256,9 @@ struct VectorizedScorer
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(value < shared.betas.size(), "value out of bounds");
+        DIST_ASSERT1(
+            value < shared.betas.size(),
+            "value out of bounds: " << value);
         count_t count = group.counts.get_count(value);
         count_t count_sum = group.counts.get_total();
         scores[value][groupid] =
@@ -289,7 +295,9 @@ struct VectorizedScorer
             VectorFloat & scores_accum,
             rng_t &) const
     {
-        DIST_ASSERT1(value < shared.betas.size(), "value out of bounds");
+        DIST_ASSERT1(
+            value < shared.betas.size(),
+            "value out of bounds: " << value);
         vector_add_subtract(
             scores_accum.size(),
             scores_accum.data(),
