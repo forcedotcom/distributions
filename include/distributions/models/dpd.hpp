@@ -372,11 +372,11 @@ public:
         scorer.score_value(shared, value, scores_accum, rng);
     }
 
-    float score_mixture (
+    float score_data (
             const Shared & shared,
             rng_t & rng) const
     {
-        return slave_.score_mixture(shared, rng);
+        return slave_.score_data(shared, rng);
     }
 
 private:

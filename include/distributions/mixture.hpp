@@ -146,7 +146,7 @@ public:
         }
     }
 
-    float score_mixture (const Model & model) const
+    float score_data (const Model & model) const
     {
         return model.score_counts(counts_);
     }
@@ -252,7 +252,7 @@ public:
     }
 
     // this slow version should be overridden
-    float score_mixture (const Shared & shared, rng_t & rng) const
+    float score_data (const Shared & shared, rng_t & rng) const
     {
         float score = 0;
         for (const Group & group : groups_) {

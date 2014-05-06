@@ -206,9 +206,9 @@ struct PitmanYor
             }
         }
 
-        float score_mixture (const Model & model) const
+        float score_data (const Model & model) const
         {
-            return driver_.score_mixture(model);
+            return driver_.score_data(model);
         }
 
     private:
