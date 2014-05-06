@@ -234,6 +234,18 @@ struct VectorizedScorer
             const Shared & shared,
             size_t groupid,
             const Group & group,
+            rng_t & rng)
+    {
+        const Value dim = shared.betas.size();
+        for (Value value = 0; value < dim; ++value) {
+            update_group(shared, groupid, group, value, rng);
+        }
+    }
+
+    void update_group (
+            const Shared & shared,
+            size_t groupid,
+            const Group & group,
             const Value & value,
             rng_t &)
     {
@@ -311,8 +323,10 @@ public:
             const Shared & shared,
             rng_t & rng)
     {
+        const size_t groupid = slave_.groups().size();
         slave_.add_group(shared, rng);
         scorer.add_group(shared, rng);
+        scorer.update_group(shared, groupid, groups()[groupid], rng);
     }
 
     void remove_group (

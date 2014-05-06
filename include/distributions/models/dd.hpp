@@ -229,6 +229,17 @@ struct VectorizedScorer
             const Shared & shared,
             size_t groupid,
             const Group & group,
+            rng_t & rng)
+    {
+        for (Value value = 0; value < shared.dim; ++value) {
+            update_group(shared, groupid, group, value, rng);
+        }
+    }
+
+    void update_group (
+            const Shared & shared,
+            size_t groupid,
+            const Group & group,
             const Value & value,
             rng_t &)
     {
@@ -240,7 +251,7 @@ struct VectorizedScorer
     void update_all (
             const Shared & shared,
             const MixtureSlave<Shared> & slave,
-            rng_t & rng)
+            rng_t &)
     {
         const size_t group_count = slave.groups().size();
 
@@ -263,10 +274,10 @@ struct VectorizedScorer
     }
 
     void score_value(
-            const Shared & shared,
+            const Shared &,
             const Value & value,
             VectorFloat & scores_accum,
-            rng_t & rng) const
+            rng_t &) const
     {
         vector_add_subtract(
             scores_accum.size(),
@@ -309,8 +320,10 @@ public:
             const Shared & shared,
             rng_t & rng)
     {
+        const size_t groupid = slave_.groups().size();
         slave_.add_group(shared, rng);
         scorer.add_group(shared, rng);
+        scorer.update_group(shared, groupid, groups()[groupid], rng);
     }
 
     void remove_group (
