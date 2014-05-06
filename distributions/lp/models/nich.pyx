@@ -30,10 +30,10 @@ cdef class _Shared(_nich.Shared):
         }
 
     def load_protobuf(self, message):
-        self.ptr.mu = float(message.mu)
-        self.ptr.kappa = float(message.kappa)
-        self.ptr.sigmasq = float(message.sigmasq)
-        self.ptr.nu = float(message.nu)
+        self.ptr.mu = message.mu
+        self.ptr.kappa = message.kappa
+        self.ptr.sigmasq = message.sigmasq
+        self.ptr.nu = message.nu
 
     def dump_protobuf(self, message):
         message.Clear()

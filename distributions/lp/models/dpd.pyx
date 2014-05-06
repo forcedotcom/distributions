@@ -50,6 +50,28 @@ cdef class _Shared(_dpd.Shared):
             'betas': betas,
         }
 
+    def load_protobuf(self, message):
+        self.ptr.gamma = message.gamma
+        self.ptr.alpha = message.alpha
+        self.ptr.betas.clear()
+        cdef int size = len(message.betas)
+        self.ptr.betas.resize(size)
+        cdef int i
+        cdef float beta
+        cdef double beta0 = 1.0
+        for i in xrange(size):
+            beta = message.betas[i]
+            self.ptr.betas[i] = beta
+            beta0 -= beta
+        self.ptr.beta0 = beta0
+
+    def dump_protobuf(self, message):
+        message.Clear()
+        message.gamma = self.ptr.gamma
+        message.alpha = self.ptr.alpha
+        cdef int i
+        for i in xrange(self.ptr.betas.size()):
+            message.betas.append(self.ptr.betas[i])
 
 class Shared(_Shared, SharedIoMixin):
     pass
