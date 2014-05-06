@@ -258,6 +258,16 @@ struct VectorizedScorer
         mean[groupid] = base.mean;
     }
 
+    void update_group (
+            const Shared & shared,
+            size_t groupid,
+            const Group & group,
+            const Value &,
+            rng_t & rng)
+    {
+        update_group(shared, groupid, group, rng);
+    }
+
     void update_all (
             const Shared & shared,
             const MixtureSlave<Shared> & slave,
