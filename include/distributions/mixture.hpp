@@ -43,7 +43,7 @@ namespace distributions
 //
 // This interface maintains contiguous groupids for vectorized scoring
 // while maintaining a fixed number of empty groups.
-// Specific models may use this class, or maintain custom cached scores. 
+// Specific models may use this class, or maintain custom cached scores.
 
 template<class ModelT, class count_t>
 class MixtureDriver
@@ -344,6 +344,92 @@ private:
     Packed_<Id> packed_to_global_;
     std::unordered_map<Id, Id, TrivialHash<Id>> global_to_packed_;
     size_t global_size_;
+};
+
+template<class _Scorer>
+struct GroupScorerMixture
+{
+    typedef typename _Scorer::Value Value;
+    typedef typename _Scorer::Shared Shared;
+    typedef typename _Scorer::Group Group;
+    typedef typename _Scorer::BaseScorer Scorer;
+    typedef _Scorer VectorizedScorer;
+
+private:
+    MixtureSlave<Shared> slave_;
+    VectorizedScorer scorer_;
+
+public:
+    std::vector<Group> & groups () { return slave_.groups(); }
+    Group & groups (size_t i) { return slave_.groups(i); }
+    const std::vector<Group> & groups () const { return slave_.groups(); }
+    const Group & groups (size_t i) const { return slave_.groups(i); }
+
+    void init (
+            const Shared & shared,
+            rng_t & rng)
+    {
+        slave_.init(shared, rng);
+        scorer_.resize(shared, slave_.groups().size());
+        scorer_.update_all(shared, slave_, rng);
+    }
+
+    void add_group (
+            const Shared & shared,
+            rng_t & rng)
+    {
+        const size_t groupid = slave_.groups().size();
+        slave_.add_group(shared, rng);
+        scorer_.add_group(shared, rng);
+        scorer_.update_group(shared, groupid, groups()[groupid], rng);
+    }
+
+    void remove_group (
+            const Shared & shared,
+            size_t groupid)
+    {
+        slave_.remove_group(shared, groupid);
+        scorer_.remove_group(shared, groupid);
+    }
+
+    void add_value (
+            const Shared & shared,
+            size_t groupid,
+            const Value & value,
+            rng_t & rng)
+    {
+        slave_.add_value(shared, groupid, value, rng);
+        scorer_.update_group(shared, groupid, groups()[groupid], value, rng);
+    }
+
+    void remove_value (
+            const Shared & shared,
+            size_t groupid,
+            const Value & value,
+            rng_t & rng)
+    {
+        slave_.remove_value(shared, groupid, value, rng);
+        scorer_.update_group(shared, groupid, groups()[groupid], value, rng);
+    }
+
+    void score_value (
+            const Shared & shared,
+            const Value & value,
+            VectorFloat & scores_accum,
+            rng_t & rng) const
+    {
+        if (DIST_DEBUG_LEVEL >= 2) {
+            DIST_ASSERT_EQ(scores_accum.size(), slave_.groups().size());
+        }
+        scorer_.score_value(shared, value, scores_accum, rng);
+    }
+
+    float score_data (
+            const Shared & shared,
+            rng_t & rng) const
+    {
+        return slave_.score_data(shared, rng);
+    }
 };
 
 } // namespace distributions

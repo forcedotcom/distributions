@@ -91,7 +91,7 @@ struct Group
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(value < shared.dim, "bad value: out of bounds: " << value);
+        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         count_sum += 1;
         counts[value] += 1;
     }
@@ -243,6 +243,7 @@ struct VectorizedScorer
             const Value & value,
             rng_t &)
     {
+        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         scores[value][groupid] =
             fast_log(shared.alphas[value] + group.counts[value]);
         scores_shift[groupid] = fast_log(alpha_sum + group.count_sum);
@@ -274,11 +275,12 @@ struct VectorizedScorer
     }
 
     void score_value(
-            const Shared &,
+            const Shared & shared,
             const Value & value,
             VectorFloat & scores_accum,
             rng_t &) const
     {
+        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         vector_add_subtract(
             scores_accum.size(),
             scores_accum.data(),
@@ -287,99 +289,9 @@ struct VectorizedScorer
     }
 };
 
-
-
 template<int max_dim>
-class Mixture
-{
-public:
-
-    typedef dirichlet_discrete::Value Value;
-    typedef dirichlet_discrete::Shared<max_dim> Shared;
-    typedef dirichlet_discrete::Group<max_dim> Group;
-    typedef dirichlet_discrete::Scorer<max_dim> Scorer;
-    typedef dirichlet_discrete::VectorizedScorer<max_dim> VectorizedScorer;
-
-    VectorizedScorer scorer;
-
-    std::vector<Group> & groups () { return slave_.groups(); }
-    Group & groups (size_t i) { return slave_.groups(i); }
-    const std::vector<Group> & groups () const { return slave_.groups(); }
-    const Group & groups (size_t i) const { return slave_.groups(i); }
-
-    void init (
-            const Shared & shared,
-            rng_t & rng)
-    {
-        slave_.init(shared, rng);
-        scorer.resize(shared, slave_.groups().size());
-        scorer.update_all(shared, slave_, rng);
-    }
-
-    void add_group (
-            const Shared & shared,
-            rng_t & rng)
-    {
-        const size_t groupid = slave_.groups().size();
-        slave_.add_group(shared, rng);
-        scorer.add_group(shared, rng);
-        scorer.update_group(shared, groupid, groups()[groupid], rng);
-    }
-
-    void remove_group (
-            const Shared & shared,
-            size_t groupid)
-    {
-        slave_.remove_group(shared, groupid);
-        scorer.remove_group(shared, groupid);
-    }
-
-    void add_value (
-            const Shared & shared,
-            size_t groupid,
-            const Value & value,
-            rng_t & rng)
-    {
-        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
-        slave_.add_value(shared, groupid, value, rng);
-        scorer.update_group(shared, groupid, groups()[groupid], value, rng);
-    }
-
-    void remove_value (
-            const Shared & shared,
-            size_t groupid,
-            const Value & value,
-            rng_t & rng)
-    {
-        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
-        slave_.remove_value(shared, groupid, value, rng);
-        scorer.update_group(shared, groupid, groups()[groupid], value, rng);
-    }
-
-    void score_value (
-            const Shared & shared,
-            const Value & value,
-            VectorFloat & scores_accum,
-            rng_t & rng) const
-    {
-        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
-        if (DIST_DEBUG_LEVEL >= 2) {
-            DIST_ASSERT_EQ(scores_accum.size(), slave_.groups().size());
-        }
-        scorer.score_value(shared, value, scores_accum, rng);
-    }
-
-    float score_data (
-            const Shared & shared,
-            rng_t & rng) const
-    {
-        return slave_.score_data(shared, rng);
-    }
-
-private:
-
-    MixtureSlave<Shared> slave_;
-};
+struct Mixture : public GroupScorerMixture<VectorizedScorer<max_dim>>
+{};
 
 template<int max_dim>
 inline Value sample_value (
