@@ -361,7 +361,12 @@ def sample_successive_conditional(module, shared, group, value_count):
 
 @for_each_model(lambda module: hasattr(module, 'sampler_create'))
 def test_joint(module, EXAMPLE):
-    print module.__name__
+    """
+    Geweke, John. "Getting it right: Joint distribution tests of posterior simulators."
+    Journal of the American Statistical Association 99.467 (2004): 799-804.
+
+    http://qed.econ.queensu.ca/pub/faculty/ferrall/quant/papers/04_04_29_geweke.pdf
+    """
     seed_all(0)
     SIZE = 20
     SKIP = 50 
