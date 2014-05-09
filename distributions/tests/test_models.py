@@ -28,7 +28,9 @@
 import math
 import numpy
 import numpy.random
+import scipy.stats
 import functools
+from collections import defaultdict
 from nose import SkipTest
 from nose.tools import (
     assert_true,
@@ -328,6 +330,61 @@ def test_sample_group(module, EXAMPLE):
         else:
             raise SkipTest('Not implemented for {}'.format(module.Value))
         print '{} gof = {:0.3g}'.format(module.__name__, gof)
+        assert_greater(gof, MIN_GOODNESS_OF_FIT)
+
+
+def _append_ss(group, aggregator):
+    ss = group.dump()
+    for key, val in ss.iteritems():
+        if isinstance(val, list):
+            for i, v in enumerate(val):
+                aggregator['{}_{}'.format(key, i)].append(v)
+        elif isinstance(val, dict):
+            for k, v in val.iteritems():
+                aggregator['{}_{}'.format(key, k)].append(v)
+        else:
+            aggregator[key].append(val)
+
+
+def sample_marginal_conditional(module, shared, value_count):
+    values = module.sample_group(shared, value_count)
+    group = module.Group.from_values(shared, values)
+    return group
+
+
+def sample_successive_conditional(module, shared, group, value_count):
+    sampler = module.sampler_create(shared, group)
+    values = [module.sampler_eval(shared, sampler) for _ in xrange(value_count)]
+    new_group = module.Group.from_values(shared, values)
+    return new_group
+
+
+@for_each_model(lambda module: hasattr(module, 'sampler_create'))
+def test_joint(module, EXAMPLE):
+    print module.__name__
+    seed_all(0)
+    SIZE = 20
+    SKIP = 50 
+    shared = module.Shared.from_dict(EXAMPLE['shared'])
+    marginal_conditional_samples = defaultdict(lambda: [])
+    successive_conditional_samples = defaultdict(lambda: [])
+    cond_group = sample_marginal_conditional(module, shared, SIZE)
+    for _ in xrange(SAMPLE_COUNT):
+        marg_group = sample_marginal_conditional(module, shared, SIZE)
+        _append_ss(marg_group, marginal_conditional_samples)
+
+        for __ in range(SKIP):
+            cond_group = sample_successive_conditional(
+                    module,
+                    shared,
+                    cond_group,
+                    SIZE)
+        _append_ss(cond_group, successive_conditional_samples)
+    for key in marginal_conditional_samples.keys():
+        gof = scipy.stats.ttest_ind(
+                marginal_conditional_samples[key],
+                successive_conditional_samples[key])[1]
+        print '{}:{} gof = {:0.3g}'.format(module.__name__, key, gof)
         assert_greater(gof, MIN_GOODNESS_OF_FIT)
 
 
