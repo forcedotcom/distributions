@@ -77,3 +77,8 @@ virtualenv. Then::
 
 The top-level ``Makefile`` provides many targets useful for
 development.
+
+To use distributions in CMake targest, and to make the distributions unit
+tests run faster, set the environment variable ``DISTRIBUTIONS_PATH`` to your git cloned location, for example
+
+    echo 'export DISTRIBUTIONS_PATH=/path/to/distributions' >> $VIRTUAL_ENV/bin/postactivate
