@@ -37,6 +37,7 @@ from distributions.util import (
     bin_samples,
     multinomial_goodness_of_fit,
 )
+from distributions.tests.util import seed_all
 
 
 def test_scores_to_probs():
@@ -54,6 +55,7 @@ def test_multinomial_goodness_of_fit():
 
 
 def _test_multinomial_goodness_of_fit(dim):
+    seed_all(0)
     thresh = 1e-3
     sample_count = int(1e5)
     probs = numpy.random.dirichlet([1] * dim)
