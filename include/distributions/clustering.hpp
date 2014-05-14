@@ -123,6 +123,11 @@ struct PitmanYor
         typedef PitmanYor Model;
         typedef typename MixtureDriver<PitmanYor, count_t>::IdSet IdSet;
 
+        std::vector<count_t> & counts ()
+        {
+            return driver_.counts();
+        }
+
         const std::vector<count_t> & counts () const
         {
             return driver_.counts();
@@ -143,9 +148,9 @@ struct PitmanYor
             return driver_.sample_size();
         }
 
-        void init (const Model & model, const std::vector<count_t> & counts)
+        void init (const Model & model)
         {
-            driver_.init(model, counts);
+            driver_.init(model);
             const size_t group_count = driver_.counts().size();
             shifted_scores_.resize(group_count);
             for (size_t i = 0; i < group_count; ++i) {

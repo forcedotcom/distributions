@@ -53,14 +53,14 @@ public:
     typedef ModelT Model;
     typedef std::unordered_set<size_t, TrivialHash<size_t>> IdSet;
 
+    std::vector<count_t> & counts () { return counts_; }
     const std::vector<count_t> & counts () const { return counts_; }
     count_t counts (size_t groupid) const { return counts_[groupid]; }
     const IdSet & empty_groupids () const { return empty_groupids_; }
     size_t sample_size () const { return sample_size_; }
 
-    void init (const Model &, const std::vector<count_t> & counts)
+    void init (const Model &)
     {
-        counts_ = counts;
         empty_groupids_.clear();
         sample_size_ = 0;
 

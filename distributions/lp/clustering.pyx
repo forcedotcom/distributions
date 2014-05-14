@@ -73,7 +73,8 @@ cdef extern from 'distributions/clustering.hpp':
                     "empty_groupids().begin" () nogil except +
             IdSet.iterator empty_groupids_end \
                     "empty_groupids().end" () nogil except +
-            void init (PitmanYor_cc &, vector[int] &) nogil except +
+            void set_counts "counts() = " (vector[int] &) nogil except +
+            void init (PitmanYor_cc &) nogil except +
             bint add_value (PitmanYor_cc &, size_t) nogil except +
             bint remove_value (PitmanYor_cc &, size_t) nogil except +
             void score_value (PitmanYor_cc &, VectorFloat &) nogil except +
@@ -98,7 +99,8 @@ cdef extern from 'distributions/clustering.hpp':
                     "empty_groupids().begin" () nogil except +
             IdSet.iterator empty_groupids_end \
                     "empty_groupids().end" () nogil except +
-            void init (LowEntropy_cc &, vector[int] &) nogil except +
+            void set_counts "counts() = " (vector[int] &) nogil except +
+            void init (LowEntropy_cc &) nogil except +
             bint add_value (LowEntropy_cc &, size_t) nogil except +
             bint remove_value (LowEntropy_cc &, size_t) nogil except +
             void score_value (LowEntropy_cc &, VectorFloat &) nogil except +
@@ -236,7 +238,8 @@ cdef class PitmanYorMixture:
 
     def init(self, PitmanYor_cy model, list counts):
         cdef vector[int] counts_cc = counts
-        self.ptr.init(model.ptr[0], counts_cc)
+        self.ptr.set_counts(counts_cc)
+        self.ptr.init(model.ptr[0])
 
     def add_value(self, PitmanYor_cy model, int groupid):
         return self.ptr.add_value(model.ptr[0], groupid)
@@ -358,7 +361,8 @@ cdef class LowEntropyMixture:
 
     def init(self, LowEntropy_cy model, list counts):
         cdef vector[int] counts_cc = counts
-        self.ptr.init(model.ptr[0], counts_cc)
+        self.ptr.set_counts(counts_cc)
+        self.ptr.init(model.ptr[0])
 
     def add_value(self, LowEntropy_cy model, int groupid):
         return self.ptr.add_value(model.ptr[0], groupid)
