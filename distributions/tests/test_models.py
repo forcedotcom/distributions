@@ -363,11 +363,7 @@ def sample_successive_conditional(module, shared, group, value_count):
 
 @for_each_model(lambda module: hasattr(module, 'Sampler'))
 def test_joint(module, EXAMPLE):
-    # Geweke, John.
-    # "Getting it right: Joint distribution tests of posterior simulators."
-    # Journal of the American Statistical Association 99.467 (2004): 799-804.
-
-    # http://qed.econ.queensu.ca/pub/faculty/ferrall/quant/papers/04_04_29_geweke.pdf
+    # \cite{geweke04getting}
     seed_all(0)
     SIZE = 10
     SKIP = 100
@@ -391,7 +387,7 @@ def test_joint(module, EXAMPLE):
             marginal_conditional_samples[key],
             successive_conditional_samples[key])[1]
         print '{}:{} gof = {:0.3g}'.format(module.__name__, key, gof)
-        #assert_greater(gof, MIN_GOODNESS_OF_FIT)
+        assert_greater(gof, MIN_GOODNESS_OF_FIT)
 
 
 @for_each_model(lambda module: hasattr(module.Shared, 'scorer_create'))
