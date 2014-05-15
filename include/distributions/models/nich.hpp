@@ -285,6 +285,14 @@ struct VectorizedScorer
             const Value & value,
             AlignedFloats scores_accum,
             rng_t &) const;
+
+    float score_data (
+            const Shared & shared,
+            const MixtureSlave<Shared> & slave,
+            rng_t & rng) const
+    {
+        return slave.score_data(shared, rng);
+    }
 };
 
 inline Shared Shared::plus_group (const Group & group) const

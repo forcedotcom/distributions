@@ -355,11 +355,6 @@ struct GroupScorerMixture
     typedef typename _Scorer::BaseScorer Scorer;
     typedef _Scorer VectorizedScorer;
 
-private:
-    MixtureSlave<Shared> slave_;
-    VectorizedScorer scorer_;
-
-public:
     std::vector<Group> & groups () { return slave_.groups(); }
     Group & groups (size_t i) { return slave_.groups(i); }
     const std::vector<Group> & groups () const { return slave_.groups(); }
@@ -428,8 +423,13 @@ public:
             const Shared & shared,
             rng_t & rng) const
     {
-        return slave_.score_data(shared, rng);
+        return scorer_.score_data(shared, slave_, rng);
     }
+
+private:
+
+    MixtureSlave<Shared> slave_;
+    VectorizedScorer scorer_;
 };
 
 } // namespace distributions

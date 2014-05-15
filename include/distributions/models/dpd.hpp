@@ -304,6 +304,14 @@ struct VectorizedScorer
             scores[value].data(),
             scores_shift.data());
     }
+
+    float score_data (
+            const Shared & shared,
+            const MixtureSlave<Shared> & slave,
+            rng_t & rng) const
+    {
+        return slave.score_data(shared, rng);
+    }
 };
 
 inline Value sample_value (
