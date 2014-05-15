@@ -340,7 +340,7 @@ struct VectorizedScorer
 
         float score = 0;
         for (const auto & group : slave.groups()) {
-            if (auto total = group.counts.get_total()) {
+            if (group.counts.get_total()) {
                 for (auto i : group.counts) {
                     Value value = i.first;
                     DIST_ASSERT1(value < size,
@@ -350,7 +350,7 @@ struct VectorizedScorer
                            - temp_[value];
                 }
                 score += temp_.back()
-                       - fast_lgamma(shared.alpha + total);
+                       - fast_lgamma(shared.alpha + group.counts.get_total());
             }
         }
 

@@ -321,13 +321,15 @@ struct VectorizedScorer
 
         float score = 0;
         for (const auto & group : slave.groups()) {
-            for (Value value = 0; value < shared.dim; ++value) {
-                float alpha = shared.alphas[value];
-                score += fast_lgamma(alpha + group.counts[value])
-                       - temp_[value];
+            if (group.count_sum) {
+                for (Value value = 0; value < shared.dim; ++value) {
+                    float alpha = shared.alphas[value];
+                    score += fast_lgamma(alpha + group.counts[value])
+                           - temp_[value];
+                }
+                score += temp_.back()
+                       - fast_lgamma(alpha_sum + group.count_sum);
             }
-            score += temp_.back()
-                   - fast_lgamma(alpha_sum + group.count_sum);
         }
 
         return score;

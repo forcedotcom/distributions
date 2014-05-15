@@ -271,10 +271,12 @@ struct VectorizedScorer
 
         float score = 0;
         for (const auto & group : slave.groups()) {
-            Shared post = shared.plus_group(group);
-            score += fast_lgamma(post.alpha) - alpha_part;
-            score += beta_part - post.alpha * fast_log(post.inv_beta);
-            score += -group.log_prod;
+            if (group.count) {
+                Shared post = shared.plus_group(group);
+                score += fast_lgamma(post.alpha) - alpha_part;
+                score += beta_part - post.alpha * fast_log(post.inv_beta);
+                score += -group.log_prod;
+            }
         }
 
         return score;
