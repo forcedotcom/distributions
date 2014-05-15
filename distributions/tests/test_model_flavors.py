@@ -87,9 +87,9 @@ def _test_group(name):
             assert_all_close(scores, err_msg='score_value')
 
         scores = [
-            module.score_group(shared, group)
+            group.score_data(shared)
             for module, shared, group in modules_shareds_groups]
-        assert_all_close(scores, err_msg='score_group')
+        assert_all_close(scores, err_msg='score_data')
 
         for module, shared, group in modules_shareds_groups:
             dumped = group.dump()
@@ -97,9 +97,9 @@ def _test_group(name):
             group.load(dumped)
 
         scores = [
-            module.score_group(shared, group)
+            group.score_data(shared)
             for module, shared, group in modules_shareds_groups]
-        assert_all_close(scores, err_msg='score_group')
+        assert_all_close(scores, err_msg='score_data')
 
 
 def test_plus_group():

@@ -113,6 +113,18 @@ struct Group
             const Shared & shared,
             const Value & value,
             rng_t & rng) const;
+
+    float score_data (
+            const Shared & shared,
+            rng_t &) const
+    {
+        Shared post = shared.plus_group(*this);
+        float score = fast_lgamma(post.alpha) - fast_lgamma(shared.alpha);
+        score += shared.alpha * fast_log(shared.inv_beta)
+               - post.alpha * fast_log(post.inv_beta);
+        score += -log_prod;
+        return score;
+    }
 };
 
 struct Sampler
@@ -280,18 +292,6 @@ inline Value sample_value (
     Sampler sampler;
     sampler.init(shared, group, rng);
     return sampler.eval(shared, rng);
-}
-
-inline float score_group (
-        const Shared & shared,
-        const Group & group,
-        rng_t &)
-{
-    Shared post = shared.plus_group(group);
-    float score = fast_lgamma(post.alpha) - fast_lgamma(shared.alpha);
-    score += shared.alpha * fast_log(shared.inv_beta) - post.alpha * fast_log(post.inv_beta);
-    score += -group.log_prod;
-    return score;
 }
 
 } // namespace gamma_poisson

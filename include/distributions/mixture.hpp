@@ -256,7 +256,7 @@ public:
     {
         float score = 0;
         for (const Group & group : groups_) {
-            score += score_group(shared, group, rng);
+            score += group.score_data(shared, rng);
         }
         return score;
     }

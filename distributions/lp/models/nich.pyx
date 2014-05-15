@@ -72,4 +72,3 @@ class Sampler(_nich.Sampler):
 Mixture = _nich.Mixture
 sample_value = _nich.sample_value
 sample_group = _nich.sample_group
-score_group = _nich.score_group

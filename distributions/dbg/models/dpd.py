@@ -134,6 +134,18 @@ class Group(GroupIoMixin):
                 self.counts.get(value, 0))
         return log(numer / denom)
 
+    def score_data(self, shared):
+        assert len(shared.betas), 'betas is empty'
+        """
+        See doc/dpd.pdf Equation (3)
+        """
+        score = 0.
+        for i, count in self.counts.iteritems():
+            prior_i = shared.betas[i] * shared.alpha
+            score += gammaln(prior_i + count) - gammaln(prior_i)
+        score += gammaln(shared.alpha) - gammaln(shared.alpha + self.total)
+        return score
+
     def merge(self, model, source):
         for i, count in source.counts.iteritems():
             self.counts[i] = self.counts.get(i, 0) + count
@@ -196,16 +208,3 @@ def sample_value(shared, group):
 def sample_group(shared, size):
     sampler = sampler_create(shared)
     return [sampler_eval(shared, sampler) for _ in xrange(size)]
-
-
-def score_group(shared, group):
-    assert len(shared.betas), 'betas is empty'
-    """
-    See doc/dpd.pdf Equation (3)
-    """
-    score = 0.
-    for i, count in group.counts.iteritems():
-        prior_i = shared.betas[i] * shared.alpha
-        score += gammaln(prior_i + count) - gammaln(prior_i)
-    score += gammaln(shared.alpha) - gammaln(shared.alpha + group.total)
-    return score

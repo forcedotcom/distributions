@@ -97,6 +97,23 @@ class Group(GroupIoMixin):
         denom = self.counts.sum() + shared.alphas.sum()
         return log(numer / denom)
 
+    def score_data(self, shared):
+        """
+        \cite{jordan2001more} Eqn 22.
+        Michael Jordan's CS281B/Stat241B
+        Advanced Topics in Learning and Decision Making course,
+        'More on Marginal Likelihood'
+        """
+
+        dim = shared.dim
+        a = shared.alphas
+        m = self.counts
+
+        score = sum(gammaln(a[k] + m[k]) - gammaln(a[k]) for k in xrange(dim))
+        score += gammaln(a.sum())
+        score -= gammaln(a.sum() + m.sum())
+        return score
+
     def load(self, raw):
         self.counts = numpy.array(raw['counts'], dtype=numpy.int)
 
@@ -131,21 +148,3 @@ def sample_value(shared, group):
 def sample_group(shared, size):
     sampler = sampler_create(shared)
     return [sampler_eval(shared, sampler) for _ in xrange(size)]
-
-
-def score_group(shared, group):
-    """
-    \cite{jordan2001more} Eqn 22.
-    Michael Jordan's CS281B/Stat241B
-    Advanced Topics in Learning and Decision Making course,
-    'More on Marginal Likelihood'
-    """
-
-    dim = shared.dim
-    a = shared.alphas
-    m = group.counts
-
-    score = sum(gammaln(a[k] + m[k]) - gammaln(a[k]) for k in xrange(dim))
-    score += gammaln(a.sum())
-    score -= gammaln(a.sum() + m.sum())
-    return score

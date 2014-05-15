@@ -137,6 +137,21 @@ struct Group
             const Shared & shared,
             const Value & value,
             rng_t & rng) const;
+
+    float score_data (
+            const Shared & shared,
+            rng_t &) const
+    {
+        Shared post = shared.plus_group(*this);
+        float log_pi = 1.1447298858493991f;
+        float score = fast_lgamma(0.5f * post.nu)
+                    - fast_lgamma(0.5f * shared.nu);
+        score += 0.5f * fast_log(shared.kappa / post.kappa);
+        score += 0.5f * shared.nu * (fast_log(shared.nu * shared.sigmasq))
+               - 0.5f * post.nu * fast_log(post.nu * post.sigmasq);
+        score += -0.5f * count * log_pi;
+        return score;
+    }
 };
 
 struct Sampler
@@ -319,21 +334,6 @@ inline Value sample_value (
     Sampler sampler;
     sampler.init(shared, group, rng);
     return sampler.eval(shared, rng);
-}
-
-inline float score_group (
-        const Shared & shared,
-        const Group & group,
-        rng_t &)
-{
-    Shared post = shared.plus_group(group);
-    float log_pi = 1.1447298858493991f;
-    float score = fast_lgamma(0.5f * post.nu) - fast_lgamma(0.5f * shared.nu);
-    score += 0.5f * fast_log(shared.kappa / post.kappa);
-    score += 0.5f * shared.nu * (fast_log(shared.nu * shared.sigmasq))
-           - 0.5f * post.nu * fast_log(post.nu * post.sigmasq);
-    score += -0.5f * group.count * log_pi;
-    return score;
 }
 
 } // namespace normal_inverse_chi_sq

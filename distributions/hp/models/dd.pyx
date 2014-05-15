@@ -108,6 +108,25 @@ cdef class _Group:
             total += self.counts[i] + shared.alphas[i]
         return log((self.counts[value] + shared.alphas[value]) / total)
 
+    def score_data(self, _Shared shared):
+        """
+        From equation 22 of Michael Jordan's CS281B/Stat241B
+        Advanced Topics in Learning and Decision Making course,
+        'More on Marginal Likelihood'
+        """
+        cdef int i
+        cdef double alpha_sum = 0.0
+        cdef int count_sum = 0
+        cdef double sum = 0.0
+        for i in xrange(shared.dim):
+            alpha_sum += shared.alphas[i]
+        for i in xrange(shared.dim):
+            count_sum += self.counts[i]
+        for i in xrange(shared.dim):
+            sum += (gammaln(shared.alphas[i] + self.counts[i])
+                    - gammaln(shared.alphas[i]))
+        return sum + gammaln(alpha_sum) - gammaln(alpha_sum + count_sum)
+
     def load(self, raw):
         counts = raw['counts']
         self.dim = len(counts)
@@ -157,22 +176,3 @@ def sample_group(_Shared shared, int size):
     for i in xrange(size):
         result.append(sampler_eval(shared, sampler))
     return result
-
-def score_group(_Shared shared, _Group group):
-    """
-    From equation 22 of Michael Jordan's CS281B/Stat241B
-    Advanced Topics in Learning and Decision Making course,
-    'More on Marginal Likelihood'
-    """
-    cdef int i
-    cdef double alpha_sum = 0.0
-    cdef int count_sum = 0
-    cdef double sum = 0.0
-    for i in xrange(shared.dim):
-        alpha_sum += shared.alphas[i]
-    for i in xrange(shared.dim):
-        count_sum += group.counts[i]
-    for i in xrange(shared.dim):
-        sum += (gammaln(shared.alphas[i] + group.counts[i])
-                - gammaln(shared.alphas[i]))
-    return sum + gammaln(alpha_sum) - gammaln(alpha_sum + count_sum)

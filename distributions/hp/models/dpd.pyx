@@ -118,6 +118,25 @@ cdef class _Group:
             numer = shared.betas[value] * shared.alpha + counts.get_count(value)
         return log(numer / denom)
 
+    def score_data(self, _Shared shared):
+        assert len(shared.betas), 'betas is empty'
+        cdef double score = 0.
+        cdef SparseCounter * counts = self.counts
+        cdef SparseCounter.iterator it = counts.begin()
+        cdef SparseCounter.iterator end = counts.end()
+        cdef int i
+        cdef int count
+        cdef double prior_i
+        while it != end:
+            i = deref(it).first
+            count = deref(it).second
+            prior_i = shared.betas[i] * shared.alpha
+            score += gammaln(prior_i + count) - gammaln(prior_i)
+            inc(it)
+        score += gammaln(shared.alpha) \
+               - gammaln(shared.alpha + counts.get_total())
+        return score
+
     def load(self, dict raw):
         cdef SparseCounter * counts = self.counts
         counts.clear()
@@ -188,22 +207,3 @@ def sample_group(_Shared shared, int size):
     for i in xrange(size):
         result.append(sampler_eval(shared, sampler))
     return result
-
-def score_group(_Shared shared, _Group group):
-    assert len(shared.betas), 'betas is empty'
-    cdef double score = 0.
-    cdef SparseCounter * counts = group.counts
-    cdef SparseCounter.iterator it = counts.begin()
-    cdef SparseCounter.iterator end = counts.end()
-    cdef int i
-    cdef int count
-    cdef double prior_i
-    while it != end:
-        i = deref(it).first
-        count = deref(it).second
-        prior_i = shared.betas[i] * shared.alpha
-        score += gammaln(prior_i + count) - gammaln(prior_i)
-        inc(it)
-    score += gammaln(shared.alpha) - gammaln(shared.alpha + counts.get_total())
-
-    return score

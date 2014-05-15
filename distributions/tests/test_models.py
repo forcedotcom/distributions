@@ -147,8 +147,8 @@ def test_interface(module, EXAMPLE):
         value = module.sample_value(shared, group1)
         group1.score_value(shared, value)
         module.sample_group(shared, 10)
-    module.score_group(shared, group1)
-    module.score_group(shared, group2)
+    group1.score_data(shared)
+    group2.score_data(shared)
 
     assert_close(shared.dump(), EXAMPLE['shared'])
 
@@ -188,7 +188,7 @@ def test_protbuf(module, EXAMPLE):
 
 @for_each_model()
 def test_add_remove(module, EXAMPLE):
-    # Test group_add_value, group_remove_value, score_group, score_value
+    # Test group_add_value, group_remove_value, score_data, score_value
 
     shared = module.Shared.from_dict(EXAMPLE['shared'])
     #shared.realize()
@@ -198,7 +198,7 @@ def test_add_remove(module, EXAMPLE):
     group = module.Group.from_values(shared)
     score = 0.0
     assert_close(
-        module.score_group(shared, group), score, err_msg='p(empty) != 1')
+        group.score_data(shared), score, err_msg='p(empty) != 1')
 
     for _ in range(DATA_COUNT):
         value = module.sample_value(shared, group)
@@ -209,7 +209,7 @@ def test_add_remove(module, EXAMPLE):
     group_all = module.Group.from_dict(group.dump())
     assert_close(
         score,
-        module.score_group(shared, group),
+        group.score_data(shared),
         err_msg='p(x1,...,xn) != p(x1) p(x2|x1) p(xn|...)')
 
     numpy.random.shuffle(values)
@@ -324,8 +324,7 @@ def test_sample_group(module, EXAMPLE):
                 sample = tuple(values)
                 samples.append(sample)
                 group = module.Group.from_values(shared, values)
-                probs_dict[sample] = math.exp(
-                    module.score_group(shared, group))
+                probs_dict[sample] = math.exp(group.score_data(shared))
             gof = discrete_goodness_of_fit(samples, probs_dict, plot=True)
         else:
             raise SkipTest('Not implemented for {}'.format(module.Value))
@@ -454,33 +453,40 @@ def test_mixture_score(module, EXAMPLE):
         mixture.append(group)
     mixture.init(shared)
 
-    def check_scores():
-        expected = [
-            group.score_value(shared, value) for group in groups]
+    def check_score_value():
+        expected = [group.score_value(shared, value) for group in groups]
         actual = numpy.zeros(len(mixture), dtype=numpy.float32)
         noise = numpy.random.randn(len(actual))
         actual += noise
         mixture.score_value(shared, value, actual)
         actual -= noise
-        assert_close(actual, expected, err_msg='scores')
+        assert_close(actual, expected, err_msg='score_value')
         return actual
+
+    def check_score_data():
+        expected = sum(group.score_data(shared) for group in groups)
+        actual = mixture.score_data(shared)
+        assert_close(actual, expected, err_msg='score_data')
 
     print 'init'
     for value in values:
-        check_scores()
+        check_score_value()
+        check_score_data()
 
     print 'adding'
     groupids = []
     for value in values:
-        scores = check_scores()
+        scores = check_score_value()
         probs = scores_to_probs(scores)
         groupid = sample_discrete(probs)
         groups[groupid].add_value(shared, value)
         mixture.add_value(shared, groupid, value)
         groupids.append(groupid)
+        check_score_data()
 
     print 'removing'
     for value, groupid in zip(values, groupids):
         groups[groupid].remove_value(shared, value)
         mixture.remove_value(shared, groupid, value)
-        scores = check_scores()
+        scores = check_score_value()
+        check_score_data()

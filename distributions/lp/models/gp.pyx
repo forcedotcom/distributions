@@ -63,4 +63,3 @@ class Sampler(_gp.Sampler):
 Mixture = _gp.Mixture
 sample_value = _gp.sample_value
 sample_group = _gp.sample_group
-score_group = _gp.score_group

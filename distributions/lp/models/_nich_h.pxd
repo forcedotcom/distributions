@@ -26,6 +26,7 @@ cdef extern from "distributions/models/nich.hpp" namespace "distributions::norma
         void remove_value (Shared &, Value &, rng_t &) nogil except +
         void merge (Shared &, Group &, rng_t &) nogil except +
         float score_value (Shared &, Value &, rng_t &) nogil except +
+        float score_data (Shared &, rng_t &) nogil except +
 
 
     cppclass Sampler:
@@ -44,7 +45,7 @@ cdef extern from "distributions/models/nich.hpp" namespace "distributions::norma
             (Shared &, size_t, Value &, rng_t &) nogil except +
         void score_value \
             (Shared &, Value &, VectorFloat &, rng_t &) nogil except +
+        float score_data (Shared &, rng_t &) nogil except +
 
 
     Value sample_value (Shared &, Group &, rng_t &) nogil except +
-    float score_group (Shared &, Group &, rng_t &) nogil except +

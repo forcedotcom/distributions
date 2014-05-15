@@ -118,6 +118,28 @@ struct Group
             const Shared & shared,
             const Value & value,
             rng_t & rng) const;
+
+    float score_data (
+            const Shared & shared,
+            rng_t &) const
+    {
+        const size_t size = shared.betas.size();
+        const size_t total = counts.get_total();
+
+        float score = 0;
+        for (auto i : counts) {
+            Value value = i.first;
+            DIST_ASSERT(value < size,
+                "unknown DPM value: " << value << " >= " << size);
+            float prior_i = shared.betas[value] * shared.alpha;
+            score += fast_lgamma(prior_i + i.second)
+                   - fast_lgamma(prior_i);
+        }
+        score += fast_lgamma(shared.alpha)
+               - fast_lgamma(shared.alpha + total);
+
+        return score;
+    }
 };
 
 struct Sampler
@@ -324,29 +346,6 @@ inline Value sample_value (
     Sampler sampler;
     sampler.init(shared, group, rng);
     return sampler.eval(shared, rng);
-}
-
-inline float score_group (
-        const Shared & shared,
-        const Group & group,
-        rng_t &)
-{
-    const size_t size = shared.betas.size();
-    const size_t total = group.counts.get_total();
-
-    float score = 0;
-    for (auto i : group.counts) {
-        Value value = i.first;
-        DIST_ASSERT(value < size,
-            "unknown DPM value: " << value << " >= " << size);
-        float prior_i = shared.betas[value] * shared.alpha;
-        score += fast_lgamma(prior_i + i.second)
-               - fast_lgamma(prior_i);
-    }
-    score += fast_lgamma(shared.alpha)
-           - fast_lgamma(shared.alpha + total);
-
-    return score;
 }
 
 } // namespace dirichlet_process_discrete

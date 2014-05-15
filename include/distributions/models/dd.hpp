@@ -120,6 +120,26 @@ struct Group
             const Shared<max_dim> & shared,
             const Value & value,
             rng_t & rng) const;
+
+    float score_data (
+            const Shared<max_dim> & shared,
+            rng_t &) const
+    {
+        float alpha_sum = 0;
+        float score = 0;
+
+        for (Value value = 0; value < shared.dim; ++value) {
+            float alpha = shared.alphas[value];
+            alpha_sum += alpha;
+            score += fast_lgamma(alpha + counts[value])
+                   - fast_lgamma(alpha);
+        }
+
+        score += fast_lgamma(alpha_sum)
+               - fast_lgamma(alpha_sum + count_sum);
+
+        return score;
+    }
 };
 
 template<int max_dim>
@@ -312,26 +332,6 @@ inline Value sample_value (
     Sampler<max_dim> sampler;
     sampler.init(shared, group, rng);
     return sampler.eval(shared, rng);
-}
-
-template<int max_dim>
-inline float score_group (
-        const Shared<max_dim> & shared,
-        const Group<max_dim> & group,
-        rng_t &)
-{
-    float alpha_sum = 0;
-    float score = 0;
-
-    for (Value value = 0; value < shared.dim; ++value) {
-        float alpha = shared.alphas[value];
-        alpha_sum += alpha;
-        score += fast_lgamma(alpha + group.counts[value]) - fast_lgamma(alpha);
-    }
-
-    score += fast_lgamma(alpha_sum) - fast_lgamma(alpha_sum + group.count_sum);
-
-    return score;
 }
 
 } // namespace dirichlet_discrete

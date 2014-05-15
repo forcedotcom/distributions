@@ -104,6 +104,13 @@ class Group(GroupIoMixin):
             - (post.alpha + value) * log(1. + post.inv_beta) \
             - log(factorial(value))
 
+    def score_data(self, model):
+        post = model.plus_group(self)
+        return gammaln(post.alpha) - gammaln(model.alpha) \
+            - post.alpha * log(post.inv_beta) \
+            + model.alpha * log(model.inv_beta) \
+            - self.log_prod
+
     def load(self, raw):
         self.count = int(raw['count'])
         self.sum = int(raw['sum'])
@@ -125,14 +132,6 @@ class Group(GroupIoMixin):
         message.count = self.count
         message.sum = self.sum
         message.log_prod = self.log_prod
-
-
-def score_group(model, group):
-    post = model.plus_group(group)
-    return gammaln(post.alpha) - gammaln(model.alpha) \
-        - post.alpha * log(post.inv_beta) \
-        + model.alpha * log(model.inv_beta) \
-        - group.log_prod
 
 
 def sampler_create(model, group=None):

@@ -31,6 +31,9 @@ cdef class Group:
     def score_value(self, Shared shared, Value value):
         return self.ptr.score_value(shared.ptr[0], value, get_rng()[0])
 
+    def score_data(self, Shared shared):
+        return self.ptr.score_data(shared.ptr[0], get_rng()[0])
+
 
 cdef class Sampler:
     def __cinit__(self):
@@ -91,6 +94,9 @@ cdef class Mixture:
         self.ptr.score_value(shared.ptr[0], value, self.scores, get_rng()[0])
         vector_float_to_ndarray(self.scores, scores_accum)
 
+    def score_data(self, Shared shared):
+        return self.ptr.score_data(shared.ptr[0], get_rng()[0])
+
 
 def sample_value(Shared shared, Group group):
     cdef Value value = _h.sample_value(
@@ -109,7 +115,3 @@ def sample_group(Shared shared, int size):
         value = sampler.eval(shared.ptr[0], get_rng()[0])
         result.append(value)
     return result
-
-
-def score_group(Shared shared, Group group):
-    return _h.score_group(shared.ptr[0], group.ptr[0], get_rng()[0])

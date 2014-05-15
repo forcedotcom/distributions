@@ -166,6 +166,17 @@ cdef class _Group:
             post.mu,
             ((1 + post.kappa) * post.sigmasq) / post.kappa)
 
+    def score_data(self, _Shared shared):
+        """
+        \cite{murphy2007conjugate}, Eq. 171
+        """
+        cdef _Shared post = shared.plus_group(self)
+        return gammaln(post.nu / 2.) - gammaln(shared.nu / 2.) + \
+            0.5 * log(shared.kappa / post.kappa) + \
+            (0.5 * shared.nu) * log(shared.nu * shared.sigmasq) - \
+            (0.5 * post.nu) * log(post.nu * post.sigmasq) - \
+            self.count / 2. * 1.1447298858493991
+
     def load(self, dict raw):
         self.count = raw['count']
         self.mean = raw['mean']
@@ -216,15 +227,3 @@ def sample_group(_Shared shared, int size):
     for i in xrange(size):
         result.append(sampler_eval(shared, sampler))
     return result
-
-
-def score_group(_Shared shared, _Group group):
-    """
-    \cite{murphy2007conjugate}, Eq. 171
-    """
-    cdef _Shared post = shared.plus_group(group)
-    return gammaln(post.nu / 2.) - gammaln(shared.nu / 2.) + \
-        0.5 * log(shared.kappa / post.kappa) + \
-        (0.5 * shared.nu) * log(shared.nu * shared.sigmasq) - \
-        (0.5 * post.nu) * log(post.nu * post.sigmasq) - \
-        group.count / 2. * 1.1447298858493991
