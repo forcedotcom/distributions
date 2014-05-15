@@ -41,22 +41,22 @@ void VectorizedScorer::score_value (
     const float value_noalias = value;
     float * __restrict__ scores_accum_noalias =
         VectorFloat_data(scores_accum);
-    const float * __restrict__ _score = VectorFloat_data(score);
-    const float * __restrict__ _post_alpha =
-        VectorFloat_data(post_alpha);
-    const float * __restrict__ _score_coeff =
-        VectorFloat_data(score_coeff);
-    float * __restrict__ _temp = VectorFloat_data(temp);
+    const float * __restrict__ score = VectorFloat_data(score_);
+    const float * __restrict__ post_alpha =
+        VectorFloat_data(post_alpha_);
+    const float * __restrict__ score_coeff =
+        VectorFloat_data(score_coeff_);
+    float * __restrict__ temp = VectorFloat_data(temp_);
 
     const float log_factorial_value = fast_log_factorial(value);
     for (size_t i = 0; i < size; ++i) {
-        _temp[i] = fast_lgamma(_post_alpha[i] + value_noalias);
+        temp[i] = fast_lgamma(post_alpha[i] + value_noalias);
     }
     for (size_t i = 0; i < size; ++i) {
-        scores_accum_noalias[i] += _score[i]
-            + _temp[i]
+        scores_accum_noalias[i] += score[i]
+            + temp[i]
             - log_factorial_value
-            + _score_coeff[i] * value_noalias;
+            + score_coeff[i] * value_noalias;
     }
 }
 

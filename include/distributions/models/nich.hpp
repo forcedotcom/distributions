@@ -211,37 +211,31 @@ struct VectorizedScorer
     typedef normal_inverse_chi_sq::Group Group;
     typedef normal_inverse_chi_sq::Scorer BaseScorer;
 
-    VectorFloat score;
-    VectorFloat log_coeff;
-    VectorFloat precision;
-    VectorFloat mean;
-    mutable VectorFloat temp;
-
     void resize(const Shared &, size_t size)
     {
-        score.resize(size);
-        log_coeff.resize(size);
-        precision.resize(size);
-        mean.resize(size);
-        temp.resize(size);
+        score_.resize(size);
+        log_coeff_.resize(size);
+        precision_.resize(size);
+        mean_.resize(size);
+        temp_.resize(size);
     }
 
     void add_group (const Shared &, rng_t &)
     {
-        score.packed_add();
-        log_coeff.packed_add();
-        precision.packed_add();
-        mean.packed_add();
-        temp.packed_add();
+        score_.packed_add();
+        log_coeff_.packed_add();
+        precision_.packed_add();
+        mean_.packed_add();
+        temp_.packed_add();
     }
 
     void remove_group (const Shared &, size_t groupid)
     {
-        score.packed_remove(groupid);
-        log_coeff.packed_remove(groupid);
-        precision.packed_remove(groupid);
-        mean.packed_remove(groupid);
-        temp.packed_remove(groupid);
+        score_.packed_remove(groupid);
+        log_coeff_.packed_remove(groupid);
+        precision_.packed_remove(groupid);
+        mean_.packed_remove(groupid);
+        temp_.packed_remove(groupid);
     }
 
     void update_group (
@@ -253,10 +247,10 @@ struct VectorizedScorer
         BaseScorer base;
         base.init(shared, group, rng);
 
-        score[groupid] = base.score;
-        log_coeff[groupid] = base.log_coeff;
-        precision[groupid] = base.precision;
-        mean[groupid] = base.mean;
+        score_[groupid] = base.score;
+        log_coeff_[groupid] = base.log_coeff;
+        precision_[groupid] = base.precision;
+        mean_[groupid] = base.mean;
     }
 
     void update_group (
@@ -293,6 +287,14 @@ struct VectorizedScorer
     {
         return slave.score_data(shared, rng);
     }
+
+private:
+
+    VectorFloat score_;
+    VectorFloat log_coeff_;
+    VectorFloat precision_;
+    VectorFloat mean_;
+    mutable VectorFloat temp_;
 };
 
 inline Shared Shared::plus_group (const Group & group) const

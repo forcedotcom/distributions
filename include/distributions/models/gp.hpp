@@ -183,33 +183,28 @@ struct VectorizedScorer
     typedef gamma_poisson::Group Group;
     typedef gamma_poisson::Scorer BaseScorer;
 
-    VectorFloat score;
-    VectorFloat post_alpha;
-    VectorFloat score_coeff;
-    mutable VectorFloat temp;
-
     void resize(const Shared &, size_t size)
     {
-        score.resize(size);
-        post_alpha.resize(size);
-        score_coeff.resize(size);
-        temp.resize(size);
+        score_.resize(size);
+        post_alpha_.resize(size);
+        score_coeff_.resize(size);
+        temp_.resize(size);
     }
 
     void add_group (const Shared &, rng_t &)
     {
-        score.packed_add();
-        post_alpha.packed_add();
-        score_coeff.packed_add();
-        temp.packed_add();
+        score_.packed_add();
+        post_alpha_.packed_add();
+        score_coeff_.packed_add();
+        temp_.packed_add();
     }
 
     void remove_group (const Shared &, size_t groupid)
     {
-        score.packed_remove(groupid);
-        post_alpha.packed_remove(groupid);
-        score_coeff.packed_remove(groupid);
-        temp.packed_remove(groupid);
+        score_.packed_remove(groupid);
+        post_alpha_.packed_remove(groupid);
+        score_coeff_.packed_remove(groupid);
+        temp_.packed_remove(groupid);
     }
 
     void update_group (
@@ -221,9 +216,9 @@ struct VectorizedScorer
         BaseScorer base;
         base.init(shared, group, rng);
 
-        score[groupid] = base.score;
-        post_alpha[groupid] = base.post_alpha;
-        score_coeff[groupid] = base.score_coeff;
+        score_[groupid] = base.score;
+        post_alpha_[groupid] = base.post_alpha;
+        score_coeff_[groupid] = base.score_coeff;
     }
 
     void update_group (
@@ -260,6 +255,13 @@ struct VectorizedScorer
     {
         return slave.score_data(shared, rng);
     }
+
+private:
+
+    VectorFloat score_;
+    VectorFloat post_alpha_;
+    VectorFloat score_coeff_;
+    mutable VectorFloat temp_;
 };
 
 inline Shared Shared::plus_group (const Group & group) const

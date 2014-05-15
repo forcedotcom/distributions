@@ -206,34 +206,31 @@ struct VectorizedScorer
     typedef dirichlet_process_discrete::Group Group;
     typedef dirichlet_process_discrete::Scorer BaseScorer;
 
-    std::vector<VectorFloat> scores;  // dense
-    VectorFloat scores_shift;
-
     void resize(const Shared & shared, size_t size)
     {
         const Value dim = shared.betas.size();
-        scores_shift.resize(size);
-        scores.resize(dim);
+        scores_shift_.resize(size);
+        scores_.resize(dim);
         for (Value value = 0; value < dim; ++value) {
-            scores[value].resize(size);
+            scores_[value].resize(size);
         }
     }
 
     void add_group (const Shared & shared, rng_t &)
     {
-        scores_shift.packed_add(0);
+        scores_shift_.packed_add(0);
         const Value dim = shared.betas.size();
         for (Value value = 0; value < dim; ++value) {
-            scores[value].packed_add(0);
+            scores_[value].packed_add(0);
         }
     }
 
     void remove_group (const Shared & shared, size_t groupid)
     {
-        scores_shift.packed_remove(groupid);
+        scores_shift_.packed_remove(groupid);
         const Value dim = shared.betas.size();
         for (Value value = 0; value < dim; ++value) {
-            scores[value].packed_remove(groupid);
+            scores_[value].packed_remove(groupid);
         }
     }
 
@@ -261,9 +258,9 @@ struct VectorizedScorer
             "value out of bounds: " << value);
         count_t count = group.counts.get_count(value);
         count_t count_sum = group.counts.get_total();
-        scores[value][groupid] =
+        scores_[value][groupid] =
             fast_log(shared.alpha * shared.betas[value] + count);
-        scores_shift[groupid] = fast_log(shared.alpha + count_sum);
+        scores_shift_[groupid] = fast_log(shared.alpha + count_sum);
     }
 
     void update_all (
@@ -277,15 +274,15 @@ struct VectorizedScorer
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
             const Group & group = slave.groups(groupid);
             for (Value value = 0; value < dim; ++value) {
-                scores[value][groupid] =
+                scores_[value][groupid] =
                     shared.alpha * shared.betas[value]
                     + group.counts.get_count(value);
             }
-            scores_shift[groupid] = shared.alpha + group.counts.get_total();
+            scores_shift_[groupid] = shared.alpha + group.counts.get_total();
         }
-        vector_log(group_count, scores_shift.data());
+        vector_log(group_count, scores_shift_.data());
         for (Value value = 0; value < dim; ++value) {
-            vector_log(group_count, scores[value].data());
+            vector_log(group_count, scores_[value].data());
         }
     }
 
@@ -301,8 +298,8 @@ struct VectorizedScorer
         vector_add_subtract(
             scores_accum.size(),
             scores_accum.data(),
-            scores[value].data(),
-            scores_shift.data());
+            scores_[value].data(),
+            scores_shift_.data());
     }
 
     float score_data (
@@ -312,6 +309,11 @@ struct VectorizedScorer
     {
         return slave.score_data(shared, rng);
     }
+
+private:
+
+    std::vector<VectorFloat> scores_;  // dense
+    VectorFloat scores_shift_;
 };
 
 inline Value sample_value (
