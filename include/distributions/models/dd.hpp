@@ -207,6 +207,75 @@ inline float Group<max_dim>::score_value (
     return scorer.eval(shared, value, rng);
 }
 
+template<int max_dim>
+class CachedDataScorer
+{
+    double alpha_sum_;
+    VectorFloat shared_part_;
+    VectorFloat scores_;
+
+public:
+
+    typedef dirichlet_discrete::Value Value;
+    typedef dirichlet_discrete::Shared<max_dim> Shared;
+    typedef dirichlet_discrete::Group<max_dim> Group;
+
+    void init (
+            const Shared & shared,
+            const std::vector<Group> & groups)
+    {
+        const size_t dim = shared.dim;
+        shared_part_.resize(dim + 1);
+        float alpha_sum = 0;
+        for (size_t i = 0; i < dim; ++i) {
+            float alpha = shared.alphas[i];
+            alpha_sum += alpha;
+            shared_part_[i] = fast_lgamma(alpha);
+        }
+        alpha_sum_ = alpha_sum;
+        shared_part_.back() = fast_lgamma(alpha_sum);
+
+        scores_.resize(0);
+        scores_.resize(dim + 1, 0);
+        for (const auto & group : groups) {
+            if (group.count_sum) {
+                for (size_t i = 0; i < dim; ++i) {
+                    float alpha = shared.alphas[i];
+                    scores_[i] += fast_lgamma(alpha + group.counts[i])
+                               - shared_part_[i];
+                }
+                scores_.back() += shared_part_.back()
+                               - fast_lgamma(alpha_sum + group.count_sum);
+            }
+        }
+    }
+
+    float eval () const
+    {
+        return vector_sum(scores_.size(), scores_.data());
+    }
+
+    void update (
+            Value value,
+            float old_alpha,
+            float new_alpha,
+            const std::vector<Group> & groups)
+    {
+        shared_part_[value] = fast_lgamma(new_alpha);
+        alpha_sum_ += double(new_alpha) - double(old_alpha);
+        const float alpha_sum = alpha_sum_;
+        shared_part_.back() = fast_lgamma(alpha_sum);
+
+        scores_[value] = 0;
+        scores_.back() = 0;
+        for (const auto & group : groups) {
+            scores_[value] += fast_lgamma(new_alpha + group.counts[value])
+                           - shared_part_[value];
+            scores_.back() += shared_part_.back()
+                           - fast_lgamma(alpha_sum + group.count_sum);
+        }
+    }
+};
 
 template<int max_dim>
 struct VectorizedScorer
@@ -310,38 +379,41 @@ struct VectorizedScorer
             const MixtureSlave<Shared> & slave,
             rng_t &) const
     {
-        temp_.resize(shared.dim + 1);
-        float alpha_sum = 0;
-        for (Value value = 0; value < shared.dim; ++value) {
-            float alpha = shared.alphas[value];
-            alpha_sum += alpha;
-            temp_[value] = fast_lgamma(alpha);
-        }
-        temp_.back() = fast_lgamma(alpha_sum);
-
-        float score = 0;
-        for (const auto & group : slave.groups()) {
-            if (group.count_sum) {
-                for (Value value = 0; value < shared.dim; ++value) {
-                    float alpha = shared.alphas[value];
-                    score += fast_lgamma(alpha + group.counts[value])
-                           - temp_[value];
-                }
-                score += temp_.back()
-                       - fast_lgamma(alpha_sum + group.count_sum);
-            }
-        }
-
-        return score;
+        cached_data_scorer_.init(shared, slave.groups());
+        return cached_data_scorer_.eval();
     }
 
+    // not thread safe
     void score_data_grid (
             const std::vector<Shared> & shareds,
             const MixtureSlave<Shared> & slave,
             AlignedFloats scores_out,
-            rng_t & rng) const
+            rng_t &) const
     {
-        slave.score_data_grid(shareds, scores_out, rng);
+        DIST_ASSERT_EQ(shareds.size(), scores_out.size());
+        if (const size_t size = shareds.size()) {
+            const size_t dim = shareds[0].dim;
+
+            cached_data_scorer_.init(shareds[0], slave.groups());
+            scores_out[0] = cached_data_scorer_.eval();
+
+            for (size_t i = 1; i < size; ++i) {
+                const float * old_alphas = shareds[i-1].alphas;
+                const float * new_alphas = shareds[i].alphas;
+                for (Value value = 0; value < dim; ++value) {
+                    const float & old_alpha = old_alphas[value];
+                    const float & new_alpha = new_alphas[value];
+                    if (DIST_UNLIKELY(new_alpha != old_alpha)) {
+                        cached_data_scorer_.update(
+                            value,
+                            old_alpha,
+                            new_alpha,
+                            slave.groups());
+                    }
+                }
+                scores_out[i] = cached_data_scorer_.eval();
+            }
+        }
     }
 
 private:
@@ -350,7 +422,7 @@ private:
     std::vector<VectorFloat> scores_;
     VectorFloat scores_shift_;
 
-    mutable VectorFloat temp_;
+    mutable CachedDataScorer<max_dim> cached_data_scorer_;
 };
 
 template<int max_dim>
