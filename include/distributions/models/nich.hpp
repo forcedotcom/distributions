@@ -302,6 +302,7 @@ struct VectorizedScorer
             rng_t &) const
     {
         const float nu_part = fast_lgamma(0.5f * shared.nu);
+        const float kappa_part = 0.5f * fast_log(shared.kappa);
         const float sigmasq_part =
             0.5f * shared.nu * fast_log(shared.nu * shared.sigmasq);
         const float log_pi = 1.1447298858493991f;
@@ -311,7 +312,7 @@ struct VectorizedScorer
             if (group.count) {
                 Shared post = shared.plus_group(group);
                 score += fast_lgamma(0.5f * post.nu) - nu_part;
-                score += 0.5f * fast_log(shared.kappa / post.kappa);
+                score += kappa_part - 0.5f * fast_log(post.kappa);
                 score += sigmasq_part
                        - 0.5f * post.nu * fast_log(post.nu * post.sigmasq);
                 score += -0.5f * log_pi * group.count;
