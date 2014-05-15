@@ -261,6 +261,18 @@ public:
         return score;
     }
 
+    // this slow version should be overridden
+    void score_data_grid (
+            const std::vector<Shared> & shareds,
+            AlignedFloats scores_out,
+            rng_t & rng) const
+    {
+        DIST_ASSERT_EQ(shareds.size(), scores_out.size());
+        for (size_t i = 0, size = scores_out.size(); i < size; ++i) {
+            scores_out[i] = score_data(shareds[i], rng);
+        }
+    }
+
 private:
 
     Packed_<Group> groups_;
@@ -424,6 +436,14 @@ struct GroupScorerMixture
             rng_t & rng) const
     {
         return scorer_.score_data(shared, slave_, rng);
+    }
+
+    void score_data_grid (
+            const std::vector<Shared> & shareds,
+            AlignedFloats scores_out,
+            rng_t & rng) const
+    {
+        scorer_.score_data_grid(shareds, slave_, scores_out, rng);
     }
 
 private:

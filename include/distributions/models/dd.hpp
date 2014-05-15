@@ -335,6 +335,15 @@ struct VectorizedScorer
         return score;
     }
 
+    void score_data_grid (
+            const std::vector<Shared> & shareds,
+            const MixtureSlave<Shared> & slave,
+            AlignedFloats scores_out,
+            rng_t & rng) const
+    {
+        slave.score_data_grid(shareds, scores_out, rng);
+    }
+
 private:
 
     float alpha_sum_;
