@@ -254,6 +254,7 @@ struct VectorizedScorer
         }
     }
 
+    // not thread safe
     void score_value (
             const Shared & shared,
             const Value & value,
@@ -263,9 +264,20 @@ struct VectorizedScorer
     float score_data (
             const Shared & shared,
             const MixtureSlave<Shared> & slave,
-            rng_t & rng) const
+            rng_t &) const
     {
-        return slave.score_data(shared, rng);
+        const float alpha_part = fast_lgamma(shared.alpha);
+        const float beta_part = shared.alpha * fast_log(shared.inv_beta);
+
+        float score = 0;
+        for (const auto & group : slave.groups()) {
+            Shared post = shared.plus_group(group);
+            score += fast_lgamma(post.alpha) - alpha_part;
+            score += beta_part - post.alpha * fast_log(post.inv_beta);
+            score += -group.log_prod;
+        }
+
+        return score;
     }
 
 private:

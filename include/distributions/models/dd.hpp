@@ -125,8 +125,8 @@ struct Group
             const Shared<max_dim> & shared,
             rng_t &) const
     {
-        float alpha_sum = 0;
         float score = 0;
+        float alpha_sum = 0;
 
         for (Value value = 0; value < shared.dim; ++value) {
             float alpha = shared.alphas[value];
@@ -304,12 +304,33 @@ struct VectorizedScorer
             scores_shift_.data());
     }
 
+    // not thread safe
     float score_data (
             const Shared & shared,
             const MixtureSlave<Shared> & slave,
-            rng_t & rng) const
+            rng_t &) const
     {
-        return slave.score_data(shared, rng);
+        temp_.resize(shared.dim + 1);
+        float alpha_sum = 0;
+        for (Value value = 0; value < shared.dim; ++value) {
+            float alpha = shared.alphas[value];
+            alpha_sum += alpha;
+            temp_[value] = fast_lgamma(alpha);
+        }
+        temp_.back() = fast_lgamma(alpha_sum);
+
+        float score = 0;
+        for (const auto & group : slave.groups()) {
+            for (Value value = 0; value < shared.dim; ++value) {
+                float alpha = shared.alphas[value];
+                score += fast_lgamma(alpha + group.counts[value])
+                       - temp_[value];
+            }
+            score += temp_.back()
+                   - fast_lgamma(alpha_sum + group.count_sum);
+        }
+
+        return score;
     }
 
 private:
@@ -317,6 +338,8 @@ private:
     float alpha_sum_;
     std::vector<VectorFloat> scores_;
     VectorFloat scores_shift_;
+
+    mutable VectorFloat temp_;
 };
 
 template<int max_dim>

@@ -129,8 +129,8 @@ struct Group
         float score = 0;
         for (auto i : counts) {
             Value value = i.first;
-            DIST_ASSERT(value < size,
-                "unknown DPM value: " << value << " >= " << size);
+            DIST_ASSERT1(value < size,
+                "unknown value: " << value << " >= " << size);
             float prior_i = shared.betas[value] * shared.alpha;
             score += fast_lgamma(prior_i + i.second)
                    - fast_lgamma(prior_i);
@@ -194,7 +194,7 @@ struct Scorer
         for (auto i : group.counts) {
             Value value = i.first;
             DIST_ASSERT(value < size,
-                "unknown DPM value: " << value << " >= " << size);
+                "unknown value: " << value << " >= " << size);
             scores[value] += counts_scale * i.second;
         }
     }
@@ -206,7 +206,7 @@ struct Scorer
     {
         size_t size = scores.size();
         DIST_ASSERT(value < size,
-            "unknown DPM value: " << value << " >= " << size);
+            "unknown value: " << value << " >= " << size);
         return fast_log(scores[value]);
     }
 };
@@ -324,18 +324,45 @@ struct VectorizedScorer
             scores_shift_.data());
     }
 
+    // not thread safe
     float score_data (
             const Shared & shared,
             const MixtureSlave<Shared> & slave,
-            rng_t & rng) const
+            rng_t &) const
     {
-        return slave.score_data(shared, rng);
+        const size_t size = shared.betas.size();
+
+        temp_.resize(size + 1);
+        for (size_t i = 0; i < size; ++i) {
+            temp_[i] = fast_lgamma(shared.betas[i] * shared.alpha);
+        }
+        temp_.back() = fast_lgamma(shared.alpha);
+
+        float score = 0;
+        for (const auto & group : slave.groups()) {
+            if (auto total = group.counts.get_total()) {
+                for (auto i : group.counts) {
+                    Value value = i.first;
+                    DIST_ASSERT1(value < size,
+                        "unknown value: " << value << " >= " << size);
+                    float prior_i = shared.betas[value] * shared.alpha;
+                    score += fast_lgamma(prior_i + i.second)
+                           - temp_[value];
+                }
+                score += temp_.back()
+                       - fast_lgamma(shared.alpha + total);
+            }
+        }
+
+        return score;
     }
 
 private:
 
     std::vector<VectorFloat> scores_;  // dense
     VectorFloat scores_shift_;
+
+    mutable VectorFloat temp_;
 };
 
 inline Value sample_value (
