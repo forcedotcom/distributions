@@ -86,6 +86,7 @@ protobuf: FORCE
 
 profile: install_cc FORCE
 	build/benchmarks/sample_from_scores
+	build/benchmarks/score_counts
 	build/benchmarks/sample_assignment_from_py
 	build/benchmarks/special
 	build/benchmarks/mixture

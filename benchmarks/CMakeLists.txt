@@ -10,6 +10,11 @@ target_link_libraries(sample_assignment_from_py
   ${DISTRIBUTIONS_SHARED_LIBS}
 )
 
+add_executable(score_counts score_counts.cc)
+target_link_libraries(score_counts
+  ${DISTRIBUTIONS_SHARED_LIBS}
+)
+
 add_executable(special special.cc)
 target_link_libraries(special
   ${DISTRIBUTIONS_SHARED_LIBS}
