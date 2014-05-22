@@ -145,6 +145,16 @@ std::vector<count_t> Clustering<count_t>::PitmanYor::sample_assignments (
     return assignments;
 }
 
+inline float fast_log_ratio (float numer, float denom)
+{
+    return fast_log(numer / denom);
+}
+
+inline float fast_lgamma_ratio (float start, size_t count)
+{
+    return fast_lgamma(start + count) - fast_lgamma(start);
+}
+
 template<class count_t>
 float Clustering<count_t>::PitmanYor::score_counts (
         const std::vector<count_t> & counts) const
@@ -155,19 +165,27 @@ float Clustering<count_t>::PitmanYor::score_counts (
 
     for (size_t count : counts) {
         if (count) {
-            size_t group_size = 0;
+            if (count == 1) {
 
-            score += score_add_value(
-                group_size++,
-                nonempty_group_count++,
-                sample_size++);
+                score += fast_log_ratio(
+                    alpha + d * nonempty_group_count,
+                    alpha + sample_size);
 
-            while (group_size < count) {
-                score += score_add_value(
-                    group_size++,
-                    nonempty_group_count,
-                    sample_size++);
+            } else if (count == 2) {
+
+                score += fast_log_ratio(
+                    (alpha + d * nonempty_group_count) * (1 - d),
+                    (alpha + sample_size) * (alpha + sample_size + 1));
+
+            } else {
+
+                score += fast_log(alpha + d * nonempty_group_count);
+                score += fast_lgamma_ratio(1 - d, count - 1);
+                score -= fast_lgamma_ratio(alpha + sample_size, count);
             }
+
+            nonempty_group_count += 1;
+            sample_size += count;
         }
     }
 
