@@ -53,6 +53,19 @@ EXAMPLES = [
 
 Value = tuple
 
+def rev_logistic_scaled(x, mu, lamb, pmin, pmax):
+    ratio = (x-mu) / lamb
+    p_unscaled = 1.0 / (1.0 + np.exp(ratio))
+    return p_unscaled * (pmax-pmin) + pmin
+
+def log_exp_dist(x, lamb):
+    if x < 0.0 : 
+        return -np.inf
+    if lamb <=0.0:
+        return -np.inf
+
+    return np.log(lamb)  - lamb*x
+
 
 class Shared(SharedIoMixin):
     def __init__(self):
@@ -130,14 +143,15 @@ class Group(GroupIoMixin):
         """
         Score the parameters from the prior
         """
-        score = log_exp(self.mu, shared['mu_hp'])
-        score += log_exp(self.lamb, shared['lamb_hp'])
+        score = log_exp_dist(self.mu, shared['mu_hp'])
+        score += log_exp_dist(self.lamb, shared['lamb_hp'])
         return score
 
     def score_value(self, shared, value):
-        p = compute_scaled_log(value[1], 
-                               shared['p_min'], shared['p_max'], 
-                               shared['mu'], shared['hp'])
+        p = rev_logistic_scaled(value[1], 
+                                shared['mu_hp'], shared['lamb_hp'], 
+                                shared['p_min'], shared['p_max'])
+)
         if value[0]):
             return np.log(p)
         else:
