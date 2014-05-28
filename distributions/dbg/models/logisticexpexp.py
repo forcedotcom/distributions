@@ -43,7 +43,7 @@ from distributions.dbg.random import sample_chi2, sample_normal
 from distributions.mixins import GroupIoMixin, SharedIoMixin
 
 
-NAME = 'NormalInverseChiSq'
+NAME = 'LogistcExpExp'
 EXAMPLES = [
     {
         'shared': {'mu': 0., 'kappa': 1., 'sigmasq': 1., 'nu': 1.},
