@@ -232,6 +232,13 @@ template<class Alloc>
 float scores_to_likelihoods (std::vector<float, Alloc> & scores);
 
 template<class Alloc>
+void scores_to_probs (std::vector<float, Alloc> & scores)
+{
+    float total = scores_to_likelihoods(scores);
+    vector_scale(scores.size(), scores.data(), 1.f / total);
+}
+
+template<class Alloc>
 inline size_t sample_from_scores_overwrite (
         rng_t & rng,
         std::vector<float, Alloc> & scores)
