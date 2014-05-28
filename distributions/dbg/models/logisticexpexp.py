@@ -46,11 +46,12 @@ from distributions.mixins import GroupIoMixin, SharedIoMixin
 NAME = 'LogistcExpExp'
 EXAMPLES = [
     {
-        'shared': {'mu': 0., 'kappa': 1., 'sigmasq': 1., 'nu': 1.},
-        'values': [-4.0, -2.0, -1.0, -0.5, 0.0, 0.5, 1.0, 2.0, 4.0],
+        'shared': {'mu_hp': 1., 'lamb_hp': 1., 'p_min': 0.01, 'p_max': 0.99},
+        'values': [(True, 1.0), (True, 1.5), (False, 2.0), (False, 3.0)]
     },
 ]
-Value = float
+
+Value = tuple
 
 
 class Shared(SharedIoMixin):
