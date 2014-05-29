@@ -34,7 +34,7 @@ from numpy.random import multivariate_normal
 from numpy.random import beta as sample_beta
 from numpy.random import poisson as sample_poisson
 from numpy.random import gamma as sample_gamma
-from scipy.stats import norm, chi2
+from scipy.stats import norm, chi2, nbinom
 from scipy.special import gammaln
 from distributions.util import scores_to_probs
 import logging
@@ -180,3 +180,7 @@ def sample_stick(gamma, tol=1e-3):
         betas.append(new_beta)
         Z += new_beta
     return {i: b / Z for i, b in enumerate(betas)}
+
+
+def sample_negative_binomial(p, r):
+    return nbinom.rvs(r, p)
