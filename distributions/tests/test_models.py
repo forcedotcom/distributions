@@ -292,7 +292,7 @@ def test_sample_value(module, EXAMPLE):
         group = module.Group.from_values(shared, values)
         samples = [
             module.sample_value(shared, group) for _ in xrange(SAMPLE_COUNT)]
-        if module.Value == int:
+        if module.Value in [bool, int]:
             probs_dict = {
                 value: math.exp(group.score_value(shared, value))
                 for value in set(samples)
@@ -316,7 +316,7 @@ def test_sample_group(module, EXAMPLE):
     SIZE = 2
     shared = module.Shared.from_dict(EXAMPLE['shared'])
     for values in [[], EXAMPLE['values']]:
-        if module.Value == int:
+        if module.Value in [bool, int]:
             samples = []
             probs_dict = {}
             for _ in xrange(SAMPLE_COUNT):
