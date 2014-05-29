@@ -34,8 +34,8 @@ from distributions.mixins import GroupIoMixin, SharedIoMixin
 NAME = 'BetaBernoulli'
 EXAMPLES = [
     {
-        'shared': {'alpha': 0.5, 'beta': 0.5},
-        'values': [True, False, False, True, False, True, True],
+        'shared': {'alpha': 0.5, 'beta': 2.0},
+        'values': [False, False, True, False, True, True, False, False],
     },
 ]
 Value = bool

@@ -59,7 +59,7 @@ struct Shared
     {
         Shared shared;
         shared.alpha = 0.5;
-        shared.beta = 0.5;
+        shared.beta = 2.0;
         return shared;
     }
 };
