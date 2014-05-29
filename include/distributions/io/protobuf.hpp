@@ -29,6 +29,7 @@
 
 #include <distributions/common.hpp>
 #include <distributions/clustering.hpp>
+#include <distributions/models/bb.hpp>
 #include <distributions/models/dd.hpp>
 #include <distributions/models/dpd.hpp>
 #include <distributions/models/nich.hpp>
@@ -105,6 +106,22 @@ inline void clustering_dump (
 
 //----------------------------------------------------------------------------
 // Shareds
+
+inline void shared_load (
+        beta_bernoulli::Shared & shared,
+        const protobuf::BetaBernoulli_Shared & message)
+{
+    shared.alpha = message.alpha();
+    shared.beta = message.beta();
+}
+
+inline void shared_dump (
+        const beta_bernoulli::Shared & shared,
+        protobuf::BetaBernoulli_Shared & message)
+{
+    message.set_alpha(shared.alpha);
+    message.set_beta(shared.beta);
+}
 
 template<int max_dim>
 inline void shared_load (
@@ -193,6 +210,24 @@ inline void shared_dump (
 
 //----------------------------------------------------------------------------
 // Groups
+
+inline void group_load (
+        const beta_bernoulli::Shared &,
+        beta_bernoulli::Group & group,
+        const protobuf::BetaBernoulli::Group & message)
+{
+    group.heads = message.heads();
+    group.tails = message.tails();
+}
+
+inline void group_dump (
+        const beta_bernoulli::Shared &,
+        const beta_bernoulli::Group & group,
+        protobuf::BetaBernoulli::Group & message)
+{
+    message.set_heads(group.heads);
+    message.set_tails(group.tails);
+}
 
 template<int max_dim>
 inline void group_load (
@@ -292,6 +327,22 @@ inline void group_dump (
 
 //----------------------------------------------------------------------------
 // Grid Priors
+
+template<class Visitor>
+inline void for_each_gridpoint (
+        const protobuf::BetaBernoulli_GridPrior & grid,
+        Visitor & visitor)
+{
+    for (auto alpha : grid.alpha()) {
+        visitor.add().alpha = alpha;
+    }
+    visitor.done();
+
+    for (auto beta : grid.beta()) {
+        visitor.add().beta = beta;
+    }
+    visitor.done();
+}
 
 template<class Visitor>
 inline void for_each_gridpoint (
