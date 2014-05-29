@@ -271,11 +271,21 @@ public:
     float score_data (
             const Shared & shared,
             const MixtureSlave<Shared> & slave,
-            rng_t & rng) const
+            rng_t &) const
     {
+        const float shared_part =
+               + fast_lgamma(shared.alpha + shared.beta)
+               - fast_lgamma(shared.alpha)
+               - fast_lgamma(shared.beta);
         float score = 0;
         for (const auto & group : slave.groups()) {
-            score += group.score_data(shared, rng);
+            float alpha = shared.alpha + group.heads;
+            float beta = shared.beta + group.tails;
+            float group_part =
+                   + fast_lgamma(alpha)
+                   + fast_lgamma(beta)
+                   - fast_lgamma(alpha + beta);
+            score += shared_part + group_part;
         }
         return score;
     }
@@ -286,7 +296,10 @@ public:
             AlignedFloats scores_out,
             rng_t & rng) const
     {
-        slave.score_data_grid(shareds, scores_out, rng);
+        DIST_ASSERT_EQ(shareds.size(), scores_out.size());
+        for (size_t i = 0, size = scores_out.size(); i < size; ++i) {
+            scores_out[i] = score_data(shareds[i], slave, rng);
+        }
     }
 };
 
