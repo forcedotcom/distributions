@@ -34,7 +34,7 @@ from numpy.random import multivariate_normal
 from numpy.random import beta as sample_beta
 from numpy.random import poisson as sample_poisson
 from numpy.random import gamma as sample_gamma
-from scipy.stats import norm, chi2
+from scipy.stats import norm, chi2, bernoulli
 from scipy.special import gammaln
 from distributions.util import scores_to_probs
 import logging
@@ -59,6 +59,10 @@ def seed(x):
 def sample_discrete_log(scores):
     probs = scores_to_probs(scores)
     return sample_discrete(probs, total=1.0)
+
+
+def sample_bernoulli(prob):
+    return bool(bernoulli.rvs(prob))
 
 
 def sample_discrete(probs, total=None):

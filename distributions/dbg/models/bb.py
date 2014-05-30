@@ -46,8 +46,8 @@ class Shared(SharedIoMixin):
         self.beta = None
 
     def load(self, raw):
-        self.alpha = float(raw['alphas'])
-        self.beta = float(raw['betas'])
+        self.alpha = float(raw['alpha'])
+        self.beta = float(raw['beta'])
 
     def dump(self):
         return {
@@ -111,7 +111,7 @@ class Group(GroupIoMixin):
         beta = shared.beta + self.tails
         score = gammaln(shared.alpha + shared.beta) - gammaln(alpha + beta)
         score += gammaln(alpha) - gammaln(shared.alpha)
-        score += gammaln(alpha) - gammaln(shared.alpha)
+        score += gammaln(beta) - gammaln(shared.beta)
         return score
 
     def load(self, raw):
