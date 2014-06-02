@@ -29,6 +29,7 @@
 #include <iomanip>
 #include <typeinfo>
 #include <distributions/vector.hpp>
+#include <distributions/models/bb.hpp>
 #include <distributions/models/dd.hpp>
 #include <distributions/models/dpd.hpp>
 #include <distributions/models/gp.hpp>
@@ -163,6 +164,7 @@ void speedtests ()
 
 int main()
 {
+    speedtests<beta_bernoulli::Mixture>();
     speedtests<dirichlet_discrete::Mixture<4>>();
     speedtests<dirichlet_process_discrete::Mixture>();
     speedtests<gamma_poisson::Mixture>();
