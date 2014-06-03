@@ -1,4 +1,7 @@
 """
+Cook, John D. "Notes on the negative binomial distribution."
+Unknown, October 28 (2009): 2009.
+
 Following http://www.johndcook.com/negative_binomial.pdf
 The negative binomial (NB) gives the probability of seeing x
 failures before the rth success given a success probability
