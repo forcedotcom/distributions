@@ -20,7 +20,7 @@ from distributions.mixins import GroupIoMixin, SharedIoMixin
 NAME = 'BetaNegativeBinomial'
 EXAMPLES = [
     {
-        'shared': {'alpha': 100., 'beta': 100., 'r': 1},
+        'shared': {'alpha': 1., 'beta': 1., 'r': 1},
         'values': [0, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 2, 3],
     },
 ]
