@@ -42,9 +42,9 @@ class Shared(SharedIoMixin):
         return post
 
     def load(self, raw):
-        self.alpha = raw['alpha']
-        self.beta = raw['beta']
-        self.r = raw['r']
+        self.alpha = float(raw['alpha'])
+        self.beta = float(raw['beta'])
+        self.r = int(raw['r'])
 
     def dump(self):
         return {
