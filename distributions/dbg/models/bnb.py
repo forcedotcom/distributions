@@ -17,8 +17,8 @@ from distributions.mixins import GroupIoMixin, SharedIoMixin
 NAME = 'BetaNegativeBinomial'
 EXAMPLES = [
     {
-        'shared': {'alpha': 1., 'beta': 1., 'r': 10.},
-        'values': [5., 5., 7., 9., 4., 12., 7.]
+        'shared': {'alpha': 100., 'beta': 100., 'r': 1},
+        'values': [0, 1, 2, 3, 4, 5, 6, 1, 2, 3, 4, 2, 3],
     },
 ]
 
@@ -47,6 +47,7 @@ class Shared(SharedIoMixin):
         return {
             'alpha': self.alpha,
             'beta': self.beta,
+            'r': self.r
         }
 
 
@@ -57,28 +58,48 @@ class Group(GroupIoMixin):
         self.sum = None
 
     def init(self, shared):
-        self.count = 0.
-        self.sum = 0.
+        self.count = 0
+        self.sum = 0
 
     def add_value(self, shared, value):
-        self.count += 1.
-        self.sum += value
+        self.count += 1
+        self.sum += int(value)
 
     def remove_value(self, shared, value):
-        self.count -= 1.
-        self.sum -= value
+        self.count -= 1
+        self.sum -= int(value)
+
+    def merge(self, model, source):
+        self.count += source.count
+        self.sum += source.sum
 
     def score_value(self, shared, value):
         post = shared.plus_group(self)
-        return gammaln(post.alpha + shared.r) \
-            + gammaln(post.beta + value) \
-            - gammaln(post.alpha + shared.r + post.beta + value)
+        alpha = post.alpha + shared.r
+        beta = post.beta + value
+        score = gammaln(post.alpha + post.beta)
+        score -= gammaln(alpha + beta)
+        score += gammaln(alpha) - gammaln(post.alpha)
+        score += gammaln(beta) - gammaln(post.beta)
+        return score
 
     def score_data(self, shared):
         post = shared.plus_group(self)
-        return gammaln(post.alpha) \
-            + gammaln(post.beta) \
-            - gammaln(post.alpha + post.beta)
+        score = gammaln(shared.alpha + shared.beta)
+        score -= gammaln(post.alpha + post.beta)
+        score += gammaln(post.alpha) - gammaln(shared.alpha)
+        score += gammaln(post.beta) - gammaln(shared.beta)
+        return score
+
+    def dump(self):
+        return {
+            'count': self.count,
+            'sum': self.sum
+        }
+
+    def load(self, raw):
+        self.count = int(raw['count'])
+        self.sum = int(raw['sum'])
 
 
 def sampler_create(shared, group=None):
