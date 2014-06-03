@@ -133,15 +133,27 @@ class json_stream_load(object):
         self.fd.close()
 
 
+def protobuf_stream_write(item, fd):
+    assert isinstance(item, str), item
+    fd.write(struct.pack('<I', len(item)))
+    fd.write(item)
+
+
+def protobuf_stream_read(fd):
+    size_str = fd.read(4)
+    if len(size_str) < 4:
+        raise StopIteration
+    size = struct.unpack('<I', size_str)[0]
+    return fd.read(size)
+
+
 def protobuf_stream_dump(stream, filename):
     dirname = os.path.dirname(filename)
     if dirname and not os.path.exists(dirname):
         os.makedirs(dirname)
     with open_compressed(filename, 'wb') as f:
         for item in stream:
-            assert isinstance(item, str), item
-            f.write(struct.pack('<I', len(item)))
-            f.write(item)
+            protobuf_stream_write(item, f)
 
 
 class protobuf_stream_load(object):
@@ -152,11 +164,7 @@ class protobuf_stream_load(object):
         return self
 
     def next(self):
-        size_str = self.fd.read(4)
-        if len(size_str) < 4:
-            raise StopIteration
-        size = struct.unpack('<I', size_str)[0]
-        return self.fd.read(size)
+        return protobuf_stream_read(self.fd)
 
     def close(self):
         self.fd.close()
