@@ -8,7 +8,7 @@ failures before the rth success given a success probability
 p:
     p(x | p, r) \propto p ^ r * (1 - p) ^ x
 For a given r and p, the NB has mean:
-    mu = r (1 - p) / r
+    mu = r (1 - p) / p
 and variance:
     sigmasq = mu + (1 / r) * mu ** 2
 """
