@@ -50,7 +50,7 @@ class Shared(SharedIoMixin):
         return {
             'alpha': self.alpha,
             'beta': self.beta,
-            'r': self.r
+            'r': self.r,
         }
 
 
@@ -97,7 +97,7 @@ class Group(GroupIoMixin):
     def dump(self):
         return {
             'count': self.count,
-            'sum': self.sum
+            'sum': self.sum,
         }
 
     def load(self, raw):
