@@ -187,4 +187,4 @@ def sample_stick(gamma, tol=1e-3):
 
 
 def sample_negative_binomial(p, r):
-    return nbinom.rvs(r, p)
+    return int(nbinom.rvs(r, p))
