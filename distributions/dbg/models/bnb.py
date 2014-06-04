@@ -66,6 +66,7 @@ class Shared(SharedIoMixin):
         post = self.__class__()
         post.alpha = self.alpha + self.r * group.count
         post.beta = self.beta + group.sum
+        post.r = self.r
         return post
 
     def load(self, raw):
@@ -83,7 +84,6 @@ class Shared(SharedIoMixin):
 
 class Group(GroupIoMixin):
     def __init__(self):
-        self.r = None
         self.count = None
         self.sum = None
 

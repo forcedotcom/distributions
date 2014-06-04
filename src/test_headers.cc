@@ -3,6 +3,7 @@
 #include <distributions/common.hpp>
 #include <distributions/mixture.hpp>
 #include <distributions/models/bb.hpp>
+#include <distributions/models/bnb.hpp>
 #include <distributions/models/dd.hpp>
 #include <distributions/models/dpd.hpp>
 #include <distributions/models_fwd.hpp>

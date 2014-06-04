@@ -84,6 +84,12 @@ inline int sample_poisson (rng_t & rng, float mean)
     return sampler(rng);
 }
 
+inline int sample_negative_binomial (rng_t & rng, float p, int r)
+{
+    std::negative_binomial_distribution<int> sampler(r, p);
+    return sampler(rng);
+}
+
 inline float sample_gamma (
         rng_t & rng,
         float alpha,
@@ -95,6 +101,16 @@ inline float sample_gamma (
 
     gamma_distribution_t sampler(alpha, beta);
     return sampler(rng);
+}
+
+inline float sample_beta (
+        rng_t & rng,
+        float alpha,
+        float beta)
+{
+    float x = sample_gamma(rng, alpha, 1);
+    float y = sample_gamma(rng, beta, 1);
+    return x / (x + y);
 }
 
 void sample_dirichlet (

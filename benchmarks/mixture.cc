@@ -33,6 +33,7 @@
 #include <distributions/models/dd.hpp>
 #include <distributions/models/dpd.hpp>
 #include <distributions/models/gp.hpp>
+#include <distributions/models/bnb.hpp>
 #include <distributions/models/nich.hpp>
 #include <distributions/timers.hpp>
 
@@ -168,6 +169,7 @@ int main()
     speedtests<dirichlet_discrete::Mixture<4>>();
     speedtests<dirichlet_process_discrete::Mixture>();
     speedtests<gamma_poisson::Mixture>();
+    speedtests<beta_negative_binomial::Mixture>();
     speedtests<normal_inverse_chi_sq::Mixture>();
 
     return 0;
