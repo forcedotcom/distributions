@@ -132,11 +132,8 @@ inline float fast_lgamma (float y)
     //
     // see loggamma.py for the code used to generate the coefficient table
 
-    DIST_ASSERT(y <= 4294967295.0,
-        "loggamma approx : value " << y << " outside of domain");
-
-    if (y < 2.5) {
-        return lgamma(y);
+    if (DIST_UNLIKELY(y < 2.5f or 4294967295.0f <= y)) {
+        return lgammaf(y);
     }
 
     // adapted from:
@@ -189,7 +186,7 @@ inline float fast_lgamma (float y)
 
 inline float log_beta (float alpha, float beta)
 {
-    if (alpha <= 0.f or beta <= 0.f) {
+    if (DIST_UNLIKELY(alpha <= 0.f or beta <= 0.f)) {
         return - std::numeric_limits<float>::infinity();
     } else {
         return lgamma(alpha) + lgamma(beta) - lgamma(alpha + beta);
@@ -198,7 +195,7 @@ inline float log_beta (float alpha, float beta)
 
 inline float fast_log_beta (float alpha, float beta)
 {
-    if (alpha <= 0.f or beta <= 0.f) {
+    if (DIST_UNLIKELY(alpha <= 0.f or beta <= 0.f)) {
         return - std::numeric_limits<float>::infinity();
     } else {
         return fast_lgamma(alpha)
@@ -269,11 +266,7 @@ inline float fast_lgamma_nu (float nu)
 
     // see loggamma.py:lstudent for coeff gen
 
-    DIST_ASSERT(
-        nu <= 4294967295.0f,
-        "loggamma nu approx : value " << nu << " outside of domain");
-
-    if (nu < 0.0625f) {
+    if (DIST_UNLIKELY(nu < 0.0625f or 4294967295.0f <= nu)) {
         return lgammaf(nu * 0.5f + 0.5f) - lgammaf(nu * 0.5f);
     }
 
