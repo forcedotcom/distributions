@@ -11,7 +11,7 @@ ifeq ($(uname),Darwin)
 endif
 
 cmake_args=
-nose_env:=NOSE_PROCESSES=$(cpu_count) NOSE_PROCESS_TIEMOUT=240
+nose_env:=NOSE_PROCESSES=$(cpu_count) NOSE_PROCESS_TIMEOUT=240
 ifdef VIRTUAL_ENV
 	cmake_args=-DCMAKE_INSTALL_PREFIX=$(VIRTUAL_ENV)
 	library_path=$(LIBRARY_PATH):$(VIRTUAL_ENV)/lib/
