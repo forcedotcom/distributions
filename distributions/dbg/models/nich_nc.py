@@ -71,7 +71,12 @@ class Shared(SharedIoMixin):
         self.nu = None
 
     def plus_group(self, group):
-        raise
+        post = self.__class__()
+        post.mu = self.mu
+        post.kappa = self.kappa
+        post.nu = self.nu
+        post.sigmasq = self.sigmasq
+        return post
 
     def load(self, raw):
         self.mu = float(raw['mu'])
@@ -162,11 +167,10 @@ def sampler_create(shared, group=None):
 
     \cite{murphy2007conjugate}, Eqs. 156 & 167
     """
-    post = shared if group is None else shared.plus_group(group)
-    # Sample from the inverse-chi^2 using the transform from the chi^2
-    sigmasq_star = post.nu * post.sigmasq / sample_chi2(post.nu)
-    mu_star = sample_normal(post.mu, sqrt(sigmasq_star / post.kappa))
-    return (mu_star, sigmasq_star)
+    if group is None:
+        group = Group()
+        group.sample_params(shared)
+    return (group.mu, group.sigmasq)
 
 
 def sampler_eval(shared, sampler):

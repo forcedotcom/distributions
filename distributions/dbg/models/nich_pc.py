@@ -42,6 +42,7 @@ from distributions.mixins import GroupIoMixin, SharedIoMixin
 
 ROOT_2_PI = sqrt(2. * pi)
 
+
 # FIXME how does this relate to distributions.dbg.random.score_student_t
 def score_student_t(x, nu, mu, sigmasq):
     """
@@ -158,7 +159,7 @@ class Group(GroupIoMixin):
             self.count_times_variance -= delta * (value - self.mean)
 
     def merge(self, shared, source):
-        pass # what to do with params?
+        pass  # what to do with params?
 
     def sample_params(self, shared):
         self.sigmasq = shared.nu * shared.sigmasq / sample_chi2(shared.nu)
@@ -187,7 +188,8 @@ class Group(GroupIoMixin):
         denom = self.sigmasq * post.kappa / shared.kappa
         sumsq = self.count * (self.mean ** 2) - self.count_times_variance
 
-        score = log(sigma / (((ROOT_2_PI * sigma) ** self.count) * sqrt(denom)))
+        score = log(
+            sigma / (((ROOT_2_PI * sigma) ** self.count) * sqrt(denom)))
         score -= (sumsq + shared.mu * shared.kappa) / (2. * self.sigmasq)
         score += post.mu ** 2 * (denom / 2.)
         return score
@@ -214,11 +216,13 @@ def sampler_create(shared, group=None):
 
     \cite{murphy2007conjugate}, Eqs. 156 & 167
     """
-    post = shared if group is None else shared.plus_group(group)
-    # Sample from the inverse-chi^2 using the transform from the chi^2
-    sigmasq_star = post.nu * post.sigmasq / sample_chi2(post.nu)
-    mu_star = sample_normal(post.mu, sqrt(sigmasq_star / post.kappa))
-    return (mu_star, sigmasq_star)
+    if group is None:
+        group = Group()
+        group.init(shared)
+        group.sample_params(shared)
+    post = shared.plus_group(group)
+    mu = sample_normal(post.mu, group.sigmasq / post.kappa)
+    return (mu, group.sigmasq)
 
 
 def sampler_eval(shared, sampler):
