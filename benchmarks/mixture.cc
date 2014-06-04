@@ -151,7 +151,7 @@ template<class Mixture>
 void speedtests ()
 {
     std::cout <<
-        typeid(typename Mixture::Shared).name() << '\n' <<
+        demangle(typeid(typename Mixture::Shared).name()) << '\n' <<
         "Groups" << '\t' <<
         "Scorers" << '\t' <<
         "Mixture (cells/us)" << '\n';

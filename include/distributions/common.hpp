@@ -28,6 +28,11 @@
 #pragma once
 
 #ifdef __GNUG__
+#include <cxxabi.h>
+#include <memory>
+#endif // __GNUG__
+
+#ifdef __GNUG__
 #  define DIST_LIKELY(x) __builtin_expect(bool(x), true)
 #  define DIST_UNLIKELY(x) __builtin_expect(bool(x), false)
 #else // __GNUG__
@@ -84,6 +89,24 @@
 
 namespace distributions
 {
+
+// adapted from http://stackoverflow.com/questions/281818
+#ifdef __GNUG__
+inline std::string demangle (const char * name)
+{
+    int status = 0;
+    std::unique_ptr<char, void(*)(void*)> result {
+        abi::__cxa_demangle(name, NULL, NULL, &status),
+        std::free
+    };
+    return (status == 0) ? result.get() : name;
+}
+#else // __GNUG__
+inline std::string demangle (const char * name)
+{
+    return name;
+}
+#endif // __GNUG__
 
 enum { SYNCHRONIZE_ENTROPY_FOR_UNIT_TESTING = 1 };
 
