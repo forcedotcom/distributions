@@ -95,6 +95,12 @@ def sample_normal(mu, sigmasq):
     return norm.rvs(mu, sigmasq)
 
 
+def score_normal(x, mu, sigmasq):
+    score = -(x - mu) ** 2 / (2. * sigmasq)
+    score += log(1. / sqrt(2. * pi * sigmasq))
+    return score
+
+
 def sample_chi2(nu):
     return chi2.rvs(nu)
 

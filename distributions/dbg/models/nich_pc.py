@@ -40,6 +40,8 @@ from distributions.dbg.random import sample_chi2, sample_normal, score_normal
 from distributions.mixins import GroupIoMixin, SharedIoMixin
 
 
+ROOT_2_PI = sqrt(2. * pi)
+
 # FIXME how does this relate to distributions.dbg.random.score_student_t
 def score_student_t(x, nu, mu, sigmasq):
     """
@@ -71,7 +73,16 @@ class Shared(SharedIoMixin):
         self.nu = None
 
     def plus_group(self, group):
-        raise
+        total = group.mean * group.count
+        kappa_n = self.kappa + group.count
+        mu_n = (self.kappa * self.mu + total) / kappa_n
+
+        post = self.__class__()
+        post.mu = mu_n
+        post.kappa = kappa_n
+        post.nu = self.nu
+        post.sigmasq = self.sigmasq
+        return post
 
     def load(self, raw):
         self.mu = float(raw['mu'])
@@ -103,42 +114,83 @@ class Shared(SharedIoMixin):
 
 class Group(GroupIoMixin):
     def __init__(self):
+        # vals + params for nonconj
         self.values = None
-        self.mu = None
         self.sigmasq = None
+
+        # ss for conj
+        self.count = None
+        self.mean = None
+        self.count_times_variance = None  # = count * variance
 
     def init(self, shared):
         self.values = []
-        self.mu = 0.
         self.sigmasq = 1.
+
+        self.count = 0
+        self.mean = 0.
+        self.count_times_variance = 0.
 
     def add_value(self, shared, value):
         self.values.append(value)
 
+        self.count += 1
+        delta = value - self.mean
+        self.mean += delta / self.count
+        if self.count <= 1:
+            self.count_times_variance = 0.
+        else:
+            self.count_times_variance -= delta * (value - self.mean)
+
     def remove_value(self, shared, value):
         self.values.remove(value)
 
+        total = self.mean * self.count
+        delta = value - self.mean
+        self.count -= 1
+        if self.count == 0:
+            self.mean = 0.
+        else:
+            self.mean = (total - value) / self.count
+        if self.count <= 1:
+            self.count_times_variance = 0.
+        else:
+            self.count_times_variance -= delta * (value - self.mean)
+
     def merge(self, shared, source):
-        self.values.extend(source.values)
+        raise # what to do with params?
 
     def sample_params(self, shared):
         self.sigmasq = shared.nu * shared.sigmasq / sample_chi2(shared.nu)
-        self.mu = sample_normal(shared.mu, sqrt(self.sigmasq / shared.kappa))
 
     def score_params(self, shared):
-        # proportional to Murphy 125
         iss = -1. / (2. * self.sigmasq)
-        n_score = iss * shared.kappa * (self.mu - shared.mu) ** 2
-        n_score += log(1. / sqrt(self.sigmasq))
         ix_score = iss * shared.nu * shared.sigmasq
         ix_score += log(self.sigmasq ** (1. + shared.nu / 2.))
-        return n_score + ix_score
+        return ix_score
 
     def score_value(self, shared, value):
-        return score_normal(value, self.mu, self.sigmasq)
+        '''
+        \cite{murphy2007conjugate}, Eq. 36
+        '''
+        post = shared.plus_group(self)
+        return score_normal(
+            value, post.mu, self.sigmasq / post.kappa + self.sigmasq)
 
     def score_data(self, shared):
-        return sum(self.score_value(shared, value) for value in self.values)
+        '''
+        \cite{murphy2007conjugate}, Eqs. 53-55
+        '''
+        post = shared.plus_group(self)
+
+        sigma = sqrt(self.sigmasq)
+        denom = self.sigmasq * post.kappa / shared.kappa
+        sumsq = self.count * (self.mean ** 2) - self.count_times_variance
+
+        score = log(sigma / (((ROOT_2_PI * sigma) ** self.count) * sqrt(denom)))
+        score -= (sumsq + shared.mu * shared.kappa) / (2. * self.sigmasq)
+        score += post.mu ** 2 * (denom / 2.)
+        return score
 
     def score_group(self, shared):
         return self.score_data(shared) + self.score_params(shared)
