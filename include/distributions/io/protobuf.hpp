@@ -32,8 +32,9 @@
 #include <distributions/models/bb.hpp>
 #include <distributions/models/dd.hpp>
 #include <distributions/models/dpd.hpp>
-#include <distributions/models/nich.hpp>
 #include <distributions/models/gp.hpp>
+#include <distributions/models/bnb.hpp>
+#include <distributions/models/nich.hpp>
 #include <distributions/io/schema.pb.h>
 
 namespace distributions
@@ -189,6 +190,24 @@ inline void shared_dump (
 }
 
 inline void shared_load (
+        beta_negative_binomial::Shared & shared,
+        const protobuf::BetaNegativeBinomial_Shared & message)
+{
+    shared.alpha = message.alpha();
+    shared.beta = message.beta();
+    shared.r = message.r();
+}
+
+inline void shared_dump (
+        const beta_negative_binomial::Shared & shared,
+        protobuf::BetaNegativeBinomial_Shared & message)
+{
+    message.set_alpha(shared.alpha);
+    message.set_beta(shared.beta);
+    message.set_r(shared.r);
+}
+
+inline void shared_load (
         normal_inverse_chi_sq::Shared & shared,
         const protobuf::NormalInverseChiSq_Shared & message)
 {
@@ -306,6 +325,24 @@ inline void group_dump (
 }
 
 inline void group_load (
+        const beta_negative_binomial::Shared &,
+        beta_negative_binomial::Group & group,
+        const protobuf::BetaNegativeBinomial::Group & message)
+{
+    group.count = message.count();
+    group.sum = message.sum();
+}
+
+inline void group_dump (
+        const beta_negative_binomial::Shared &,
+        const beta_negative_binomial::Group & group,
+        protobuf::BetaNegativeBinomial::Group & message)
+{
+    message.set_count(group.count);
+    message.set_sum(group.sum);
+}
+
+inline void group_load (
         const normal_inverse_chi_sq::Shared &,
         normal_inverse_chi_sq::Group & group,
         const protobuf::NormalInverseChiSq::Group & message)
@@ -387,6 +424,27 @@ inline void for_each_gridpoint (
 
     for (auto inv_beta : grid.inv_beta()) {
         visitor.add().inv_beta = inv_beta;
+    }
+    visitor.done();
+}
+
+template<class Visitor>
+inline void for_each_gridpoint (
+        const protobuf::BetaNegativeBinomial_GridPrior & grid,
+        Visitor & visitor)
+{
+    for (auto alpha : grid.alpha()) {
+        visitor.add().alpha = alpha;
+    }
+    visitor.done();
+
+    for (auto beta : grid.beta()) {
+        visitor.add().beta = beta;
+    }
+    visitor.done();
+
+    for (auto r : grid.r()) {
+        visitor.add().r = r;
     }
     visitor.done();
 }
