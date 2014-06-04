@@ -301,7 +301,7 @@ private:
 inline Shared Shared::plus_group (const Group & group) const
 {
     Shared post;
-    post.alpha = alpha + r * group.count;
+    post.alpha = alpha + float(r) * group.count;
     post.beta = beta + group.sum;
     post.r = r;
     return post;
