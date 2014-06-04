@@ -75,6 +75,18 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* GammaPoisson_Group_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   GammaPoisson_Group_reflection_ = NULL;
+const ::google::protobuf::Descriptor* BetaNegativeBinomial_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  BetaNegativeBinomial_reflection_ = NULL;
+const ::google::protobuf::Descriptor* BetaNegativeBinomial_Shared_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  BetaNegativeBinomial_Shared_reflection_ = NULL;
+const ::google::protobuf::Descriptor* BetaNegativeBinomial_GridPrior_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  BetaNegativeBinomial_GridPrior_reflection_ = NULL;
+const ::google::protobuf::Descriptor* BetaNegativeBinomial_Group_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  BetaNegativeBinomial_Group_reflection_ = NULL;
 const ::google::protobuf::Descriptor* NormalInverseChiSq_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   NormalInverseChiSq_reflection_ = NULL;
@@ -391,7 +403,71 @@ void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(GammaPoisson_Group));
-  NormalInverseChiSq_descriptor_ = file->message_type(5);
+  BetaNegativeBinomial_descriptor_ = file->message_type(5);
+  static const int BetaNegativeBinomial_offsets_[1] = {
+  };
+  BetaNegativeBinomial_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      BetaNegativeBinomial_descriptor_,
+      BetaNegativeBinomial::default_instance_,
+      BetaNegativeBinomial_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(BetaNegativeBinomial));
+  BetaNegativeBinomial_Shared_descriptor_ = BetaNegativeBinomial_descriptor_->nested_type(0);
+  static const int BetaNegativeBinomial_Shared_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_Shared, alpha_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_Shared, beta_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_Shared, r_),
+  };
+  BetaNegativeBinomial_Shared_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      BetaNegativeBinomial_Shared_descriptor_,
+      BetaNegativeBinomial_Shared::default_instance_,
+      BetaNegativeBinomial_Shared_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_Shared, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_Shared, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(BetaNegativeBinomial_Shared));
+  BetaNegativeBinomial_GridPrior_descriptor_ = BetaNegativeBinomial_descriptor_->nested_type(1);
+  static const int BetaNegativeBinomial_GridPrior_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_GridPrior, alpha_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_GridPrior, beta_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_GridPrior, r_),
+  };
+  BetaNegativeBinomial_GridPrior_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      BetaNegativeBinomial_GridPrior_descriptor_,
+      BetaNegativeBinomial_GridPrior::default_instance_,
+      BetaNegativeBinomial_GridPrior_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_GridPrior, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_GridPrior, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(BetaNegativeBinomial_GridPrior));
+  BetaNegativeBinomial_Group_descriptor_ = BetaNegativeBinomial_descriptor_->nested_type(2);
+  static const int BetaNegativeBinomial_Group_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_Group, count_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_Group, sum_),
+  };
+  BetaNegativeBinomial_Group_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      BetaNegativeBinomial_Group_descriptor_,
+      BetaNegativeBinomial_Group::default_instance_,
+      BetaNegativeBinomial_Group_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_Group, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_Group, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(BetaNegativeBinomial_Group));
+  NormalInverseChiSq_descriptor_ = file->message_type(6);
   static const int NormalInverseChiSq_offsets_[1] = {
   };
   NormalInverseChiSq_reflection_ =
@@ -509,6 +585,14 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     GammaPoisson_Group_descriptor_, &GammaPoisson_Group::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    BetaNegativeBinomial_descriptor_, &BetaNegativeBinomial::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    BetaNegativeBinomial_Shared_descriptor_, &BetaNegativeBinomial_Shared::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    BetaNegativeBinomial_GridPrior_descriptor_, &BetaNegativeBinomial_GridPrior::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    BetaNegativeBinomial_Group_descriptor_, &BetaNegativeBinomial_Group::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     NormalInverseChiSq_descriptor_, &NormalInverseChiSq::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     NormalInverseChiSq_Shared_descriptor_, &NormalInverseChiSq_Shared::default_instance());
@@ -559,6 +643,14 @@ void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto() {
   delete GammaPoisson_GridPrior_reflection_;
   delete GammaPoisson_Group::default_instance_;
   delete GammaPoisson_Group_reflection_;
+  delete BetaNegativeBinomial::default_instance_;
+  delete BetaNegativeBinomial_reflection_;
+  delete BetaNegativeBinomial_Shared::default_instance_;
+  delete BetaNegativeBinomial_Shared_reflection_;
+  delete BetaNegativeBinomial_GridPrior::default_instance_;
+  delete BetaNegativeBinomial_GridPrior_reflection_;
+  delete BetaNegativeBinomial_Group::default_instance_;
+  delete BetaNegativeBinomial_Group_reflection_;
   delete NormalInverseChiSq::default_instance_;
   delete NormalInverseChiSq_reflection_;
   delete NormalInverseChiSq_Shared::default_instance_;
@@ -597,12 +689,16 @@ void protobuf_AddDesc_distributions_2fio_2fschema_2eproto() {
     "\001 \002(\002\022\020\n\010inv_beta\030\002 \002(\002\032,\n\tGridPrior\022\r\n\005"
     "alpha\030\001 \003(\002\022\020\n\010inv_beta\030\002 \003(\002\0325\n\005Group\022\r"
     "\n\005count\030\001 \002(\004\022\013\n\003sum\030\002 \002(\004\022\020\n\010log_prod\030\003"
-    " \002(\002\"\337\001\n\022NormalInverseChiSq\032@\n\006Shared\022\n\n"
-    "\002mu\030\001 \002(\002\022\r\n\005kappa\030\002 \002(\002\022\017\n\007sigmasq\030\003 \002("
-    "\002\022\n\n\002nu\030\004 \002(\002\032C\n\tGridPrior\022\n\n\002mu\030\001 \003(\002\022\r"
-    "\n\005kappa\030\002 \003(\002\022\017\n\007sigmasq\030\003 \003(\002\022\n\n\002nu\030\004 \003"
-    "(\002\032B\n\005Group\022\r\n\005count\030\001 \002(\004\022\014\n\004mean\030\002 \002(\002"
-    "\022\034\n\024count_times_variance\030\003 \002(\002", 1070);
+    " \002(\002\"\242\001\n\024BetaNegativeBinomial\0320\n\006Shared\022"
+    "\r\n\005alpha\030\001 \002(\002\022\014\n\004beta\030\002 \002(\002\022\t\n\001r\030\003 \002(\004\032"
+    "3\n\tGridPrior\022\r\n\005alpha\030\001 \003(\002\022\014\n\004beta\030\002 \003("
+    "\002\022\t\n\001r\030\003 \003(\004\032#\n\005Group\022\r\n\005count\030\001 \002(\004\022\013\n\003"
+    "sum\030\002 \002(\004\"\337\001\n\022NormalInverseChiSq\032@\n\006Shar"
+    "ed\022\n\n\002mu\030\001 \002(\002\022\r\n\005kappa\030\002 \002(\002\022\017\n\007sigmasq"
+    "\030\003 \002(\002\022\n\n\002nu\030\004 \002(\002\032C\n\tGridPrior\022\n\n\002mu\030\001 "
+    "\003(\002\022\r\n\005kappa\030\002 \003(\002\022\017\n\007sigmasq\030\003 \003(\002\022\n\n\002n"
+    "u\030\004 \003(\002\032B\n\005Group\022\r\n\005count\030\001 \002(\004\022\014\n\004mean\030"
+    "\002 \002(\002\022\034\n\024count_times_variance\030\003 \002(\002", 1235);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "distributions/io/schema.proto", &protobuf_RegisterTypes);
   Clustering::default_instance_ = new Clustering();
@@ -624,6 +720,10 @@ void protobuf_AddDesc_distributions_2fio_2fschema_2eproto() {
   GammaPoisson_Shared::default_instance_ = new GammaPoisson_Shared();
   GammaPoisson_GridPrior::default_instance_ = new GammaPoisson_GridPrior();
   GammaPoisson_Group::default_instance_ = new GammaPoisson_Group();
+  BetaNegativeBinomial::default_instance_ = new BetaNegativeBinomial();
+  BetaNegativeBinomial_Shared::default_instance_ = new BetaNegativeBinomial_Shared();
+  BetaNegativeBinomial_GridPrior::default_instance_ = new BetaNegativeBinomial_GridPrior();
+  BetaNegativeBinomial_Group::default_instance_ = new BetaNegativeBinomial_Group();
   NormalInverseChiSq::default_instance_ = new NormalInverseChiSq();
   NormalInverseChiSq_Shared::default_instance_ = new NormalInverseChiSq_Shared();
   NormalInverseChiSq_GridPrior::default_instance_ = new NormalInverseChiSq_GridPrior();
@@ -647,6 +747,10 @@ void protobuf_AddDesc_distributions_2fio_2fschema_2eproto() {
   GammaPoisson_Shared::default_instance_->InitAsDefaultInstance();
   GammaPoisson_GridPrior::default_instance_->InitAsDefaultInstance();
   GammaPoisson_Group::default_instance_->InitAsDefaultInstance();
+  BetaNegativeBinomial::default_instance_->InitAsDefaultInstance();
+  BetaNegativeBinomial_Shared::default_instance_->InitAsDefaultInstance();
+  BetaNegativeBinomial_GridPrior::default_instance_->InitAsDefaultInstance();
+  BetaNegativeBinomial_Group::default_instance_->InitAsDefaultInstance();
   NormalInverseChiSq::default_instance_->InitAsDefaultInstance();
   NormalInverseChiSq_Shared::default_instance_->InitAsDefaultInstance();
   NormalInverseChiSq_GridPrior::default_instance_->InitAsDefaultInstance();
@@ -4942,6 +5046,993 @@ void GammaPoisson::Swap(GammaPoisson* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = GammaPoisson_descriptor_;
   metadata.reflection = GammaPoisson_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int BetaNegativeBinomial_Shared::kAlphaFieldNumber;
+const int BetaNegativeBinomial_Shared::kBetaFieldNumber;
+const int BetaNegativeBinomial_Shared::kRFieldNumber;
+#endif  // !_MSC_VER
+
+BetaNegativeBinomial_Shared::BetaNegativeBinomial_Shared()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void BetaNegativeBinomial_Shared::InitAsDefaultInstance() {
+}
+
+BetaNegativeBinomial_Shared::BetaNegativeBinomial_Shared(const BetaNegativeBinomial_Shared& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void BetaNegativeBinomial_Shared::SharedCtor() {
+  _cached_size_ = 0;
+  alpha_ = 0;
+  beta_ = 0;
+  r_ = GOOGLE_ULONGLONG(0);
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+BetaNegativeBinomial_Shared::~BetaNegativeBinomial_Shared() {
+  SharedDtor();
+}
+
+void BetaNegativeBinomial_Shared::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void BetaNegativeBinomial_Shared::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* BetaNegativeBinomial_Shared::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return BetaNegativeBinomial_Shared_descriptor_;
+}
+
+const BetaNegativeBinomial_Shared& BetaNegativeBinomial_Shared::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fio_2fschema_2eproto();  return *default_instance_;
+}
+
+BetaNegativeBinomial_Shared* BetaNegativeBinomial_Shared::default_instance_ = NULL;
+
+BetaNegativeBinomial_Shared* BetaNegativeBinomial_Shared::New() const {
+  return new BetaNegativeBinomial_Shared;
+}
+
+void BetaNegativeBinomial_Shared::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    alpha_ = 0;
+    beta_ = 0;
+    r_ = GOOGLE_ULONGLONG(0);
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool BetaNegativeBinomial_Shared::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required float alpha = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &alpha_)));
+          set_has_alpha();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(21)) goto parse_beta;
+        break;
+      }
+      
+      // required float beta = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_beta:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &beta_)));
+          set_has_beta();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(24)) goto parse_r;
+        break;
+      }
+      
+      // required uint64 r = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_r:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &r_)));
+          set_has_r();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void BetaNegativeBinomial_Shared::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required float alpha = 1;
+  if (has_alpha()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(1, this->alpha(), output);
+  }
+  
+  // required float beta = 2;
+  if (has_beta()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->beta(), output);
+  }
+  
+  // required uint64 r = 3;
+  if (has_r()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(3, this->r(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* BetaNegativeBinomial_Shared::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required float alpha = 1;
+  if (has_alpha()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(1, this->alpha(), target);
+  }
+  
+  // required float beta = 2;
+  if (has_beta()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->beta(), target);
+  }
+  
+  // required uint64 r = 3;
+  if (has_r()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(3, this->r(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int BetaNegativeBinomial_Shared::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required float alpha = 1;
+    if (has_alpha()) {
+      total_size += 1 + 4;
+    }
+    
+    // required float beta = 2;
+    if (has_beta()) {
+      total_size += 1 + 4;
+    }
+    
+    // required uint64 r = 3;
+    if (has_r()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt64Size(
+          this->r());
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void BetaNegativeBinomial_Shared::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const BetaNegativeBinomial_Shared* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const BetaNegativeBinomial_Shared*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void BetaNegativeBinomial_Shared::MergeFrom(const BetaNegativeBinomial_Shared& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_alpha()) {
+      set_alpha(from.alpha());
+    }
+    if (from.has_beta()) {
+      set_beta(from.beta());
+    }
+    if (from.has_r()) {
+      set_r(from.r());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void BetaNegativeBinomial_Shared::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void BetaNegativeBinomial_Shared::CopyFrom(const BetaNegativeBinomial_Shared& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool BetaNegativeBinomial_Shared::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000007) != 0x00000007) return false;
+  
+  return true;
+}
+
+void BetaNegativeBinomial_Shared::Swap(BetaNegativeBinomial_Shared* other) {
+  if (other != this) {
+    std::swap(alpha_, other->alpha_);
+    std::swap(beta_, other->beta_);
+    std::swap(r_, other->r_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata BetaNegativeBinomial_Shared::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = BetaNegativeBinomial_Shared_descriptor_;
+  metadata.reflection = BetaNegativeBinomial_Shared_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#ifndef _MSC_VER
+const int BetaNegativeBinomial_GridPrior::kAlphaFieldNumber;
+const int BetaNegativeBinomial_GridPrior::kBetaFieldNumber;
+const int BetaNegativeBinomial_GridPrior::kRFieldNumber;
+#endif  // !_MSC_VER
+
+BetaNegativeBinomial_GridPrior::BetaNegativeBinomial_GridPrior()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void BetaNegativeBinomial_GridPrior::InitAsDefaultInstance() {
+}
+
+BetaNegativeBinomial_GridPrior::BetaNegativeBinomial_GridPrior(const BetaNegativeBinomial_GridPrior& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void BetaNegativeBinomial_GridPrior::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+BetaNegativeBinomial_GridPrior::~BetaNegativeBinomial_GridPrior() {
+  SharedDtor();
+}
+
+void BetaNegativeBinomial_GridPrior::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void BetaNegativeBinomial_GridPrior::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* BetaNegativeBinomial_GridPrior::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return BetaNegativeBinomial_GridPrior_descriptor_;
+}
+
+const BetaNegativeBinomial_GridPrior& BetaNegativeBinomial_GridPrior::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fio_2fschema_2eproto();  return *default_instance_;
+}
+
+BetaNegativeBinomial_GridPrior* BetaNegativeBinomial_GridPrior::default_instance_ = NULL;
+
+BetaNegativeBinomial_GridPrior* BetaNegativeBinomial_GridPrior::New() const {
+  return new BetaNegativeBinomial_GridPrior;
+}
+
+void BetaNegativeBinomial_GridPrior::Clear() {
+  alpha_.Clear();
+  beta_.Clear();
+  r_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool BetaNegativeBinomial_GridPrior::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated float alpha = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_alpha:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 1, 13, input, this->mutable_alpha())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, this->mutable_alpha())));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(13)) goto parse_alpha;
+        if (input->ExpectTag(21)) goto parse_beta;
+        break;
+      }
+      
+      // repeated float beta = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_beta:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 1, 21, input, this->mutable_beta())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, this->mutable_beta())));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(21)) goto parse_beta;
+        if (input->ExpectTag(24)) goto parse_r;
+        break;
+      }
+      
+      // repeated uint64 r = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_r:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 1, 24, input, this->mutable_r())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, this->mutable_r())));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(24)) goto parse_r;
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void BetaNegativeBinomial_GridPrior::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // repeated float alpha = 1;
+  for (int i = 0; i < this->alpha_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(
+      1, this->alpha(i), output);
+  }
+  
+  // repeated float beta = 2;
+  for (int i = 0; i < this->beta_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(
+      2, this->beta(i), output);
+  }
+  
+  // repeated uint64 r = 3;
+  for (int i = 0; i < this->r_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(
+      3, this->r(i), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* BetaNegativeBinomial_GridPrior::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // repeated float alpha = 1;
+  for (int i = 0; i < this->alpha_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteFloatToArray(1, this->alpha(i), target);
+  }
+  
+  // repeated float beta = 2;
+  for (int i = 0; i < this->beta_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteFloatToArray(2, this->beta(i), target);
+  }
+  
+  // repeated uint64 r = 3;
+  for (int i = 0; i < this->r_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteUInt64ToArray(3, this->r(i), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int BetaNegativeBinomial_GridPrior::ByteSize() const {
+  int total_size = 0;
+  
+  // repeated float alpha = 1;
+  {
+    int data_size = 0;
+    data_size = 4 * this->alpha_size();
+    total_size += 1 * this->alpha_size() + data_size;
+  }
+  
+  // repeated float beta = 2;
+  {
+    int data_size = 0;
+    data_size = 4 * this->beta_size();
+    total_size += 1 * this->beta_size() + data_size;
+  }
+  
+  // repeated uint64 r = 3;
+  {
+    int data_size = 0;
+    for (int i = 0; i < this->r_size(); i++) {
+      data_size += ::google::protobuf::internal::WireFormatLite::
+        UInt64Size(this->r(i));
+    }
+    total_size += 1 * this->r_size() + data_size;
+  }
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void BetaNegativeBinomial_GridPrior::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const BetaNegativeBinomial_GridPrior* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const BetaNegativeBinomial_GridPrior*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void BetaNegativeBinomial_GridPrior::MergeFrom(const BetaNegativeBinomial_GridPrior& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  alpha_.MergeFrom(from.alpha_);
+  beta_.MergeFrom(from.beta_);
+  r_.MergeFrom(from.r_);
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void BetaNegativeBinomial_GridPrior::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void BetaNegativeBinomial_GridPrior::CopyFrom(const BetaNegativeBinomial_GridPrior& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool BetaNegativeBinomial_GridPrior::IsInitialized() const {
+  
+  return true;
+}
+
+void BetaNegativeBinomial_GridPrior::Swap(BetaNegativeBinomial_GridPrior* other) {
+  if (other != this) {
+    alpha_.Swap(&other->alpha_);
+    beta_.Swap(&other->beta_);
+    r_.Swap(&other->r_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata BetaNegativeBinomial_GridPrior::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = BetaNegativeBinomial_GridPrior_descriptor_;
+  metadata.reflection = BetaNegativeBinomial_GridPrior_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#ifndef _MSC_VER
+const int BetaNegativeBinomial_Group::kCountFieldNumber;
+const int BetaNegativeBinomial_Group::kSumFieldNumber;
+#endif  // !_MSC_VER
+
+BetaNegativeBinomial_Group::BetaNegativeBinomial_Group()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void BetaNegativeBinomial_Group::InitAsDefaultInstance() {
+}
+
+BetaNegativeBinomial_Group::BetaNegativeBinomial_Group(const BetaNegativeBinomial_Group& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void BetaNegativeBinomial_Group::SharedCtor() {
+  _cached_size_ = 0;
+  count_ = GOOGLE_ULONGLONG(0);
+  sum_ = GOOGLE_ULONGLONG(0);
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+BetaNegativeBinomial_Group::~BetaNegativeBinomial_Group() {
+  SharedDtor();
+}
+
+void BetaNegativeBinomial_Group::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void BetaNegativeBinomial_Group::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* BetaNegativeBinomial_Group::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return BetaNegativeBinomial_Group_descriptor_;
+}
+
+const BetaNegativeBinomial_Group& BetaNegativeBinomial_Group::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fio_2fschema_2eproto();  return *default_instance_;
+}
+
+BetaNegativeBinomial_Group* BetaNegativeBinomial_Group::default_instance_ = NULL;
+
+BetaNegativeBinomial_Group* BetaNegativeBinomial_Group::New() const {
+  return new BetaNegativeBinomial_Group;
+}
+
+void BetaNegativeBinomial_Group::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    count_ = GOOGLE_ULONGLONG(0);
+    sum_ = GOOGLE_ULONGLONG(0);
+  }
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool BetaNegativeBinomial_Group::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required uint64 count = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &count_)));
+          set_has_count();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(16)) goto parse_sum;
+        break;
+      }
+      
+      // required uint64 sum = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_sum:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, &sum_)));
+          set_has_sum();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void BetaNegativeBinomial_Group::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required uint64 count = 1;
+  if (has_count()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(1, this->count(), output);
+  }
+  
+  // required uint64 sum = 2;
+  if (has_sum()) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(2, this->sum(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* BetaNegativeBinomial_Group::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required uint64 count = 1;
+  if (has_count()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(1, this->count(), target);
+  }
+  
+  // required uint64 sum = 2;
+  if (has_sum()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteUInt64ToArray(2, this->sum(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int BetaNegativeBinomial_Group::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required uint64 count = 1;
+    if (has_count()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt64Size(
+          this->count());
+    }
+    
+    // required uint64 sum = 2;
+    if (has_sum()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::UInt64Size(
+          this->sum());
+    }
+    
+  }
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void BetaNegativeBinomial_Group::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const BetaNegativeBinomial_Group* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const BetaNegativeBinomial_Group*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void BetaNegativeBinomial_Group::MergeFrom(const BetaNegativeBinomial_Group& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_count()) {
+      set_count(from.count());
+    }
+    if (from.has_sum()) {
+      set_sum(from.sum());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void BetaNegativeBinomial_Group::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void BetaNegativeBinomial_Group::CopyFrom(const BetaNegativeBinomial_Group& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool BetaNegativeBinomial_Group::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000003) != 0x00000003) return false;
+  
+  return true;
+}
+
+void BetaNegativeBinomial_Group::Swap(BetaNegativeBinomial_Group* other) {
+  if (other != this) {
+    std::swap(count_, other->count_);
+    std::swap(sum_, other->sum_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata BetaNegativeBinomial_Group::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = BetaNegativeBinomial_Group_descriptor_;
+  metadata.reflection = BetaNegativeBinomial_Group_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#ifndef _MSC_VER
+#endif  // !_MSC_VER
+
+BetaNegativeBinomial::BetaNegativeBinomial()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void BetaNegativeBinomial::InitAsDefaultInstance() {
+}
+
+BetaNegativeBinomial::BetaNegativeBinomial(const BetaNegativeBinomial& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void BetaNegativeBinomial::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+BetaNegativeBinomial::~BetaNegativeBinomial() {
+  SharedDtor();
+}
+
+void BetaNegativeBinomial::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void BetaNegativeBinomial::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* BetaNegativeBinomial::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return BetaNegativeBinomial_descriptor_;
+}
+
+const BetaNegativeBinomial& BetaNegativeBinomial::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fio_2fschema_2eproto();  return *default_instance_;
+}
+
+BetaNegativeBinomial* BetaNegativeBinomial::default_instance_ = NULL;
+
+BetaNegativeBinomial* BetaNegativeBinomial::New() const {
+  return new BetaNegativeBinomial;
+}
+
+void BetaNegativeBinomial::Clear() {
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool BetaNegativeBinomial::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+        ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+      return true;
+    }
+    DO_(::google::protobuf::internal::WireFormat::SkipField(
+          input, tag, mutable_unknown_fields()));
+  }
+  return true;
+#undef DO_
+}
+
+void BetaNegativeBinomial::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* BetaNegativeBinomial::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int BetaNegativeBinomial::ByteSize() const {
+  int total_size = 0;
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void BetaNegativeBinomial::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const BetaNegativeBinomial* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const BetaNegativeBinomial*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void BetaNegativeBinomial::MergeFrom(const BetaNegativeBinomial& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void BetaNegativeBinomial::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void BetaNegativeBinomial::CopyFrom(const BetaNegativeBinomial& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool BetaNegativeBinomial::IsInitialized() const {
+  
+  return true;
+}
+
+void BetaNegativeBinomial::Swap(BetaNegativeBinomial* other) {
+  if (other != this) {
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata BetaNegativeBinomial::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = BetaNegativeBinomial_descriptor_;
+  metadata.reflection = BetaNegativeBinomial_reflection_;
   return metadata;
 }
 

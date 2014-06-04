@@ -52,6 +52,10 @@ class GammaPoisson;
 class GammaPoisson_Shared;
 class GammaPoisson_GridPrior;
 class GammaPoisson_Group;
+class BetaNegativeBinomial;
+class BetaNegativeBinomial_Shared;
+class BetaNegativeBinomial_GridPrior;
+class BetaNegativeBinomial_Group;
 class NormalInverseChiSq;
 class NormalInverseChiSq_Shared;
 class NormalInverseChiSq_GridPrior;
@@ -1764,6 +1768,387 @@ class GammaPoisson : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
+class BetaNegativeBinomial_Shared : public ::google::protobuf::Message {
+ public:
+  BetaNegativeBinomial_Shared();
+  virtual ~BetaNegativeBinomial_Shared();
+  
+  BetaNegativeBinomial_Shared(const BetaNegativeBinomial_Shared& from);
+  
+  inline BetaNegativeBinomial_Shared& operator=(const BetaNegativeBinomial_Shared& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const BetaNegativeBinomial_Shared& default_instance();
+  
+  void Swap(BetaNegativeBinomial_Shared* other);
+  
+  // implements Message ----------------------------------------------
+  
+  BetaNegativeBinomial_Shared* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const BetaNegativeBinomial_Shared& from);
+  void MergeFrom(const BetaNegativeBinomial_Shared& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required float alpha = 1;
+  inline bool has_alpha() const;
+  inline void clear_alpha();
+  static const int kAlphaFieldNumber = 1;
+  inline float alpha() const;
+  inline void set_alpha(float value);
+  
+  // required float beta = 2;
+  inline bool has_beta() const;
+  inline void clear_beta();
+  static const int kBetaFieldNumber = 2;
+  inline float beta() const;
+  inline void set_beta(float value);
+  
+  // required uint64 r = 3;
+  inline bool has_r() const;
+  inline void clear_r();
+  static const int kRFieldNumber = 3;
+  inline ::google::protobuf::uint64 r() const;
+  inline void set_r(::google::protobuf::uint64 value);
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.BetaNegativeBinomial.Shared)
+ private:
+  inline void set_has_alpha();
+  inline void clear_has_alpha();
+  inline void set_has_beta();
+  inline void clear_has_beta();
+  inline void set_has_r();
+  inline void clear_has_r();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  float alpha_;
+  float beta_;
+  ::google::protobuf::uint64 r_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static BetaNegativeBinomial_Shared* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class BetaNegativeBinomial_GridPrior : public ::google::protobuf::Message {
+ public:
+  BetaNegativeBinomial_GridPrior();
+  virtual ~BetaNegativeBinomial_GridPrior();
+  
+  BetaNegativeBinomial_GridPrior(const BetaNegativeBinomial_GridPrior& from);
+  
+  inline BetaNegativeBinomial_GridPrior& operator=(const BetaNegativeBinomial_GridPrior& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const BetaNegativeBinomial_GridPrior& default_instance();
+  
+  void Swap(BetaNegativeBinomial_GridPrior* other);
+  
+  // implements Message ----------------------------------------------
+  
+  BetaNegativeBinomial_GridPrior* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const BetaNegativeBinomial_GridPrior& from);
+  void MergeFrom(const BetaNegativeBinomial_GridPrior& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // repeated float alpha = 1;
+  inline int alpha_size() const;
+  inline void clear_alpha();
+  static const int kAlphaFieldNumber = 1;
+  inline float alpha(int index) const;
+  inline void set_alpha(int index, float value);
+  inline void add_alpha(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      alpha() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_alpha();
+  
+  // repeated float beta = 2;
+  inline int beta_size() const;
+  inline void clear_beta();
+  static const int kBetaFieldNumber = 2;
+  inline float beta(int index) const;
+  inline void set_beta(int index, float value);
+  inline void add_beta(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      beta() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_beta();
+  
+  // repeated uint64 r = 3;
+  inline int r_size() const;
+  inline void clear_r();
+  static const int kRFieldNumber = 3;
+  inline ::google::protobuf::uint64 r(int index) const;
+  inline void set_r(int index, ::google::protobuf::uint64 value);
+  inline void add_r(::google::protobuf::uint64 value);
+  inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >&
+      r() const;
+  inline ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >*
+      mutable_r();
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.BetaNegativeBinomial.GridPrior)
+ private:
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::RepeatedField< float > alpha_;
+  ::google::protobuf::RepeatedField< float > beta_;
+  ::google::protobuf::RepeatedField< ::google::protobuf::uint64 > r_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static BetaNegativeBinomial_GridPrior* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class BetaNegativeBinomial_Group : public ::google::protobuf::Message {
+ public:
+  BetaNegativeBinomial_Group();
+  virtual ~BetaNegativeBinomial_Group();
+  
+  BetaNegativeBinomial_Group(const BetaNegativeBinomial_Group& from);
+  
+  inline BetaNegativeBinomial_Group& operator=(const BetaNegativeBinomial_Group& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const BetaNegativeBinomial_Group& default_instance();
+  
+  void Swap(BetaNegativeBinomial_Group* other);
+  
+  // implements Message ----------------------------------------------
+  
+  BetaNegativeBinomial_Group* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const BetaNegativeBinomial_Group& from);
+  void MergeFrom(const BetaNegativeBinomial_Group& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required uint64 count = 1;
+  inline bool has_count() const;
+  inline void clear_count();
+  static const int kCountFieldNumber = 1;
+  inline ::google::protobuf::uint64 count() const;
+  inline void set_count(::google::protobuf::uint64 value);
+  
+  // required uint64 sum = 2;
+  inline bool has_sum() const;
+  inline void clear_sum();
+  static const int kSumFieldNumber = 2;
+  inline ::google::protobuf::uint64 sum() const;
+  inline void set_sum(::google::protobuf::uint64 value);
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.BetaNegativeBinomial.Group)
+ private:
+  inline void set_has_count();
+  inline void clear_has_count();
+  inline void set_has_sum();
+  inline void clear_has_sum();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::uint64 count_;
+  ::google::protobuf::uint64 sum_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static BetaNegativeBinomial_Group* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class BetaNegativeBinomial : public ::google::protobuf::Message {
+ public:
+  BetaNegativeBinomial();
+  virtual ~BetaNegativeBinomial();
+  
+  BetaNegativeBinomial(const BetaNegativeBinomial& from);
+  
+  inline BetaNegativeBinomial& operator=(const BetaNegativeBinomial& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const BetaNegativeBinomial& default_instance();
+  
+  void Swap(BetaNegativeBinomial* other);
+  
+  // implements Message ----------------------------------------------
+  
+  BetaNegativeBinomial* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const BetaNegativeBinomial& from);
+  void MergeFrom(const BetaNegativeBinomial& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  typedef BetaNegativeBinomial_Shared Shared;
+  typedef BetaNegativeBinomial_GridPrior GridPrior;
+  typedef BetaNegativeBinomial_Group Group;
+  
+  // accessors -------------------------------------------------------
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.BetaNegativeBinomial)
+ private:
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[1];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static BetaNegativeBinomial* default_instance_;
+};
+// -------------------------------------------------------------------
+
 class NormalInverseChiSq_Shared : public ::google::protobuf::Message {
  public:
   NormalInverseChiSq_Shared();
@@ -2920,6 +3305,207 @@ inline void GammaPoisson_Group::set_log_prod(float value) {
 // -------------------------------------------------------------------
 
 // GammaPoisson
+
+// -------------------------------------------------------------------
+
+// BetaNegativeBinomial_Shared
+
+// required float alpha = 1;
+inline bool BetaNegativeBinomial_Shared::has_alpha() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void BetaNegativeBinomial_Shared::set_has_alpha() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void BetaNegativeBinomial_Shared::clear_has_alpha() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void BetaNegativeBinomial_Shared::clear_alpha() {
+  alpha_ = 0;
+  clear_has_alpha();
+}
+inline float BetaNegativeBinomial_Shared::alpha() const {
+  return alpha_;
+}
+inline void BetaNegativeBinomial_Shared::set_alpha(float value) {
+  set_has_alpha();
+  alpha_ = value;
+}
+
+// required float beta = 2;
+inline bool BetaNegativeBinomial_Shared::has_beta() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void BetaNegativeBinomial_Shared::set_has_beta() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void BetaNegativeBinomial_Shared::clear_has_beta() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void BetaNegativeBinomial_Shared::clear_beta() {
+  beta_ = 0;
+  clear_has_beta();
+}
+inline float BetaNegativeBinomial_Shared::beta() const {
+  return beta_;
+}
+inline void BetaNegativeBinomial_Shared::set_beta(float value) {
+  set_has_beta();
+  beta_ = value;
+}
+
+// required uint64 r = 3;
+inline bool BetaNegativeBinomial_Shared::has_r() const {
+  return (_has_bits_[0] & 0x00000004u) != 0;
+}
+inline void BetaNegativeBinomial_Shared::set_has_r() {
+  _has_bits_[0] |= 0x00000004u;
+}
+inline void BetaNegativeBinomial_Shared::clear_has_r() {
+  _has_bits_[0] &= ~0x00000004u;
+}
+inline void BetaNegativeBinomial_Shared::clear_r() {
+  r_ = GOOGLE_ULONGLONG(0);
+  clear_has_r();
+}
+inline ::google::protobuf::uint64 BetaNegativeBinomial_Shared::r() const {
+  return r_;
+}
+inline void BetaNegativeBinomial_Shared::set_r(::google::protobuf::uint64 value) {
+  set_has_r();
+  r_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// BetaNegativeBinomial_GridPrior
+
+// repeated float alpha = 1;
+inline int BetaNegativeBinomial_GridPrior::alpha_size() const {
+  return alpha_.size();
+}
+inline void BetaNegativeBinomial_GridPrior::clear_alpha() {
+  alpha_.Clear();
+}
+inline float BetaNegativeBinomial_GridPrior::alpha(int index) const {
+  return alpha_.Get(index);
+}
+inline void BetaNegativeBinomial_GridPrior::set_alpha(int index, float value) {
+  alpha_.Set(index, value);
+}
+inline void BetaNegativeBinomial_GridPrior::add_alpha(float value) {
+  alpha_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+BetaNegativeBinomial_GridPrior::alpha() const {
+  return alpha_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+BetaNegativeBinomial_GridPrior::mutable_alpha() {
+  return &alpha_;
+}
+
+// repeated float beta = 2;
+inline int BetaNegativeBinomial_GridPrior::beta_size() const {
+  return beta_.size();
+}
+inline void BetaNegativeBinomial_GridPrior::clear_beta() {
+  beta_.Clear();
+}
+inline float BetaNegativeBinomial_GridPrior::beta(int index) const {
+  return beta_.Get(index);
+}
+inline void BetaNegativeBinomial_GridPrior::set_beta(int index, float value) {
+  beta_.Set(index, value);
+}
+inline void BetaNegativeBinomial_GridPrior::add_beta(float value) {
+  beta_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+BetaNegativeBinomial_GridPrior::beta() const {
+  return beta_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+BetaNegativeBinomial_GridPrior::mutable_beta() {
+  return &beta_;
+}
+
+// repeated uint64 r = 3;
+inline int BetaNegativeBinomial_GridPrior::r_size() const {
+  return r_.size();
+}
+inline void BetaNegativeBinomial_GridPrior::clear_r() {
+  r_.Clear();
+}
+inline ::google::protobuf::uint64 BetaNegativeBinomial_GridPrior::r(int index) const {
+  return r_.Get(index);
+}
+inline void BetaNegativeBinomial_GridPrior::set_r(int index, ::google::protobuf::uint64 value) {
+  r_.Set(index, value);
+}
+inline void BetaNegativeBinomial_GridPrior::add_r(::google::protobuf::uint64 value) {
+  r_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >&
+BetaNegativeBinomial_GridPrior::r() const {
+  return r_;
+}
+inline ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >*
+BetaNegativeBinomial_GridPrior::mutable_r() {
+  return &r_;
+}
+
+// -------------------------------------------------------------------
+
+// BetaNegativeBinomial_Group
+
+// required uint64 count = 1;
+inline bool BetaNegativeBinomial_Group::has_count() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void BetaNegativeBinomial_Group::set_has_count() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void BetaNegativeBinomial_Group::clear_has_count() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void BetaNegativeBinomial_Group::clear_count() {
+  count_ = GOOGLE_ULONGLONG(0);
+  clear_has_count();
+}
+inline ::google::protobuf::uint64 BetaNegativeBinomial_Group::count() const {
+  return count_;
+}
+inline void BetaNegativeBinomial_Group::set_count(::google::protobuf::uint64 value) {
+  set_has_count();
+  count_ = value;
+}
+
+// required uint64 sum = 2;
+inline bool BetaNegativeBinomial_Group::has_sum() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void BetaNegativeBinomial_Group::set_has_sum() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void BetaNegativeBinomial_Group::clear_has_sum() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void BetaNegativeBinomial_Group::clear_sum() {
+  sum_ = GOOGLE_ULONGLONG(0);
+  clear_has_sum();
+}
+inline ::google::protobuf::uint64 BetaNegativeBinomial_Group::sum() const {
+  return sum_;
+}
+inline void BetaNegativeBinomial_Group::set_sum(::google::protobuf::uint64 value) {
+  set_has_sum();
+  sum_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// BetaNegativeBinomial
 
 // -------------------------------------------------------------------
 

@@ -154,7 +154,7 @@ def test_interface(module, EXAMPLE):
 
 
 @for_each_model(lambda module: hasattr(module.Shared, 'load_protobuf'))
-def test_protbuf(module, EXAMPLE):
+def test_protobuf(module, EXAMPLE):
     if not has_protobuf:
         raise SkipTest('protobuf not available')
     shared = module.Shared.from_dict(EXAMPLE['shared'])

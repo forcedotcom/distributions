@@ -117,6 +117,25 @@ message GammaPoisson {
   }
 }
 
+message BetaNegativeBinomial {
+  message Shared {
+    required float alpha = 1;
+    required float beta = 2;
+    required uint64 r = 3;
+  }
+
+  message GridPrior {
+    repeated float alpha = 1;
+    repeated float beta = 2;
+    repeated uint64 r = 3;
+  }
+
+  message Group {
+    required uint64 count = 1;
+    required uint64 sum = 2;
+  }
+}
+
 message NormalInverseChiSq {
   message Shared {
     required float mu = 1;

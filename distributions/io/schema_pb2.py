@@ -10,7 +10,7 @@ from google.protobuf import reflection
 DESCRIPTOR = descriptor.FileDescriptor(
   name='distributions/io/schema.proto',
   package='protobuf.distributions',
-  serialized_pb='\n\x1d\x64istributions/io/schema.proto\x12\x16protobuf.distributions\"\xdd\x01\n\nClustering\x12@\n\npitman_yor\x18\x01 \x01(\x0b\x32,.protobuf.distributions.Clustering.PitmanYor\x12\x42\n\x0blow_entropy\x18\x02 \x01(\x0b\x32-.protobuf.distributions.Clustering.LowEntropy\x1a%\n\tPitmanYor\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\t\n\x01\x64\x18\x02 \x02(\x02\x1a\"\n\nLowEntropy\x12\x14\n\x0c\x64\x61taset_size\x18\x01 \x02(\x04\"\x87\x01\n\rBetaBernoulli\x1a%\n\x06Shared\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\x1a(\n\tGridPrior\x12\r\n\x05\x61lpha\x18\x01 \x03(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x03(\x02\x1a%\n\x05Group\x12\r\n\x05heads\x18\x01 \x02(\x04\x12\r\n\x05tails\x18\x02 \x02(\x04\"b\n\x11\x44irichletDiscrete\x1a\x18\n\x06Shared\x12\x0e\n\x06\x61lphas\x18\x01 \x03(\x02\x1a\x1a\n\tGridPrior\x12\r\n\x05\x61lpha\x18\x01 \x03(\x02\x1a\x17\n\x05Group\x12\x0e\n\x06\x63ounts\x18\x01 \x03(\x04\"\xa3\x01\n\x18\x44irichletProcessDiscrete\x1a\x35\n\x06Shared\x12\r\n\x05gamma\x18\x01 \x02(\x02\x12\r\n\x05\x61lpha\x18\x02 \x02(\x02\x12\r\n\x05\x62\x65tas\x18\x03 \x03(\x02\x1a)\n\tGridPrior\x12\r\n\x05gamma\x18\x01 \x03(\x02\x12\r\n\x05\x61lpha\x18\x02 \x03(\x02\x1a%\n\x05Group\x12\x0c\n\x04keys\x18\x01 \x03(\r\x12\x0e\n\x06values\x18\x02 \x03(\x04\"\x9e\x01\n\x0cGammaPoisson\x1a)\n\x06Shared\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x10\n\x08inv_beta\x18\x02 \x02(\x02\x1a,\n\tGridPrior\x12\r\n\x05\x61lpha\x18\x01 \x03(\x02\x12\x10\n\x08inv_beta\x18\x02 \x03(\x02\x1a\x35\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0b\n\x03sum\x18\x02 \x02(\x04\x12\x10\n\x08log_prod\x18\x03 \x02(\x02\"\xdf\x01\n\x12NormalInverseChiSq\x1a@\n\x06Shared\x12\n\n\x02mu\x18\x01 \x02(\x02\x12\r\n\x05kappa\x18\x02 \x02(\x02\x12\x0f\n\x07sigmasq\x18\x03 \x02(\x02\x12\n\n\x02nu\x18\x04 \x02(\x02\x1a\x43\n\tGridPrior\x12\n\n\x02mu\x18\x01 \x03(\x02\x12\r\n\x05kappa\x18\x02 \x03(\x02\x12\x0f\n\x07sigmasq\x18\x03 \x03(\x02\x12\n\n\x02nu\x18\x04 \x03(\x02\x1a\x42\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0c\n\x04mean\x18\x02 \x02(\x02\x12\x1c\n\x14\x63ount_times_variance\x18\x03 \x02(\x02')
+  serialized_pb='\n\x1d\x64istributions/io/schema.proto\x12\x16protobuf.distributions\"\xdd\x01\n\nClustering\x12@\n\npitman_yor\x18\x01 \x01(\x0b\x32,.protobuf.distributions.Clustering.PitmanYor\x12\x42\n\x0blow_entropy\x18\x02 \x01(\x0b\x32-.protobuf.distributions.Clustering.LowEntropy\x1a%\n\tPitmanYor\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\t\n\x01\x64\x18\x02 \x02(\x02\x1a\"\n\nLowEntropy\x12\x14\n\x0c\x64\x61taset_size\x18\x01 \x02(\x04\"\x87\x01\n\rBetaBernoulli\x1a%\n\x06Shared\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\x1a(\n\tGridPrior\x12\r\n\x05\x61lpha\x18\x01 \x03(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x03(\x02\x1a%\n\x05Group\x12\r\n\x05heads\x18\x01 \x02(\x04\x12\r\n\x05tails\x18\x02 \x02(\x04\"b\n\x11\x44irichletDiscrete\x1a\x18\n\x06Shared\x12\x0e\n\x06\x61lphas\x18\x01 \x03(\x02\x1a\x1a\n\tGridPrior\x12\r\n\x05\x61lpha\x18\x01 \x03(\x02\x1a\x17\n\x05Group\x12\x0e\n\x06\x63ounts\x18\x01 \x03(\x04\"\xa3\x01\n\x18\x44irichletProcessDiscrete\x1a\x35\n\x06Shared\x12\r\n\x05gamma\x18\x01 \x02(\x02\x12\r\n\x05\x61lpha\x18\x02 \x02(\x02\x12\r\n\x05\x62\x65tas\x18\x03 \x03(\x02\x1a)\n\tGridPrior\x12\r\n\x05gamma\x18\x01 \x03(\x02\x12\r\n\x05\x61lpha\x18\x02 \x03(\x02\x1a%\n\x05Group\x12\x0c\n\x04keys\x18\x01 \x03(\r\x12\x0e\n\x06values\x18\x02 \x03(\x04\"\x9e\x01\n\x0cGammaPoisson\x1a)\n\x06Shared\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x10\n\x08inv_beta\x18\x02 \x02(\x02\x1a,\n\tGridPrior\x12\r\n\x05\x61lpha\x18\x01 \x03(\x02\x12\x10\n\x08inv_beta\x18\x02 \x03(\x02\x1a\x35\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0b\n\x03sum\x18\x02 \x02(\x04\x12\x10\n\x08log_prod\x18\x03 \x02(\x02\"\xa2\x01\n\x14\x42\x65taNegativeBinomial\x1a\x30\n\x06Shared\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\x12\t\n\x01r\x18\x03 \x02(\x04\x1a\x33\n\tGridPrior\x12\r\n\x05\x61lpha\x18\x01 \x03(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x03(\x02\x12\t\n\x01r\x18\x03 \x03(\x04\x1a#\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0b\n\x03sum\x18\x02 \x02(\x04\"\xdf\x01\n\x12NormalInverseChiSq\x1a@\n\x06Shared\x12\n\n\x02mu\x18\x01 \x02(\x02\x12\r\n\x05kappa\x18\x02 \x02(\x02\x12\x0f\n\x07sigmasq\x18\x03 \x02(\x02\x12\n\n\x02nu\x18\x04 \x02(\x02\x1a\x43\n\tGridPrior\x12\n\n\x02mu\x18\x01 \x03(\x02\x12\r\n\x05kappa\x18\x02 \x03(\x02\x12\x0f\n\x07sigmasq\x18\x03 \x03(\x02\x12\n\n\x02nu\x18\x04 \x03(\x02\x1a\x42\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0c\n\x04mean\x18\x02 \x02(\x02\x12\x1c\n\x14\x63ount_times_variance\x18\x03 \x02(\x02')
 
 
 
@@ -596,6 +596,143 @@ _GAMMAPOISSON = descriptor.Descriptor(
 )
 
 
+_BETANEGATIVEBINOMIAL_SHARED = descriptor.Descriptor(
+  name='Shared',
+  full_name='protobuf.distributions.BetaNegativeBinomial.Shared',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='alpha', full_name='protobuf.distributions.BetaNegativeBinomial.Shared.alpha', index=0,
+      number=1, type=2, cpp_type=6, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='beta', full_name='protobuf.distributions.BetaNegativeBinomial.Shared.beta', index=1,
+      number=2, type=2, cpp_type=6, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='r', full_name='protobuf.distributions.BetaNegativeBinomial.Shared.r', index=2,
+      number=3, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=871,
+  serialized_end=919,
+)
+
+_BETANEGATIVEBINOMIAL_GRIDPRIOR = descriptor.Descriptor(
+  name='GridPrior',
+  full_name='protobuf.distributions.BetaNegativeBinomial.GridPrior',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='alpha', full_name='protobuf.distributions.BetaNegativeBinomial.GridPrior.alpha', index=0,
+      number=1, type=2, cpp_type=6, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='beta', full_name='protobuf.distributions.BetaNegativeBinomial.GridPrior.beta', index=1,
+      number=2, type=2, cpp_type=6, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='r', full_name='protobuf.distributions.BetaNegativeBinomial.GridPrior.r', index=2,
+      number=3, type=4, cpp_type=4, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=921,
+  serialized_end=972,
+)
+
+_BETANEGATIVEBINOMIAL_GROUP = descriptor.Descriptor(
+  name='Group',
+  full_name='protobuf.distributions.BetaNegativeBinomial.Group',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='count', full_name='protobuf.distributions.BetaNegativeBinomial.Group.count', index=0,
+      number=1, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='sum', full_name='protobuf.distributions.BetaNegativeBinomial.Group.sum', index=1,
+      number=2, type=4, cpp_type=4, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=791,
+  serialized_end=826,
+)
+
+_BETANEGATIVEBINOMIAL = descriptor.Descriptor(
+  name='BetaNegativeBinomial',
+  full_name='protobuf.distributions.BetaNegativeBinomial',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[_BETANEGATIVEBINOMIAL_SHARED, _BETANEGATIVEBINOMIAL_GRIDPRIOR, _BETANEGATIVEBINOMIAL_GROUP, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=847,
+  serialized_end=1009,
+)
+
+
 _NORMALINVERSECHISQ_SHARED = descriptor.Descriptor(
   name='Shared',
   full_name='protobuf.distributions.NormalInverseChiSq.Shared',
@@ -640,8 +777,8 @@ _NORMALINVERSECHISQ_SHARED = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=869,
-  serialized_end=933,
+  serialized_start=1034,
+  serialized_end=1098,
 )
 
 _NORMALINVERSECHISQ_GRIDPRIOR = descriptor.Descriptor(
@@ -688,8 +825,8 @@ _NORMALINVERSECHISQ_GRIDPRIOR = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=935,
-  serialized_end=1002,
+  serialized_start=1100,
+  serialized_end=1167,
 )
 
 _NORMALINVERSECHISQ_GROUP = descriptor.Descriptor(
@@ -729,8 +866,8 @@ _NORMALINVERSECHISQ_GROUP = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1004,
-  serialized_end=1070,
+  serialized_start=1169,
+  serialized_end=1235,
 )
 
 _NORMALINVERSECHISQ = descriptor.Descriptor(
@@ -749,8 +886,8 @@ _NORMALINVERSECHISQ = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=847,
-  serialized_end=1070,
+  serialized_start=1012,
+  serialized_end=1235,
 )
 
 _CLUSTERING_PITMANYOR.containing_type = _CLUSTERING;
@@ -769,6 +906,9 @@ _DIRICHLETPROCESSDISCRETE_GROUP.containing_type = _DIRICHLETPROCESSDISCRETE;
 _GAMMAPOISSON_SHARED.containing_type = _GAMMAPOISSON;
 _GAMMAPOISSON_GRIDPRIOR.containing_type = _GAMMAPOISSON;
 _GAMMAPOISSON_GROUP.containing_type = _GAMMAPOISSON;
+_BETANEGATIVEBINOMIAL_SHARED.containing_type = _BETANEGATIVEBINOMIAL;
+_BETANEGATIVEBINOMIAL_GRIDPRIOR.containing_type = _BETANEGATIVEBINOMIAL;
+_BETANEGATIVEBINOMIAL_GROUP.containing_type = _BETANEGATIVEBINOMIAL;
 _NORMALINVERSECHISQ_SHARED.containing_type = _NORMALINVERSECHISQ;
 _NORMALINVERSECHISQ_GRIDPRIOR.containing_type = _NORMALINVERSECHISQ;
 _NORMALINVERSECHISQ_GROUP.containing_type = _NORMALINVERSECHISQ;
@@ -777,6 +917,7 @@ DESCRIPTOR.message_types_by_name['BetaBernoulli'] = _BETABERNOULLI
 DESCRIPTOR.message_types_by_name['DirichletDiscrete'] = _DIRICHLETDISCRETE
 DESCRIPTOR.message_types_by_name['DirichletProcessDiscrete'] = _DIRICHLETPROCESSDISCRETE
 DESCRIPTOR.message_types_by_name['GammaPoisson'] = _GAMMAPOISSON
+DESCRIPTOR.message_types_by_name['BetaNegativeBinomial'] = _BETANEGATIVEBINOMIAL
 DESCRIPTOR.message_types_by_name['NormalInverseChiSq'] = _NORMALINVERSECHISQ
 
 class Clustering(message.Message):
@@ -892,6 +1033,30 @@ class GammaPoisson(message.Message):
   DESCRIPTOR = _GAMMAPOISSON
   
   # @@protoc_insertion_point(class_scope:protobuf.distributions.GammaPoisson)
+
+class BetaNegativeBinomial(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  
+  class Shared(message.Message):
+    __metaclass__ = reflection.GeneratedProtocolMessageType
+    DESCRIPTOR = _BETANEGATIVEBINOMIAL_SHARED
+    
+    # @@protoc_insertion_point(class_scope:protobuf.distributions.BetaNegativeBinomial.Shared)
+  
+  class GridPrior(message.Message):
+    __metaclass__ = reflection.GeneratedProtocolMessageType
+    DESCRIPTOR = _BETANEGATIVEBINOMIAL_GRIDPRIOR
+    
+    # @@protoc_insertion_point(class_scope:protobuf.distributions.BetaNegativeBinomial.GridPrior)
+  
+  class Group(message.Message):
+    __metaclass__ = reflection.GeneratedProtocolMessageType
+    DESCRIPTOR = _BETANEGATIVEBINOMIAL_GROUP
+    
+    # @@protoc_insertion_point(class_scope:protobuf.distributions.BetaNegativeBinomial.Group)
+  DESCRIPTOR = _BETANEGATIVEBINOMIAL
+  
+  # @@protoc_insertion_point(class_scope:protobuf.distributions.BetaNegativeBinomial)
 
 class NormalInverseChiSq(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
