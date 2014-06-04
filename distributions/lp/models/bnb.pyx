@@ -62,7 +62,7 @@ cdef class _Shared(_bnb.Shared):
     def dump_protobuf(self, message):
         message.alpha = self.ptr.alpha
         message.beta = self.ptr.beta
-        message.r = self.prt.r
+        message.r = self.ptr.r
 
 
 class Shared(_Shared, SharedIoMixin):

@@ -135,11 +135,10 @@ hp_extensions = make_extensions([
     'global_rng',
     'hp.special',
     'hp.random',
-    #'hp.models.bb',
     'hp.models.dd',
+    'hp.models.dpd',
     'hp.models.gp',
     'hp.models.nich',
-    'hp.models.dpd',
 ])
 
 
@@ -151,12 +150,14 @@ lp_extensions = make_extensions([
     'lp.models._bb',
     'lp.models.dd',
     'lp.models._dd',
-    'lp.models.gp',
-    'lp.models._gp',
-    'lp.models.nich',
-    'lp.models._nich',
     'lp.models.dpd',
     'lp.models._dpd',
+    'lp.models.gp',
+    'lp.models._gp',
+    'lp.models.bnb',
+    'lp.models._bnb',
+    'lp.models.nich',
+    'lp.models._nich',
     'lp.clustering',
     'lp.mixture',
 ])
