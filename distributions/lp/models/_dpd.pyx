@@ -35,6 +35,12 @@ cdef class Shared:
     def __dealloc__(self):
         del self.ptr
 
+    def add_slot(self):
+        self.ptr.add_slot(get_rng()[0])
+
+    def remove_slot(self, Value value):
+        self.ptr.remove_slot(value)
+
 
 cdef class Group:
     def __cinit__(self):
@@ -45,6 +51,12 @@ cdef class Group:
 
     def init(self, Shared shared):
         self.ptr.init(shared.ptr[0], get_rng()[0])
+
+    def add_slot(self, Shared shared):
+        self.ptr.add_slot(shared.ptr[0])
+
+    def remove_slot(self, Shared shared, Value value):
+        self.ptr.remove_slot(shared.ptr[0], value)
 
     def add_value(self, Shared shared, Value value):
         self.ptr.add_value(shared.ptr[0], value, get_rng()[0])
@@ -100,6 +112,12 @@ cdef class Mixture:
 
     def init(self, Shared shared):
         self.ptr.init(shared.ptr[0], get_rng()[0])
+
+    def add_slot(self, Shared shared):
+        self.ptr.add_slot(shared.ptr[0])
+
+    def remove_slot(self, Shared shared, Value value):
+        self.ptr.remove_slot(shared.ptr[0], value)
 
     def add_group(self, Shared shared):
         self.ptr.add_group(shared.ptr[0], get_rng()[0])

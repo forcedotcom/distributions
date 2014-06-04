@@ -29,6 +29,7 @@
 
 #include <utility>
 #include <unordered_map>
+#include <distributions/common.hpp>
 #include <distributions/trivial_hash.hpp>
 
 namespace distributions
@@ -53,8 +54,9 @@ public:
 
     void init_count (key_t key, value_t value)
     {
-        // assumes value > 0, key is not present
-        map_.insert(std::make_pair(key, value));
+        DIST_ASSERT1(value > 0, "expected value > 0, actual: " << value);
+        bool success = map_.insert(std::make_pair(key, value)).second;
+        DIST_ASSERT1(success, "duplicate key: " << key);
         total_ += value;
     }
 
@@ -68,7 +70,7 @@ public:
 
     value_t add (const key_t & key, const value_t & value = 1)
     {
-        // assumes value > 0
+        DIST_ASSERT1(value > 0, "expected value > 0, actual: " << value);
         total_ += value;
         auto i = map_.find(key);
         if (i != map_.end()) {
@@ -84,11 +86,14 @@ public:
         // assumes value > 0
         total_ -= 1;
         auto i = map_.find(key);
-        value_t new_value = i->second -= 1;
-        if (new_value == 0) {
+        DIST_ASSERT1(i != map_.end(), "missing key: " << key);
+        auto & value = i->second;
+        DIST_ASSERT1(value > 0, "expected value > 0, actual: " << value);
+        value -= 1;
+        if (value == 0) {
             map_.erase(i);
         }
-        return new_value;
+        return value;
     }
 
     void merge (const SparseCounter<key_t, value_t> & other)
@@ -97,6 +102,17 @@ public:
             add(i.first, i.second);
         }
         total_ += other.total_;
+    }
+
+    void rename (key_t old_key, key_t new_key)
+    {
+        auto i = map_.find(old_key);
+        if (i != map_.end()) {
+            value_t value = i->second;
+            map_.erase(i);
+            bool success = map_.insert(std::make_pair(new_key, value)).second;
+            DIST_ASSERT1(success, "duplicate key: " << new_key);
+        }
     }
 
     iterator begin () const { return map_.begin(); }

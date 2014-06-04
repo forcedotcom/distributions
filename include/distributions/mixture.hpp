@@ -30,6 +30,7 @@
 #include <vector>
 #include <unordered_set>
 #include <unordered_map>
+#include <type_traits>
 #include <distributions/common.hpp>
 #include <distributions/vector.hpp>
 #include <distributions/trivial_hash.hpp>
@@ -200,6 +201,22 @@ public:
 
     void init (const Shared &, rng_t &) {}
 
+    // optional
+    void add_slot (const Shared & shared)
+    {
+        for (auto & group : groups_) {
+            group.add_slot(shared);
+        }
+    }
+
+    // optional
+    void remove_slot (const Shared & shared, const Value & value)
+    {
+        for (auto & group : groups_) {
+            group.remove_slot(shared, value);
+        }
+    }
+
     // add_group is called whenever driver.add_value returns true
     void add_group (
             const Shared & shared,
@@ -358,6 +375,11 @@ private:
     size_t global_size_;
 };
 
+
+//----------------------------------------------------------------------------
+// GroupScorerMixture
+
+
 template<class _Scorer>
 struct GroupScorerMixture
 {
@@ -379,6 +401,20 @@ struct GroupScorerMixture
         slave_.init(shared, rng);
         scorer_.resize(shared, slave_.groups().size());
         scorer_.update_all(shared, slave_, rng);
+    }
+
+    // optional
+    void add_slot (const Shared & shared)
+    {
+        slave_.add_slot(shared);
+        scorer_.add_slot(shared);
+    }
+
+    // optional
+    void remove_slot (const Shared & shared, const Value & value)
+    {
+        slave_.remove_slot(shared, value);
+        scorer_.remove_slot(shared, value);
     }
 
     void add_group (
@@ -451,5 +487,6 @@ private:
     MixtureSlave<Shared> slave_;
     VectorizedScorer scorer_;
 };
+
 
 } // namespace distributions

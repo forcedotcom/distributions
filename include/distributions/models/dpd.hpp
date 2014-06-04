@@ -55,9 +55,26 @@ struct Shared
     float gamma;
     float alpha;
     float beta0;
-    std::vector<float> betas;  // dense
+    Packed_<float> betas;  // dense
 
     static constexpr Value OTHER () { return -1; }
+
+    void add_slot (rng_t & rng)
+    {
+        float beta = beta0 * sample_beta(rng, 1.f, alpha);
+        beta0 -= beta;
+        betas.packed_add(beta);
+    }
+
+    void remove_slot (const Value & value)
+    {
+        DIST_ASSERT1(value < betas.size(), "value out of bounds: " << value);
+        beta0 += betas[value];
+        betas.packed_remove(value);
+        if (betas.empty()) {
+            beta0 = 0;
+        }
+    }
 
     static Shared EXAMPLE () {
         Shared shared;
@@ -82,6 +99,18 @@ struct Group
             rng_t &)
     {
         counts.clear();
+    }
+
+    void add_slot (const Shared &)
+    {
+    }
+
+    void remove_slot (const Shared & shared, const Value & value)
+    {
+        const Value & last_value = shared.betas.size();
+        if (value != last_value) {
+            counts.rename(last_value, value);
+        }
     }
 
     void add_value (
@@ -221,14 +250,20 @@ inline float Group::score_value (
     return scorer.eval(shared, value, rng);
 }
 
-struct VectorizedScorer
+class VectorizedScorer
 {
+    Packed_<VectorFloat> scores_;  // dense
+    VectorFloat scores_shift_;
+    mutable VectorFloat temp_;
+
+public:
+
     typedef dirichlet_process_discrete::Value Value;
     typedef dirichlet_process_discrete::Shared Shared;
     typedef dirichlet_process_discrete::Group Group;
     typedef dirichlet_process_discrete::Scorer BaseScorer;
 
-    void resize(const Shared & shared, size_t size)
+    void resize (const Shared & shared, size_t size)
     {
         const Value dim = shared.betas.size();
         scores_shift_.resize(size);
@@ -236,6 +271,20 @@ struct VectorizedScorer
         for (Value value = 0; value < dim; ++value) {
             scores_[value].resize(size);
         }
+    }
+
+    void add_slot (const Shared & shared)
+    {
+        const Value value = scores_.size();
+        const size_t size = scores_shift_.size();
+        const float score = fast_log(shared.alpha * shared.betas[value]);
+        scores_.packed_add().resize(size, score);
+    }
+
+    void remove_slot (const Shared &, const Value & value)
+    {
+        DIST_ASSERT1(value < scores_.size(), "value out of bounds: " << value);
+        scores_.packed_remove(value);
     }
 
     void add_group (const Shared & shared, rng_t &)
@@ -365,13 +414,6 @@ struct VectorizedScorer
     {
         slave.score_data_grid(shareds, scores_out, rng);
     }
-
-private:
-
-    std::vector<VectorFloat> scores_;  // dense
-    VectorFloat scores_shift_;
-
-    mutable VectorFloat temp_;
 };
 
 inline Value sample_value (
