@@ -158,7 +158,7 @@ class Group(GroupIoMixin):
             self.count_times_variance -= delta * (value - self.mean)
 
     def merge(self, shared, source):
-        raise # what to do with params?
+        pass # what to do with params?
 
     def sample_params(self, shared):
         self.sigmasq = shared.nu * shared.sigmasq / sample_chi2(shared.nu)
@@ -196,16 +196,16 @@ class Group(GroupIoMixin):
         return self.score_data(shared) + self.score_params(shared)
 
     def load(self, raw):
-        raise 'todo'
+        pass
 
     def dump(self):
-        raise 'todo'
+        return {}
 
     def load_protobuf(self, message):
-        raise 'todo'
+        pass
 
     def dump_protobuf(self, message):
-        raise 'todo'
+        pass
 
 
 def sampler_create(shared, group=None):

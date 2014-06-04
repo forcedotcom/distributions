@@ -144,16 +144,16 @@ class Group(GroupIoMixin):
         return self.score_data(shared) + self.score_params(shared)
 
     def load(self, raw):
-        raise 'todo'
+        pass
 
     def dump(self):
-        raise 'todo'
+        return {}
 
     def load_protobuf(self, message):
-        raise 'todo'
+        pass
 
     def dump_protobuf(self, message):
-        raise 'todo'
+        pass
 
 
 def sampler_create(shared, group=None):
