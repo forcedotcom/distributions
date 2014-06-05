@@ -85,7 +85,9 @@ message DirichletProcessDiscrete {
   message Shared {
     required float gamma = 1;
     required float alpha = 2;
-    repeated float betas = 3;
+    repeated uint32 keys = 3;
+    repeated float betas = 4;
+    repeated uint64 counts = 5;
   }
 
   message GridPrior {

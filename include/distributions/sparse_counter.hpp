@@ -72,18 +72,17 @@ public:
     {
         DIST_ASSERT1(value > 0, "expected value > 0, actual: " << value);
         total_ += value;
-        auto i = map_.find(key);
-        if (i != map_.end()) {
-            return i->second += value;
+        auto pair = map_.insert(std::make_pair(key, value));
+        bool inserted = pair.second;
+        if (inserted) {
+            return value;
         } else {
-            map_.insert(std::make_pair(key, value));
-            return 1;
+            return pair.first->second += value;
         }
     }
 
     value_t remove (const key_t & key)
     {
-        // assumes value > 0
         total_ -= 1;
         auto i = map_.find(key);
         DIST_ASSERT1(i != map_.end(), "missing key: " << key);
@@ -98,7 +97,7 @@ public:
 
     void merge (const SparseCounter<key_t, value_t> & other)
     {
-        for (auto i : other.map_) {
+        for (auto & i : other.map_) {
             add(i.first, i.second);
         }
         total_ += other.total_;
@@ -122,6 +121,69 @@ private:
 
     map_t map_;
     value_t total_;
+};
+
+
+template<class Key, class Value>
+class Sparse_ : public std::unordered_map<Key, Value, TrivialHash<Key>>
+{
+    typedef std::unordered_map<Key, Value, TrivialHash<Key>> Base;
+
+public:
+
+    bool contains (const Key & key) const
+    {
+        return Base::find(key) != Base::end();
+    }
+
+    Value & add (const Key & key)
+    {
+        auto pair = Base::insert(std::make_pair(key, Value()));
+        DIST_ASSERT1(pair.second, "duplicate key: " << key);
+        return pair.first->second;
+    }
+
+    void add (const Key & key, const Value & value)
+    {
+        auto pair = Base::insert(std::make_pair(key, value));
+        DIST_ASSERT1(pair.second, "duplicate key: " << key);
+    }
+
+    void remove (const Key & key)
+    {
+        bool removed = Base::erase(key);
+        DIST_ASSERT1(removed, "missing key: " << key);
+    }
+
+    Value pop (const Key & key)
+    {
+        auto & i = Base::find(key);
+        DIST_ASSERT1(i != Base::end(), "missing key: " << key);
+        Value result = std::move(i->second);
+        Base::erase(i);
+        return result;
+    }
+
+    void set (const Key & key, const Value & value)
+    {
+        auto & i = Base::find(key);
+        DIST_ASSERT1(i != Base::end(), "missing key: " << key);
+        i->second = value;
+    }
+
+    Value & get (const Key & key)
+    {
+        auto & i = Base::find(key);
+        DIST_ASSERT1(i != Base::end(), "missing key: " << key);
+        return i->second;
+    }
+
+    const Value & get (const Key & key) const
+    {
+        auto & i = Base::find(key);
+        DIST_ASSERT1(i != Base::end(), "missing key: " << key);
+        return i->second;
+    }
 };
 
 } // namespace distributions

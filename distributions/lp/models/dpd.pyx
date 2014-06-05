@@ -57,12 +57,11 @@ cdef class _Shared(_dpd.Shared):
         self.ptr.alpha = raw['alpha']
         self.ptr.betas.clear()
         cdef dict raw_betas = raw['betas']
-        self.ptr.betas.resize(len(raw_betas))
         cdef str i
         cdef float beta
         cdef double beta0 = 1.0
         for i, beta in raw_betas.iteritems():
-            self.ptr.betas[int(i)] = beta
+            self.ptr.betas.get(int(i)) = beta
             beta0 -= beta
         self.ptr.beta0 = beta0
 
@@ -70,7 +69,7 @@ cdef class _Shared(_dpd.Shared):
         cdef dict betas = {}
         cdef int i
         for i in xrange(self.ptr.betas.size()):
-            betas[str(i)] = self.ptr.betas[i]
+            betas[str(i)] = self.ptr.betas.get(i)
         return {
             'gamma': float(self.ptr.gamma),
             'alpha': float(self.ptr.alpha),
@@ -82,13 +81,12 @@ cdef class _Shared(_dpd.Shared):
         self.ptr.alpha = message.alpha
         self.ptr.betas.clear()
         cdef int size = len(message.betas)
-        self.ptr.betas.resize(size)
         cdef int i
         cdef float beta
         cdef double beta0 = 1.0
         for i in xrange(size):
             beta = message.betas[i]
-            self.ptr.betas[i] = beta
+            self.ptr.betas.add(i, beta)
             beta0 -= beta
         self.ptr.beta0 = beta0
 
@@ -96,9 +94,15 @@ cdef class _Shared(_dpd.Shared):
         message.Clear()
         message.gamma = self.ptr.gamma
         message.alpha = self.ptr.alpha
-        cdef int i
-        for i in xrange(self.ptr.betas.size()):
-            message.betas.append(self.ptr.betas[i])
+        cdef SparseCounter.iterator it = self.ptr.betas.begin()
+        cdef SparseCounter.iterator end = self.ptr.betas.end()
+        int value
+        while it != end:
+            value = deref(it).first
+            message.keys.append(value)
+            message.betas.append(deref(it).second)
+            message.counts.append(self.ptr.counts.get_count(value))
+
 
 class Shared(_Shared, SharedIoMixin):
     pass

@@ -227,7 +227,7 @@ public:
         tails_scores_[groupid] = scorer.tails_score;
     }
 
-    void update_group (
+    void update_value (
             const Shared & shared,
             size_t groupid,
             const Group & group,

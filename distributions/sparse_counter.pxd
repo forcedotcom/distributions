@@ -25,28 +25,43 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from libc.stdint cimport uint32_t
 from libcpp.utility cimport pair
 
 cdef extern from "distributions/sparse_counter.hpp":
-    cdef cppclass SparseCounter "distributions::SparseCounter<uint32_t, uint32_t>":
+    cppclass SparseCounter "distributions::SparseCounter<uint32_t, uint32_t>":
         cppclass iterator:
-            pair[int, int]& operator*() nogil
-            iterator operator++() nogil
-            iterator operator--() nogil
-            bint operator==(iterator) nogil
-            bint operator!=(iterator) nogil
-        SparseCounter() nogil except +
-        SparseCounter(SparseCounter&) nogil except +
-        void clear() nogil
-        void init_count(int, int) nogil
-        int get_count(int) nogil
-        int get_total() nogil
-        void add(int) nogil
-        void remove(int) nogil
-        void merge(SparseCounter&) nogil
-        #SparseCounter& operator=(SparseCounter&)
-        iterator begin() nogil
-        iterator end() nogil
-        #bint empty() nogil
-        #size_t size() nogil
-        #void swap(SparseCounter&) nogil
+            pair[uint32_t, uint32_t]& operator* () nogil
+            iterator operator++ () nogil
+            iterator operator-- () nogil
+            bint operator== (iterator) nogil
+            bint operator!= (iterator) nogil
+        SparseCounter () nogil except +
+        SparseCounter (SparseCounter&) nogil except +
+        void clear () nogil
+        void init_count (uint32_t, uint32_t) nogil
+        uint32_t get_count (uint32_t) nogil
+        uint32_t get_total () nogil
+        uint32_t add (uint32_t) nogil
+        uint32_t remove (uint32_t) nogil
+        void merge (SparseCounter&) nogil
+        #SparseCounter& operator= (SparseCounter&)
+        iterator begin () nogil
+        iterator end () nogil
+        #bint empty () nogil
+        #size_t size () nogil
+        #void swap (SparseCounter&) nogil
+
+
+    cppclass SparseFloat "distributions::Sparse_<uint32_t, float>":
+        cppclass iterator:
+            pair[uint32_t, float]& operator* () nogil
+            iterator operator++ () nogil
+            iterator operator-- () nogil
+            bint operator== (iterator) nogil
+            bint operator!= (iterator) nogil
+        void clear () nogil
+        void add (uint32_t, float) nogil
+        float get (uint32_t) nogil
+        iterator begin () nogil
+        iterator end () nogil

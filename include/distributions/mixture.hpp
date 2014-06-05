@@ -201,22 +201,6 @@ public:
 
     void init (const Shared &, rng_t &) {}
 
-    // optional
-    void add_slot (const Shared & shared)
-    {
-        for (auto & group : groups_) {
-            group.add_slot(shared);
-        }
-    }
-
-    // optional
-    void remove_slot (const Shared & shared, const Value & value)
-    {
-        for (auto & group : groups_) {
-            group.remove_slot(shared, value);
-        }
-    }
-
     // add_group is called whenever driver.add_value returns true
     void add_group (
             const Shared & shared,
@@ -404,17 +388,15 @@ struct GroupScorerMixture
     }
 
     // optional
-    void add_slot (const Shared & shared)
+    void add_shared_value (const Shared & shared, const Value & value)
     {
-        slave_.add_slot(shared);
-        scorer_.add_slot(shared);
+        scorer_.add_shared_value(shared, slave_, value);
     }
 
     // optional
-    void remove_slot (const Shared & shared, const Value & value)
+    void remove_shared_value (const Shared & shared, const Value & value)
     {
-        slave_.remove_slot(shared, value);
-        scorer_.remove_slot(shared, value);
+        scorer_.remove_shared_value(shared, value);
     }
 
     void add_group (
@@ -442,7 +424,7 @@ struct GroupScorerMixture
             rng_t & rng)
     {
         slave_.add_value(shared, groupid, value, rng);
-        scorer_.update_group(shared, groupid, groups()[groupid], value, rng);
+        scorer_.update_value(shared, groupid, groups()[groupid], value, rng);
     }
 
     void remove_value (
@@ -452,7 +434,7 @@ struct GroupScorerMixture
             rng_t & rng)
     {
         slave_.remove_value(shared, groupid, value, rng);
-        scorer_.update_group(shared, groupid, groups()[groupid], value, rng);
+        scorer_.update_value(shared, groupid, groups()[groupid], value, rng);
     }
 
     void score_value (
