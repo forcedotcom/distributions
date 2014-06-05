@@ -28,7 +28,7 @@
 import numpy
 from distributions.dbg.special import log, gammaln
 from distributions.dbg.random import sample_discrete, sample_dirichlet
-from distributions.mixins import GroupIoMixin, SharedIoMixin
+from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 
 NAME = 'DirichletDiscrete'
@@ -49,7 +49,7 @@ EXAMPLES = [
 Value = int
 
 
-class Shared(SharedIoMixin):
+class Shared(SharedMixin, SharedIoMixin):
     def __init__(self):
         self.alphas = None
 

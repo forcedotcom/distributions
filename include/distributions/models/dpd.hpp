@@ -59,10 +59,7 @@ struct Shared
     Sparse_<Value, float> betas;
     SparseCounter<Value, count_t> counts;
 
-    static constexpr Value OTHER ()
-    {
-        return std::numeric_limits<Value>::max();
-    }
+    static constexpr Value OTHER () { return 0xFFFFFFFFU; }
 
     bool add_value (const Value & value, rng_t & rng)
     {
@@ -218,6 +215,7 @@ struct Scorer
 
         const size_t total = group.counts.get_total();
         const float beta_scale = shared.alpha / (shared.alpha + total);
+        scores.add(shared.OTHER(), beta_scale * shared.beta0);
         for (auto & i : shared.betas) {
             scores.add(i.first, i.second * beta_scale);
         }
@@ -396,7 +394,6 @@ public:
             const MixtureSlave<Shared> & slave,
             rng_t &) const
     {
-        const size_t dim = shared.betas.size();
         const float alpha = shared.alpha;
 
         Sparse_<Value, float> shared_part;
@@ -410,8 +407,6 @@ public:
             if (group.counts.get_total()) {
                 for (auto & i : group.counts) {
                     Value value = i.first;
-                    DIST_ASSERT1(value < dim,
-                        "unknown value: " << value << " >= " << dim);
                     float prior_i = shared.betas.get(value) * alpha;
                     score += fast_lgamma(prior_i + i.second)
                            - shared_part.get(value);

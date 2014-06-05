@@ -40,17 +40,17 @@ EXAMPLES = [
             'gamma': 0.5,
             'alpha': 0.5,
             'betas': {  # beta0 must be zero for unit tests
-                '0': 0.25,
-                '1': 0.5,
-                '2': 0.25,
+                0: 0.25,
+                7: 0.5,
+                8: 0.25,
             },
             'counts': {
-                '0': 1,
-                '1': 2,
-                '2': 4,
+                0: 1,
+                7: 2,
+                8: 4,
             }
         },
-        'values': [0, 1, 0, 2, 0, 1, 0],
+        'values': [0, 7, 0, 8, 0, 7, 0],
     },
 ]
 Value = int
@@ -64,7 +64,7 @@ cdef class _Shared(_dpd.Shared):
         self.ptr.counts.clear()
         cdef dict raw_betas = raw['betas']
         cdef dict raw_counts = raw['counts']
-        cdef str value
+        cdef int value
         cdef float beta
         cdef double beta0 = 1.0
         for value, beta in raw_betas.iteritems():
@@ -79,7 +79,7 @@ cdef class _Shared(_dpd.Shared):
         cdef dict counts = {}
         cdef SparseFloat.iterator it = self.ptr.betas.begin()
         cdef SparseFloat.iterator end = self.ptr.betas.end()
-        cdef str value
+        cdef int value
         while it != end:
             value = deref(it).first
             betas[value] = float(deref(it).second)
@@ -133,17 +133,17 @@ cdef class _Group(_dpd.Group):
         cdef SparseCounter * counts = & self.ptr.counts
         counts.clear()
         cdef dict raw_counts = raw['counts']
-        cdef str i
+        cdef int value
         cdef int count
-        for i, count in raw_counts.iteritems():
-            counts.init_count(int(i), count)
+        for value, count in raw_counts.iteritems():
+            counts.init_count(value, count)
 
     def dump(self):
         cdef dict counts = {}
         cdef SparseCounter.iterator it = self.ptr.counts.begin()
         cdef SparseCounter.iterator end = self.ptr.counts.end()
         while it != end:
-            counts[str(deref(it).first)] = deref(it).second
+            counts[int(deref(it).first)] = deref(it).second
             inc(it)
         return {'counts': counts}
 

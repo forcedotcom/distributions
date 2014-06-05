@@ -25,11 +25,10 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import numpy
 from itertools import izip
 from distributions.dbg.special import log, gammaln
 from distributions.dbg.random import sample_discrete, sample_dirichlet
-from distributions.mixins import GroupIoMixin, SharedIoMixin
+from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 
 NAME = 'DirichletProcessDiscrete'
@@ -39,28 +38,36 @@ EXAMPLES = [
             'gamma': 0.5,
             'alpha': 0.5,
             'betas': {  # beta0 must be zero for unit tests
-                '0': 0.25,
-                '1': 0.5,
-                '2': 0.25,
+                0: 0.25,
+                7: 0.5,
+                8: 0.25,
             },
+            'counts': {
+                0: 1,
+                7: 2,
+                8: 4,
+            }
         },
-        'values': [0, 1, 0, 2, 0, 1, 0],
+        'values': [0, 7, 0, 8, 0, 7, 0],
     },
 ]
-OTHER = -1
+OTHER = 0xFFFFFFFF
 Value = int
 
 
-class Shared(SharedIoMixin):
+class Shared(SharedMixin, SharedIoMixin):
     def __init__(self):
         self.gamma = None
         self.alpha = None
-        self.betas = None
         self.beta0 = None
+        self.betas = None
+        self.counts = None
 
     def _load_beta0(self):
-        self.beta0 = 1 - self.betas.sum()
-        if not (0 <= self.betas.min() and self.betas.max() <= 1):
+        self.beta0 = 1 - sum(self.betas.itervalues())
+        min_beta = min(self.betas.itervalues())
+        max_beta = max(self.betas.itervalues())
+        if not (0 <= min_beta and max_beta <= 1):
             raise ValueError('betas out of bounds: {}'.format(self.betas))
         if not (0 <= self.beta0 and self.beta0 <= 1):
             raise ValueError('beta0 out of bounds: {}'.format(self.beta0))
@@ -68,30 +75,64 @@ class Shared(SharedIoMixin):
     def load(self, raw):
         self.gamma = float(raw['gamma'])
         self.alpha = float(raw['alpha'])
-        raw_betas = raw['betas']
-        betas = [raw_betas[str(i)] for i in xrange(len(raw_betas))]
-        self.betas = numpy.array(betas, dtype=numpy.float)  # dense
+        self.betas = {
+            int(value): float(beta)
+            for value, beta in raw['betas'].iteritems()
+        }
+        self.counts = {
+            int(value): int(count)
+            for value, count in raw['counts'].iteritems()
+        }
         self._load_beta0()
 
     def dump(self):
         return {
             'gamma': self.gamma,
             'alpha': self.alpha,
-            'betas': {str(i): beta for i, beta in enumerate(self.betas)},
+            'betas': self.betas.copy(),
+            'counts': self.counts.copy(),
         }
 
     def load_protobuf(self, message):
+        assert len(message.betas) == len(message.values), "invalid message"
+        assert len(message.counts) == len(message.values), "invalid message"
         self.gamma = float(message.gamma)
         self.alpha = float(message.alpha)
-        self.betas = numpy.array(message.betas, dtype=numpy.float)
+        self.betas = {
+            int(value): float(beta)
+            for value, beta in izip(message.values, message.betas)
+        }
+        self.counts = {
+            int(value): int(count)
+            for value, count in izip(message.values, message.counts)
+        }
         self._load_beta0()
 
     def dump_protobuf(self, message):
         message.Clear()
         message.gamma = self.gamma
         message.alpha = self.alpha
-        for beta in self.betas:
+        for value, beta in self.betas.iteritems():
+            message.values.append(value)
             message.betas.append(beta)
+            message.counts.append(self.counts[value])
+
+    def add_value(self, value):
+        if value in self.counts:
+            self.counts[value] += 1
+            return False
+        else:
+            self.counts[value] = 1
+            return True
+
+    def remove_value(self, value):
+        count = self.counts[value] - 1
+        if count:
+            self.counts[value] = count
+            return False
+        else:
+            del self.counts[value]
+            return True
 
 
 class Group(GroupIoMixin):
@@ -99,11 +140,11 @@ class Group(GroupIoMixin):
         self.counts = None
         self.total = None
 
-    def init(self, model):
+    def init(self, shared):
         self.counts = {}  # sparse
         self.total = 0
 
-    def add_value(self, model, value):
+    def add_value(self, shared, value):
         assert value != OTHER, 'tried to add OTHER to suffstats'
         try:
             self.counts[value] += 1
@@ -111,7 +152,7 @@ class Group(GroupIoMixin):
             self.counts[value] = 1
         self.total += 1
 
-    def remove_value(self, model, value):
+    def remove_value(self, shared, value):
         assert value != OTHER, 'tried to remove OTHER to suffstats'
         new_count = self.counts[value] - 1
         if new_count == 0:
@@ -146,7 +187,7 @@ class Group(GroupIoMixin):
         score += gammaln(shared.alpha) - gammaln(shared.alpha + self.total)
         return score
 
-    def merge(self, model, source):
+    def merge(self, shared, source):
         for i, count in source.counts.iteritems():
             self.counts[i] = self.counts.get(i, 0) + count
         self.total += source.total
@@ -161,8 +202,8 @@ class Group(GroupIoMixin):
 
     def dump(self):
         counts = {
-            str(i): count
-            for i, count in self.counts.iteritems()
+            value: count
+            for value, count in self.counts.iteritems()
             if count
         }
         return {'counts': counts}
@@ -183,28 +224,43 @@ class Group(GroupIoMixin):
                 message.values.append(count)
 
 
+class Sampler(object):
+    def init(self, shared, group):
+        self.values = []
+        post = []
+        alpha = shared.alpha
+        for value, beta in shared.betas.iteritems():
+            self.values.append(value)
+            post.append(beta * alpha + group.counts.get(value, 0))
+        if shared.beta0 > 0:
+            self.values.append(OTHER)
+            post.append(shared.beta0 * alpha)
+        self.probs = sample_dirichlet(post)
+
+    def eval(self, shared):
+        index = sample_discrete(self.probs)
+        return self.values[index]
+
+
 def sampler_create(shared, group=None):
-    probs = (shared.betas * shared.alpha).tolist()
-    if group is not None:
-        for i, count in group.counts.iteritems():
-            probs[i] += count
-    probs.append(shared.beta0 * shared.alpha)
-    return sample_dirichlet(probs)
+    if group is None:
+        group = Group()
+        group.init(shared)
+    sampler = Sampler()
+    sampler.init(shared, group)
+    return sampler
 
 
 def sampler_eval(shared, sampler):
-    index = sample_discrete(sampler)
-    if index == len(shared.betas):
-        return OTHER
-    else:
-        return index
+    return sampler.eval(shared)
 
 
 def sample_value(shared, group):
-    sampler = sampler_create(shared, group)
-    return sampler_eval(shared, sampler)
+    sampler = Sampler()
+    sampler.init(shared, group)
+    return sampler.eval(shared)
 
 
 def sample_group(shared, size):
     sampler = sampler_create(shared)
-    return [sampler_eval(shared, sampler) for _ in xrange(size)]
+    return [sampler.eval(shared) for _ in xrange(size)]

@@ -27,7 +27,7 @@
 
 from distributions.dbg.special import log, factorial, gammaln
 from distributions.dbg.random import sample_gamma, sample_poisson
-from distributions.mixins import GroupIoMixin, SharedIoMixin
+from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 
 NAME = 'GammaPoisson'
@@ -40,7 +40,7 @@ EXAMPLES = [
 Value = int
 
 
-class Shared(SharedIoMixin):
+class Shared(SharedMixin, SharedIoMixin):
     def __init__(self):
         self.alpha = None
         self.inv_beta = None

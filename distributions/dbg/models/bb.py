@@ -27,7 +27,7 @@
 
 from distributions.dbg.special import log, gammaln
 from distributions.dbg.random import sample_bernoulli, sample_dirichlet
-from distributions.mixins import GroupIoMixin, SharedIoMixin
+from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 
 NAME = 'BetaBernoulli'
@@ -40,7 +40,7 @@ EXAMPLES = [
 Value = bool
 
 
-class Shared(SharedIoMixin):
+class Shared(SharedMixin, SharedIoMixin):
     def __init__(self):
         self.alpha = None
         self.beta = None

@@ -41,7 +41,7 @@ and variance:
 """
 from distributions.dbg.special import gammaln
 from distributions.dbg.random import sample_beta, sample_negative_binomial
-from distributions.mixins import GroupIoMixin, SharedIoMixin
+from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 
 NAME = 'BetaNegativeBinomial'
@@ -56,7 +56,7 @@ EXAMPLES = [
 Value = int
 
 
-class Shared(SharedIoMixin):
+class Shared(SharedMixin, SharedIoMixin):
     def __init__(self):
         self.alpha = None
         self.beta = None

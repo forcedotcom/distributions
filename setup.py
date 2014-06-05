@@ -135,7 +135,6 @@ hp_extensions = make_extensions([
     'hp.special',
     'hp.random',
     'hp.models.dd',
-    'hp.models.dpd',
     'hp.models.gp',
     'hp.models.nich',
 ])

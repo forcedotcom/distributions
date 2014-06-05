@@ -114,9 +114,11 @@ def for_each_model(*filters):
 
 @for_each_model()
 def test_interface(module, EXAMPLE):
-    for typename in ['Value', 'Group']:
+    for typename in ['Value', 'Shared', 'Group']:
         assert_hasattr(module, typename)
         assert_is_instance(getattr(module, typename), type)
+    assert_hasattr(module.Shared, 'add_value')
+    assert_hasattr(module.Shared, 'remove_value')
 
     shared = module.Shared.from_dict(EXAMPLE['shared'])
     values = EXAMPLE['values']
@@ -402,6 +404,12 @@ def test_scorer(module, EXAMPLE):
         score2 = shared.scorer_eval(scorer2, value)
         score3 = group.score_value(shared, value)
         assert_all_close([score1, score2, score3])
+
+
+@for_each_model(lambda module: hasattr(module, 'Mixture'))
+def test_mixture_interface(module, EXAMPLE):
+    assert_hasattr(module.Mixture, 'add_shared_value')
+    assert_hasattr(module.Mixture, 'remove_shared_value')
 
 
 @for_each_model(lambda module: hasattr(module, 'Mixture'))
