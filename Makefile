@@ -91,6 +91,10 @@ profile: install_cc FORCE
 	build/benchmarks/special
 	build/benchmarks/mixture
 
+profile_test: install
+	nosetests --with-profile --profile-stats-file=nosetests.profile
+	cat nosetests.profile
+
 clean: FORCE
 	git clean -Xdf
 

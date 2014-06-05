@@ -6,4 +6,5 @@ temp.*
 *.pyc
 *.cpp
 *.so
+*.profile
 doc/_build

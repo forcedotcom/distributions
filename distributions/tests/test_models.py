@@ -69,6 +69,13 @@ MODULES = {
     for spec in list_models()
 }
 
+IS_FAST = {'dbg': False, 'hp': True, 'lp': True}
+
+
+def model_is_fast(model):
+    flavor = model.__name__.split('.')[1]
+    return IS_FAST[flavor]
+
 
 def iter_examples(module):
     assert_hasattr(module, 'EXAMPLES')
@@ -355,13 +362,12 @@ def sample_marginal_conditional(module, shared, value_count):
 def sample_successive_conditional(module, shared, group, value_count):
     sampler = module.Sampler()
     sampler.init(shared, group)
-    values = [sampler.eval(shared)
-              for _ in xrange(value_count)]
+    values = [sampler.eval(shared) for _ in xrange(value_count)]
     new_group = module.Group.from_values(shared, values)
     return new_group
 
 
-@for_each_model(lambda module: hasattr(module, 'Sampler'))
+@for_each_model(model_is_fast)
 def test_joint(module, EXAMPLE):
     # \cite{geweke04getting}
     seed_all(0)
