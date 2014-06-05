@@ -38,10 +38,10 @@
 namespace distributions
 {
 template<int max_dim>
-struct dirichlet_discrete
+struct DirichletDiscrete
 {
 
-typedef dirichlet_discrete<max_dim> Model;
+typedef DirichletDiscrete<max_dim> Model;
 typedef uint32_t count_t;
 typedef int Value;
 struct Group;
@@ -414,5 +414,5 @@ private:
 struct Mixture : public GroupScorerMixture<VectorizedScorer>
 {};
 
-}; // struct dirichlet_discrete
+}; // struct DirichletDiscrete
 } // namespace distributions

@@ -165,12 +165,12 @@ void speedtests ()
 
 int main()
 {
-    speedtests<beta_bernoulli::Mixture>();
-    speedtests<dirichlet_discrete<4>::Mixture>();
-    speedtests<dirichlet_process_discrete::Mixture>();
-    speedtests<gamma_poisson::Mixture>();
-    speedtests<beta_negative_binomial::Mixture>();
-    speedtests<normal_inverse_chi_sq::Mixture>();
+    speedtests<BetaBernoulli::Mixture>();
+    speedtests<DirichletDiscrete<4>::Mixture>();
+    speedtests<DirichletProcessDiscrete::Mixture>();
+    speedtests<GammaPoisson::Mixture>();
+    speedtests<BetaNegativeBinomial::Mixture>();
+    speedtests<NormalInverseChiSq::Mixture>();
 
     return 0;
 }

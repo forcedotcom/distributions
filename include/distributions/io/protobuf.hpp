@@ -109,7 +109,7 @@ inline void clustering_dump (
 // Shareds
 
 inline void shared_load (
-        beta_bernoulli::Shared & shared,
+        BetaBernoulli::Shared & shared,
         const protobuf::BetaBernoulli_Shared & message)
 {
     shared.alpha = message.alpha();
@@ -117,7 +117,7 @@ inline void shared_load (
 }
 
 inline void shared_dump (
-        const beta_bernoulli::Shared & shared,
+        const BetaBernoulli::Shared & shared,
         protobuf::BetaBernoulli_Shared & message)
 {
     message.set_alpha(shared.alpha);
@@ -126,7 +126,7 @@ inline void shared_dump (
 
 template<int max_dim>
 inline void shared_load (
-        dirichlet_discrete::Shared<max_dim> & shared,
+        DirichletDiscrete::Shared<max_dim> & shared,
         const protobuf::DirichletDiscrete_Shared & message)
 {
     shared.dim = message.alphas_size();
@@ -138,7 +138,7 @@ inline void shared_load (
 
 template<int max_dim>
 inline void shared_dump (
-        const dirichlet_discrete::Shared<max_dim> & shared,
+        const DirichletDiscrete::Shared<max_dim> & shared,
         protobuf::DirichletDiscrete_Shared & message)
 {
     message.Clear();
@@ -148,7 +148,7 @@ inline void shared_dump (
 }
 
 inline void shared_load (
-        dirichlet_process_discrete::Shared & shared,
+        DirichletProcessDiscrete::Shared & shared,
         const protobuf::DirichletProcessDiscrete_Shared & message)
 {
     const size_t value_count = message.values_size();
@@ -172,7 +172,7 @@ inline void shared_load (
 }
 
 inline void shared_dump (
-        const dirichlet_process_discrete::Shared & shared,
+        const DirichletProcessDiscrete::Shared & shared,
         protobuf::DirichletProcessDiscrete_Shared & message)
 {
     message.Clear();
@@ -189,7 +189,7 @@ inline void shared_dump (
 }
 
 inline void shared_load (
-        gamma_poisson::Shared & shared,
+        GammaPoisson::Shared & shared,
         const protobuf::GammaPoisson_Shared & message)
 {
     shared.alpha = message.alpha();
@@ -197,7 +197,7 @@ inline void shared_load (
 }
 
 inline void shared_dump (
-        const gamma_poisson::Shared & shared,
+        const GammaPoisson::Shared & shared,
         protobuf::GammaPoisson_Shared & message)
 {
     message.set_alpha(shared.alpha);
@@ -205,7 +205,7 @@ inline void shared_dump (
 }
 
 inline void shared_load (
-        beta_negative_binomial::Shared & shared,
+        BetaNegativeBinomial::Shared & shared,
         const protobuf::BetaNegativeBinomial_Shared & message)
 {
     shared.alpha = message.alpha();
@@ -214,7 +214,7 @@ inline void shared_load (
 }
 
 inline void shared_dump (
-        const beta_negative_binomial::Shared & shared,
+        const BetaNegativeBinomial::Shared & shared,
         protobuf::BetaNegativeBinomial_Shared & message)
 {
     message.set_alpha(shared.alpha);
@@ -223,7 +223,7 @@ inline void shared_dump (
 }
 
 inline void shared_load (
-        normal_inverse_chi_sq::Shared & shared,
+        NormalInverseChiSq::Shared & shared,
         const protobuf::NormalInverseChiSq_Shared & message)
 {
     shared.mu = message.mu();
@@ -233,7 +233,7 @@ inline void shared_load (
 }
 
 inline void shared_dump (
-        const normal_inverse_chi_sq::Shared & shared,
+        const NormalInverseChiSq::Shared & shared,
         protobuf::NormalInverseChiSq_Shared & message)
 {
     message.set_mu(shared.mu);
@@ -246,8 +246,8 @@ inline void shared_dump (
 // Groups
 
 inline void group_load (
-        const beta_bernoulli::Shared &,
-        beta_bernoulli::Group & group,
+        const BetaBernoulli::Shared &,
+        BetaBernoulli::Group & group,
         const protobuf::BetaBernoulli::Group & message)
 {
     group.heads = message.heads();
@@ -255,8 +255,8 @@ inline void group_load (
 }
 
 inline void group_dump (
-        const beta_bernoulli::Shared &,
-        const beta_bernoulli::Group & group,
+        const BetaBernoulli::Shared &,
+        const BetaBernoulli::Group & group,
         protobuf::BetaBernoulli::Group & message)
 {
     message.set_heads(group.heads);
@@ -265,8 +265,8 @@ inline void group_dump (
 
 template<int max_dim>
 inline void group_load (
-        const dirichlet_discrete::Shared<max_dim> & shared,
-        dirichlet_discrete::Group<max_dim> & group,
+        const DirichletDiscrete::Shared<max_dim> & shared,
+        DirichletDiscrete::Group<max_dim> & group,
         const protobuf::DirichletDiscrete::Group & message)
 {
     if (DIST_DEBUG_LEVEL >= 1) {
@@ -280,8 +280,8 @@ inline void group_load (
 
 template<int max_dim>
 inline void group_dump (
-        const dirichlet_discrete::Shared<max_dim> & shared,
-        const dirichlet_discrete::Group<max_dim> & group,
+        const DirichletDiscrete::Shared<max_dim> & shared,
+        const DirichletDiscrete::Group<max_dim> & group,
         protobuf::DirichletDiscrete::Group & message)
 {
     message.Clear();
@@ -292,8 +292,8 @@ inline void group_dump (
 }
 
 inline void group_load (
-        const dirichlet_process_discrete::Shared &,
-        dirichlet_process_discrete::Group & group,
+        const DirichletProcessDiscrete::Shared &,
+        DirichletProcessDiscrete::Group & group,
         const protobuf::DirichletProcessDiscrete::Group & message)
 {
     if (DIST_DEBUG_LEVEL >= 1) {
@@ -306,8 +306,8 @@ inline void group_load (
 }
 
 inline void group_dump (
-        const dirichlet_process_discrete::Shared &,
-        const dirichlet_process_discrete::Group & group,
+        const DirichletProcessDiscrete::Shared &,
+        const DirichletProcessDiscrete::Group & group,
         protobuf::DirichletProcessDiscrete::Group & message)
 {
     message.Clear();
@@ -320,8 +320,8 @@ inline void group_dump (
 }
 
 inline void group_load (
-        const gamma_poisson::Shared &,
-        gamma_poisson::Group & group,
+        const GammaPoisson::Shared &,
+        GammaPoisson::Group & group,
         const protobuf::GammaPoisson::Group & message)
 {
     group.count = message.count();
@@ -330,8 +330,8 @@ inline void group_load (
 }
 
 inline void group_dump (
-        const gamma_poisson::Shared &,
-        const gamma_poisson::Group & group,
+        const GammaPoisson::Shared &,
+        const GammaPoisson::Group & group,
         protobuf::GammaPoisson::Group & message)
 {
     message.set_count(group.count);
@@ -340,8 +340,8 @@ inline void group_dump (
 }
 
 inline void group_load (
-        const beta_negative_binomial::Shared &,
-        beta_negative_binomial::Group & group,
+        const BetaNegativeBinomial::Shared &,
+        BetaNegativeBinomial::Group & group,
         const protobuf::BetaNegativeBinomial::Group & message)
 {
     group.count = message.count();
@@ -349,8 +349,8 @@ inline void group_load (
 }
 
 inline void group_dump (
-        const beta_negative_binomial::Shared &,
-        const beta_negative_binomial::Group & group,
+        const BetaNegativeBinomial::Shared &,
+        const BetaNegativeBinomial::Group & group,
         protobuf::BetaNegativeBinomial::Group & message)
 {
     message.set_count(group.count);
@@ -358,8 +358,8 @@ inline void group_dump (
 }
 
 inline void group_load (
-        const normal_inverse_chi_sq::Shared &,
-        normal_inverse_chi_sq::Group & group,
+        const NormalInverseChiSq::Shared &,
+        NormalInverseChiSq::Group & group,
         const protobuf::NormalInverseChiSq::Group & message)
 {
     group.count = message.count();
@@ -368,8 +368,8 @@ inline void group_load (
 }
 
 inline void group_dump (
-        const normal_inverse_chi_sq::Shared &,
-        const normal_inverse_chi_sq::Group & group,
+        const NormalInverseChiSq::Shared &,
+        const NormalInverseChiSq::Group & group,
         protobuf::NormalInverseChiSq::Group & message)
 {
     message.set_count(group.count);

@@ -36,7 +36,7 @@ from distributions.sparse_counter cimport SparseCounter
 ctypedef float Value
 
 
-cdef extern from "distributions/models/nich.hpp" namespace "distributions::normal_inverse_chi_sq":
+cdef extern from "distributions/models/nich.hpp" namespace "distributions::NormalInverseChiSq":
     cppclass Shared:
         float mu
         float kappa

@@ -36,7 +36,7 @@ from distributions.sparse_counter cimport SparseCounter
 ctypedef bint Value
 
 
-cdef extern from "distributions/models/bb.hpp" namespace "distributions::beta_bernoulli":
+cdef extern from "distributions/models/bb.hpp" namespace "distributions::BetaBernoulli":
     cppclass Shared:
         float alpha
         float beta

@@ -37,10 +37,10 @@
 
 namespace distributions
 {
-struct beta_bernoulli
+struct BetaBernoulli
 {
 
-typedef beta_bernoulli Model;
+typedef BetaBernoulli Model;
 typedef uint32_t count_t;
 typedef bool Value;
 struct Group;
@@ -302,5 +302,5 @@ private:
 struct Mixture : public GroupScorerMixture<VectorizedScorer>
 {};
 
-}; // struct beta_bernoulli
+}; // struct BetaBernoulli
 } // namespace distributions

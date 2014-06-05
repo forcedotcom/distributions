@@ -38,10 +38,10 @@
 
 namespace distributions
 {
-struct dirichlet_process_discrete
+struct DirichletProcessDiscrete
 {
 
-typedef dirichlet_process_discrete Model;
+typedef DirichletProcessDiscrete Model;
 typedef uint32_t count_t;
 typedef uint32_t Value;
 struct Group;
@@ -430,5 +430,5 @@ private:
     VectorFloat scores_shift_;
 };
 
-}; // struct dirichlet_process_discrete
+}; // struct DirichletProcessDiscrete
 } // namespace distributions

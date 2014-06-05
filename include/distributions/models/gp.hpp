@@ -36,10 +36,10 @@
 
 namespace distributions
 {
-struct gamma_poisson
+struct GammaPoisson
 {
 
-typedef gamma_poisson Model;
+typedef GammaPoisson Model;
 typedef uint32_t Value;
 struct Group;
 struct Scorer;
@@ -303,5 +303,5 @@ private:
     mutable VectorFloat temp_;
 };
 
-}; // struct gamma_poisson
+}; // struct GammaPoisson
 } // namespace distributions

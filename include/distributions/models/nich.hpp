@@ -36,10 +36,10 @@
 
 namespace distributions
 {
-struct normal_inverse_chi_sq
+struct NormalInverseChiSq
 {
 
-typedef normal_inverse_chi_sq Model;
+typedef NormalInverseChiSq Model;
 typedef float Value;
 struct Group;
 struct Scorer;
@@ -350,5 +350,5 @@ private:
     mutable VectorFloat temp_;
 };
 
-}; // struct normal_inverse_chi_sq
+}; // struct NormalInverseChiSq
 } // namespace distributions

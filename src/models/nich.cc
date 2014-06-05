@@ -31,7 +31,7 @@
 namespace distributions
 {
 
-void normal_inverse_chi_sq::VectorizedScorer::score_value (
+void NormalInverseChiSq::VectorizedScorer::score_value (
         const Shared &,
         const Value & value,
         AlignedFloats scores_accum,

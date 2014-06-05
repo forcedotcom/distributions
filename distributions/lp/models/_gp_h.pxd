@@ -36,7 +36,7 @@ from distributions.sparse_counter cimport SparseCounter
 ctypedef int Value
 
 
-cdef extern from "distributions/models/gp.hpp" namespace "distributions::gamma_poisson":
+cdef extern from "distributions/models/gp.hpp" namespace "distributions::GammaPoisson":
     cppclass Shared:
         float alpha
         float inv_beta

@@ -36,7 +36,7 @@ from distributions.sparse_counter cimport SparseCounter
 ctypedef int Value
 
 
-cdef extern from "distributions/models/dd.hpp" namespace "distributions::dirichlet_discrete<256>":
+cdef extern from "distributions/models/dd.hpp" namespace "distributions::DirichletDiscrete<256>":
     cppclass Shared:
         int dim
         float alphas[256]

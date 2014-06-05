@@ -36,7 +36,7 @@ from distributions.sparse_counter cimport SparseCounter, SparseFloat
 ctypedef unsigned Value
 
 
-cdef extern from "distributions/models/dpd.hpp" namespace "distributions::dirichlet_process_discrete":
+cdef extern from "distributions/models/dpd.hpp" namespace "distributions::DirichletProcessDiscrete":
     cppclass Shared:
         float gamma
         float alpha

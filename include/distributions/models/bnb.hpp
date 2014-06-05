@@ -36,10 +36,10 @@
 
 namespace distributions
 {
-struct beta_negative_binomial
+struct BetaNegativeBinomial
 {
 
-typedef beta_negative_binomial Model;
+typedef BetaNegativeBinomial Model;
 typedef uint32_t Value;
 struct Group;
 struct Scorer;
@@ -308,5 +308,5 @@ private:
     VectorFloat alpha_;
 };
 
-}; // struct beta_negative_binomial
+}; // struct BetaNegativeBinomial
 } // namespace distributions

@@ -31,7 +31,7 @@
 namespace distributions
 {
 
-void gamma_poisson::VectorizedScorer::score_value (
+void GammaPoisson::VectorizedScorer::score_value (
         const Shared &,
         const Value & value,
         VectorFloat & scores_accum,
