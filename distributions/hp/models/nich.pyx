@@ -40,7 +40,7 @@ cimport numpy
 numpy.import_array()
 from distributions.hp.special cimport sqrt, log, gammaln, M_PI
 from distributions.hp.random cimport sample_normal, sample_chisq
-from distributions.mixins import GroupIoMixin, SharedIoMixin
+from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 
 # FIXME how does this relate to distributions.dbg.random.score_student_t
@@ -111,7 +111,7 @@ cdef class _Shared:
         }
 
 
-class Shared(_Shared, SharedIoMixin):
+class Shared(_Shared, SharedMixin, SharedIoMixin):
     pass
 
 
@@ -177,6 +177,11 @@ cdef class _Group:
             (0.5 * post.nu) * log(post.nu * post.sigmasq) - \
             self.count / 2. * 1.1447298858493991
 
+    def sample_value(self, _Shared shared):
+        cdef Sampler sampler = Sampler()
+        sampler.init(shared, self)
+        return sampler.eval(shared)
+
     def load(self, dict raw):
         self.count = raw['count']
         self.mean = raw['mean']
@@ -194,36 +199,30 @@ class Group(_Group, GroupIoMixin):
     pass
 
 
-ctypedef tuple _Sampler
+cdef class Sampler:
+    cdef double mu
+    cdef double sigmasq
 
+    def init(self, _Shared shared, _Group group=None):
+        """
+        Draw samples from the marginal posteriors of mu and sigmasq
 
-def sampler_create(_Shared shared, _Group group=None):
-    """
-    Draw samples from the marginal posteriors of mu and sigmasq
+        \cite{murphy2007conjugate}, Eqs. 156 & 167
+        """
+        cdef _Shared post
+        post = shared if group is None else shared.plus_group(group)
+        self.sigmasq = post.nu * post.sigmasq / sample_chisq(post.nu)
+        self.mu = sample_normal(post.mu, self.sigmasq / post.kappa)
 
-    \cite{murphy2007conjugate}, Eqs. 156 & 167
-    """
-    cdef _Shared post = shared if group is None else shared.plus_group(group)
-    cdef double sigmasq_star = post.nu * post.sigmasq / sample_chisq(post.nu)
-    cdef double mu_star = sample_normal(post.mu, sigmasq_star / post.kappa)
-    return (mu_star, sigmasq_star)
-
-
-def sampler_eval(_Shared shared, _Sampler sampler):
-    cdef double mu = sampler[0]
-    cdef double sigmasq = sampler[1]
-    return sample_normal(mu, sigmasq)
-
-
-def sample_value(_Shared shared, _Group group):
-    cdef _Sampler sampler = sampler_create(shared, group)
-    return sampler_eval(shared, sampler)
+    def eval(self, _Shared shared):
+        return sample_normal(self.mu, self.sigmasq)
 
 
 def sample_group(_Shared shared, int size):
-    cdef _Sampler sampler = sampler_create(shared)
+    cdef Sampler sampler = Sampler()
+    sampler.init(shared)
     cdef list result = []
     cdef int i
     for i in xrange(size):
-        result.append(sampler_eval(shared, sampler))
+        result.append(sampler.eval(shared))
     return result

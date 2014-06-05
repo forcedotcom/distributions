@@ -30,7 +30,7 @@ cimport numpy
 numpy.import_array()
 from distributions.hp.special cimport sqrt, log, gammaln, log_factorial
 from distributions.hp.random cimport sample_poisson, sample_gamma
-from distributions.mixins import GroupIoMixin, SharedIoMixin
+from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 
 NAME = 'GammaPoisson'
@@ -67,7 +67,7 @@ cdef class _Shared:
         }
 
 
-class Shared(_Shared, SharedIoMixin):
+class Shared(_Shared, SharedMixin, SharedIoMixin):
     pass
 
 
@@ -110,6 +110,11 @@ cdef class _Group:
             - post.alpha * log(post.inv_beta) \
             - self.log_prod
 
+    def sample_value(self, _Shared shared):
+        cdef Sampler sampler = Sampler()
+        sampler.init(shared, self)
+        return sampler.eval(shared)
+
     def load(self, raw):
         self.count = raw['count']
         self.sum = raw['sum']
@@ -127,27 +132,23 @@ class Group(_Group, GroupIoMixin):
     pass
 
 
-ctypedef double _Sampler
+cdef class Sampler:
+    cdef double lambda_
 
+    def init(self, _Shared shared, _Group group=None):
+        cdef _Shared post
+        post = shared if group is None else shared.plus_group(group)
+        self.lambda_ = sample_gamma(post.alpha, 1.0 / post.inv_beta)
 
-def sampler_create(_Shared shared, _Group group=None):
-    cdef _Shared post = shared if group is None else shared.plus_group(group)
-    return sample_gamma(post.alpha, 1.0 / post.inv_beta)
-
-
-def sampler_eval(_Shared shared, _Sampler sampler):
-    return sample_poisson(sampler)
-
-
-def sample_value(_Shared shared, _Group group):
-    cdef _Sampler sampler = sampler_create(shared, group)
-    return sampler_eval(shared, sampler)
+    def eval(self, _Shared shared):
+        return sample_poisson(self.lambda_)
 
 
 def sample_group(_Shared shared, int size):
-    cdef _Sampler sampler = sampler_create(shared)
+    cdef Sampler sampler = Sampler()
+    sampler.init(shared)
     cdef list result = []
     cdef int i
     for i in xrange(size):
-        result.append(sampler_eval(shared, sampler))
+        result.append(sampler.eval(shared))
     return result

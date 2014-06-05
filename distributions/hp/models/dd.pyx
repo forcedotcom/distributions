@@ -30,7 +30,7 @@ cimport numpy
 numpy.import_array()
 from distributions.hp.special cimport log, gammaln
 from distributions.hp.random cimport sample_dirichlet, sample_discrete
-from distributions.mixins import GroupIoMixin, SharedIoMixin
+from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 cpdef int MAX_DIM = 256
 
@@ -70,7 +70,7 @@ cdef class _Shared:
         return {'alphas': [self.alphas[i] for i in xrange(self.dim)]}
 
 
-class Shared(_Shared, SharedIoMixin):
+class Shared(_Shared, SharedMixin, SharedIoMixin):
     pass
 
 
@@ -127,6 +127,11 @@ cdef class _Group:
                     - gammaln(shared.alphas[i]))
         return sum + gammaln(alpha_sum) - gammaln(alpha_sum + count_sum)
 
+    def sample_value(self, _Shared shared):
+        cdef Sampler sampler = Sampler()
+        sampler.init(shared, self)
+        return sampler.eval(shared)
+
     def load(self, raw):
         counts = raw['counts']
         self.dim = len(counts)
@@ -143,36 +148,32 @@ class Group(_Group, GroupIoMixin):
     pass
 
 
-# Buffer types only allowed as function local variables
-#ctypedef numpy.ndarray[numpy.float64_t, ndim=1] _Sampler
-ctypedef numpy.ndarray _Sampler
+cdef class Sampler:
+    # Buffer types only allowed as function local variables
+    #cdef numpy.ndarray[numpy.float64_t, ndim=1] ps
+    cdef numpy.ndarray ps
 
+    def init(self, _Shared shared, _Group group=None):
+        self.ps = numpy.zeros(shared.dim, dtype=numpy.float64)
+        cdef double * ps = <double *> self.ps.data
+        cdef int i
+        if group is None:
+            for i in xrange(shared.dim):
+                ps[i] = shared.alphas[i]
+        else:
+            for i in xrange(shared.dim):
+                ps[i] = group.counts[i] + shared.alphas[i]
+        sample_dirichlet(shared.dim, ps, ps)
 
-def sampler_create(_Shared shared, _Group group=None):
-    cdef _Sampler sampler = numpy.zeros(shared.dim, dtype=numpy.float64)
-    cdef double * ps = <double *> sampler.data
-    cdef int i
-    if group is None:
-        for i in xrange(shared.dim):
-            sampler[i] = shared.alphas[i]
-    else:
-        for i in xrange(shared.dim):
-            sampler[i] = group.counts[i] + shared.alphas[i]
-    sample_dirichlet(shared.dim, ps, ps)
-    return sampler
-
-def sampler_eval(_Shared shared, _Sampler sampler):
-    cdef double * ps = <double *> sampler.data
-    return sample_discrete(shared.dim, ps)
-
-def sample_value(_Shared shared, _Group group):
-    cdef _Sampler sampler = sampler_create(shared, group)
-    return sampler_eval(shared, sampler)
+    def eval(self, _Shared shared):
+        cdef double * ps = <double *> self.ps.data
+        return sample_discrete(shared.dim, ps)
 
 def sample_group(_Shared shared, int size):
-    cdef _Sampler sampler = sampler_create(shared)
+    cdef Sampler sampler = Sampler()
+    sampler.init(shared)
     cdef list result = []
     cdef int i
     for i in xrange(size):
-        result.append(sampler_eval(shared, sampler))
+        result.append(sampler.eval(shared))
     return result
