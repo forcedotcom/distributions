@@ -164,6 +164,17 @@ void vector_add_subtract (
     }
 }
 
+void vector_add_subtract (
+        const size_t size,
+        float * __restrict__ io,
+        const float in1,
+        const float * __restrict__ in2)
+{
+    for (size_t i = 0; i < size; ++i) {
+        io[i] += in1 - in2[i];
+    }
+}
+
 void vector_multiply_add (
         const size_t size,
         float * __restrict__ io,

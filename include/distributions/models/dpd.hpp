@@ -93,7 +93,8 @@ struct Shared : SharedMixin<Model>
         shared.alpha = 0.5;
         shared.beta0 = 0.0;  // must be zero for testing
         for (size_t i = 0; i < dim; ++i) {
-            shared.betas.add(i) = 1.0 / dim;
+            shared.betas.add(i, 1.0 / dim);
+            shared.counts.add(i);
         }
         return shared;
     }
@@ -116,6 +117,7 @@ struct Group : GroupMixin<Model>
             const Value & value,
             rng_t &)
     {
+        DIST_ASSERT1(value != shared.OTHER(), "cannot add OTHER");
         DIST_ASSERT1(shared.betas.contains(value), "unknown value: " << value);
         counts.add(value);
     }
@@ -125,6 +127,7 @@ struct Group : GroupMixin<Model>
             const Value & value,
             rng_t &)
     {
+        DIST_ASSERT1(value != shared.OTHER(), "cannot remove OTHER");
         DIST_ASSERT1(shared.betas.contains(value), "unknown value: " << value);
         counts.remove(value);
     }
@@ -142,11 +145,12 @@ struct Group : GroupMixin<Model>
             const Value & value,
             rng_t &) const
     {
-        float beta = (value == shared.OTHER())
-                   ? shared.beta0
-                   : shared.betas.get(value) + counts.get_count(value);
-        float total = shared.alpha + counts.get_total();
-        return fast_log(shared.alpha * beta / total);
+        float alpha = shared.alpha;
+        float numer = (value == shared.OTHER())
+                    ? alpha * shared.beta0
+                    : alpha * shared.betas.get(value) + counts.get_count(value);
+        float denom = alpha + counts.get_total();
+        return fast_log(numer / denom);
     }
 
     float score_data (
@@ -198,10 +202,12 @@ struct Sampler
             Value value = pair.first;
             float beta = pair.second;
             values.push_back(value);
-            probs.push_back(group.counts.get_count(value) + beta * alpha);
+            probs.push_back(beta * alpha + group.counts.get_count(value));
         }
-        probs.push_back(shared.beta0 * shared.alpha);
-        values.push_back(shared.OTHER());
+        if (shared.beta0 > 0) {
+            values.push_back(shared.OTHER());
+            probs.push_back(shared.beta0 * alpha);
+        }
 
         sample_dirichlet(rng, probs.size(), probs.data(), probs.data());
     }
@@ -278,6 +284,7 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
             const MixtureSlave<Shared> & slave,
             const Value & value)
     {
+        DIST_ASSERT1(value != shared.OTHER(), "cannot add OTHER");
         VectorFloat & scores = scores_.add(value);
         const size_t group_count = slave.groups().size();
         const float alpha = shared.alpha;
@@ -290,9 +297,10 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
     }
 
     void remove_shared_value (
-            const Shared &,
+            const Shared & shared,
             const Value & value)
     {
+        DIST_ASSERT1(value != shared.OTHER(), "cannot remove OTHER");
         scores_.remove(value);
     }
 
@@ -327,7 +335,7 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
                 fast_log(alpha * shared.betas.get(value) + count);
         }
         count_t count_sum = group.counts.get_total();
-        scores_shift_[groupid] = fast_log(shared.alpha + count_sum);
+        scores_shift_[groupid] = fast_log(alpha + count_sum);
 
     }
 
@@ -338,6 +346,7 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
             const Value & value,
             rng_t &)
     {
+        DIST_ASSERT1(value != shared.OTHER(), "cannot update OTHER");
         const float alpha = shared.alpha;
         count_t count = group.counts.get_count(value);
         count_t count_sum = group.counts.get_total();
@@ -373,16 +382,25 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
     }
 
     void score_value (
-            const Shared &,
+            const Shared & shared,
             const Value & value,
             VectorFloat & scores_accum,
             rng_t &) const
     {
-        vector_add_subtract(
-            scores_accum.size(),
-            scores_accum.data(),
-            scores_.get(value).data(),
-            scores_shift_.data());
+        if (DIST_LIKELY(value != shared.OTHER())) {
+            vector_add_subtract(
+                scores_accum.size(),
+                scores_accum.data(),
+                scores_.get(value).data(),
+                scores_shift_.data());
+        } else {
+            float score_other = fast_log(shared.alpha * shared.beta0);
+            vector_add_subtract(
+                scores_accum.size(),
+                scores_accum.data(),
+                score_other,
+                scores_shift_.data());
+        }
     }
 
     float score_data (

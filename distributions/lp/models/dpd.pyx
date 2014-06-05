@@ -69,6 +69,7 @@ cdef class _Shared(_dpd.Shared):
         cdef double beta0 = 1.0
         for value, beta in raw_betas.iteritems():
             self.ptr.betas.add(int(value), beta)
+            beta0 -= beta
         self.ptr.beta0 = beta0
         cdef int count
         for value, count in raw_counts.iteritems():

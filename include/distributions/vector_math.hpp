@@ -80,6 +80,11 @@ void vector_add_subtract (
         float * __restrict__ io,
         const float * __restrict__ in1,
         const float * __restrict__ in2);
+void vector_add_subtract (
+        const size_t size,
+        float * __restrict__ io,
+        const float in1,
+        const float * __restrict__ in2);
 
 // io += in1 * in2
 void vector_multiply_add (

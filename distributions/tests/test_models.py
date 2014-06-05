@@ -467,7 +467,7 @@ def test_mixture_score(module, EXAMPLE):
         actual += noise
         mixture.score_value(shared, value, actual)
         actual -= noise
-        assert_close(actual, expected, err_msg='score_value')
+        assert_close(actual, expected, err_msg='score_value {}'.format(value))
         return actual
 
     def check_score_data():
