@@ -151,14 +151,24 @@ inline void shared_load (
         dirichlet_process_discrete::Shared & shared,
         const protobuf::DirichletProcessDiscrete_Shared & message)
 {
+    const size_t value_count = message.values_size();
+    DIST_ASSERT_EQ(message.betas_size(), value_count);
+    DIST_ASSERT_EQ(message.counts_size(), value_count);
     shared.gamma = message.gamma();
     shared.alpha = message.alpha();
-    shared.betas.resize(message.betas_size());
+    shared.betas.clear();
+    shared.counts.clear();
     double beta_sum = 0;
-    for (size_t i = 0; i < shared.betas.size(); ++i) {
-        beta_sum += shared.betas[i] = message.betas(i);
+    for (size_t i = 0; i < value_count; ++i) {
+        auto value = message.values(i);
+        float beta = message.betas(i);
+        DIST_ASSERT_LT(beta, 0);
+        shared.betas.add(value, beta);
+        beta_sum += beta;
+        shared.counts.add(message.counts(i));
     }
-    shared.beta0 = 1 - beta_sum;
+    DIST_ASSERT_LE(beta_sum, 1 + 1e-4);
+    shared.beta0 = std::max(0.0, 1.0 - beta_sum);
 }
 
 inline void shared_dump (
@@ -168,8 +178,13 @@ inline void shared_dump (
     message.Clear();
     message.set_gamma(shared.gamma);
     message.set_alpha(shared.alpha);
-    for (size_t i = 0; i < shared.betas.size(); ++i) {
-        message.add_betas(shared.betas[i]);
+    for (auto & i : shared.betas) {
+        auto value = i.first;
+        auto beta = i.second;
+        auto count = shared.counts.get(i);
+        message.add_values(value);
+        message.add_betas(beta);
+        message.add_counts(count);
     }
 }
 

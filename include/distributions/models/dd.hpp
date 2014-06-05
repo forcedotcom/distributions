@@ -317,11 +317,11 @@ struct VectorizedScorer
             rng_t & rng)
     {
         for (Value value = 0; value < shared.dim; ++value) {
-            update_value(shared, groupid, group, value, rng);
+            update_group_value(shared, groupid, group, value, rng);
         }
     }
 
-    void update_value (
+    void update_group_value (
             const Shared & shared,
             size_t groupid,
             const Group & group,

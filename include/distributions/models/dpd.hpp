@@ -66,10 +66,10 @@ struct Shared
 
     bool add_value (const Value & value, rng_t & rng)
     {
-        LOOM_ASSERT1(value != OTHER(), "cannot add OTHER");
+        DIST_ASSERT1(value != OTHER(), "cannot add OTHER");
         bool add_group = (counts.add(value) == 1);
         if (DIST_UNLIKELY(add_group)) {
-            // FIXME is the following correct?
+            // FIXME(jglidden) is the following correct?
             float beta = beta0 * sample_beta(rng, 1.f, gamma);
             beta0 = std::max(0.f, beta0 - beta);
             betas.add(value) = beta;
@@ -78,9 +78,9 @@ struct Shared
         return add_group;
     }
 
-    bool remove_value (const Value & value)
+    bool remove_value (const Value & value, rng_t &)
     {
-        LOOM_ASSERT1(value != OTHER(), "cannot remove OTHER");
+        DIST_ASSERT1(value != OTHER(), "cannot remove OTHER");
         bool remove_group = (counts.remove(value) == 0);
         if (DIST_UNLIKELY(remove_group)) {
             beta0 += betas.pop(value);
@@ -93,10 +93,12 @@ struct Shared
     {
         Shared shared;
         size_t dim = 100;
-        shared.gamma = 0.5;
+        shared.gamma = 1.0 / dim;
         shared.alpha = 0.5;
         shared.beta0 = 0.0;  // must be zero for testing
-        shared.betas.resize(dim, 1.0 / dim);
+        for (size_t i = 0; i < dim; ++i) {
+            shared.betas.add(i) = 1.0 / dim;
+        }
         return shared;
     }
 };
@@ -156,7 +158,7 @@ struct Group
         float score = 0;
         for (auto & i : counts) {
             Value value = i.first;
-            float prior_i = alpha * shared.betas[value];
+            float prior_i = alpha * shared.betas.get(value);
             score += fast_lgamma(prior_i + i.second)
                    - fast_lgamma(prior_i);
         }
@@ -181,11 +183,12 @@ struct Sampler
         probs.reserve(shared.betas.size() + 1);
         values.clear();
         values.reserve(shared.betas.size() + 1);
+        const float alpha = shared.alpha;
         for (auto & pair : shared.betas) {
             Value value = pair.first;
             float beta = pair.second;
             values.push_back(value);
-            probs.push_back(group.get_count(value) + beta * shared.alpha);
+            probs.push_back(group.counts.get_count(value) + beta * alpha);
         }
         probs.push_back(shared.beta0 * shared.alpha);
         values.push_back(shared.OTHER());
@@ -214,17 +217,18 @@ struct Scorer
         scores.clear();
 
         const size_t total = group.counts.get_total();
-        const float betas_scale = shared.alpha / (shared.alpha + total);
+        const float beta_scale = shared.alpha / (shared.alpha + total);
         for (auto & i : shared.betas) {
-            scores.add(i.first) = i->second * beta_scale;
+            scores.add(i.first, i.second * beta_scale);
         }
 
         const float counts_scale = 1.0f / (shared.alpha + total);
         for (auto & i : group.counts) {
-            scores[i.first] += counts_scale * i.second;
+            scores.get(i.first) += counts_scale * i.second;
         }
 
-        for (auto & score : scores) {
+        for (auto & i : scores) {
+            float & score = i.second;
             score = fast_log(score);
         }
     }
@@ -234,7 +238,7 @@ struct Scorer
             const Value & value,
             rng_t &) const
     {
-        return scores[value];
+        return scores.get(value);
     }
 };
 
@@ -250,10 +254,6 @@ inline float Group::score_value (
 
 class VectorizedScorer
 {
-    Sparse_<Value, VectorFloat> scores_;
-    VectorFloat scores_shift_;
-    mutable VectorFloat temp_;
-
 public:
 
     typedef dirichlet_process_discrete::Value Value;
@@ -266,12 +266,12 @@ public:
         scores_shift_.resize(size);
         for (const auto & i : shared.betas) {
             Value value = i.first;
-            scores_[value].resize(size);
+            scores_.get_or_add(value).resize(size);
         }
-        if (score_.size() != shared.betas.size()) {
-            for (auto & i = scores_.begin(); i != scores_.end();) {
+        if (scores_.size() != shared.betas.size()) {
+            for (auto i = scores_.begin(); i != scores_.end();) {
                 if (DIST_UNLIKELY(not shared.betas.contains(i->first))) {
-                    score_.erase(i++);
+                    scores_.erase(i++);
                 } else {
                     ++i;
                 }
@@ -287,7 +287,7 @@ public:
         VectorFloat & scores = scores_.add(value);
         const size_t group_count = slave.groups().size();
         const float alpha = shared.alpha;
-        const float beta = shared.betas[value];
+        const float beta = shared.betas.get(value);
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
             auto count = slave.groups(groupid).counts.get_count(value);
             scores[groupid] = alpha * beta + count;
@@ -304,16 +304,17 @@ public:
 
     void add_group (const Shared & shared, rng_t &)
     {
+        const float alpha = shared.alpha;
         for (auto & i : scores_) {
-            i.second.packed_add(0);
+            i.second.packed_add(fast_log(alpha * shared.betas.get(i.first)));
         }
-        scores_shift_.packed_add(0);
+        scores_shift_.packed_add(fast_log(alpha));
     }
 
-    void remove_group (const Shared & shared, size_t groupid)
+    void remove_group (const Shared &, size_t groupid)
     {
         for (auto & i : scores_) {
-            i->second.packed_remove(groupid);
+            i.second.packed_remove(groupid);
         }
         scores_shift_.packed_remove(groupid);
     }
@@ -322,20 +323,21 @@ public:
             const Shared & shared,
             size_t groupid,
             const Group & group,
-            rng_t & rng)
+            rng_t &)
     {
         const float alpha = shared.alpha;
-        const count_t count = group.counts.get_count(value);
         for (auto & i : scores_) {
-            Value value = i->first;
-            i->second[groupid] = fast_log(alpha * shared.betas[value] + count);
+            Value value = i.first;
+            count_t count = group.counts.get_count(value);
+            i.second[groupid] =
+                fast_log(alpha * shared.betas.get(value) + count);
         }
         count_t count_sum = group.counts.get_total();
         scores_shift_[groupid] = fast_log(shared.alpha + count_sum);
 
     }
 
-    void update_value (
+    void update_group_value (
             const Shared & shared,
             size_t groupid,
             const Group & group,
@@ -346,7 +348,7 @@ public:
         count_t count = group.counts.get_count(value);
         count_t count_sum = group.counts.get_total();
         scores_.get(value)[groupid] =
-            fast_log(alpha * shared.betas[value] + count);
+            fast_log(alpha * shared.betas.get(value) + count);
         scores_shift_[groupid] = fast_log(alpha + count_sum);
     }
 
@@ -360,8 +362,8 @@ public:
 
         for (auto & i : scores_) {
             Value value = i.first;
-            VectorFloat & scores = i->second;
-            const float beta = shared.betas[value];
+            VectorFloat & scores = i.second;
+            const float beta = shared.betas.get(value);
             for (size_t groupid = 0; groupid < group_count; ++groupid) {
                 auto count = slave.groups(groupid).counts.get_count(value);
                 scores[groupid] = alpha * beta + count;
@@ -389,19 +391,19 @@ public:
             scores_shift_.data());
     }
 
-    // not thread safe
     float score_data (
             const Shared & shared,
             const MixtureSlave<Shared> & slave,
             rng_t &) const
     {
         const size_t dim = shared.betas.size();
+        const float alpha = shared.alpha;
 
-        temp_.resize(dim + 1);
-        for (size_t i = 0; i < dim; ++i) {
-            temp_[i] = fast_lgamma(shared.betas[i] * shared.alpha);
+        Sparse_<Value, float> shared_part;
+        for (auto & i : shared.betas) {
+            shared_part.add(i.first, fast_lgamma(alpha * i.second));
         }
-        temp_.back() = fast_lgamma(shared.alpha);
+        const float shared_total = fast_lgamma(alpha);
 
         float score = 0;
         for (const auto & group : slave.groups()) {
@@ -410,12 +412,12 @@ public:
                     Value value = i.first;
                     DIST_ASSERT1(value < dim,
                         "unknown value: " << value << " >= " << dim);
-                    float prior_i = shared.betas[value] * shared.alpha;
+                    float prior_i = shared.betas.get(value) * alpha;
                     score += fast_lgamma(prior_i + i.second)
-                           - temp_[value];
+                           - shared_part.get(value);
                 }
-                score += temp_.back()
-                       - fast_lgamma(shared.alpha + group.counts.get_total());
+                score += shared_total
+                       - fast_lgamma(alpha + group.counts.get_total());
             }
         }
 
@@ -430,6 +432,11 @@ public:
     {
         slave.score_data_grid(shareds, scores_out, rng);
     }
+
+private:
+
+    Sparse_<Value, VectorFloat> scores_;
+    VectorFloat scores_shift_;
 };
 
 inline Value sample_value (

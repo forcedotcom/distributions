@@ -36,9 +36,80 @@ namespace distributions
 {
 
 template<class Key, class Value>
+class Sparse_ : public std::unordered_map<Key, Value, TrivialHash<Key>>
+{
+    typedef std::unordered_map<Key, Value, TrivialHash<Key>> Base;
+
+public:
+
+    bool contains (const Key & key) const
+    {
+        return Base::find(key) != Base::end();
+    }
+
+    Value & add (const Key & key)
+    {
+        auto pair = Base::insert(std::make_pair(key, Value()));
+        DIST_ASSERT1(pair.second, "duplicate key: " << key);
+        return pair.first->second;
+    }
+
+    void add (const Key & key, const Value & value)
+    {
+        auto pair = Base::insert(std::make_pair(key, value));
+        DIST_ASSERT1(pair.second, "duplicate key: " << key);
+    }
+
+    void remove (const Key & key)
+    {
+        bool removed = Base::erase(key);
+        DIST_ASSERT1(removed, "missing key: " << key);
+    }
+
+    Value pop (const Key & key)
+    {
+        auto i = Base::find(key);
+        DIST_ASSERT1(i != Base::end(), "missing key: " << key);
+        Value result = std::move(i->second);
+        Base::erase(i);
+        return result;
+    }
+
+    void set (const Key & key, const Value & value)
+    {
+        auto i = Base::find(key);
+        DIST_ASSERT1(i != Base::end(), "missing key: " << key);
+        i->second = value;
+    }
+
+    Value & get (const Key & key)
+    {
+        auto i = Base::find(key);
+        DIST_ASSERT1(i != Base::end(), "missing key: " << key);
+        return i->second;
+    }
+
+    Value & get_or_add (const Key & key)
+    {
+        return Base::operator[](key);
+    }
+
+    const Value & get (const Key & key) const
+    {
+        auto i = Base::find(key);
+        DIST_ASSERT1(i != Base::end(), "missing key: " << key);
+        return i->second;
+    }
+};
+
+
+template<class Key, class Value>
 class SparseCounter
 {
     typedef std::unordered_map<Key, Value, TrivialHash<Key>> map_t;
+
+    map_t map_;
+    Value total_;
 
 public:
 
@@ -116,74 +187,6 @@ public:
 
     iterator begin () const { return map_.begin(); }
     iterator end () const { return map_.end(); }
-
-private:
-
-    map_t map_;
-    value_t total_;
-};
-
-
-template<class Key, class Value>
-class Sparse_ : public std::unordered_map<Key, Value, TrivialHash<Key>>
-{
-    typedef std::unordered_map<Key, Value, TrivialHash<Key>> Base;
-
-public:
-
-    bool contains (const Key & key) const
-    {
-        return Base::find(key) != Base::end();
-    }
-
-    Value & add (const Key & key)
-    {
-        auto pair = Base::insert(std::make_pair(key, Value()));
-        DIST_ASSERT1(pair.second, "duplicate key: " << key);
-        return pair.first->second;
-    }
-
-    void add (const Key & key, const Value & value)
-    {
-        auto pair = Base::insert(std::make_pair(key, value));
-        DIST_ASSERT1(pair.second, "duplicate key: " << key);
-    }
-
-    void remove (const Key & key)
-    {
-        bool removed = Base::erase(key);
-        DIST_ASSERT1(removed, "missing key: " << key);
-    }
-
-    Value pop (const Key & key)
-    {
-        auto & i = Base::find(key);
-        DIST_ASSERT1(i != Base::end(), "missing key: " << key);
-        Value result = std::move(i->second);
-        Base::erase(i);
-        return result;
-    }
-
-    void set (const Key & key, const Value & value)
-    {
-        auto & i = Base::find(key);
-        DIST_ASSERT1(i != Base::end(), "missing key: " << key);
-        i->second = value;
-    }
-
-    Value & get (const Key & key)
-    {
-        auto & i = Base::find(key);
-        DIST_ASSERT1(i != Base::end(), "missing key: " << key);
-        return i->second;
-    }
-
-    const Value & get (const Key & key) const
-    {
-        auto & i = Base::find(key);
-        DIST_ASSERT1(i != Base::end(), "missing key: " << key);
-        return i->second;
-    }
 };
 
 } // namespace distributions

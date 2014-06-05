@@ -227,7 +227,7 @@ struct VectorizedScorer
         alpha_[groupid] = base.alpha;
     }
 
-    void update_value (
+    void update_group_value (
             const Shared & shared,
             size_t groupid,
             const Group & group,

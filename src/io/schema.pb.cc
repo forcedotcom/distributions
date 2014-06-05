@@ -292,10 +292,12 @@ void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(DirichletProcessDiscrete));
   DirichletProcessDiscrete_Shared_descriptor_ = DirichletProcessDiscrete_descriptor_->nested_type(0);
-  static const int DirichletProcessDiscrete_Shared_offsets_[3] = {
+  static const int DirichletProcessDiscrete_Shared_offsets_[5] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletProcessDiscrete_Shared, gamma_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletProcessDiscrete_Shared, alpha_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletProcessDiscrete_Shared, values_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletProcessDiscrete_Shared, betas_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletProcessDiscrete_Shared, counts_),
   };
   DirichletProcessDiscrete_Shared_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -680,25 +682,26 @@ void protobuf_AddDesc_distributions_2fio_2fschema_2eproto() {
     " \003(\002\022\014\n\004beta\030\002 \003(\002\032%\n\005Group\022\r\n\005heads\030\001 \002"
     "(\004\022\r\n\005tails\030\002 \002(\004\"b\n\021DirichletDiscrete\032\030"
     "\n\006Shared\022\016\n\006alphas\030\001 \003(\002\032\032\n\tGridPrior\022\r\n"
-    "\005alpha\030\001 \003(\002\032\027\n\005Group\022\016\n\006counts\030\001 \003(\004\"\243\001"
-    "\n\030DirichletProcessDiscrete\0325\n\006Shared\022\r\n\005"
-    "gamma\030\001 \002(\002\022\r\n\005alpha\030\002 \002(\002\022\r\n\005betas\030\003 \003("
-    "\002\032)\n\tGridPrior\022\r\n\005gamma\030\001 \003(\002\022\r\n\005alpha\030\002"
-    " \003(\002\032%\n\005Group\022\014\n\004keys\030\001 \003(\r\022\016\n\006values\030\002 "
-    "\003(\004\"\236\001\n\014GammaPoisson\032)\n\006Shared\022\r\n\005alpha\030"
-    "\001 \002(\002\022\020\n\010inv_beta\030\002 \002(\002\032,\n\tGridPrior\022\r\n\005"
-    "alpha\030\001 \003(\002\022\020\n\010inv_beta\030\002 \003(\002\0325\n\005Group\022\r"
-    "\n\005count\030\001 \002(\004\022\013\n\003sum\030\002 \002(\004\022\020\n\010log_prod\030\003"
-    " \002(\002\"\242\001\n\024BetaNegativeBinomial\0320\n\006Shared\022"
-    "\r\n\005alpha\030\001 \002(\002\022\014\n\004beta\030\002 \002(\002\022\t\n\001r\030\003 \002(\004\032"
-    "3\n\tGridPrior\022\r\n\005alpha\030\001 \003(\002\022\014\n\004beta\030\002 \003("
-    "\002\022\t\n\001r\030\003 \003(\004\032#\n\005Group\022\r\n\005count\030\001 \002(\004\022\013\n\003"
-    "sum\030\002 \002(\004\"\337\001\n\022NormalInverseChiSq\032@\n\006Shar"
-    "ed\022\n\n\002mu\030\001 \002(\002\022\r\n\005kappa\030\002 \002(\002\022\017\n\007sigmasq"
-    "\030\003 \002(\002\022\n\n\002nu\030\004 \002(\002\032C\n\tGridPrior\022\n\n\002mu\030\001 "
-    "\003(\002\022\r\n\005kappa\030\002 \003(\002\022\017\n\007sigmasq\030\003 \003(\002\022\n\n\002n"
-    "u\030\004 \003(\002\032B\n\005Group\022\r\n\005count\030\001 \002(\004\022\014\n\004mean\030"
-    "\002 \002(\002\022\034\n\024count_times_variance\030\003 \002(\002", 1235);
+    "\005alpha\030\001 \003(\002\032\027\n\005Group\022\016\n\006counts\030\001 \003(\004\"\303\001"
+    "\n\030DirichletProcessDiscrete\032U\n\006Shared\022\r\n\005"
+    "gamma\030\001 \002(\002\022\r\n\005alpha\030\002 \002(\002\022\016\n\006values\030\003 \003"
+    "(\r\022\r\n\005betas\030\004 \003(\002\022\016\n\006counts\030\005 \003(\004\032)\n\tGri"
+    "dPrior\022\r\n\005gamma\030\001 \003(\002\022\r\n\005alpha\030\002 \003(\002\032%\n\005"
+    "Group\022\014\n\004keys\030\001 \003(\r\022\016\n\006values\030\002 \003(\004\"\236\001\n\014"
+    "GammaPoisson\032)\n\006Shared\022\r\n\005alpha\030\001 \002(\002\022\020\n"
+    "\010inv_beta\030\002 \002(\002\032,\n\tGridPrior\022\r\n\005alpha\030\001 "
+    "\003(\002\022\020\n\010inv_beta\030\002 \003(\002\0325\n\005Group\022\r\n\005count\030"
+    "\001 \002(\004\022\013\n\003sum\030\002 \002(\004\022\020\n\010log_prod\030\003 \002(\002\"\242\001\n"
+    "\024BetaNegativeBinomial\0320\n\006Shared\022\r\n\005alpha"
+    "\030\001 \002(\002\022\014\n\004beta\030\002 \002(\002\022\t\n\001r\030\003 \002(\004\0323\n\tGridP"
+    "rior\022\r\n\005alpha\030\001 \003(\002\022\014\n\004beta\030\002 \003(\002\022\t\n\001r\030\003"
+    " \003(\004\032#\n\005Group\022\r\n\005count\030\001 \002(\004\022\013\n\003sum\030\002 \002("
+    "\004\"\337\001\n\022NormalInverseChiSq\032@\n\006Shared\022\n\n\002mu"
+    "\030\001 \002(\002\022\r\n\005kappa\030\002 \002(\002\022\017\n\007sigmasq\030\003 \002(\002\022\n"
+    "\n\002nu\030\004 \002(\002\032C\n\tGridPrior\022\n\n\002mu\030\001 \003(\002\022\r\n\005k"
+    "appa\030\002 \003(\002\022\017\n\007sigmasq\030\003 \003(\002\022\n\n\002nu\030\004 \003(\002\032"
+    "B\n\005Group\022\r\n\005count\030\001 \002(\004\022\014\n\004mean\030\002 \002(\002\022\034\n"
+    "\024count_times_variance\030\003 \002(\002", 1267);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "distributions/io/schema.proto", &protobuf_RegisterTypes);
   Clustering::default_instance_ = new Clustering();
@@ -3164,7 +3167,9 @@ void DirichletDiscrete::Swap(DirichletDiscrete* other) {
 #ifndef _MSC_VER
 const int DirichletProcessDiscrete_Shared::kGammaFieldNumber;
 const int DirichletProcessDiscrete_Shared::kAlphaFieldNumber;
+const int DirichletProcessDiscrete_Shared::kValuesFieldNumber;
 const int DirichletProcessDiscrete_Shared::kBetasFieldNumber;
+const int DirichletProcessDiscrete_Shared::kCountsFieldNumber;
 #endif  // !_MSC_VER
 
 DirichletProcessDiscrete_Shared::DirichletProcessDiscrete_Shared()
@@ -3222,7 +3227,9 @@ void DirichletProcessDiscrete_Shared::Clear() {
     gamma_ = 0;
     alpha_ = 0;
   }
+  values_.Clear();
   betas_.Clear();
+  counts_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
 }
@@ -3260,18 +3267,40 @@ bool DirichletProcessDiscrete_Shared::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(29)) goto parse_betas;
+        if (input->ExpectTag(24)) goto parse_values;
         break;
       }
       
-      // repeated float betas = 3;
+      // repeated uint32 values = 3;
       case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_values:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 1, 24, input, this->mutable_values())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, this->mutable_values())));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(24)) goto parse_values;
+        if (input->ExpectTag(37)) goto parse_betas;
+        break;
+      }
+      
+      // repeated float betas = 4;
+      case 4: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
          parse_betas:
           DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 1, 29, input, this->mutable_betas())));
+                 1, 37, input, this->mutable_betas())));
         } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
                    == ::google::protobuf::internal::WireFormatLite::
                       WIRETYPE_LENGTH_DELIMITED) {
@@ -3281,7 +3310,29 @@ bool DirichletProcessDiscrete_Shared::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(29)) goto parse_betas;
+        if (input->ExpectTag(37)) goto parse_betas;
+        if (input->ExpectTag(40)) goto parse_counts;
+        break;
+      }
+      
+      // repeated uint64 counts = 5;
+      case 5: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_counts:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 1, 40, input, this->mutable_counts())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, this->mutable_counts())));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(40)) goto parse_counts;
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -3314,10 +3365,22 @@ void DirichletProcessDiscrete_Shared::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->alpha(), output);
   }
   
-  // repeated float betas = 3;
+  // repeated uint32 values = 3;
+  for (int i = 0; i < this->values_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(
+      3, this->values(i), output);
+  }
+  
+  // repeated float betas = 4;
   for (int i = 0; i < this->betas_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteFloat(
-      3, this->betas(i), output);
+      4, this->betas(i), output);
+  }
+  
+  // repeated uint64 counts = 5;
+  for (int i = 0; i < this->counts_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(
+      5, this->counts(i), output);
   }
   
   if (!unknown_fields().empty()) {
@@ -3338,10 +3401,22 @@ void DirichletProcessDiscrete_Shared::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->alpha(), target);
   }
   
-  // repeated float betas = 3;
+  // repeated uint32 values = 3;
+  for (int i = 0; i < this->values_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteUInt32ToArray(3, this->values(i), target);
+  }
+  
+  // repeated float betas = 4;
   for (int i = 0; i < this->betas_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteFloatToArray(3, this->betas(i), target);
+      WriteFloatToArray(4, this->betas(i), target);
+  }
+  
+  // repeated uint64 counts = 5;
+  for (int i = 0; i < this->counts_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteUInt64ToArray(5, this->counts(i), target);
   }
   
   if (!unknown_fields().empty()) {
@@ -3366,11 +3441,31 @@ int DirichletProcessDiscrete_Shared::ByteSize() const {
     }
     
   }
-  // repeated float betas = 3;
+  // repeated uint32 values = 3;
+  {
+    int data_size = 0;
+    for (int i = 0; i < this->values_size(); i++) {
+      data_size += ::google::protobuf::internal::WireFormatLite::
+        UInt32Size(this->values(i));
+    }
+    total_size += 1 * this->values_size() + data_size;
+  }
+  
+  // repeated float betas = 4;
   {
     int data_size = 0;
     data_size = 4 * this->betas_size();
     total_size += 1 * this->betas_size() + data_size;
+  }
+  
+  // repeated uint64 counts = 5;
+  {
+    int data_size = 0;
+    for (int i = 0; i < this->counts_size(); i++) {
+      data_size += ::google::protobuf::internal::WireFormatLite::
+        UInt64Size(this->counts(i));
+    }
+    total_size += 1 * this->counts_size() + data_size;
   }
   
   if (!unknown_fields().empty()) {
@@ -3398,7 +3493,9 @@ void DirichletProcessDiscrete_Shared::MergeFrom(const ::google::protobuf::Messag
 
 void DirichletProcessDiscrete_Shared::MergeFrom(const DirichletProcessDiscrete_Shared& from) {
   GOOGLE_CHECK_NE(&from, this);
+  values_.MergeFrom(from.values_);
   betas_.MergeFrom(from.betas_);
+  counts_.MergeFrom(from.counts_);
   if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
     if (from.has_gamma()) {
       set_gamma(from.gamma());
@@ -3432,7 +3529,9 @@ void DirichletProcessDiscrete_Shared::Swap(DirichletProcessDiscrete_Shared* othe
   if (other != this) {
     std::swap(gamma_, other->gamma_);
     std::swap(alpha_, other->alpha_);
+    values_.Swap(&other->values_);
     betas_.Swap(&other->betas_);
+    counts_.Swap(&other->counts_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

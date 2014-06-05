@@ -42,8 +42,9 @@ cdef extern from "distributions/models/dpd.hpp" namespace "distributions::dirich
         float alpha
         float beta0
         SparseFloat betas
+        SparseCounter counts
         void add_value (Value &, rng_t &) nogil except +
-        void remove_value (Value &) nogil except +
+        void remove_value (Value &, rng_t &) nogil except +
 
 
     cppclass Group:
@@ -64,8 +65,8 @@ cdef extern from "distributions/models/dpd.hpp" namespace "distributions::dirich
     cppclass Mixture:
         vector[Group] groups "groups()"
         void init (Shared &, rng_t &) nogil except +
-        void add_shared_value (Shared &) nogil except +
-        void remove_slot (Shared &, Value &) nogil except +
+        void add_shared_value (Shared &, Value &) nogil except +
+        void remove_shared_value (Shared &, Value &) nogil except +
         void add_group (Shared &, rng_t &) nogil except +
         void remove_group (Shared &, size_t) nogil except +
         void add_value \

@@ -1091,10 +1091,22 @@ class DirichletProcessDiscrete_Shared : public ::google::protobuf::Message {
   inline float alpha() const;
   inline void set_alpha(float value);
   
-  // repeated float betas = 3;
+  // repeated uint32 values = 3;
+  inline int values_size() const;
+  inline void clear_values();
+  static const int kValuesFieldNumber = 3;
+  inline ::google::protobuf::uint32 values(int index) const;
+  inline void set_values(int index, ::google::protobuf::uint32 value);
+  inline void add_values(::google::protobuf::uint32 value);
+  inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
+      values() const;
+  inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
+      mutable_values();
+  
+  // repeated float betas = 4;
   inline int betas_size() const;
   inline void clear_betas();
-  static const int kBetasFieldNumber = 3;
+  static const int kBetasFieldNumber = 4;
   inline float betas(int index) const;
   inline void set_betas(int index, float value);
   inline void add_betas(float value);
@@ -1102,6 +1114,18 @@ class DirichletProcessDiscrete_Shared : public ::google::protobuf::Message {
       betas() const;
   inline ::google::protobuf::RepeatedField< float >*
       mutable_betas();
+  
+  // repeated uint64 counts = 5;
+  inline int counts_size() const;
+  inline void clear_counts();
+  static const int kCountsFieldNumber = 5;
+  inline ::google::protobuf::uint64 counts(int index) const;
+  inline void set_counts(int index, ::google::protobuf::uint64 value);
+  inline void add_counts(::google::protobuf::uint64 value);
+  inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >&
+      counts() const;
+  inline ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >*
+      mutable_counts();
   
   // @@protoc_insertion_point(class_scope:protobuf.distributions.DirichletProcessDiscrete.Shared)
  private:
@@ -1114,10 +1138,12 @@ class DirichletProcessDiscrete_Shared : public ::google::protobuf::Message {
   
   float gamma_;
   float alpha_;
+  ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > values_;
   ::google::protobuf::RepeatedField< float > betas_;
+  ::google::protobuf::RepeatedField< ::google::protobuf::uint64 > counts_;
   
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
   
   friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
   friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
@@ -2993,7 +3019,32 @@ inline void DirichletProcessDiscrete_Shared::set_alpha(float value) {
   alpha_ = value;
 }
 
-// repeated float betas = 3;
+// repeated uint32 values = 3;
+inline int DirichletProcessDiscrete_Shared::values_size() const {
+  return values_.size();
+}
+inline void DirichletProcessDiscrete_Shared::clear_values() {
+  values_.Clear();
+}
+inline ::google::protobuf::uint32 DirichletProcessDiscrete_Shared::values(int index) const {
+  return values_.Get(index);
+}
+inline void DirichletProcessDiscrete_Shared::set_values(int index, ::google::protobuf::uint32 value) {
+  values_.Set(index, value);
+}
+inline void DirichletProcessDiscrete_Shared::add_values(::google::protobuf::uint32 value) {
+  values_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
+DirichletProcessDiscrete_Shared::values() const {
+  return values_;
+}
+inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
+DirichletProcessDiscrete_Shared::mutable_values() {
+  return &values_;
+}
+
+// repeated float betas = 4;
 inline int DirichletProcessDiscrete_Shared::betas_size() const {
   return betas_.size();
 }
@@ -3016,6 +3067,31 @@ DirichletProcessDiscrete_Shared::betas() const {
 inline ::google::protobuf::RepeatedField< float >*
 DirichletProcessDiscrete_Shared::mutable_betas() {
   return &betas_;
+}
+
+// repeated uint64 counts = 5;
+inline int DirichletProcessDiscrete_Shared::counts_size() const {
+  return counts_.size();
+}
+inline void DirichletProcessDiscrete_Shared::clear_counts() {
+  counts_.Clear();
+}
+inline ::google::protobuf::uint64 DirichletProcessDiscrete_Shared::counts(int index) const {
+  return counts_.Get(index);
+}
+inline void DirichletProcessDiscrete_Shared::set_counts(int index, ::google::protobuf::uint64 value) {
+  counts_.Set(index, value);
+}
+inline void DirichletProcessDiscrete_Shared::add_counts(::google::protobuf::uint64 value) {
+  counts_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >&
+DirichletProcessDiscrete_Shared::counts() const {
+  return counts_;
+}
+inline ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >*
+DirichletProcessDiscrete_Shared::mutable_counts() {
+  return &counts_;
 }
 
 // -------------------------------------------------------------------

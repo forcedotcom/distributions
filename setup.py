@@ -28,10 +28,9 @@
 import os
 import re
 import sys
+import numpy
 from distutils.core import setup, Extension
 from distutils.version import LooseVersion
-
-import numpy as np
 
 try:
     from Cython.Build import cythonize
@@ -51,7 +50,7 @@ if sys.platform.lower().startswith('darwin'):
 
 
 include_dirs = ['include', 'distributions']
-include_dirs.append(np.get_include())
+include_dirs.append(numpy.get_include())
 
 
 extra_compile_args = [

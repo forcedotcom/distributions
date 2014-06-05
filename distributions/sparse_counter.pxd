@@ -42,7 +42,7 @@ cdef extern from "distributions/sparse_counter.hpp":
         void init_count (uint32_t, uint32_t) nogil
         uint32_t get_count (uint32_t) nogil
         uint32_t get_total () nogil
-        uint32_t add (uint32_t) nogil
+        uint32_t add (uint32_t, uint32_t) nogil
         uint32_t remove (uint32_t) nogil
         void merge (SparseCounter&) nogil
         #SparseCounter& operator= (SparseCounter&)

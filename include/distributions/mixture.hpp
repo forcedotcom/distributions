@@ -424,7 +424,7 @@ struct GroupScorerMixture
             rng_t & rng)
     {
         slave_.add_value(shared, groupid, value, rng);
-        scorer_.update_value(shared, groupid, groups()[groupid], value, rng);
+        scorer_.update_group_value(shared, groupid, groups()[groupid], value, rng);
     }
 
     void remove_value (
@@ -434,7 +434,7 @@ struct GroupScorerMixture
             rng_t & rng)
     {
         slave_.remove_value(shared, groupid, value, rng);
-        scorer_.update_value(shared, groupid, groups()[groupid], value, rng);
+        scorer_.update_group_value(shared, groupid, groups()[groupid], value, rng);
     }
 
     void score_value (

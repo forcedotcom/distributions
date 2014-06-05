@@ -268,7 +268,7 @@ struct VectorizedScorer
         mean_[groupid] = base.mean;
     }
 
-    void update_value (
+    void update_group_value (
             const Shared & shared,
             size_t groupid,
             const Group & group,

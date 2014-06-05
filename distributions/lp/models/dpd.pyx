@@ -29,7 +29,7 @@ cimport _dpd
 import _dpd
 
 from cython.operator cimport dereference as deref, preincrement as inc
-from distributions.sparse_counter cimport SparseCounter
+from distributions.sparse_counter cimport SparseCounter, SparseFloat
 from distributions.mixins import GroupIoMixin, SharedIoMixin
 
 
@@ -44,6 +44,11 @@ EXAMPLES = [
                 '1': 0.5,
                 '2': 0.25,
             },
+            'counts': {
+                '0': 1,
+                '1': 2,
+                '2': 4,
+            }
         },
         'values': [0, 1, 0, 2, 0, 1, 0],
     },
@@ -56,37 +61,51 @@ cdef class _Shared(_dpd.Shared):
         self.ptr.gamma = raw['gamma']
         self.ptr.alpha = raw['alpha']
         self.ptr.betas.clear()
+        self.ptr.counts.clear()
         cdef dict raw_betas = raw['betas']
-        cdef str i
+        cdef dict raw_counts = raw['counts']
+        cdef str value
         cdef float beta
         cdef double beta0 = 1.0
-        for i, beta in raw_betas.iteritems():
-            self.ptr.betas.get(int(i)) = beta
-            beta0 -= beta
+        for value, beta in raw_betas.iteritems():
+            self.ptr.betas.add(int(value), beta)
         self.ptr.beta0 = beta0
+        cdef int count
+        for value, count in raw_counts.iteritems():
+            self.ptr.counts.add(int(value), count)
 
     def dump(self):
         cdef dict betas = {}
-        cdef int i
-        for i in xrange(self.ptr.betas.size()):
-            betas[str(i)] = self.ptr.betas.get(i)
+        cdef dict counts = {}
+        cdef SparseFloat.iterator it = self.ptr.betas.begin()
+        cdef SparseFloat.iterator end = self.ptr.betas.end()
+        cdef str value
+        while it != end:
+            value = deref(it).first
+            betas[value] = float(deref(it).second)
+            counts[value] = int(self.ptr.counts.get_count(value))
+            inc(it)
         return {
             'gamma': float(self.ptr.gamma),
             'alpha': float(self.ptr.alpha),
             'betas': betas,
+            'counts': counts,
         }
 
     def load_protobuf(self, message):
         self.ptr.gamma = message.gamma
         self.ptr.alpha = message.alpha
         self.ptr.betas.clear()
-        cdef int size = len(message.betas)
+        self.ptr.counts.clear()
         cdef int i
+        cdef int value
         cdef float beta
         cdef double beta0 = 1.0
-        for i in xrange(size):
+        for i in xrange(len(message.betas)):
+            value = message.values[i]
             beta = message.betas[i]
-            self.ptr.betas.add(i, beta)
+            self.ptr.betas.add(value, beta)
+            self.ptr.counts.add(value, message.counts[i])
             beta0 -= beta
         self.ptr.beta0 = beta0
 
@@ -94,14 +113,15 @@ cdef class _Shared(_dpd.Shared):
         message.Clear()
         message.gamma = self.ptr.gamma
         message.alpha = self.ptr.alpha
-        cdef SparseCounter.iterator it = self.ptr.betas.begin()
-        cdef SparseCounter.iterator end = self.ptr.betas.end()
-        int value
+        cdef SparseFloat.iterator it = self.ptr.betas.begin()
+        cdef SparseFloat.iterator end = self.ptr.betas.end()
+        cdef int value
         while it != end:
             value = deref(it).first
-            message.keys.append(value)
+            message.values.append(value)
             message.betas.append(deref(it).second)
             message.counts.append(self.ptr.counts.get_count(value))
+            inc(it)
 
 
 class Shared(_Shared, SharedIoMixin):

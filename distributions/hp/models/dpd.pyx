@@ -99,7 +99,7 @@ cdef class _Group:
 
     def add_value(self, _Shared shared, _Value value):
         assert value != OTHER, 'tried to add OTHER to group'
-        self.counts.add(value)
+        self.counts.add(value, 1)
 
     def remove_value(self, _Shared shared, _Value value):
         assert value != OTHER, 'tried to remove OTHER to group'
