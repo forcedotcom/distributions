@@ -31,11 +31,15 @@
 #include <distributions/special.hpp>
 #include <distributions/random.hpp>
 #include <distributions/vector.hpp>
+#include <distributions/mixins.hpp>
 #include <distributions/mixture.hpp>
 
-namespace distributions {
-namespace gamma_poisson {
+namespace distributions
+{
+struct gamma_poisson
+{
 
+typedef gamma_poisson Model;
 typedef uint32_t Value;
 struct Group;
 struct Scorer;
@@ -44,15 +48,21 @@ struct VectorizedScorer;
 typedef GroupScorerMixture<VectorizedScorer> Mixture;
 
 
-struct Shared
+struct Shared : SharedMixin<Model>
 {
-    typedef gamma_poisson::Value Value;
-    typedef gamma_poisson::Group Group;
+    typedef Model::Value Value;
+    typedef Model::Group Group;
 
     float alpha;
     float inv_beta;
 
-    Shared plus_group(const Group & group) const;
+    Shared plus_group (const Group & group) const
+    {
+        Shared post;
+        post.alpha = alpha + group.sum;
+        post.inv_beta = inv_beta + group.count;
+        return post;
+    }
 
     static Shared EXAMPLE ()
     {
@@ -66,7 +76,7 @@ struct Shared
 
 struct Group
 {
-    typedef gamma_poisson::Value Value;
+    typedef Model::Value Value;
 
     uint32_t count;
     uint32_t sum;
@@ -112,7 +122,12 @@ struct Group
     float score_value (
             const Shared & shared,
             const Value & value,
-            rng_t & rng) const;
+            rng_t & rng) const
+    {
+        Scorer scorer;
+        scorer.init(shared, * this, rng);
+        return scorer.eval(shared, value, rng);
+    }
 
     float score_data (
             const Shared & shared,
@@ -124,6 +139,15 @@ struct Group
                - post.alpha * fast_log(post.inv_beta);
         score += -log_prod;
         return score;
+    }
+
+    Value sample_value (
+            const Shared & shared,
+            rng_t & rng)
+    {
+        Sampler sampler;
+        sampler.init(shared, *this, rng);
+        return sampler.eval(shared, rng);
     }
 };
 
@@ -178,22 +202,12 @@ struct Scorer
     }
 };
 
-inline float Group::score_value (
-        const Shared & shared,
-        const Value & value,
-        rng_t & rng) const
-{
-    Scorer scorer;
-    scorer.init(shared, * this, rng);
-    return scorer.eval(shared, value, rng);
-}
-
 struct VectorizedScorer
 {
-    typedef gamma_poisson::Value Value;
-    typedef gamma_poisson::Shared Shared;
-    typedef gamma_poisson::Group Group;
-    typedef gamma_poisson::Scorer BaseScorer;
+    typedef Model::Value Value;
+    typedef Model::Shared Shared;
+    typedef Model::Group Group;
+    typedef Model::Scorer BaseScorer;
 
     void resize(const Shared &, size_t size)
     {
@@ -299,23 +313,5 @@ private:
     mutable VectorFloat temp_;
 };
 
-inline Shared Shared::plus_group (const Group & group) const
-{
-    Shared post;
-    post.alpha = alpha + group.sum;
-    post.inv_beta = inv_beta + group.count;
-    return post;
-}
-
-inline Value sample_value (
-        const Shared & shared,
-        const Group & group,
-        rng_t & rng)
-{
-    Sampler sampler;
-    sampler.init(shared, group, rng);
-    return sampler.eval(shared, rng);
-}
-
-} // namespace gamma_poisson
+}; // struct gamma_poisson
 } // namespace distributions

@@ -31,11 +31,15 @@
 #include <distributions/special.hpp>
 #include <distributions/random.hpp>
 #include <distributions/vector.hpp>
+#include <distributions/mixins.hpp>
 #include <distributions/mixture.hpp>
 
-namespace distributions {
-namespace normal_inverse_chi_sq {
+namespace distributions
+{
+struct normal_inverse_chi_sq
+{
 
+typedef normal_inverse_chi_sq Model;
 typedef float Value;
 struct Group;
 struct Scorer;
@@ -44,17 +48,29 @@ struct VectorizedScorer;
 typedef GroupScorerMixture<VectorizedScorer> Mixture;
 
 
-struct Shared
+struct Shared : SharedMixin<Model>
 {
-    typedef normal_inverse_chi_sq::Value Value;
-    typedef normal_inverse_chi_sq::Group Group;
+    typedef Model::Value Value;
+    typedef Model::Group Group;
 
     float mu;
     float kappa;
     float sigmasq;
     float nu;
 
-    Shared plus_group(const Group & group) const;
+    Shared plus_group (const Group & group) const
+    {
+        Shared post;
+        float mu_1 = mu - group.mean;
+        post.kappa = kappa + group.count;
+        post.mu = (kappa * mu + group.mean * group.count) / post.kappa;
+        post.nu = nu + group.count;
+        post.sigmasq = 1.f / post.nu * (
+            nu * sigmasq
+            + group.count_times_variance
+            + (group.count * kappa * mu_1 * mu_1) / post.kappa);
+        return post;
+    }
 
     static Shared EXAMPLE ()
     {
@@ -70,7 +86,7 @@ struct Shared
 
 struct Group
 {
-    typedef normal_inverse_chi_sq::Value Value;
+    typedef Model::Value Value;
 
     uint32_t count;
     float mean;
@@ -136,7 +152,12 @@ struct Group
     float score_value (
             const Shared & shared,
             const Value & value,
-            rng_t & rng) const;
+            rng_t & rng) const
+    {
+        Scorer scorer;
+        scorer.init(shared, * this, rng);
+        return scorer.eval(shared, value, rng);
+    }
 
     float score_data (
             const Shared & shared,
@@ -151,6 +172,15 @@ struct Group
                - 0.5f * post.nu * fast_log(post.nu * post.sigmasq);
         score += -0.5f * count * log_pi;
         return score;
+    }
+
+    Value sample_value (
+            const Shared & shared,
+            rng_t & rng)
+    {
+        Sampler sampler;
+        sampler.init(shared, *this, rng);
+        return sampler.eval(shared, rng);
     }
 };
 
@@ -209,22 +239,12 @@ struct Scorer
     }
 };
 
-inline float Group::score_value (
-        const Shared & shared,
-        const Value & value,
-        rng_t & rng) const
-{
-    Scorer scorer;
-    scorer.init(shared, * this, rng);
-    return scorer.eval(shared, value, rng);
-}
-
 struct VectorizedScorer
 {
-    typedef normal_inverse_chi_sq::Value Value;
-    typedef normal_inverse_chi_sq::Shared Shared;
-    typedef normal_inverse_chi_sq::Group Group;
-    typedef normal_inverse_chi_sq::Scorer BaseScorer;
+    typedef Model::Value Value;
+    typedef Model::Shared Shared;
+    typedef Model::Group Group;
+    typedef Model::Scorer BaseScorer;
 
     void resize(const Shared &, size_t size)
     {
@@ -340,29 +360,5 @@ private:
     mutable VectorFloat temp_;
 };
 
-inline Shared Shared::plus_group (const Group & group) const
-{
-    Shared post;
-    float mu_1 = mu - group.mean;
-    post.kappa = kappa + group.count;
-    post.mu = (kappa * mu + group.mean * group.count) / post.kappa;
-    post.nu = nu + group.count;
-    post.sigmasq = 1.f / post.nu * (
-        nu * sigmasq
-        + group.count_times_variance
-        + (group.count * kappa * mu_1 * mu_1) / post.kappa);
-    return post;
-}
-
-inline Value sample_value (
-        const Shared & shared,
-        const Group & group,
-        rng_t & rng)
-{
-    Sampler sampler;
-    sampler.init(shared, group, rng);
-    return sampler.eval(shared, rng);
-}
-
-} // namespace normal_inverse_chi_sq
+}; // struct normal_inverse_chi_sq
 } // namespace distributions

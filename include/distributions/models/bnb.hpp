@@ -31,11 +31,13 @@
 #include <distributions/special.hpp>
 #include <distributions/random.hpp>
 #include <distributions/vector.hpp>
+#include <distributions/mixins.hpp>
 #include <distributions/mixture.hpp>
 
 namespace distributions {
-namespace beta_negative_binomial {
+struct beta_negative_binomial {
 
+typedef beta_negative_binomial Model;
 typedef uint32_t Value;
 struct Group;
 struct Scorer;
@@ -46,14 +48,21 @@ typedef GroupScorerMixture<VectorizedScorer> Mixture;
 
 struct Shared
 {
-    typedef beta_negative_binomial::Value Value;
-    typedef beta_negative_binomial::Group Group;
+    typedef Model::Value Value;
+    typedef Model::Group Group;
 
     float alpha;
     float beta;
     uint32_t r;
 
-    Shared plus_group (const Group & group) const;
+    Shared plus_group (const Group & group) const
+    {
+        Shared post;
+        post.alpha = alpha + float(r) * group.count;
+        post.beta = beta + group.sum;
+        post.r = r;
+        return post;
+    }
 
     static Shared EXAMPLE ()
     {
@@ -68,7 +77,7 @@ struct Shared
 
 struct Group
 {
-    typedef beta_negative_binomial::Value Value;
+    typedef Model::Value Value;
 
     uint32_t count;
     uint32_t sum;
@@ -132,6 +141,15 @@ struct Group
         score += fast_lgamma(post.beta) - fast_lgamma(shared.beta);
         return score;
     }
+
+    Value sample_value (
+            const Shared & shared,
+            rng_t & rng)
+    {
+        Sampler sampler;
+        sampler.init(shared, *this, rng);
+        return sampler.eval(shared, rng);
+    }
 };
 
 struct Sampler
@@ -187,10 +205,10 @@ struct Scorer
 
 struct VectorizedScorer
 {
-    typedef beta_negative_binomial::Value Value;
-    typedef beta_negative_binomial::Shared Shared;
-    typedef beta_negative_binomial::Group Group;
-    typedef beta_negative_binomial::Scorer BaseScorer;
+    typedef Model::Value Value;
+    typedef Model::Shared Shared;
+    typedef Model::Group Group;
+    typedef Model::Scorer BaseScorer;
 
     void resize(const Shared &, size_t size)
     {
@@ -298,24 +316,5 @@ private:
     VectorFloat alpha_;
 };
 
-inline Shared Shared::plus_group (const Group & group) const
-{
-    Shared post;
-    post.alpha = alpha + float(r) * group.count;
-    post.beta = beta + group.sum;
-    post.r = r;
-    return post;
-}
-
-inline Value sample_value (
-        const Shared & shared,
-        const Group & group,
-        rng_t & rng)
-{
-    Sampler sampler;
-    sampler.init(shared, group, rng);
-    return sampler.eval(shared, rng);
-}
-
-} // namespace beta_negative_binomial
+}; // struct beta_negative_binomial
 } // namespace distributions

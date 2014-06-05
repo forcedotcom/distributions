@@ -28,10 +28,10 @@
 #include <distributions/models/nich.hpp>
 #include <distributions/vector_math.hpp>
 
-namespace distributions {
-namespace normal_inverse_chi_sq {
+namespace distributions
+{
 
-void VectorizedScorer::score_value (
+void normal_inverse_chi_sq::VectorizedScorer::score_value (
         const Shared &,
         const Value & value,
         AlignedFloats scores_accum,
@@ -88,5 +88,4 @@ void VectorizedScorer::score_value (
     //}
 }
 
-} // namespace normal_inverse_chi_sq
 } // namespace distributions

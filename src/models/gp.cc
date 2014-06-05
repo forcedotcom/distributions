@@ -28,10 +28,10 @@
 #include <distributions/models/gp.hpp>
 #include <distributions/vector_math.hpp>
 
-namespace distributions {
-namespace gamma_poisson {
+namespace distributions
+{
 
-void VectorizedScorer::score_value (
+void gamma_poisson::VectorizedScorer::score_value (
         const Shared &,
         const Value & value,
         VectorFloat & scores_accum,
@@ -60,5 +60,4 @@ void VectorizedScorer::score_value (
     }
 }
 
-} // namespace gamma_poisson
 } // namespace distributions

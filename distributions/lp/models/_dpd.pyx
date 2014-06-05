@@ -67,6 +67,9 @@ cdef class Group:
     def score_data(self, Shared shared):
         return self.ptr.score_data(shared.ptr[0], get_rng()[0])
 
+    def sample_value(self, Shared shared):
+        return self.ptr.sample_value(shared.ptr[0], get_rng()[0])
+
 
 cdef class Sampler:
     def __cinit__(self):
@@ -138,9 +141,7 @@ cdef class Mixture:
 
 
 def sample_value(Shared shared, Group group):
-    cdef Value value = _h.sample_value(
-        shared.ptr[0], group.ptr[0], get_rng()[0])
-    return value
+    return group.sample_value(shared)
 
 
 def sample_group(Shared shared, int size):

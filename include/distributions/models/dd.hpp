@@ -32,10 +32,13 @@
 #include <distributions/random.hpp>
 #include <distributions/vector.hpp>
 #include <distributions/vector_math.hpp>
+#include <distributions/mixins.hpp>
 #include <distributions/mixture.hpp>
 
-namespace distributions {
-namespace dirichlet_discrete {
+namespace distributions
+{
+struct dirichlet_discrete
+{
 
 typedef uint32_t count_t;
 typedef int Value;
@@ -119,7 +122,12 @@ struct Group
     float score_value (
             const Shared<max_dim> & shared,
             const Value & value,
-            rng_t & rng) const;
+            rng_t & rng) const
+    {
+        Scorer<max_dim> scorer;
+        scorer.init(shared, * this, rng);
+        return scorer.eval(shared, value, rng);
+    }
 
     float score_data (
             const Shared<max_dim> & shared,
@@ -139,6 +147,15 @@ struct Group
                - fast_lgamma(alpha_sum + count_sum);
 
         return score;
+    }
+
+    Value sample_value (
+            const Shared<max_dim> & shared,
+            rng_t & rng)
+    {
+        Sampler<max_dim> sampler;
+        sampler.init(shared, *this, rng);
+        return sampler.eval(shared, rng);
     }
 };
 
@@ -195,17 +212,6 @@ struct Scorer
         return fast_log(alphas[value] / alpha_sum);
     }
 };
-
-template<int max_dim>
-inline float Group<max_dim>::score_value (
-        const Shared<max_dim> & shared,
-        const Value & value,
-        rng_t & rng) const
-{
-    Scorer<max_dim> scorer;
-    scorer.init(shared, * this, rng);
-    return scorer.eval(shared, value, rng);
-}
 
 template<int max_dim>
 class CachedDataScorer
@@ -429,16 +435,5 @@ template<int max_dim>
 struct Mixture : public GroupScorerMixture<VectorizedScorer<max_dim>>
 {};
 
-template<int max_dim>
-inline Value sample_value (
-        const Shared<max_dim> & shared,
-        const Group<max_dim> & group,
-        rng_t & rng)
-{
-    Sampler<max_dim> sampler;
-    sampler.init(shared, group, rng);
-    return sampler.eval(shared, rng);
-}
-
-} // namespace dirichlet_discrete
+}; // struct dirichlet_discrete
 } // namespace distributions

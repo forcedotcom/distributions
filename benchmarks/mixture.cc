@@ -96,7 +96,7 @@ void speedtest (
     for (size_t i = 0; i < 4 * group_count; ++i) {
         size_t groupid = sample_int(rng, 0, group_count - 1);
         typename Mixture::Group & group = mixture.groups()[groupid];
-        typename Mixture::Value value = sample_value(shared, group, rng);
+        typename Mixture::Value value = group.sample_value(shared, rng);
         group.add_value(shared, value, rng);
         values.push_back(value);
         assignments.push_back(groupid);

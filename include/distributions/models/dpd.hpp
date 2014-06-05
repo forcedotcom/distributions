@@ -33,11 +33,15 @@
 #include <distributions/sparse_counter.hpp>
 #include <distributions/vector.hpp>
 #include <distributions/vector_math.hpp>
+#include <distributions/mixins.hpp>
 #include <distributions/mixture.hpp>
 
-namespace distributions {
-namespace dirichlet_process_discrete {
+namespace distributions
+{
+struct dirichlet_process_discrete
+{
 
+typedef dirichlet_process_discrete Model;
 typedef uint32_t count_t;
 typedef uint32_t Value;
 struct Group;
@@ -48,10 +52,10 @@ typedef GroupScorerMixture<VectorizedScorer> Mixture;
 
 typedef std::unordered_map<Value, float, TrivialHash<Value>> SparseFloat;
 
-struct Shared
+struct Shared : SharedMixin<Model>
 {
-    typedef dirichlet_process_discrete::Value Value;
-    typedef dirichlet_process_discrete::Group Group;
+    typedef Model::Value Value;
+    typedef Model::Group Group;
 
     float gamma;
     float alpha;
@@ -103,7 +107,7 @@ struct Shared
 
 struct Group
 {
-    typedef dirichlet_process_discrete::Value Value;
+    typedef Model::Value Value;
 
     SparseCounter<Value, count_t> counts;
 
@@ -143,7 +147,14 @@ struct Group
     float score_value (
             const Shared & shared,
             const Value & value,
-            rng_t & rng) const;
+            rng_t &) const
+    {
+        float beta = (value == shared.OTHER())
+                   ? shared.beta0
+                   : shared.betas.get(value) + counts.get_count(value);
+        float total = shared.alpha + counts.get_total();
+        return fast_log(shared.alpha * beta / total);
+    }
 
     float score_data (
             const Shared & shared,
@@ -163,6 +174,15 @@ struct Group
                - fast_lgamma(alpha + total);
 
         return score;
+    }
+
+    Value sample_value (
+            const Shared & shared,
+            rng_t & rng)
+    {
+        Sampler sampler;
+        sampler.init(shared, *this, rng);
+        return sampler.eval(shared, rng);
     }
 };
 
@@ -240,24 +260,14 @@ struct Scorer
     }
 };
 
-inline float Group::score_value (
-        const Shared & shared,
-        const Value & value,
-        rng_t & rng) const
-{
-    Scorer scorer;
-    scorer.init(shared, * this, rng);
-    return scorer.eval(shared, value, rng);
-}
-
 class VectorizedScorer
 {
 public:
 
-    typedef dirichlet_process_discrete::Value Value;
-    typedef dirichlet_process_discrete::Shared Shared;
-    typedef dirichlet_process_discrete::Group Group;
-    typedef dirichlet_process_discrete::Scorer BaseScorer;
+    typedef Model::Value Value;
+    typedef Model::Shared Shared;
+    typedef Model::Group Group;
+    typedef Model::Scorer BaseScorer;
 
     void resize (const Shared & shared, size_t size)
     {
@@ -434,15 +444,5 @@ private:
     VectorFloat scores_shift_;
 };
 
-inline Value sample_value (
-        const Shared & shared,
-        const Group & group,
-        rng_t & rng)
-{
-    Sampler sampler;
-    sampler.init(shared, group, rng);
-    return sampler.eval(shared, rng);
-}
-
-} // namespace dirichlet_process_discrete
+}; // struct dirichlet_process_discrete
 } // namespace distributions
