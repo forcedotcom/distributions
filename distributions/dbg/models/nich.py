@@ -181,6 +181,11 @@ class Group(GroupIoMixin):
             - (0.5 * post.nu) * log(post.nu * post.sigmasq) \
             - self.count / 2. * 1.1447298858493991
 
+    def sample_value(self, shared):
+        sampler = Sampler()
+        sampler.init(shared, self)
+        return sampler.eval(shared)
+
     def load(self, raw):
         self.count = int(raw['count'])
         self.mean = float(raw['mean'])
@@ -204,29 +209,26 @@ class Group(GroupIoMixin):
         message.count_times_variance = self.count_times_variance
 
 
-def sampler_create(shared, group=None):
-    """
-    Draw samples from the marginal posteriors of mu and sigmasq
+class Sampler(object):
+    def init(self, shared, group=None):
+        """
+        Draw samples from the marginal posteriors of mu and sigmasq
 
-    \cite{murphy2007conjugate}, Eqs. 156 & 167
-    """
-    post = shared if group is None else shared.plus_group(group)
-    # Sample from the inverse-chi^2 using the transform from the chi^2
-    sigmasq_star = post.nu * post.sigmasq / sample_chi2(post.nu)
-    mu_star = sample_normal(post.mu, sqrt(sigmasq_star / post.kappa))
-    return (mu_star, sigmasq_star)
+        \cite{murphy2007conjugate}, Eqs. 156 & 167
+        """
+        post = shared if group is None else shared.plus_group(group)
+        # Sample from the inverse-chi^2 using the transform from the chi^2
+        sigmasq_star = post.nu * post.sigmasq / sample_chi2(post.nu)
+        self.sigma = sqrt(sigmasq_star)
+        self.mu = sample_normal(post.mu, sqrt(sigmasq_star / post.kappa))
 
-
-def sampler_eval(shared, sampler):
-    mu, sigmasq = sampler
-    return sample_normal(mu, sqrt(sigmasq))
-
-
-def sample_value(shared, group):
-    sampler = sampler_create(shared, group)
-    return sampler_eval(shared, sampler)
+    def eval(self, shared):
+        return sample_normal(self.mu, self.sigma)
 
 
 def sample_group(shared, size):
-    sampler = sampler_create(shared)
-    return [sampler_eval(shared, sampler) for _ in xrange(size)]
+    group = Group()
+    group.init(shared)
+    sampler = Sampler()
+    sampler.init(shared, group)
+    return [sampler.eval(shared) for _ in xrange(size)]

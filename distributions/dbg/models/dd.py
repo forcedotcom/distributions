@@ -114,6 +114,11 @@ class Group(GroupIoMixin):
         score -= gammaln(a.sum() + m.sum())
         return score
 
+    def sample_value(self, shared):
+        sampler = Sampler()
+        sampler.init(shared, self)
+        return sampler.eval(shared)
+
     def load(self, raw):
         self.counts = numpy.array(raw['counts'], dtype=numpy.int)
 
@@ -129,22 +134,20 @@ class Group(GroupIoMixin):
             message.counts.append(count)
 
 
-def sampler_create(shared, group=None):
-    if group is None:
-        return sample_dirichlet(shared.alphas)
-    else:
-        return sample_dirichlet(group.counts + shared.alphas)
+class Sampler(object):
+    def init(self, shared, group=None):
+        if group is None:
+            self.ps = sample_dirichlet(shared.alphas)
+        else:
+            self.ps = sample_dirichlet(group.counts + shared.alphas)
 
-
-def sampler_eval(shared, sampler):
-    return sample_discrete(sampler)
-
-
-def sample_value(shared, group):
-    sampler = sampler_create(shared, group)
-    return sampler_eval(shared, sampler)
+    def eval(self, shared):
+        return sample_discrete(self.ps)
 
 
 def sample_group(shared, size):
-    sampler = sampler_create(shared)
-    return [sampler_eval(shared, sampler) for _ in xrange(size)]
+    group = Group()
+    group.init(shared)
+    sampler = Sampler()
+    sampler.init(shared, group)
+    return [sampler.eval(shared) for _ in xrange(size)]

@@ -187,6 +187,11 @@ class Group(GroupIoMixin):
         score += gammaln(shared.alpha) - gammaln(shared.alpha + self.total)
         return score
 
+    def sample_value(self, shared):
+        sampler = Sampler()
+        sampler.init(shared, self)
+        return sampler.eval(shared)
+
     def merge(self, shared, source):
         for i, count in source.counts.iteritems():
             self.counts[i] = self.counts.get(i, 0) + count
@@ -225,13 +230,14 @@ class Group(GroupIoMixin):
 
 
 class Sampler(object):
-    def init(self, shared, group):
+    def init(self, shared, group=None):
         self.values = []
         post = []
         alpha = shared.alpha
+        counts = {} if group is None else group.counts
         for value, beta in shared.betas.iteritems():
             self.values.append(value)
-            post.append(beta * alpha + group.counts.get(value, 0))
+            post.append(beta * alpha + counts.get(value, 0))
         if shared.beta0 > 0:
             self.values.append(OTHER)
             post.append(shared.beta0 * alpha)
@@ -242,25 +248,9 @@ class Sampler(object):
         return self.values[index]
 
 
-def sampler_create(shared, group=None):
-    if group is None:
-        group = Group()
-        group.init(shared)
-    sampler = Sampler()
-    sampler.init(shared, group)
-    return sampler
-
-
-def sampler_eval(shared, sampler):
-    return sampler.eval(shared)
-
-
-def sample_value(shared, group):
-    sampler = Sampler()
-    sampler.init(shared, group)
-    return sampler.eval(shared)
-
-
 def sample_group(shared, size):
-    sampler = sampler_create(shared)
+    group = Group()
+    group.init(shared)
+    sampler = Sampler()
+    sampler.init(shared, group)
     return [sampler.eval(shared) for _ in xrange(size)]

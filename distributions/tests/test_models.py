@@ -146,7 +146,7 @@ def test_interface(module, EXAMPLE):
     for value in values:
         group1.score_value(shared, value)
     for _ in xrange(10):
-        value = module.sample_value(shared, group1)
+        value = group1.sample_value(shared)
         group1.score_value(shared, value)
         module.sample_group(shared, 10)
     group1.score_data(shared)
@@ -203,7 +203,7 @@ def test_add_remove(module, EXAMPLE):
         group.score_data(shared), score, err_msg='p(empty) != 1')
 
     for _ in range(DATA_COUNT):
-        value = module.sample_value(shared, group)
+        value = group.sample_value(shared)
         values.append(value)
         score += group.score_value(shared, value)
         group.add_value(shared, value)
@@ -258,11 +258,11 @@ def test_group_merge(module, EXAMPLE):
     expected = module.Group.from_values(shared)
     actual = module.Group.from_values(shared)
     for _ in xrange(100):
-        value = module.sample_value(shared, expected)
+        value = expected.sample_value(shared)
         expected.add_value(shared, value)
         group1.add_value(shared, value)
 
-        value = module.sample_value(shared, expected)
+        value = expected.sample_value(shared)
         expected.add_value(shared, value)
         group2.add_value(shared, value)
 
@@ -277,11 +277,11 @@ def test_sample_seed(module, EXAMPLE):
 
     seed_all(0)
     group1 = module.Group.from_values(shared)
-    values1 = [module.sample_value(shared, group1) for _ in xrange(DATA_COUNT)]
+    values1 = [group1.sample_value(shared) for _ in xrange(DATA_COUNT)]
 
     seed_all(0)
     group2 = module.Group.from_values(shared)
-    values2 = [module.sample_value(shared, group2) for _ in xrange(DATA_COUNT)]
+    values2 = [group2.sample_value(shared) for _ in xrange(DATA_COUNT)]
 
     assert_close(values1, values2, err_msg='values')
 
@@ -292,8 +292,7 @@ def test_sample_value(module, EXAMPLE):
     shared = module.Shared.from_dict(EXAMPLE['shared'])
     for values in [[], EXAMPLE['values']]:
         group = module.Group.from_values(shared, values)
-        samples = [
-            module.sample_value(shared, group) for _ in xrange(SAMPLE_COUNT)]
+        samples = [group.sample_value(shared) for _ in xrange(SAMPLE_COUNT)]
         if module.Value in [bool, int]:
             probs_dict = {
                 value: math.exp(group.score_value(shared, value))

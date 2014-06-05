@@ -26,7 +26,7 @@
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from distributions.dbg.special import log, gammaln
-from distributions.dbg.random import sample_bernoulli, sample_dirichlet
+from distributions.dbg.random import sample_bernoulli, sample_beta
 from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 
@@ -114,6 +114,11 @@ class Group(GroupIoMixin):
         score += gammaln(beta) - gammaln(shared.beta)
         return score
 
+    def sample_value(self, shared):
+        sampler = Sampler()
+        sampler.init(shared, self)
+        return sampler.eval(shared)
+
     def load(self, raw):
         self.heads = raw['heads']
         self.tails = raw['tails']
@@ -133,24 +138,22 @@ class Group(GroupIoMixin):
         message.tails = self.tails
 
 
-def sampler_create(shared, group=None):
-    if group is None:
-        alphas = [shared.alpha, shared.beta]
-    else:
-        alphas = [shared.alpha + group.heads, shared.beta + group.tails]
-    ps = sample_dirichlet(alphas)
-    return ps[0]
+class Sampler(object):
+    def init(self, shared, group=None):
+        if group is None:
+            self.p = sample_beta(shared.alpha, shared.beta)
+        else:
+            alpha = shared.alpha + group.heads
+            beta = shared.beta + group.tails
+            self.p = sample_beta(alpha, beta)
 
-
-def sampler_eval(shared, sampler):
-    return sample_bernoulli(sampler)
-
-
-def sample_value(shared, group):
-    sampler = sampler_create(shared, group)
-    return sampler_eval(shared, sampler)
+    def eval(self, shared):
+        return sample_bernoulli(self.p)
 
 
 def sample_group(shared, size):
-    sampler = sampler_create(shared)
-    return [sampler_eval(shared, sampler) for _ in xrange(size)]
+    group = Group()
+    group.init(shared)
+    sampler = Sampler()
+    sampler.init(shared, group)
+    return [sampler.eval(shared) for _ in xrange(size)]

@@ -77,7 +77,7 @@ def _test_group(name):
             assert_all_close(dumped, err_msg='group_dump')
 
         for module, shared, group in modules_shareds_groups:
-            values.append(module.sample_value(shared, group))
+            values.append(group.sample_value(shared))
 
         for value in values:
             scores = [

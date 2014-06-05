@@ -110,7 +110,7 @@ class Group(GroupIoMixin):
         self.count -= 1
         self.sum -= int(value)
 
-    def merge(self, model, source):
+    def merge(self, shared, source):
         self.count += source.count
         self.sum += source.sum
 
@@ -132,6 +132,11 @@ class Group(GroupIoMixin):
         score += gammaln(post.beta) - gammaln(shared.beta)
         return score
 
+    def sample_value(self, shared):
+        sampler = Sampler()
+        sampler.init(shared, self)
+        return sampler.eval(shared)
+
     def dump(self):
         return {
             'count': self.count,
@@ -151,20 +156,18 @@ class Group(GroupIoMixin):
         message.sum = self.sum
 
 
-def sampler_create(shared, group=None):
-    post = shared if group is None else shared.plus_group(group)
-    return sample_beta(post.alpha, post.beta), shared.r
+class Sampler(object):
+    def init(self, shared, group=None):
+        post = shared if group is None else shared.plus_group(group)
+        self.p = sample_beta(post.alpha, post.beta)
 
-
-def sampler_eval(shared, sampler):
-    return sample_negative_binomial(*sampler)
-
-
-def sample_value(shared, group):
-    sampler = sampler_create(shared, group)
-    return sampler_eval(shared, sampler)
+    def eval(self, shared):
+        return sample_negative_binomial(self.p, shared.r)
 
 
 def sample_group(shared, size):
-    sampler = sampler_create(shared)
-    return [sampler_eval(shared, sampler) for _ in xrange(size)]
+    group = Group()
+    group.init(shared)
+    sampler = Sampler()
+    sampler.init(shared, group)
+    return [sampler.eval(shared) for _ in xrange(size)]

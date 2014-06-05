@@ -77,39 +77,44 @@ class Group(GroupIoMixin):
         self.sum = None
         self.log_prod = None
 
-    def init(self, model):
+    def init(self, shared):
         self.count = 0
         self.sum = 0
         self.log_prod = 0.
 
-    def add_value(self, model, value):
+    def add_value(self, shared, value):
         self.count += 1
         self.sum += int(value)
         self.log_prod += log(factorial(value))
 
-    def remove_value(self, model, value):
+    def remove_value(self, shared, value):
         self.count -= 1
         self.sum -= int(value)
         self.log_prod -= log(factorial(value))
 
-    def merge(self, model, source):
+    def merge(self, shared, source):
         self.count += source.count
         self.sum += source.sum
         self.log_prod += source.log_prod
 
-    def score_value(self, model, value):
-        post = model.plus_group(self)
+    def score_value(self, shared, value):
+        post = shared.plus_group(self)
         return gammaln(post.alpha + value) - gammaln(post.alpha) \
             + post.alpha * log(post.inv_beta) \
             - (post.alpha + value) * log(1. + post.inv_beta) \
             - log(factorial(value))
 
-    def score_data(self, model):
-        post = model.plus_group(self)
-        return gammaln(post.alpha) - gammaln(model.alpha) \
+    def score_data(self, shared):
+        post = shared.plus_group(self)
+        return gammaln(post.alpha) - gammaln(shared.alpha) \
             - post.alpha * log(post.inv_beta) \
-            + model.alpha * log(model.inv_beta) \
+            + shared.alpha * log(shared.inv_beta) \
             - self.log_prod
+
+    def sample_value(self, shared):
+        sampler = Sampler()
+        sampler.init(shared, self)
+        return sampler.eval(shared)
 
     def load(self, raw):
         self.count = int(raw['count'])
@@ -134,20 +139,18 @@ class Group(GroupIoMixin):
         message.log_prod = self.log_prod
 
 
-def sampler_create(model, group=None):
-    post = model if group is None else model.plus_group(group)
-    return sample_gamma(post.alpha, 1.0 / post.inv_beta)
+class Sampler(object):
+    def init(self, shared, group=None):
+        post = shared if group is None else shared.plus_group(group)
+        self.lambda_ = sample_gamma(post.alpha, 1.0 / post.inv_beta)
+
+    def eval(self, shared):
+        return sample_poisson(self.lambda_)
 
 
-def sampler_eval(model, sampler):
-    return sample_poisson(sampler)
-
-
-def sample_value(model, group):
-    sampler = sampler_create(model, group)
-    return sampler_eval(model, sampler)
-
-
-def sample_group(model, size):
-    sampler = sampler_create(model)
-    return [sampler_eval(model, sampler) for _ in xrange(size)]
+def sample_group(shared, size):
+    group = Group()
+    group.init(shared)
+    sampler = Sampler()
+    sampler.init(shared, group)
+    return [sampler.eval(shared) for _ in xrange(size)]

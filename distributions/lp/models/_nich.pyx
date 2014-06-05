@@ -140,10 +140,6 @@ cdef class Mixture:
         return self.ptr.score_data(shared.ptr[0], get_rng()[0])
 
 
-def sample_value(Shared shared, Group group):
-    return group.sample_value(shared)
-
-
 def sample_group(Shared shared, int size):
     cdef Group group = Group()
     cdef _h.Sampler sampler
