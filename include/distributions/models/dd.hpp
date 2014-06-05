@@ -37,9 +37,11 @@
 
 namespace distributions
 {
-template<int max_dim>
+template<int max_dim_>
 struct DirichletDiscrete
 {
+
+enum { max_dim = max_dim_ };
 
 typedef DirichletDiscrete<max_dim> Model;
 typedef uint32_t count_t;
@@ -144,7 +146,7 @@ struct Group : GroupMixin<Model>
 
     Value sample_value (
             const Shared & shared,
-            rng_t & rng)
+            rng_t & rng) const
     {
         Sampler sampler;
         sampler.init(shared, *this, rng);

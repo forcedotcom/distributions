@@ -138,7 +138,7 @@ struct Group : GroupMixin<Model>
 
     Value sample_value (
             const Shared & shared,
-            rng_t & rng)
+            rng_t & rng) const
     {
         Sampler sampler;
         sampler.init(shared, *this, rng);

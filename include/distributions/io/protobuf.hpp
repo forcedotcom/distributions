@@ -124,21 +124,21 @@ inline void shared_dump (
     message.set_beta(shared.beta);
 }
 
-template<int max_dim>
+template<class Shared>
 inline void shared_load (
-        DirichletDiscrete::Shared<max_dim> & shared,
+        Shared & shared,
         const protobuf::DirichletDiscrete_Shared & message)
 {
     shared.dim = message.alphas_size();
-    DIST_ASSERT_LE(shared.dim, max_dim);
+    DIST_ASSERT_LE(shared.dim, Shared::Model::max_dim);
     for (size_t i = 0; i < shared.dim; ++i) {
         shared.alphas[i] = message.alphas(i);
     }
 }
 
-template<int max_dim>
+template<class Shared>
 inline void shared_dump (
-        const DirichletDiscrete::Shared<max_dim> & shared,
+        const Shared & shared,
         protobuf::DirichletDiscrete_Shared & message)
 {
     message.Clear();
@@ -181,7 +181,7 @@ inline void shared_dump (
     for (auto & i : shared.betas) {
         auto value = i.first;
         auto beta = i.second;
-        auto count = shared.counts.get(i);
+        auto count = shared.counts.get_count(value);
         message.add_values(value);
         message.add_betas(beta);
         message.add_counts(count);
@@ -263,10 +263,10 @@ inline void group_dump (
     message.set_tails(group.tails);
 }
 
-template<int max_dim>
+template<class Shared, class Group>
 inline void group_load (
-        const DirichletDiscrete::Shared<max_dim> & shared,
-        DirichletDiscrete::Group<max_dim> & group,
+        const Shared & shared,
+        Group & group,
         const protobuf::DirichletDiscrete::Group & message)
 {
     if (DIST_DEBUG_LEVEL >= 1) {
@@ -278,10 +278,10 @@ inline void group_load (
     }
 }
 
-template<int max_dim>
+template<class Shared, class Group>
 inline void group_dump (
-        const DirichletDiscrete::Shared<max_dim> & shared,
-        const DirichletDiscrete::Group<max_dim> & group,
+        const Shared & shared,
+        const Group & group,
         protobuf::DirichletDiscrete::Group & message)
 {
     message.Clear();
