@@ -50,13 +50,8 @@ struct Sampler;
 struct VectorizedScorer;
 typedef GroupScorerMixture<VectorizedScorer> Mixture;
 
-typedef std::unordered_map<Value, float, TrivialHash<Value>> SparseFloat;
-
 struct Shared : SharedMixin<Model>
 {
-    typedef Model::Value Value;
-    typedef Model::Group Group;
-
     float gamma;
     float alpha;
     float beta0;
@@ -105,10 +100,8 @@ struct Shared : SharedMixin<Model>
 };
 
 
-struct Group
+struct Group : GroupMixin<Model>
 {
-    typedef Model::Value Value;
-
     SparseCounter<Value, count_t> counts;
 
     void init (
@@ -260,15 +253,8 @@ struct Scorer
     }
 };
 
-class VectorizedScorer
+struct VectorizedScorer : VectorizedScorerMixin<Model>
 {
-public:
-
-    typedef Model::Value Value;
-    typedef Model::Shared Shared;
-    typedef Model::Group Group;
-    typedef Model::Scorer BaseScorer;
-
     void resize (const Shared & shared, size_t size)
     {
         scores_shift_.resize(size);

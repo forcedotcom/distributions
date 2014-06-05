@@ -370,7 +370,7 @@ struct GroupScorerMixture
     typedef typename _Scorer::Value Value;
     typedef typename _Scorer::Shared Shared;
     typedef typename _Scorer::Group Group;
-    typedef typename _Scorer::BaseScorer Scorer;
+    typedef typename _Scorer::Model::Scorer Scorer;
     typedef _Scorer VectorizedScorer;
 
     std::vector<Group> & groups () { return slave_.groups(); }

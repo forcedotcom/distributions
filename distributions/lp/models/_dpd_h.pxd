@@ -43,8 +43,8 @@ cdef extern from "distributions/models/dpd.hpp" namespace "distributions::dirich
         float beta0
         SparseFloat betas
         SparseCounter counts
-        void add_value (Value &, rng_t &) nogil except +
-        void remove_value (Value &, rng_t &) nogil except +
+        bint add_value (Value &, rng_t &) nogil except +
+        bint remove_value (Value &, rng_t &) nogil except +
 
 
     cppclass Group:

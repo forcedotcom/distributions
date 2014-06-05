@@ -50,9 +50,6 @@ typedef GroupScorerMixture<VectorizedScorer> Mixture;
 
 struct Shared : SharedMixin<Model>
 {
-    typedef Model::Value Value;
-    typedef Model::Group Group;
-
     float mu;
     float kappa;
     float sigmasq;
@@ -84,10 +81,8 @@ struct Shared : SharedMixin<Model>
 };
 
 
-struct Group
+struct Group : GroupMixin<Model>
 {
-    typedef Model::Value Value;
-
     uint32_t count;
     float mean;
     float count_times_variance;
@@ -239,13 +234,8 @@ struct Scorer
     }
 };
 
-struct VectorizedScorer
+struct VectorizedScorer : VectorizedScorerMixin<Model>
 {
-    typedef Model::Value Value;
-    typedef Model::Shared Shared;
-    typedef Model::Group Group;
-    typedef Model::Scorer BaseScorer;
-
     void resize(const Shared &, size_t size)
     {
         score_.resize(size);
@@ -279,7 +269,7 @@ struct VectorizedScorer
             const Group & group,
             rng_t & rng)
     {
-        BaseScorer base;
+        Model::Scorer base;
         base.init(shared, group, rng);
 
         score_[groupid] = base.score;

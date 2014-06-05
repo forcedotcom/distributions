@@ -166,7 +166,7 @@ void speedtests ()
 int main()
 {
     speedtests<beta_bernoulli::Mixture>();
-    speedtests<dirichlet_discrete::Mixture<4>>();
+    speedtests<dirichlet_discrete<4>::Mixture>();
     speedtests<dirichlet_process_discrete::Mixture>();
     speedtests<gamma_poisson::Mixture>();
     speedtests<beta_negative_binomial::Mixture>();

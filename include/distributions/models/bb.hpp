@@ -51,11 +51,6 @@ struct Mixture;
 
 struct Shared : SharedMixin<Model>
 {
-    typedef Model::Value Value;
-    typedef typename Model::Group Group;
-    typedef typename Model::Scorer Scorer;
-    typedef typename Model::Sampler Sampler;
-
     float alpha;
     float beta;
 
@@ -69,10 +64,8 @@ struct Shared : SharedMixin<Model>
 };
 
 
-struct Group
+struct Group : GroupMixin<Model>
 {
-    typedef Model::Value Value;
-
     count_t heads;
     count_t tails;
 
@@ -193,18 +186,8 @@ struct Scorer
     }
 };
 
-class VectorizedScorer
+struct VectorizedScorer : VectorizedScorerMixin<Model>
 {
-    VectorFloat heads_scores_;
-    VectorFloat tails_scores_;
-
-public:
-
-    typedef Model::Value Value;
-    typedef Model::Shared Shared;
-    typedef Model::Group Group;
-    typedef Model::Scorer BaseScorer;
-
     void resize (const Shared &, size_t size)
     {
         heads_scores_.resize(size);
@@ -309,6 +292,11 @@ public:
             scores_out[i] = score_data(shareds[i], slave, rng);
         }
     }
+
+private:
+
+    VectorFloat heads_scores_;
+    VectorFloat tails_scores_;
 };
 
 struct Mixture : public GroupScorerMixture<VectorizedScorer>

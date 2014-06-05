@@ -35,6 +35,12 @@ cdef class Shared:
     def __dealloc__(self):
         del self.ptr
 
+    def add_value(self, Value value):
+        return self.ptr.add_value(value, get_rng()[0])
+
+    def remove_value(self, Value value):
+        return self.ptr.remove_value(value, get_rng()[0])
+
 
 cdef class Group:
     def __cinit__(self):
@@ -60,6 +66,9 @@ cdef class Group:
 
     def score_data(self, Shared shared):
         return self.ptr.score_data(shared.ptr[0], get_rng()[0])
+
+    def sample_value(self, Shared shared):
+        return self.ptr.sample_value(shared.ptr[0], get_rng()[0])
 
 
 cdef class Sampler:
@@ -101,6 +110,12 @@ cdef class Mixture:
     def init(self, Shared shared):
         self.ptr.init(shared.ptr[0], get_rng()[0])
 
+    def add_shared_value(self, Shared shared, Value value):
+        self.ptr.add_shared_value(shared.ptr[0], value)
+
+    def remove_shared_value(self, Shared shared, Value value):
+        self.ptr.remove_shared_value(shared.ptr[0], value)
+
     def add_group(self, Shared shared):
         self.ptr.add_group(shared.ptr[0], get_rng()[0])
 
@@ -126,9 +141,7 @@ cdef class Mixture:
 
 
 def sample_value(Shared shared, Group group):
-    cdef Value value = _h.sample_value(
-        shared.ptr[0], group.ptr[0], get_rng()[0])
-    return value
+    return group.sample_value(shared)
 
 
 def sample_group(Shared shared, int size):

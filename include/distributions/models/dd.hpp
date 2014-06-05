@@ -37,31 +37,27 @@
 
 namespace distributions
 {
+template<int max_dim>
 struct dirichlet_discrete
 {
 
+typedef dirichlet_discrete<max_dim> Model;
 typedef uint32_t count_t;
 typedef int Value;
-template<int max_dim> struct Group;
-template<int max_dim> struct Scorer;
-template<int max_dim> struct Sampler;
-template<int max_dim> struct Mixture;
+struct Group;
+struct Scorer;
+struct Sampler;
+struct Mixture;
 
 
-template<int max_dim>
-struct Shared
+struct Shared : SharedMixin<Model>
 {
-    typedef dirichlet_discrete::Value Value;
-    typedef typename dirichlet_discrete::Group<max_dim> Group;
-    typedef typename dirichlet_discrete::Scorer<max_dim> Scorer;
-    typedef typename dirichlet_discrete::Sampler<max_dim> Sampler;
-
     int dim;  // fixed parameter
     float alphas[max_dim];  // hyperparamter
 
-    static Shared<max_dim> EXAMPLE ()
+    static Shared EXAMPLE ()
     {
-        Shared<max_dim> shared;
+        Shared shared;
         shared.dim = max_dim;
         for (int i = 0; i < max_dim; ++i) {
             shared.alphas[i] = 0.5;
@@ -71,16 +67,13 @@ struct Shared
 };
 
 
-template<int max_dim>
-struct Group
+struct Group : GroupMixin<Model>
 {
-    typedef dirichlet_discrete::Value Value;
-
     count_t count_sum;
     count_t counts[max_dim];
 
     void init (
-            const Shared<max_dim> & shared,
+            const Shared & shared,
             rng_t &)
     {
         count_sum = 0;
@@ -90,7 +83,7 @@ struct Group
     }
 
     void add_value (
-            const Shared<max_dim> & shared,
+            const Shared & shared,
             const Value & value,
             rng_t &)
     {
@@ -100,7 +93,7 @@ struct Group
     }
 
     void remove_value (
-            const Shared<max_dim> & shared,
+            const Shared & shared,
             const Value & value,
             rng_t &)
     {
@@ -110,8 +103,8 @@ struct Group
     }
 
     void merge (
-            const Shared<max_dim> & shared,
-            const Group<max_dim> & source,
+            const Shared & shared,
+            const Group & source,
             rng_t &)
     {
         for (Value value = 0; value < shared.dim; ++value) {
@@ -120,17 +113,17 @@ struct Group
     }
 
     float score_value (
-            const Shared<max_dim> & shared,
+            const Shared & shared,
             const Value & value,
             rng_t & rng) const
     {
-        Scorer<max_dim> scorer;
+        Scorer scorer;
         scorer.init(shared, * this, rng);
         return scorer.eval(shared, value, rng);
     }
 
     float score_data (
-            const Shared<max_dim> & shared,
+            const Shared & shared,
             rng_t &) const
     {
         float score = 0;
@@ -150,23 +143,22 @@ struct Group
     }
 
     Value sample_value (
-            const Shared<max_dim> & shared,
+            const Shared & shared,
             rng_t & rng)
     {
-        Sampler<max_dim> sampler;
+        Sampler sampler;
         sampler.init(shared, *this, rng);
         return sampler.eval(shared, rng);
     }
 };
 
-template<int max_dim>
 struct Sampler
 {
     float ps[max_dim];
 
     void init (
-            const Shared<max_dim> & shared,
-            const Group<max_dim> & group,
+            const Shared & shared,
+            const Group & group,
             rng_t & rng)
     {
         for (Value value = 0; value < shared.dim; ++value) {
@@ -177,22 +169,21 @@ struct Sampler
     }
 
     Value eval (
-            const Shared<max_dim> & shared,
+            const Shared & shared,
             rng_t & rng) const
     {
         return sample_discrete(rng, shared.dim, ps);
     }
 };
 
-template<int max_dim>
 struct Scorer
 {
     float alpha_sum;
     float alphas[max_dim];
 
     void init (
-            const Shared<max_dim> & shared,
-            const Group<max_dim> & group,
+            const Shared & shared,
+            const Group & group,
             rng_t &)
     {
         alpha_sum = 0;
@@ -204,7 +195,7 @@ struct Scorer
     }
 
     float eval (
-            const Shared<max_dim> & shared,
+            const Shared & shared,
             const Value & value,
             rng_t &) const
     {
@@ -213,7 +204,6 @@ struct Scorer
     }
 };
 
-template<int max_dim>
 class CachedDataScorer
 {
     double alpha_sum_;
@@ -221,10 +211,6 @@ class CachedDataScorer
     VectorFloat scores_;
 
 public:
-
-    typedef dirichlet_discrete::Value Value;
-    typedef dirichlet_discrete::Shared<max_dim> Shared;
-    typedef dirichlet_discrete::Group<max_dim> Group;
 
     void init (
             const Shared & shared,
@@ -283,14 +269,8 @@ public:
     }
 };
 
-template<int max_dim>
-struct VectorizedScorer
+struct VectorizedScorer : VectorizedScorerMixin<Model>
 {
-    typedef dirichlet_discrete::Value Value;
-    typedef dirichlet_discrete::Shared<max_dim> Shared;
-    typedef dirichlet_discrete::Group<max_dim> Group;
-    typedef dirichlet_discrete::Scorer<max_dim> BaseScorer;
-
     void resize(const Shared & shared, size_t size)
     {
         scores_shift_.resize(size);
@@ -428,11 +408,10 @@ private:
     std::vector<VectorFloat> scores_;
     VectorFloat scores_shift_;
 
-    mutable CachedDataScorer<max_dim> cached_data_scorer_;
+    mutable CachedDataScorer cached_data_scorer_;
 };
 
-template<int max_dim>
-struct Mixture : public GroupScorerMixture<VectorizedScorer<max_dim>>
+struct Mixture : public GroupScorerMixture<VectorizedScorer>
 {};
 
 }; // struct dirichlet_discrete

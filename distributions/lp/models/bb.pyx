@@ -85,5 +85,4 @@ class Sampler(_bb.Sampler):
 
 
 Mixture = _bb.Mixture
-sample_value = _bb.sample_value
 sample_group = _bb.sample_group

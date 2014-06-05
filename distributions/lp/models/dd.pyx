@@ -115,5 +115,4 @@ class Sampler(_dd.Sampler):
 
 
 Mixture = _dd.Mixture
-sample_value = _dd.sample_value
 sample_group = _dd.sample_group

@@ -41,6 +41,8 @@ cdef extern from "distributions/models/bnb.hpp" namespace "distributions::beta_n
         float alpha
         float beta
         uint32_t r
+        bint add_value (Value &, rng_t &) nogil except +
+        bint remove_value (Value &, rng_t &) nogil except +
 
 
     cppclass Group:
@@ -52,6 +54,7 @@ cdef extern from "distributions/models/bnb.hpp" namespace "distributions::beta_n
         void merge (Shared &, Group &, rng_t &) nogil except +
         float score_value (Shared &, Value &, rng_t &) nogil except +
         float score_data (Shared &, rng_t &) nogil except +
+        Value sample_value (Shared &, rng_t &) nogil except +
 
 
     cppclass Sampler:
@@ -62,6 +65,8 @@ cdef extern from "distributions/models/bnb.hpp" namespace "distributions::beta_n
     cppclass Mixture:
         vector[Group] groups "groups()"
         void init (Shared &, rng_t &) nogil except +
+        void add_shared_value (Shared &, Value &) nogil except +
+        void remove_shared_value (Shared &, Value &) nogil except +
         void add_group (Shared &, rng_t &) nogil except +
         void remove_group (Shared &, size_t) nogil except +
         void add_value \
@@ -71,6 +76,3 @@ cdef extern from "distributions/models/bnb.hpp" namespace "distributions::beta_n
         void score_value \
             (Shared &, Value &, VectorFloat &, rng_t &) nogil except +
         float score_data (Shared &, rng_t &) nogil except +
-
-
-    Value sample_value (Shared &, Group &, rng_t &) nogil except +

@@ -90,5 +90,4 @@ class Sampler(_bnb.Sampler):
 
 
 Mixture = _bnb.Mixture
-sample_value = _bnb.sample_value
 sample_group = _bnb.sample_group

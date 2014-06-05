@@ -34,8 +34,10 @@
 #include <distributions/mixins.hpp>
 #include <distributions/mixture.hpp>
 
-namespace distributions {
-struct beta_negative_binomial {
+namespace distributions
+{
+struct beta_negative_binomial
+{
 
 typedef beta_negative_binomial Model;
 typedef uint32_t Value;
@@ -46,11 +48,8 @@ struct VectorizedScorer;
 typedef GroupScorerMixture<VectorizedScorer> Mixture;
 
 
-struct Shared
+struct Shared : SharedMixin<Model>
 {
-    typedef Model::Value Value;
-    typedef Model::Group Group;
-
     float alpha;
     float beta;
     uint32_t r;
@@ -75,10 +74,8 @@ struct Shared
 };
 
 
-struct Group
+struct Group : GroupMixin<Model>
 {
-    typedef Model::Value Value;
-
     uint32_t count;
     uint32_t sum;
 
@@ -203,13 +200,8 @@ struct Scorer
     }
 };
 
-struct VectorizedScorer
+struct VectorizedScorer : VectorizedScorerMixin<Model>
 {
-    typedef Model::Value Value;
-    typedef Model::Shared Shared;
-    typedef Model::Group Group;
-    typedef Model::Scorer BaseScorer;
-
     void resize(const Shared &, size_t size)
     {
         score_.resize(size);
@@ -237,7 +229,7 @@ struct VectorizedScorer
             const Group & group,
             rng_t & rng)
     {
-        BaseScorer base;
+        Model::Scorer base;
         base.init(shared, group, rng);
 
         score_[groupid] = base.score;
