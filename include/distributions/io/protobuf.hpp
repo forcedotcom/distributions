@@ -162,7 +162,7 @@ inline void shared_load (
     for (size_t i = 0; i < value_count; ++i) {
         auto value = message.values(i);
         float beta = message.betas(i);
-        DIST_ASSERT_LT(beta, 0);
+        DIST_ASSERT_LT(0, beta);
         shared.betas.add(value, beta);
         beta_sum += beta;
         shared.counts.add(message.counts(i));
