@@ -28,7 +28,7 @@
 from libc.stdint cimport uint32_t
 from libcpp.utility cimport pair
 
-cdef extern from "distributions/sparse_counter.hpp":
+cdef extern from "distributions/sparse.hpp":
     cppclass SparseCounter "distributions::SparseCounter<uint32_t, uint32_t>":
         cppclass iterator:
             pair[uint32_t, uint32_t]& operator* () nogil

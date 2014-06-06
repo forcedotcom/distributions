@@ -30,7 +30,7 @@
 #include <distributions/common.hpp>
 #include <distributions/special.hpp>
 #include <distributions/random.hpp>
-#include <distributions/sparse_counter.hpp>
+#include <distributions/sparse.hpp>
 #include <distributions/vector.hpp>
 #include <distributions/vector_math.hpp>
 #include <distributions/mixins.hpp>

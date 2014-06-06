@@ -11,7 +11,7 @@
 #include <distributions/models/nich.hpp>
 #include <distributions/random_fwd.hpp>
 #include <distributions/random.hpp>
-#include <distributions/sparse_counter.hpp>
+#include <distributions/sparse.hpp>
 #include <distributions/special.hpp>
 #include <distributions/timers.hpp>
 #include <distributions/trivial_hash.hpp>
