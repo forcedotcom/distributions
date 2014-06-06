@@ -387,16 +387,6 @@ struct GroupScorerMixture
         scorer_.update_all(shared, slave_, rng);
     }
 
-    void add_shared_value (const Shared & shared, const Value & value)
-    {
-        scorer_.add_shared_value(shared, value);
-    }
-
-    void remove_shared_value (const Shared & shared, const Value & value)
-    {
-        scorer_.remove_shared_value(shared, value);
-    }
-
     void add_group (
             const Shared & shared,
             rng_t & rng)

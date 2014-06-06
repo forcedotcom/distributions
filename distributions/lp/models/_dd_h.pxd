@@ -64,8 +64,6 @@ cdef extern from "distributions/models/dd.hpp" namespace "distributions::Dirichl
     cppclass Mixture:
         vector[Group] groups "groups()"
         void init (Shared &, rng_t &) nogil except +
-        void add_shared_value (Shared &, Value &) nogil except +
-        void remove_shared_value (Shared &, Value &) nogil except +
         void add_group (Shared &, rng_t &) nogil except +
         void remove_group (Shared &, size_t) nogil except +
         void add_value \

@@ -412,12 +412,6 @@ def test_scorer(module, EXAMPLE):
 
 
 @for_each_model(lambda module: hasattr(module, 'Mixture'))
-def test_mixture_interface(module, EXAMPLE):
-    assert_hasattr(module.Mixture, 'add_shared_value')
-    assert_hasattr(module.Mixture, 'remove_shared_value')
-
-
-@for_each_model(lambda module: hasattr(module, 'Mixture'))
 def test_mixture_runs(module, EXAMPLE):
     shared = module.Shared.from_dict(EXAMPLE['shared'])
     values = EXAMPLE['values']

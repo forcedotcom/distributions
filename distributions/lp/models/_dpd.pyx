@@ -110,12 +110,6 @@ cdef class Mixture:
     def init(self, Shared shared):
         self.ptr.init(shared.ptr[0], get_rng()[0])
 
-    def add_shared_value(self, Shared shared, Value value):
-        self.ptr.add_shared_value(shared.ptr[0], value)
-
-    def remove_shared_value(self, Shared shared, Value value):
-        self.ptr.remove_shared_value(shared.ptr[0], value)
-
     def add_group(self, Shared shared):
         self.ptr.add_group(shared.ptr[0], get_rng()[0])
 

@@ -33,9 +33,6 @@ struct VectorizedScorerMixin
     typedef typename Model::Shared Shared;
     typedef typename Model::Group Group;
     typedef MixtureSlave<Shared> Slave;
-
-    void add_shared_value (const Shared &, const Value &) {}
-    void remove_shared_value (const Shared &, const Value &) {}
 };
 
 } // namespace distributions

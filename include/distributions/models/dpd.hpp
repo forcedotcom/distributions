@@ -279,28 +279,6 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
         }
     }
 
-    void add_shared_value (
-            const Shared & shared,
-            const Value & value)
-    {
-        DIST_ASSERT1(value != shared.OTHER(), "cannot add OTHER");
-        VectorFloat & scores = scores_.add(value);
-        const size_t group_count = scores_shift_.size();
-        const float beta = shared.alpha * shared.betas.get(value);
-        for (size_t groupid = 0; groupid < group_count; ++groupid) {
-            scores[groupid] = beta;
-        }
-        vector_log(group_count, scores.data());
-    }
-
-    void remove_shared_value (
-            const Shared & shared,
-            const Value & value)
-    {
-        DIST_ASSERT1(value != shared.OTHER(), "cannot remove OTHER");
-        scores_.remove(value);
-    }
-
     void add_group (const Shared & shared, rng_t &)
     {
         const float alpha = shared.alpha;
@@ -342,8 +320,11 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
             const Value & value,
             rng_t &)
     {
+        DIST_ASSERT1(value != shared.OTHER(), "cannot add OTHER");
         if (DIST_UNLIKELY(not scores_.contains(value))) {
-            add_shared_value(shared, value);
+            const size_t group_count = scores_shift_.size();
+            const float beta = shared.alpha * shared.betas.get(value);
+            scores_.add(value).resize(group_count, fast_log(beta));
         }
 
         _update_group_value(shared, groupid, group, value);
@@ -356,8 +337,9 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
             const Value & value,
             rng_t &)
     {
+        DIST_ASSERT1(value != shared.OTHER(), "cannot remove OTHER");
         if (DIST_UNLIKELY(not shared.betas.contains(value))) {
-            remove_shared_value(shared, value);
+            scores_.remove(value);
         }
 
         _update_group_value(shared, groupid, group, value);
@@ -464,7 +446,6 @@ private:
             const Group & group,
             const Value & value)
     {
-        DIST_ASSERT1(value != shared.OTHER(), "cannot update OTHER");
         const float alpha = shared.alpha;
         count_t count = group.counts.get_count(value);
         count_t count_sum = group.counts.get_total();
