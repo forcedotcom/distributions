@@ -57,6 +57,25 @@ struct Shared : SharedMixin<Model>
     int dim;  // fixed parameter
     float alphas[max_dim];  // hyperparamter
 
+    template<class Message>
+    void protobuf_load (const Message & message)
+    {
+        dim = message.alphas_size();
+        DIST_ASSERT_LE(dim, max_dim);
+        for (size_t i = 0; i < dim; ++i) {
+            alphas[i] = message.alphas(i);
+        }
+    }
+
+    template<class Message>
+    void protobuf_dump (Message & message) const
+    {
+        message.Clear();
+        for (size_t i = 0; i < dim; ++i) {
+            message.add_alphas(alphas[i]);
+        }
+    }
+
     static Shared EXAMPLE ()
     {
         Shared shared;

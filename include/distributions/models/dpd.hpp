@@ -79,6 +79,44 @@ struct Shared : SharedMixin<Model>
         }
     }
 
+    template<class Message>
+    void protobuf_load (const Message & message)
+    {
+        const size_t value_count = message.values_size();
+        DIST_ASSERT_EQ(message.betas_size(), value_count);
+        DIST_ASSERT_EQ(message.counts_size(), value_count);
+        gamma = message.gamma();
+        alpha = message.alpha();
+        betas.clear();
+        counts.clear();
+        double beta_sum = 0;
+        for (size_t i = 0; i < value_count; ++i) {
+            auto value = message.values(i);
+            float beta = message.betas(i);
+            DIST_ASSERT_LT(0, beta);
+            betas.add(value, beta);
+            beta_sum += beta;
+            counts.add(value, message.counts(i));
+        }
+        DIST_ASSERT_LE(beta_sum, 1 + 1e-4);
+        beta0 = std::max(0.0, 1.0 - beta_sum);
+    }
+
+    template<class Message>
+    void protobuf_dump (Message & message) const
+    {
+        message.Clear();
+        message.set_gamma(gamma);
+        message.set_alpha(alpha);
+        for (auto & i : betas) {
+            auto value = i.first;
+            auto beta = i.second;
+            message.add_values(value);
+            message.add_betas(beta);
+            message.add_counts(counts.get_count(value));
+        }
+    }
+
     static Shared EXAMPLE ()
     {
         Shared shared;

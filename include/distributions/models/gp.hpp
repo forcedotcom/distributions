@@ -61,6 +61,20 @@ struct Shared : SharedMixin<Model>
         return post;
     }
 
+    template<class Message>
+    void protobuf_load (const Message & message)
+    {
+        alpha = message.alpha();
+        inv_beta = message.inv_beta();
+    }
+
+    template<class Message>
+    void protobuf_dump (Message & message) const
+    {
+        message.set_alpha(alpha);
+        message.set_inv_beta(inv_beta);
+    }
+
     static Shared EXAMPLE ()
     {
         Shared shared;

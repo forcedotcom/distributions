@@ -69,6 +69,24 @@ struct Shared : SharedMixin<Model>
         return post;
     }
 
+    template<class Message>
+    void protobuf_load (const Message & message)
+    {
+        mu = message.mu();
+        kappa = message.kappa();
+        sigmasq = message.sigmasq();
+        nu = message.nu();
+    }
+
+    template<class Message>
+    void protobuf_dump (Message & message) const
+    {
+        message.set_mu(mu);
+        message.set_kappa(kappa);
+        message.set_sigmasq(sigmasq);
+        message.set_nu(nu);
+    }
+
     static Shared EXAMPLE ()
     {
         Shared shared;
