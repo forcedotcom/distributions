@@ -165,7 +165,7 @@ inline void shared_load (
         DIST_ASSERT_LT(0, beta);
         shared.betas.add(value, beta);
         beta_sum += beta;
-        shared.counts.add(message.counts(i));
+        shared.counts.add(value, message.counts(i));
     }
     DIST_ASSERT_LE(beta_sum, 1 + 1e-4);
     shared.beta0 = std::max(0.0, 1.0 - beta_sum);
