@@ -131,6 +131,18 @@ class Shared(SharedMixin, SharedIoMixin):
         else:
             del self.counts[value]
 
+    def realize(self):
+        max_size = 10000
+        min_beta0 = 1e-4
+        new_value = 1 + max(self.betas.iterkeys()) if self.betas else 0
+        while len(self.betas) < max_size - 1 and self.beta0 > min_beta0:
+            self.add_value(new_value)
+            new_value += 1
+        if self.beta0 > 0:
+            self.add_value(new_value)
+            self.betas[new_value] += self.beta0
+            self.beta0 = 0
+
 
 class Group(GroupIoMixin):
     def __init__(self):

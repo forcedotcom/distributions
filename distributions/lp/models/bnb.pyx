@@ -28,7 +28,7 @@
 cimport _bnb
 import _bnb
 
-from distributions.mixins import GroupIoMixin, SharedIoMixin
+from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 
 NAME = 'BetaNegativeBinomial'
@@ -65,7 +65,7 @@ cdef class _Shared(_bnb.Shared):
         message.r = self.ptr.r
 
 
-class Shared(_Shared, SharedIoMixin):
+class Shared(_Shared, SharedMixin, SharedIoMixin):
     pass
 
 

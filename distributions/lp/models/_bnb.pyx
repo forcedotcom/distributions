@@ -35,12 +35,6 @@ cdef class Shared:
     def __dealloc__(self):
         del self.ptr
 
-    def add_value(self, Value value):
-        self.ptr.add_value(value, get_rng()[0])
-
-    def remove_value(self, Value value):
-        self.ptr.remove_value(value, get_rng()[0])
-
 
 cdef class Group:
     def __cinit__(self):

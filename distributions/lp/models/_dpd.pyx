@@ -41,6 +41,9 @@ cdef class Shared:
     def remove_value(self, Value value):
         self.ptr.remove_value(value, get_rng()[0])
 
+    def realize(self):
+        self.ptr.realize(get_rng()[0])
+
 
 cdef class Group:
     def __cinit__(self):

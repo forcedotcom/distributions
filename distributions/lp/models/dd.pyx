@@ -28,7 +28,7 @@
 cimport _dd
 import _dd
 
-from distributions.mixins import GroupIoMixin, SharedIoMixin
+from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 
 NAME = 'DirichletDiscrete'
@@ -75,7 +75,7 @@ cdef class _Shared(_dd.Shared):
             message.alphas.append(float(self.ptr.alphas[i]))
 
 
-class Shared(_Shared, SharedIoMixin):
+class Shared(_Shared, SharedMixin, SharedIoMixin):
     pass
 
 

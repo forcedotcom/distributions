@@ -28,7 +28,7 @@
 cimport _nich
 import _nich
 
-from distributions.mixins import GroupIoMixin, SharedIoMixin
+from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 
 NAME = 'NormalInverseChiSq'
@@ -70,7 +70,7 @@ cdef class _Shared(_nich.Shared):
         message.nu = self.ptr.nu
 
 
-class Shared(_Shared, SharedIoMixin):
+class Shared(_Shared, SharedMixin, SharedIoMixin):
     pass
 
 

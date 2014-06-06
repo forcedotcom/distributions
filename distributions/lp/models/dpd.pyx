@@ -30,7 +30,7 @@ import _dpd
 
 from cython.operator cimport dereference as deref, preincrement as inc
 from distributions.sparse_counter cimport SparseCounter, SparseFloat
-from distributions.mixins import GroupIoMixin, SharedIoMixin
+from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 
 NAME = 'DirichletProcessDiscrete'
@@ -125,7 +125,7 @@ cdef class _Shared(_dpd.Shared):
             inc(it)
 
 
-class Shared(_Shared, SharedIoMixin):
+class Shared(_Shared, SharedMixin, SharedIoMixin):
     pass
 
 

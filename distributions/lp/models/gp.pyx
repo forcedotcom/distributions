@@ -28,7 +28,7 @@
 cimport _gp
 import _gp
 
-from distributions.mixins import GroupIoMixin, SharedIoMixin
+from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 
 NAME = 'GammaPoisson'
@@ -61,7 +61,7 @@ cdef class _Shared(_gp.Shared):
         message.inv_beta = self.ptr.inv_beta
 
 
-class Shared(_Shared, SharedIoMixin):
+class Shared(_Shared, SharedMixin, SharedIoMixin):
     pass
 
 

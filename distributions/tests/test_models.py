@@ -126,6 +126,7 @@ def test_interface(module, EXAMPLE):
         assert_is_instance(getattr(module, typename), type)
     assert_hasattr(module.Shared, 'add_value')
     assert_hasattr(module.Shared, 'remove_value')
+    assert_hasattr(module.Shared, 'realize')
 
     shared = module.Shared.from_dict(EXAMPLE['shared'])
     values = EXAMPLE['values']

@@ -28,7 +28,7 @@
 cimport _bb
 import _bb
 
-from distributions.mixins import GroupIoMixin, SharedIoMixin
+from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 
 NAME = 'BetaBernoulli'
@@ -61,7 +61,7 @@ cdef class _Shared(_bb.Shared):
         message.beta = float(self.ptr.beta)
 
 
-class Shared(_Shared, SharedIoMixin):
+class Shared(_Shared, SharedMixin, SharedIoMixin):
     pass
 
 

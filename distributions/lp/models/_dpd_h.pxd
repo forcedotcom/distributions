@@ -45,6 +45,7 @@ cdef extern from "distributions/models/dpd.hpp" namespace "distributions::Dirich
         SparseCounter counts
         void add_value (Value &, rng_t &) nogil except +
         void remove_value (Value &, rng_t &) nogil except +
+        void realize (rng_t &) nogil except +
 
 
     cppclass Group:

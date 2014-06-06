@@ -41,8 +41,6 @@ cdef extern from "distributions/models/bnb.hpp" namespace "distributions::BetaNe
         float alpha
         float beta
         uint32_t r
-        void add_value (Value &, rng_t &) nogil except +
-        void remove_value (Value &, rng_t &) nogil except +
 
 
     cppclass Group:

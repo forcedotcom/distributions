@@ -40,8 +40,6 @@ cdef extern from "distributions/models/dd.hpp" namespace "distributions::Dirichl
     cppclass Shared:
         int dim
         float alphas[256]
-        void add_value (Value &, rng_t &) nogil except +
-        void remove_value (Value &, rng_t &) nogil except +
 
 
     cppclass Group:

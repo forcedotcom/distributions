@@ -37,6 +37,9 @@ class SharedMixin(object):
     def remove_value(self, value):
         pass
 
+    def realize(self):
+        pass
+
 
 class ProtobufSerializable(object):
 
