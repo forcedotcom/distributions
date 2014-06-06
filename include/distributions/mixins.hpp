@@ -42,6 +42,7 @@ struct SharedMixin
 
     void add_value (const Value &, rng_t &) {}
     void remove_value (const Value &, rng_t &) {}
+    void realize (rng_t &) {}
 };
 
 template<class Model_>

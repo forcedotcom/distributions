@@ -79,6 +79,27 @@ struct Shared : SharedMixin<Model>
         }
     }
 
+    void realize (rng_t & rng)
+    {
+        const size_t max_size = 10000;
+        const float min_beta0 = 1e-4f;
+
+        Value new_value = 0;
+        for (const auto & i : betas) {
+            new_value = std::max(new_value, 1 + i.first);
+        }
+
+        while (betas.size() < max_size - 1 and beta0 > min_beta0) {
+            add_value(new_value++, rng);
+        }
+
+        if (beta0 > 0) {
+            add_value(new_value, rng);
+            betas.get(new_value) += beta0;
+            beta0 = 0;
+        }
+    }
+
     template<class Message>
     void protobuf_load (const Message & message)
     {
