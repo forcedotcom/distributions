@@ -333,23 +333,34 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
         }
         count_t count_sum = group.counts.get_total();
         scores_shift_[groupid] = fast_log(alpha + count_sum);
-
     }
 
-    void update_group_value (
+    void add_value (
             const Shared & shared,
             size_t groupid,
             const Group & group,
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(value != shared.OTHER(), "cannot update OTHER");
-        const float alpha = shared.alpha;
-        count_t count = group.counts.get_count(value);
-        count_t count_sum = group.counts.get_total();
-        scores_.get(value)[groupid] =
-            fast_log(alpha * shared.betas.get(value) + count);
-        scores_shift_[groupid] = fast_log(alpha + count_sum);
+        if (DIST_UNLIKELY(not scores_.contains(value))) {
+            add_shared_value(shared, value);
+        }
+
+        _update_group_value(shared, groupid, group, value);
+    }
+
+    void remove_value (
+            const Shared & shared,
+            size_t groupid,
+            const Group & group,
+            const Value & value,
+            rng_t &)
+    {
+        if (DIST_UNLIKELY(not shared.betas.contains(value))) {
+            remove_shared_value(shared, value);
+        }
+
+        _update_group_value(shared, groupid, group, value);
     }
 
     void update_all (
@@ -384,18 +395,24 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
             VectorFloat & scores_accum,
             rng_t &) const
     {
-        if (DIST_LIKELY(value != shared.OTHER())) {
+        if (DIST_LIKELY(scores_.contains(value))) {
+
             vector_add_subtract(
                 scores_accum.size(),
                 scores_accum.data(),
                 scores_.get(value).data(),
                 scores_shift_.data());
+
         } else {
-            float score_other = fast_log(shared.alpha * shared.beta0);
+
+            float beta = (value == shared.OTHER())
+                       ? shared.beta0
+                       : shared.betas.get(value);
+            float score = fast_log(shared.alpha * beta);
             vector_add_subtract(
                 scores_accum.size(),
                 scores_accum.data(),
-                score_other,
+                score,
                 scores_shift_.data());
         }
     }
@@ -440,6 +457,21 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
     }
 
 private:
+
+    void _update_group_value (
+            const Shared & shared,
+            size_t groupid,
+            const Group & group,
+            const Value & value)
+    {
+        DIST_ASSERT1(value != shared.OTHER(), "cannot update OTHER");
+        const float alpha = shared.alpha;
+        count_t count = group.counts.get_count(value);
+        count_t count_sum = group.counts.get_total();
+        scores_.get(value)[groupid] =
+            fast_log(alpha * shared.betas.get(value) + count);
+        scores_shift_[groupid] = fast_log(alpha + count_sum);
+    }
 
     Sparse_<Value, VectorFloat> scores_;
     VectorFloat scores_shift_;

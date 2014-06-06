@@ -278,7 +278,17 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
         mean_[groupid] = base.mean;
     }
 
-    void update_group_value (
+    void add_value (
+            const Shared & shared,
+            size_t groupid,
+            const Group & group,
+            const Value &,
+            rng_t & rng)
+    {
+        update_group(shared, groupid, group, rng);
+    }
+
+    void remove_value (
             const Shared & shared,
             size_t groupid,
             const Group & group,

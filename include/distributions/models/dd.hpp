@@ -302,24 +302,33 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
             const Shared & shared,
             size_t groupid,
             const Group & group,
-            rng_t & rng)
+            rng_t &)
     {
+        scores_shift_[groupid] = fast_log(alpha_sum_ + group.count_sum);
         for (Value value = 0; value < shared.dim; ++value) {
-            update_group_value(shared, groupid, group, value, rng);
+            scores_[value][groupid] =
+                fast_log(shared.alphas[value] + group.counts[value]);
         }
     }
 
-    void update_group_value (
+    void add_value (
             const Shared & shared,
             size_t groupid,
             const Group & group,
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
-        scores_[value][groupid] =
-            fast_log(shared.alphas[value] + group.counts[value]);
-        scores_shift_[groupid] = fast_log(alpha_sum_ + group.count_sum);
+        _update_group_value(shared, groupid, group, value);
+    }
+
+    void remove_value (
+            const Shared & shared,
+            size_t groupid,
+            const Group & group,
+            const Value & value,
+            rng_t &)
+    {
+        _update_group_value(shared, groupid, group, value);
     }
 
     void update_all (
@@ -405,6 +414,18 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
     }
 
 private:
+
+    void _update_group_value (
+            const Shared & shared,
+            size_t groupid,
+            const Group & group,
+            const Value & value)
+    {
+        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
+        scores_[value][groupid] =
+            fast_log(shared.alphas[value] + group.counts[value]);
+        scores_shift_[groupid] = fast_log(alpha_sum_ + group.count_sum);
+    }
 
     float alpha_sum_;
     std::vector<VectorFloat> scores_;
