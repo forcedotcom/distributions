@@ -77,6 +77,24 @@ void sample_dirichlet_safe (
 // Discrete distribution
 
 template<class Alloc>
+float log_sum_exp (const std::vector<float, Alloc> & scores)
+{
+    const size_t size = scores.size();
+    if (DIST_UNLIKELY(size == 0)) {
+        return 0.f;
+    }
+
+    const float * __restrict__ scores_data = scores.data();
+    const float max_score = vector_max(size, scores_data);
+    float total = 0;
+    for (size_t i = 0; i < size; ++i) {
+        total += fast_exp(scores_data[i] - max_score);
+    }
+
+    return fast_log(total) + max_score;
+}
+
+template<class Alloc>
 float scores_to_likelihoods (std::vector<float, Alloc> & scores)
 {
     const size_t size = scores.size();
@@ -118,6 +136,8 @@ float score_from_scores_overwrite (
 // Explicit template instantiations
 
 #define INSTANTIATE_TEMPLATES(Alloc)                \
+    template float log_sum_exp (                    \
+            const std::vector<float, Alloc> &);     \
     template float scores_to_likelihoods (          \
             std::vector<float, Alloc> &);           \
     template float score_from_scores_overwrite (    \

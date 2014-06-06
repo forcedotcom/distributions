@@ -200,3 +200,14 @@ def test_sample_prob_from_scores():
             return distributions.lp.random.sample_prob_from_scores(rng, scores)
 
         assert_samples_match_scores(sampler)
+
+
+def test_log_sum_exp():
+    require_cython()
+    import distributions.lp.random
+
+    for size in xrange(20):
+        scores = numpy.random.normal(size=size).tolist()
+        expected = numpy.logaddexp.reduce(scores) if size else 0.0
+        actual = distributions.lp.random.log_sum_exp(scores)
+        assert_close(actual, expected, err_msg='log_sum_exp')

@@ -191,6 +191,9 @@ inline std::pair<T, T> sample_pair_from_urn (
 //   likelihood = non-normalized probability
 //        score = non-normalized log probability
 
+template<class Alloc>
+float log_sum_exp (const std::vector<float, Alloc> & scores);
+
 inline size_t sample_discrete (
         rng_t & rng,
         size_t dim,

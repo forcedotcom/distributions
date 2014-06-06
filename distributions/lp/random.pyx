@@ -38,6 +38,8 @@ ctypedef PyObject* O
 
 
 cdef extern from "distributions/random.hpp" namespace "distributions":
+    cdef float log_sum_exp_cc "distributions::log_sum_exp" (
+            vector[float] & scores) nogil
     cdef pair[size_t, float] sample_prob_from_scores_overwrite (
             rng_t & rng,
             vector[float] & scores) nogil
@@ -69,6 +71,11 @@ cdef class RNG:
         del result.ptr
         result.ptr = new rng_t(self.ptr[0])
         return result
+
+
+def log_sum_exp(list scores):
+    cdef vector[float] _scores = scores
+    return log_sum_exp_cc(_scores)
 
 
 def sample_prob_from_scores(RNG rng, list scores):
