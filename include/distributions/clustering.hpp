@@ -62,6 +62,20 @@ struct PitmanYor
     float alpha;
     float d;
 
+    template<class Message>
+    void protobuf_load (const Message & message)
+    {
+        alpha = message.alpha();
+        d = message.d();
+    }
+
+    template<class Message>
+    void protobuf_dump (Message & message) const
+    {
+        message.set_alpha(alpha);
+        message.set_d(d);
+    }
+
     std::vector<count_t> sample_assignments (
             count_t size,
             rng_t & rng) const;
@@ -253,6 +267,18 @@ struct PitmanYor
 struct LowEntropy
 {
     count_t dataset_size;
+
+    template<class Message>
+    void protobuf_load (const Message & message)
+    {
+        dataset_size = message.dataset_size();
+    }
+
+    template<class Message>
+    void protobuf_dump (Message & message) const
+    {
+        message.set_dataset_size(dataset_size);
+    }
 
     std::vector<count_t> sample_assignments (
             count_t sample_size,

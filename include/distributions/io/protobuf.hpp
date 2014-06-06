@@ -43,69 +43,6 @@ namespace distributions
 namespace protobuf { using namespace ::protobuf::distributions; }
 
 //----------------------------------------------------------------------------
-// Clustering
-
-// FIXME gcc-4.6 fails if these are made template<count_t>
-
-inline void clustering_load (
-        typename Clustering<int>::PitmanYor & model,
-        const protobuf::Clustering::PitmanYor & message)
-{
-    model.alpha = message.alpha();
-    model.d = message.d();
-}
-inline void clustering_dump (
-        const typename Clustering<int>::PitmanYor & model,
-        protobuf::Clustering::PitmanYor & message)
-{
-    message.set_alpha(model.alpha);
-    message.set_d(model.d);
-}
-
-inline void clustering_load (
-        typename Clustering<int>::PitmanYor & model,
-        const protobuf::Clustering & message)
-{
-    clustering_load(model, message.pitman_yor());
-}
-
-inline void clustering_dump (
-        const typename Clustering<int>::PitmanYor & model,
-        protobuf::Clustering & message)
-{
-    message.Clear();
-    clustering_dump(model, * message.mutable_pitman_yor());
-}
-
-inline void clustering_load (
-        typename Clustering<int>::LowEntropy & model,
-        const protobuf::Clustering::LowEntropy & message)
-{
-    model.dataset_size = message.dataset_size();
-}
-
-inline void clustering_dump (
-        const typename Clustering<int>::LowEntropy & model,
-        protobuf::Clustering::LowEntropy & message)
-{
-    message.set_dataset_size(model.dataset_size);
-}
-
-inline void clustering_load (
-        typename Clustering<int>::LowEntropy & model,
-        const protobuf::Clustering & message)
-{
-    clustering_load(model, message.low_entropy());
-}
-
-inline void clustering_dump (
-        const typename Clustering<int>::LowEntropy & model,
-        protobuf::Clustering & message)
-{
-    clustering_dump(model, * message.mutable_low_entropy());
-}
-
-//----------------------------------------------------------------------------
 // Grid Priors
 
 template<class Visitor>
