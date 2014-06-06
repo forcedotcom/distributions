@@ -90,45 +90,68 @@ struct Shared : SharedMixin<Model>
 
 struct Group : GroupMixin<Model>
 {
+    int dim;
     count_t count_sum;
     count_t counts[max_dim];
+
+    template<class Message>
+    void protobuf_load (const Message & message)
+    {
+        dim = message.counts_size();
+        DIST_ASSERT_LE(dim, max_dim);
+        count_sum = 0;
+        for (size_t i = 0; i < dim; ++i) {
+            count_sum += counts[i] = message.counts(i);
+        }
+    }
+
+    template<class Message>
+    void protobuf_dump (Message & message) const
+    {
+        message.Clear();
+        auto & message_counts = * message.mutable_counts();
+        for (size_t i = 0; i < dim; ++i) {
+            message_counts.Add(counts[i]);
+        }
+    }
 
     void init (
             const Shared & shared,
             rng_t &)
     {
+        dim = shared.dim;
         count_sum = 0;
-        for (Value value = 0; value < shared.dim; ++value) {
+        for (Value value = 0; value < dim; ++value) {
             counts[value] = 0;
         }
     }
 
     void add_value (
-            const Shared & shared,
+            const Shared &,
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
+        DIST_ASSERT1(value < dim, "value out of bounds: " << value);
         count_sum += 1;
         counts[value] += 1;
     }
 
     void remove_value (
-            const Shared & shared,
+            const Shared &,
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
+        DIST_ASSERT1(value < dim, "value out of bounds: " << value);
         count_sum -= 1;
         counts[value] -= 1;
     }
 
     void merge (
-            const Shared & shared,
+            const Shared &,
             const Group & source,
             rng_t &)
     {
-        for (Value value = 0; value < shared.dim; ++value) {
+        for (Value value = 0; value < dim; ++value) {
             counts[value] += source.counts[value];
         }
     }
@@ -150,7 +173,7 @@ struct Group : GroupMixin<Model>
         float score = 0;
         float alpha_sum = 0;
 
-        for (Value value = 0; value < shared.dim; ++value) {
+        for (Value value = 0; value < dim; ++value) {
             float alpha = shared.alphas[value];
             alpha_sum += alpha;
             score += fast_lgamma(alpha + counts[value])

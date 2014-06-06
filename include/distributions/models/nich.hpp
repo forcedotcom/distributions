@@ -105,6 +105,22 @@ struct Group : GroupMixin<Model>
     float mean;
     float count_times_variance;
 
+    template<class Message>
+    void protobuf_load (const Message & message)
+    {
+        count = message.count();
+        mean = message.mean();
+        count_times_variance = message.count_times_variance();
+    }
+
+    template<class Message>
+    void protobuf_dump (Message & message) const
+    {
+        message.set_count(count);
+        message.set_mean(mean);
+        message.set_count_times_variance(count_times_variance);
+    }
+
     void init (
             const Shared &,
             rng_t &)

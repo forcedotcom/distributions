@@ -91,6 +91,22 @@ struct Group : GroupMixin<Model>
     uint32_t sum;
     float log_prod;
 
+    template<class Message>
+    void protobuf_load (const Message & message)
+    {
+        count = message.count();
+        sum = message.sum();
+        log_prod = message.log_prod();
+    }
+
+    template<class Message>
+    void protobuf_dump (Message & message) const
+    {
+        message.set_count(count);
+        message.set_sum(sum);
+        message.set_log_prod(log_prod);
+    }
+
     void init (const Shared &, rng_t &)
     {
         count = 0;

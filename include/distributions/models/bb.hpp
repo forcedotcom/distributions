@@ -83,6 +83,20 @@ struct Group : GroupMixin<Model>
     count_t heads;
     count_t tails;
 
+    template<class Message>
+    void protobuf_load (const Message & message)
+    {
+        heads = message.heads();
+        tails = message.tails();
+    }
+
+    template<class Message>
+    void protobuf_dump (Message & message) const
+    {
+        message.set_heads(heads);
+        message.set_tails(tails);
+    }
+
     void init (
             const Shared &,
             rng_t &)

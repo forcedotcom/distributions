@@ -137,6 +137,30 @@ struct Group : GroupMixin<Model>
 {
     SparseCounter<Value, count_t> counts;
 
+    template<class Message>
+    void protobuf_load (const Message & message)
+    {
+        if (DIST_DEBUG_LEVEL >= 1) {
+            DIST_ASSERT_EQ(message.keys_size(), message.values_size());
+        }
+        counts.clear();
+        for (size_t i = 0, size = message.keys_size(); i < size; ++i) {
+            counts.add(message.keys(i), message.values(i));
+        }
+    }
+
+    template<class Message>
+    void protobuf_dump (Message & message) const
+    {
+        message.Clear();
+        auto & keys = * message.mutable_keys();
+        auto & values = * message.mutable_values();
+        for (const auto & pair : counts) {
+            keys.Add(pair.first);
+            values.Add(pair.second);
+        }
+    }
+
     void init (
             const Shared &,
             rng_t &)
