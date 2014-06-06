@@ -36,10 +36,10 @@ cdef class Shared:
         del self.ptr
 
     def add_value(self, Value value):
-        return self.ptr.add_value(value, get_rng()[0])
+        self.ptr.add_value(value, get_rng()[0])
 
     def remove_value(self, Value value):
-        return self.ptr.remove_value(value, get_rng()[0])
+        self.ptr.remove_value(value, get_rng()[0])
 
 
 cdef class Group:

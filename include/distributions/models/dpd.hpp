@@ -60,29 +60,23 @@ struct Shared : SharedMixin<Model>
 
     static constexpr Value OTHER () { return 0xFFFFFFFFU; }
 
-    bool add_value (const Value & value, rng_t & rng)
+    void add_value (const Value & value, rng_t & rng)
     {
         DIST_ASSERT1(value != OTHER(), "cannot add OTHER");
-        bool add_group = (counts.add(value) == 1);
-        if (DIST_UNLIKELY(add_group)) {
+        if (DIST_UNLIKELY(counts.add(value) == 1)) {
             // FIXME(jglidden) is the following correct?
             float beta = beta0 * sample_beta(rng, 1.f, gamma);
             beta0 = std::max(0.f, beta0 - beta);
-            betas.add(value) = beta;
+            betas.add(value, beta);
         }
-
-        return add_group;
     }
 
-    bool remove_value (const Value & value, rng_t &)
+    void remove_value (const Value & value, rng_t &)
     {
         DIST_ASSERT1(value != OTHER(), "cannot remove OTHER");
-        bool remove_group = (counts.remove(value) == 0);
-        if (DIST_UNLIKELY(remove_group)) {
+        if (DIST_UNLIKELY(counts.remove(value) == 0)) {
             beta0 += betas.pop(value);
         }
-
-        return remove_group;
     }
 
     static Shared EXAMPLE ()

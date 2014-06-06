@@ -32,10 +32,10 @@ class ComponentModel(object):
 
 class SharedMixin(object):
     def add_value(self, value):
-        return False
+        pass
 
     def remove_value(self, value):
-        return False
+        pass
 
 
 class ProtobufSerializable(object):

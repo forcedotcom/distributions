@@ -13,8 +13,8 @@ struct SharedMixin
     typedef typename Model::Value Value;
     typedef typename Model::Group Group;
 
-    bool add_value (const Value &, rng_t &) { return false; }
-    bool remove_value (const Value &, rng_t &) { return false; }
+    void add_value (const Value &, rng_t &) {}
+    void remove_value (const Value &, rng_t &) {}
 };
 
 template<class Model_>

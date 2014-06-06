@@ -40,8 +40,8 @@ cdef extern from "distributions/models/gp.hpp" namespace "distributions::GammaPo
     cppclass Shared:
         float alpha
         float inv_beta
-        bint add_value (Value &, rng_t &) nogil except +
-        bint remove_value (Value &, rng_t &) nogil except +
+        void add_value (Value &, rng_t &) nogil except +
+        void remove_value (Value &, rng_t &) nogil except +
 
 
     cppclass Group:

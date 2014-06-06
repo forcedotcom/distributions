@@ -42,8 +42,8 @@ cdef extern from "distributions/models/nich.hpp" namespace "distributions::Norma
         float kappa
         float sigmasq
         float nu
-        bint add_value (Value &, rng_t &) nogil except +
-        bint remove_value (Value &, rng_t &) nogil except +
+        void add_value (Value &, rng_t &) nogil except +
+        void remove_value (Value &, rng_t &) nogil except +
 
 
     cppclass Group:

@@ -118,21 +118,15 @@ class Shared(SharedMixin, SharedIoMixin):
             message.counts.append(self.counts[value])
 
     def add_value(self, value):
-        if value in self.counts:
-            self.counts[value] += 1
-            return False
-        else:
-            self.counts[value] = 1
-            return True
+        count = self.counts.get(value, 0) + 1
+        self.counts[value] = count
 
     def remove_value(self, value):
         count = self.counts[value] - 1
         if count:
             self.counts[value] = count
-            return False
         else:
             del self.counts[value]
-            return True
 
 
 class Group(GroupIoMixin):
