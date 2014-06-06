@@ -37,15 +37,21 @@ while testing all implementations for correctness.
 Feature Model API
 -------------------
 
-Feature models are written as ``Model`` classes and ``Model.method`` methods,
-since all operations depend on the model.
+Feature models are contained in modules in python and structs in C++.
+Below write ``Model.thing`` to denote
+``module.thing`` in python and
+``Model::thing`` in C++.
 
-Many functions consume explicit entropy sources in C++
+Most functions consume explicit entropy sources in C++
 or ``global_rng`` implicitly in python
+
+Below ``json`` denotes a python dict/list/number/string
+suitable for serialization with the ``json`` package.
 
 Each feature model API consist of:
 
 *   Datatypes.
+
     *   ``Shared`` - shared global model state including fixed parameters,
         hyperparameters, and, for datatypes with dynamic support,
         shared sufficient statistics.
@@ -64,10 +70,13 @@ Each feature model API consist of:
     These should be simple and fast::
 
         shared = Model.Shared()
-        shared.load(json)
-        shared.dump() -> json
-        shared.load_protobuf(message)
+        shared.load(json)                               # python only
+        shared.dump() -> json                           # python only
+        Model.shared_load(json) -> shared               # python only
+        Model.shared_dump(shared) -> json               # python only
+        shared.protobuf_load(message)
         shared.protobuf_dump_protobuf(message)
+
         shared.add_value(value)
         shared.remove_value(value)
         shared.plus_group(group) -> shared              # optional
@@ -77,6 +86,13 @@ Each feature model API consist of:
     These may consume entropy::
 
         group = Model.Group()
+        group.load(json)                                # python only
+        group.dump() -> json                            # python only
+        Model.group_load(json) -> group                 # python only
+        Model.group_dump(group) -> json                 # python only
+        group.protobuf_load(message)
+        group.protobuf_dump_protobuf(message)
+
         group.init(shared)
         group.add_value(shared, value)
         group.remove_value(shared, value)
@@ -85,8 +101,7 @@ Each feature model API consist of:
         group.score_value(shared)
 
 *   Sampling.
-    These may consume entropy
-    ::
+    These may consume entropy::
 
         sampler = Model.Sampler()
         sampler.init(shared, group)
@@ -103,11 +118,11 @@ Each feature model API consist of:
         scorer.eval(shared, value) -> float
         group.score_value(shared, value) -> float
 
-*   Mixture Slavess (optional in python).
+*   Mixture Slaves (optional in python).
     These provide batch operations on a collection of groups.::
 
         mixture = Model.Mixture()
-        mixture.groups().push_back(group)                 # c++ only
+        mixture.groups().push_back(group)                 # C++ only
         mixture.append(group)                             # python only
         mixture.init(shared)
         mixture.add_group(shared)
@@ -116,18 +131,7 @@ Each feature model API consist of:
         mixture.remove_value(shared, groupid, value)
         mixture.score_value(shared, value, scores_accum)
         mixture.score_data(shared) -> float
-        mixture.score_data_grid(shareds, scores_out)      # c++ only
-
-*   Serialization to JSON (python only)::
-
-        shared.load(json)
-        shared.dump() -> json
-        group.load(json)
-        group.dump() -> json
-        Model.shared_load(json) -> shared
-        Model.shared_dump(shared) -> json
-        Model.group_load(json) -> group
-        Model.group_dump(group) -> json
+        mixture.score_data_grid(shareds, scores_out)      # C++ only
 
 *   Testing metadata.
     Example model parameters and datasets are automatically discovered by
@@ -160,8 +164,8 @@ Clustering Model API
     Clustering mixture drivers, referencing a ``clustering`` model::
 
         mixture = model.Mixture()
-        mixture.counts().push_back(count)                       # c++ only
-        mixture.init(model)                                     # c++ only
+        mixture.counts().push_back(count)                       # C++ only
+        mixture.init(model)                                     # C++ only
         mixture.init(model, counts)                             # python only
         mixture.remove_group(shared, groupid)
         mixture.add_value(shared, groupid, value) -> bool
@@ -171,23 +175,21 @@ Clustering Model API
 
     Mixture drivers and slaves coordinate using the pattern::
 
-        # driver is a clustering model
-        # slaves are feature models
+        # driver is a single clustering model
+        # slaves is a list of feature models
 
         def add_value(driver, slaves, groupid, value):
             added = driver.mixture.add_value(driver.shared, groupid, value)
             for slave in slaves:
                 slave.mixture.add_value(slave.shared, groupid, value)
-            if added:
-                for slave in slaves:
+                if added:
                     slave.mixture.add_group(slave.shared)
 
         def remove_value(driver, slaves, groupid, value):
             removed = driver.mixture.remove_value(driver.shared, groupid, value)
             for slave in slaves:
                 slave.mixture.add_value(slave.shared, groupid, value)
-            if removed:
-                for slave in slaves:
+                if removed:
                     slave.mixture.remove_group(slave.shared, groupid)
 
     See ``examples/mixture/main.py`` for a working example.
