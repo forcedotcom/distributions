@@ -34,108 +34,114 @@ and finally implement optimized scalable inference products in C++,
 while testing all implementations for correctness.
 
 
-Component Model API
+Feature Model API
 -------------------
 
-Component models are written as ``Model`` classes and ``model.method`` methods,
+Feature models are written as ``Model`` classes and ``Model.method`` methods,
 since all operations depend on the model.
 
-Component models are written as free functions with all data passed in
-to emphasize their exact dependencies. The
-distributions.ComponentModel interface class wraps these functions for
-all models so that they may be used conveniently elsewhere.
+Many functions consume explicit entropy sources in C++
+or ``global_rng`` implicitly in python
 
-Each component model API consist of:
+Each feature model API consist of:
 
 *   Datatypes.
-    *   ``ExampleModel`` - global model state including fixed parameters
-        and hyperparameters
-    *   ``ExampleModel.Value`` - observation observation state
-    *   ``ExampleModel.Group`` - local component state including
+    *   ``Shared`` - shared global model state including fixed parameters,
+        hyperparameters, and, for datatypes with dynamic support,
+        shared sufficient statistics.
+    *   ``Value`` - observation state, i.e., datum
+    *   ``Group`` - local component state including
         sufficient statistics and possibly group parameters
-    *   ``ExampleModel.Sampler`` -
-        partially evaluated per-component sampling function
+    *   ``Sampler`` -
+        partially evaluated per-group sampling function
         (optional in python)
-    *   ``ExampleModel.Scorer`` -
-        partially evaluated per-component scoring function
+    *   ``Scorer`` - cached per-group scoring function
         (optional in python)
-    *   ``ExampleModel.Classifier`` - vectorized scoring functions
+    *   ``Mixture`` - vectorized scoring functions for mixture models
         (optional in python)
 
-*   State mutating functions.
+*   Shared operations.
     These should be simple and fast::
 
-        model.group_create(values=[]) -> group         # python only
-        group.init(model)
-        group.add_value(model, value)
-        group.remove_value(model, value)
-        group.merge(model, other_group)
-        model.plus_group(group) -> model               # optional
+        shared = Model.Shared()
+        shared.load(json)
+        shared.dump() -> json
+        shared.load_protobuf(message)
+        shared.protobuf_dump_protobuf(message)
+        shared.add_value(value)
+        shared.remove_value(value)
+        shared.plus_group(group) -> shared              # optional
 
-*   Sampling functions (optional in python).
-    These consume explicit entropy sources in C++ or ``global_rng`` in python::
+*   Group operations.
+    These should be simple and fast.
+    These may consume entropy::
 
-        model.sampler_create(group=empty) -> sampler  # python only, optional
-        sampler.init(model, group)                    # c++ only
-        sampler.eval(sampler) -> value                # python only, optional
-        model.sample_value(group) -> value
-        model.sample_group(group_size) -> group
+        group = Model.Group()
+        group.init(shared)
+        group.add_value(shared, value)
+        group.remove_value(shared, value)
+        group.merge(shared, other_group)
+        group.sample_value(shared)
+        group.score_value(shared)
 
-*   Scoring functions (optional in python).
+*   Sampling.
+    These may consume entropy
+    ::
+
+        sampler = Model.Sampler()
+        sampler.init(shared, group)
+        sampler.eval(sampler) -> value
+        group.sample_value(shared) -> value
+        Model.sample_group(shared, group_size) -> group   # python only
+
+*   Scoring.
     These may also consume entropy,
     e.g. when implemented using monte carlo integration)::
 
-        model.scorer_create(group=empty) -> scorer  # python only, optional
-        scorer.init(model, group)                   # c++ only
-        scorer.eval(model, value) -> float          # python only, optional
+        scorer = Model.Scorer()
+        scorer.init(shared, group)
+        scorer.eval(shared, value) -> float
         group.score_value(shared, value) -> float
-        score_group(shared, group) -> float
 
-*   Mixture slave (optional in python).
-    These provide batch operations on a collection of groups.
+*   Mixture Slavess (optional in python).
+    These provide batch operations on a collection of groups.::
 
-    Clustering mixture drivers::
-
-        mixture.sample_assignments(sample_size)
-        mixture.score_counts(model)
-        mixture.add_group(model)
-        mixture.remove_group(model, groupid)
-        mixture.add_value(model, groupid, value)
-        mixture.remove_value(model, groupid, value)
-        mixture.score_value(model, value, scores_accum)
-        mixture.score_mixture(model) -> float
-
-    Component model mixture slaves::
-
-        mixture.groups.push_back(group)          # c++ only
-        mixture.append(group)                    # python only
-        mixture.init(model)
-        mixture.add_group(model)
-        mixture.remove_group(model, groupid)
-        mixture.add_value(model, groupid, value)
-        mixture.remove_value(model, groupid, value)
-        mixture.score_value(model, value, scores_accum)
-        mixture.score_mixture(model) -> float
+        mixture = Model.Mixture()
+        mixture.groups().push_back(group)                 # c++ only
+        mixture.append(group)                             # python only
+        mixture.init(shared)
+        mixture.add_group(shared)
+        mixture.remove_group(shared, groupid)
+        mixture.add_value(shared, groupid, value)
+        mixture.remove_value(shared, groupid, value)
+        mixture.score_value(shared, value, scores_accum)
+        mixture.score_data(shared) -> float
+        mixture.score_data_grid(shareds, scores_out)      # c++ only
 
 *   Serialization to JSON (python only)::
 
-        model.load(json)
-        model.dump() -> json
+        shared.load(json)
+        shared.dump() -> json
         group.load(json)
         group.dump() -> json
-        ExampleModel.model_load(json) -> model
-        ExampleModel.model_dump(model) -> json
-        ExampleModel.group_load(json) -> group
-        ExampleModel.group_dump(group) -> json
+        Model.shared_load(json) -> shared
+        Model.shared_dump(shared) -> json
+        Model.group_load(json) -> group
+        Model.group_dump(group) -> json
 
-*   Testing metadata (python only).
+*   Testing metadata.
     Example model parameters and datasets are automatically discovered by
     unit test infrastructures, reducing the cost of per-model test-writing::
 
-        ExampleModel.EXAMPLES = [
-            {'model': ..., 'values': [...]},
+        # in python
+        for example in Model.EXAMPLES:
+            shared = Model.shared_load(example['shared'])
+            values = example['values']
             ...
-        ]
+
+        // in C++
+        Model::Shared shared = Model::Shared::EXAMPLE();
+        ...
 
 
 Clustering Model API
@@ -143,18 +149,48 @@ Clustering Model API
 
 *   Sampling and scoring::
 
+        model = Model()
         model.sample_assignments(sample_size)
         model.score_counts(counts)
         model.score_add_value(...)
         model.score_remove_value(...)
 
 *   Mixture driver (optional in python).
-    These provide batch operations on a collection of groups.::
+    These provide batch operations on a collection of groups.
+    Clustering mixture drivers, referencing a ``clustering`` model::
 
-        mixture.init(model, counts)
-        mixture.add_value(model, groupid, count)
-        mixture.remove_value(model, groupid, count)
-        mixture.score(model, scores)
+        mixture = model.Mixture()
+        mixture.counts().push_back(count)                       # c++ only
+        mixture.init(model)                                     # c++ only
+        mixture.init(model, counts)                             # python only
+        mixture.remove_group(shared, groupid)
+        mixture.add_value(shared, groupid, value) -> bool
+        mixture.remove_value(shared, groupid, value) -> bool
+        mixture.score_value(shared, value, scores_out)
+        mixture.score_data(shared) -> float
+
+    Mixture drivers and slaves coordinate using the pattern::
+
+        # driver is a clustering model
+        # slaves are feature models
+
+        def add_value(driver, slaves, groupid, value):
+            added = driver.mixture.add_value(driver.shared, groupid, value)
+            for slave in slaves:
+                slave.mixture.add_value(slave.shared, groupid, value)
+            if added:
+                for slave in slaves:
+                    slave.mixture.add_group(slave.shared)
+
+        def remove_value(driver, slaves, groupid, value):
+            removed = driver.mixture.remove_value(driver.shared, groupid, value)
+            for slave in slaves:
+                slave.mixture.add_value(slave.shared, groupid, value)
+            if removed:
+                for slave in slaves:
+                    slave.mixture.remove_group(slave.shared, groupid)
+
+    See ``examples/mixture/main.py`` for a working example.
 
 *   Testing metadata (python only).
     Example model parameters and datasets are automatically discovered by
