@@ -348,7 +348,7 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
         if (scores_.size() != shared.betas.size()) {
             for (auto i = scores_.begin(); i != scores_.end();) {
                 if (DIST_UNLIKELY(not shared.betas.contains(i->first))) {
-                    scores_.erase(i++);
+                    scores_.unsafe_erase(i++);
                 } else {
                     ++i;
                 }
