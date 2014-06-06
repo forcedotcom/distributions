@@ -281,17 +281,14 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
 
     void add_shared_value (
             const Shared & shared,
-            const MixtureSlave<Shared> & slave,
             const Value & value)
     {
         DIST_ASSERT1(value != shared.OTHER(), "cannot add OTHER");
         VectorFloat & scores = scores_.add(value);
-        const size_t group_count = slave.groups().size();
-        const float alpha = shared.alpha;
-        const float beta = shared.betas.get(value);
+        const size_t group_count = scores_shift_.size();
+        const float beta = shared.alpha * shared.betas.get(value);
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
-            auto count = slave.groups(groupid).counts.get_count(value);
-            scores[groupid] = alpha * beta + count;
+            scores[groupid] = beta;
         }
         vector_log(group_count, scores.data());
     }
