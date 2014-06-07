@@ -302,8 +302,14 @@ inline float fast_lgamma_nu (float nu)
 // Compute stirling numbers of first kind S(n,k), one row at a time
 // return [log(S(n,0), ..., log(S(n,n))]
 // http://en.wikipedia.org/wiki/Stirling_numbers_of_the_first_kind
-std::vector<float> log_stirling1_row (int n);
+template<class Alloc>
+void get_log_stirling1_row (int n, std::vector<float, Alloc> & result);
 
-
+inline std::vector<float> log_stirling1_row (int n)
+{
+    std::vector<float> result;
+    get_log_stirling1_row(n, result);
+    return result;
+}
 
 } // namespace distributions

@@ -26,6 +26,7 @@
 // USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <distributions/special.hpp>
+#include <distributions/vector.hpp>
 #include <mutex>
 
 namespace distributions
@@ -53,18 +54,19 @@ const char LogTable256[256] =
 };
 
 
-static std::vector<std::vector<float>> log_stirling1_rows;
+static std::mutex log_stirling1_mutex;
+static std::vector<VectorFloat> log_stirling1_cache;
 
-inline void log_stirling1_rows_add()
+inline void log_stirling1_cache_add ()
 {
-    size_t n = log_stirling1_rows.size();
-    log_stirling1_rows.push_back(std::vector<float>());
-    std::vector<float> & row = log_stirling1_rows.back();
+    size_t n = log_stirling1_cache.size();
+    log_stirling1_cache.push_back(VectorFloat());
+    VectorFloat & row = log_stirling1_cache.back();
     row.resize(n + 1);
     row[0] = -INFINITY;
     row[n] = 0;
     if (n > 1) {
-        const std::vector<float> & prev = log_stirling1_rows[n - 1];
+        const VectorFloat & prev = log_stirling1_cache[n - 1];
         const float log_n_minus_1 = logf(n - 1);
         for (size_t k = 1; k < n; ++k) {
             row[k] = log_sum_exp(log_n_minus_1 + prev[k], prev[k - 1]);
@@ -72,19 +74,20 @@ inline void log_stirling1_rows_add()
     }
 }
 
-inline std::vector<float> log_stirling1_row_exact(int n)
+inline void get_log_stirling1_row_exact (const int n, float * row)
 {
-    static std::mutex mutex;
-    std::unique_lock<std::mutex> lock(mutex);
+    // this could really be a readers-writer shared_mutex
+    std::unique_lock<std::mutex> lock(log_stirling1_mutex);
 
-    while (n >= log_stirling1_rows.size()) {
-        log_stirling1_rows_add();
+    while (n >= log_stirling1_cache.size()) {
+        log_stirling1_cache_add();
     }
 
-    return log_stirling1_rows[n];
+    const auto & cached = log_stirling1_cache[n];
+    memcpy(row, cached.data(), cached.size() * sizeof(float));
 }
 
-inline std::vector<float> log_stirling1_row_approx(const int n)
+inline void get_log_stirling1_row_approx (const int n, float * row)
 {
     // Approximation #1 is taken from Eqn 26.8.40 of [1],
     // whose unsigned version is
@@ -118,8 +121,6 @@ inline std::vector<float> log_stirling1_row_approx(const int n)
     const float log_stuff = logf(euler_gamma + logf(n - 1));
     const float softness = n / 3.0; // ad hoc
 
-    std::vector<float> row(n + 1, 0);
-
     // endpoints
     row[0] = -INFINITY;
     row[n] = 0;
@@ -135,8 +136,15 @@ inline std::vector<float> log_stirling1_row_approx(const int n)
             -1.0f / softness * approx1,
             -1.0f / softness * approx2);
     }
+}
 
-    return row;
+void get_log_stirling1_row (int n, float * result)
+{
+    if (n < 32) {
+        get_log_stirling1_row_exact(n, result);
+    } else {
+        get_log_stirling1_row_approx(n, result);
+    }
 }
 
 const float lgamma_approx_coeff5[] =
@@ -271,13 +279,24 @@ const float lgamma_nu_func_approx_coeff3[] =
 
 } // namespace detail
 
-std::vector<float> log_stirling1_row(int n)
+template<class Alloc>
+void get_log_stirling1_row (int n, std::vector<float, Alloc> & result)
 {
-    if (n < 32) {
-        return detail::log_stirling1_row_exact(n);
-    } else {
-        return detail::log_stirling1_row_approx(n);
-    }
+    result.resize(n + 1);
+    detail::get_log_stirling1_row(n, result.data());
 }
+
+//----------------------------------------------------------------------------
+// Explicit template instantiations
+
+#define INSTANTIATE_TEMPLATES(Alloc)                \
+    template void get_log_stirling1_row (           \
+            int n,                                  \
+            std::vector<float, Alloc> & result);
+
+INSTANTIATE_TEMPLATES(std::allocator<float>)
+INSTANTIATE_TEMPLATES(aligned_allocator<float>)
+
+#undef INSTANTIATE_TEMPLATES
 
 } // namespace distributions
