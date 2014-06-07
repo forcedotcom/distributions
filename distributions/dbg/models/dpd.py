@@ -67,12 +67,12 @@ class Shared(SharedMixin, SharedIoMixin):
         self.counts = None
 
     def _load_beta0(self):
-        self.beta0 = 1 - sum(self.betas.itervalues())
+        self.beta0 = max(0.0, 1.0 - sum(self.betas.itervalues()))
         min_beta = min(self.betas.itervalues())
         max_beta = max(self.betas.itervalues())
         if not (0 <= min_beta and max_beta <= 1):
             raise ValueError('betas out of bounds: {}'.format(self.betas))
-        if not (0 <= self.beta0 and self.beta0 <= 1):
+        if not (self.beta0 <= 1):
             raise ValueError('beta0 out of bounds: {}'.format(self.beta0))
 
     def load(self, raw):
