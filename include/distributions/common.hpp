@@ -27,6 +27,9 @@
 
 #pragma once
 
+#include <iostream>
+#include <sstream>
+
 #ifdef __GNUG__
 #include <cxxabi.h>
 #include <memory>
@@ -44,25 +47,28 @@
 #ifdef DIST_THROW_ON_ERROR
 #include <sstream>
 #include <stdexcept>
-#define DIST_ERROR(message) {\
-    std::ostringstream PRIVATE_message; \
-    PRIVATE_message \
-        << "ERROR " << message << "\n\t"\
-        << __FILE__ << " : " << __LINE__ << "\n\t"\
-        << __PRETTY_FUNCTION__ << std::endl; \
+#define DIST_ERROR(message) {                           \
+    std::ostringstream PRIVATE_message;                 \
+    PRIVATE_message                                     \
+        << "ERROR " << message << "\n\t"                \
+        << __FILE__ << " : " << __LINE__ << "\n\t"      \
+        << __PRETTY_FUNCTION__ << '\n';                 \
     throw std::runtime_error(PRIVATE_message.str()); }
 #else // DIST_THROW_ON_ERROR
-#include <iostream>
-#define DIST_ERROR(message) {\
-    std::cerr << "ERROR " << message << "\n\t"\
-              << __FILE__ << " : " << __LINE__ << "\n\t"\
-              << __PRETTY_FUNCTION__ << std::endl; \
+#define DIST_ERROR(message) {                           \
+    std::ostringstream PRIVATE_message;                 \
+    PRIVATE_message                                     \
+        << "ERROR " << message << "\n\t"                \
+        << __FILE__ << " : " << __LINE__ << "\n\t"      \
+        << __PRETTY_FUNCTION__ << '\n';                 \
+    std::cerr << PRIVATE_message.str() << std::flush;   \
     abort(); }
 #endif // DIST_THROW_ON_ERROR
 
-#ifndef DIST_DEBUG_LEVEL
-#  define DIST_DEBUG_LEVEL 0
-#endif // DIST_DEBUG_LEVEL
+#define DIST_DEBUG(message) {\
+    std::ostringstream PRIVATE_message; \
+    PRIVATE_message << "DEBUG " << message << '\n'; \
+    std::cout << PRIVATE_message.str() << std::flush; }
 
 #define DIST_ASSERT(cond, message) \
     { if (DIST_UNLIKELY(not (cond))) DIST_ERROR(message) }
@@ -79,6 +85,10 @@
 #define DIST_ASSERT_NE(x, y) \
     DIST_ASSERT((x) != (y), \
             "expected " #x " != " #y "; actual " << (x) << " vs " << (y))
+
+#ifndef DIST_DEBUG_LEVEL
+#  define DIST_DEBUG_LEVEL 0
+#endif // DIST_DEBUG_LEVEL
 
 #define DIST_ASSERT_(level, cond, message) \
     { if (DIST_DEBUG_LEVEL >= (level)) DIST_ASSERT(cond, message) }
