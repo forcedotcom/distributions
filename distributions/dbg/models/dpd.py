@@ -30,7 +30,11 @@
 
 from itertools import izip
 from distributions.dbg.special import log, gammaln
-from distributions.dbg.random import sample_discrete, sample_dirichlet
+from distributions.dbg.random import (
+    sample_discrete,
+    sample_dirichlet,
+    sample_beta,
+)
 from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 
@@ -40,7 +44,7 @@ EXAMPLES = [
         'shared': {
             'gamma': 0.5,
             'alpha': 0.5,
-            'betas': {  # beta0 must be zero for unit tests
+            'betas': {
                 0: 0.25,
                 7: 0.5,
                 8: 0.25,
@@ -49,9 +53,18 @@ EXAMPLES = [
                 0: 1,
                 7: 2,
                 8: 4,
-            }
+            },
         },
         'values': [0, 7, 0, 8, 0, 7, 0],
+    },
+    {
+        'shared': {
+            'gamma': 2.0,
+            'alpha': 2.0,
+            'betas': {},
+            'counts': {},
+        },
+        'values': [5, 4, 3, 2, 1, 0, 3, 2, 1],
     },
 ]
 OTHER = 0xFFFFFFFF
@@ -122,15 +135,22 @@ class Shared(SharedMixin, SharedIoMixin):
             message.counts.append(self.counts[value])
 
     def add_value(self, value):
+        assert value != OTHER, 'cannot add OTHER'
         count = self.counts.get(value, 0) + 1
         self.counts[value] = count
+        if count == 1:
+            beta = self.beta0 * sample_beta(1.0, self.gamma)
+            self.beta0 = max(0.0, self.beta0 - beta)
+            self.betas[value] = beta
 
     def remove_value(self, value):
+        assert value != OTHER, 'cannot remove OTHER'
         count = self.counts[value] - 1
         if count:
             self.counts[value] = count
         else:
             del self.counts[value]
+            self.beta0 += self.betas.pop(value)
 
     def realize(self):
         max_size = 10000
@@ -155,7 +175,8 @@ class Group(GroupIoMixin):
         self.total = 0
 
     def add_value(self, shared, value):
-        assert value != OTHER, 'tried to add OTHER to suffstats'
+        assert value != OTHER, 'cannot add OTHER'
+        assert value in shared.betas, 'unknown value: {}'.format(value)
         try:
             self.counts[value] += 1
         except KeyError:
@@ -163,7 +184,8 @@ class Group(GroupIoMixin):
         self.total += 1
 
     def remove_value(self, shared, value):
-        assert value != OTHER, 'tried to remove OTHER to suffstats'
+        assert value != OTHER, 'cannot remove OTHER'
+        assert value in shared.betas, 'unknown value: {}'.format(value)
         new_count = self.counts[value] - 1
         if new_count == 0:
             del self.counts[value]

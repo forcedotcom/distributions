@@ -62,8 +62,13 @@ def _test_group(name):
     modules = MODULES[name]
     EXAMPLES = [e for m in modules for e in m.EXAMPLES]
     for EXAMPLE in EXAMPLES:
-        raw_shared = EXAMPLE['shared']
         values = EXAMPLE['values'][:]
+        raw_shared = EXAMPLE['shared']
+        shared = modules[0].Shared.from_dict(raw_shared)
+        for value in values:
+            shared.add_value(value)
+        raw_shared = shared.dump()
+
         shareds = [module.Shared.from_dict(raw_shared) for module in modules]
         groups = [
             module.Group.from_values(shared)
@@ -77,7 +82,9 @@ def _test_group(name):
             assert_all_close(dumped, err_msg='group_dump')
 
         for module, shared, group in modules_shareds_groups:
-            values.append(group.sample_value(shared))
+            value = group.sample_value(shared)
+            shared.add_value(value)
+            values.append(value)
 
         for value in values:
             scores = [

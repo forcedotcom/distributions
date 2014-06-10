@@ -39,7 +39,7 @@ EXAMPLES = [
         'shared': {
             'gamma': 0.5,
             'alpha': 0.5,
-            'betas': {  # beta0 must be zero for unit tests
+            'betas': {
                 0: 0.25,
                 7: 0.5,
                 8: 0.25,
@@ -48,9 +48,18 @@ EXAMPLES = [
                 0: 1,
                 7: 2,
                 8: 4,
-            }
+            },
         },
         'values': [0, 7, 0, 8, 0, 7, 0],
+    },
+    {
+        'shared': {
+            'gamma': 2.0,
+            'alpha': 2.0,
+            'betas': {},
+            'counts': {},
+        },
+        'values': [5, 4, 3, 2, 1, 0, 3, 2, 1],
     },
 ]
 Value = int
@@ -125,7 +134,8 @@ cdef class _Shared(_dpd.Shared):
             inc(it)
 
 
-class Shared(_Shared, SharedMixin, SharedIoMixin):
+#class Shared(_Shared, SharedMixin, SharedIoMixin):
+class Shared(_Shared, SharedIoMixin):
     pass
 
 

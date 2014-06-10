@@ -64,7 +64,6 @@ struct Shared : SharedMixin<Model>
     {
         DIST_ASSERT1(value != OTHER(), "cannot add OTHER");
         if (DIST_UNLIKELY(counts.add(value) == 1)) {
-            // FIXME(jglidden) is the following correct?
             float beta = beta0 * sample_beta(rng, 1.f, gamma);
             beta0 = std::max(0.f, beta0 - beta);
             betas.add(value, beta);
