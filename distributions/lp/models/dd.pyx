@@ -34,12 +34,12 @@ from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 NAME = 'DirichletDiscrete'
 EXAMPLES = [
     {
-        'shared': {'alphas': [1.0, 4.0]},
-        'values': [0, 1, 1, 1, 1, 0, 1],
-    },
-    {
         'shared': {'alphas': [0.5, 0.5, 0.5, 0.5]},
         'values': [0, 1, 0, 2, 0, 1, 0],
+    },
+    {
+        'shared': {'alphas': [1.0, 4.0]},
+        'values': [0, 1, 1, 1, 1, 0, 1],
     },
     {
         'shared': {'alphas': [2.0 / n for n in xrange(1, 21)]},
