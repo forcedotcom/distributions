@@ -41,6 +41,10 @@ EXAMPLES = [
         'shared': {'alphas': [0.5, 0.5, 0.5, 0.5]},
         'values': [0, 1, 0, 2, 0, 1, 0],
     },
+    {
+        'shared': {'alphas': [2.0 / n for n in xrange(1, 21)]},
+        'values': range(20),
+    },
 ]
 Value = int
 
