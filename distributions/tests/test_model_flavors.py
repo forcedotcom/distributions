@@ -64,10 +64,10 @@ def _test_group(name):
     for EXAMPLE in EXAMPLES:
         values = EXAMPLE['values'][:]
         raw_shared = EXAMPLE['shared']
-        shared = modules[0].Shared.from_dict(raw_shared)
+        temp_shared = modules[0].Shared.from_dict(raw_shared)
         for value in values:
-            shared.add_value(value)
-        raw_shared = shared.dump()
+            temp_shared.add_value(value)
+        raw_shared = temp_shared.dump()
 
         shareds = [module.Shared.from_dict(raw_shared) for module in modules]
         groups = [
