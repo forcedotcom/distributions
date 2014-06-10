@@ -187,7 +187,7 @@ config = {
     'url': 'https://github.com/forcedotcom/distributions',
     'author': 'Jonathan Glidden, Eric Jonas, Fritz Obermeyer, Cap Petschulat',
     'maintainer': 'Fritz Obermeyer',
-    'maintainer_email': 'fobermeyer@salesforce.com',
+    'maintainer_email': 'fritz.obermeyer@gmail.com',
     'license': 'Revised BSD',
     'packages': [
         'distributions',
