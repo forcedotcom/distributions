@@ -8,3 +8,4 @@ temp.*
 *.so
 *.profile
 doc/_build
+MANIFEST
