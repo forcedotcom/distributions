@@ -108,9 +108,21 @@ inline float sample_beta (
         float alpha,
         float beta)
 {
-    float x = sample_gamma(rng, alpha, 1);
-    float y = sample_gamma(rng, beta, 1);
+    float x = sample_gamma(rng, alpha);
+    float y = sample_gamma(rng, beta);
     return x / (x + y);
+}
+
+inline float sample_beta_safe (
+        rng_t & rng,
+        float alpha,
+        float beta,
+        float min_value)
+{
+    DIST_ASSERT(min_value >= 0, "bad bound: " << min_value);
+    DIST_ASSERT(alpha > 0, "bad alpha = " << alpha);
+    float p = sample_beta(rng, alpha, beta);
+    return (p + min_value) / (1.f + min_value);
 }
 
 void sample_dirichlet (

@@ -53,6 +53,9 @@ typedef MixtureSlave<Model, MixtureDataScorer> SmallMixture;
 typedef MixtureSlave<Model, MixtureDataScorer, MixtureValueScorer> FastMixture;
 typedef FastMixture Mixture;
 
+static constexpr Value OTHER () { return 0xFFFFFFFFU; }
+static constexpr float MIN_BETA () { return 1e-6f; }
+
 
 struct Shared : SharedMixin<Model>
 {
@@ -62,14 +65,13 @@ struct Shared : SharedMixin<Model>
     Sparse_<Value, float> betas;
     SparseCounter<Value, count_t> counts;
 
-    static constexpr Value OTHER () { return 0xFFFFFFFFU; }
-
     void add_value (const Value & value, rng_t & rng)
     {
         DIST_ASSERT1(value != OTHER(), "cannot add OTHER");
         if (DIST_UNLIKELY(counts.add(value) == 1)) {
-            float beta = beta0 * sample_beta(rng, 1.f, gamma);
-            beta0 = std::max(0.f, beta0 - beta);
+            DIST_ASSERT(beta0 > 0, "cannot add any more values");
+            float beta = beta0 * sample_beta_safe(rng, 1.f, gamma, MIN_BETA());
+            beta0 = std::max(MIN_BETA(), beta0 - beta);
             betas.add(value, beta);
         }
     }
@@ -78,7 +80,7 @@ struct Shared : SharedMixin<Model>
     {
         DIST_ASSERT1(value != OTHER(), "cannot remove OTHER");
         if (DIST_UNLIKELY(counts.remove(value) == 0)) {
-            beta0 += betas.pop(value);
+            beta0 = std::min(1.f, beta0 + betas.pop(value));
         }
     }
 
@@ -197,7 +199,7 @@ struct Group : GroupMixin<Model>
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(value != shared.OTHER(), "cannot add OTHER");
+        DIST_ASSERT1(value != OTHER(), "cannot add OTHER");
         DIST_ASSERT1(shared.betas.contains(value), "unknown value: " << value);
         counts.add(value);
     }
@@ -207,7 +209,7 @@ struct Group : GroupMixin<Model>
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(value != shared.OTHER(), "cannot remove OTHER");
+        DIST_ASSERT1(value != OTHER(), "cannot remove OTHER");
         DIST_ASSERT1(shared.betas.contains(value), "unknown value: " << value);
         counts.remove(value);
     }
@@ -226,7 +228,7 @@ struct Group : GroupMixin<Model>
             rng_t &) const
     {
         float alpha = shared.alpha;
-        float numer = (value == shared.OTHER())
+        float numer = (value == OTHER())
                     ? alpha * shared.beta0
                     : alpha * shared.betas.get(value) + counts.get_count(value);
         float denom = alpha + counts.get_total();
@@ -294,7 +296,7 @@ struct Sampler
             probs.push_back(beta * alpha + group.counts.get_count(value));
         }
         if (shared.beta0 > 0) {
-            values.push_back(shared.OTHER());
+            values.push_back(OTHER());
             probs.push_back(shared.beta0 * alpha);
         }
 
@@ -323,7 +325,7 @@ struct Scorer
 
         const size_t total = group.counts.get_total();
         const float beta_scale = shared.alpha / (shared.alpha + total);
-        scores.add(shared.OTHER(), beta_scale * shared.beta0);
+        scores.add(OTHER(), beta_scale * shared.beta0);
         for (auto & i : shared.betas) {
             scores.add(i.first, i.second * beta_scale);
         }
@@ -447,7 +449,7 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(value != shared.OTHER(), "cannot add OTHER");
+        DIST_ASSERT1(value != OTHER(), "cannot add OTHER");
         auto & entry = scores_.get_or_add(value);
         ++entry.ref_count;
         if (DIST_UNLIKELY(entry.ref_count == 1)) {
@@ -469,7 +471,7 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
             const Value & value,
             rng_t &)
     {
-        DIST_ASSERT1(value != shared.OTHER(), "cannot remove OTHER");
+        DIST_ASSERT1(value != OTHER(), "cannot remove OTHER");
         auto & entry = scores_.get(value);
         --entry.ref_count;
         if (DIST_UNLIKELY(entry.ref_count == 0)) {
@@ -531,7 +533,7 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
 
         } else {
 
-            float beta = (value == shared.OTHER())
+            float beta = (value == OTHER())
                        ? shared.beta0
                        : shared.betas.get(value);
             float score = fast_log(shared.alpha * beta);

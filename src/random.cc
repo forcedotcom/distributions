@@ -65,11 +65,12 @@ void sample_dirichlet_safe (
     for (size_t i = 0; i < dim; ++i) {
         float alpha = alphas[i] + min_value;
         DIST_ASSERT(alpha > 0, "bad alphas[" << i << "] = " << alpha);
-        total += probs[i] = sample_gamma(rng, alpha) + min_value;
+        total += probs[i] = sample_gamma(rng, alpha);
     }
-    float scale = 1.f / total;
+    float scale = 1.f / total / (1.f + min_value * dim);
+    float shift = min_value / (1.f + min_value * dim);
     for (size_t i = 0; i < dim; ++i) {
-        probs[i] *= scale;
+        probs[i] = probs[i] * scale + shift;
     }
 }
 
