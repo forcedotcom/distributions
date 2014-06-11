@@ -46,12 +46,10 @@ namespace distributions
 // while maintaining a fixed number of empty groups.
 // Specific models may use this class, or maintain custom cached scores.
 
-template<class ModelT, class count_t>
-class MixtureDriver
+template<class Model_, class count_t>
+struct MixtureDriver
 {
-public:
-
-    typedef ModelT Model;
+    typedef Model_ Model;
     typedef std::unordered_set<size_t, TrivialHash<size_t>> IdSet;
 
     std::vector<count_t> & counts () { return counts_; }
@@ -176,14 +174,12 @@ private:
 //----------------------------------------------------------------------------
 // Mixture Slave
 
-template<class SharedT>
-class MixtureSlave
+template<class Model>
+struct MixtureSlaveGroups
 {
-public:
-
-    typedef SharedT Shared;
-    typedef typename Shared::Group Group;
-    typedef typename Shared::Value Value;
+    typedef typename Model::Shared Shared;
+    typedef typename Model::Group Group;
+    typedef typename Model::Value Value;
 
     std::vector<Group> & groups () { return groups_; }
     Group & groups (size_t groupid)
@@ -235,45 +231,6 @@ public:
         groups(groupid).remove_value(shared, value, rng);
     }
 
-    // this slow uncached version should be overridden
-    void score_value (
-            const Shared & shared,
-            const Value & value,
-            AlignedFloats scores_accum,
-            rng_t & rng) const
-    {
-        if (DIST_DEBUG_LEVEL >= 2) {
-            DIST_ASSERT_EQ(scores_accum.size(), groups_.size());
-        }
-
-        const size_t group_count = groups_.size();
-        for (size_t i = 0; i < group_count; ++i) {
-            scores_accum[i] += groups_[i].score_value(shared, value, rng);
-        }
-    }
-
-    // this slow version should be overridden
-    float score_data (const Shared & shared, rng_t & rng) const
-    {
-        float score = 0;
-        for (const Group & group : groups_) {
-            score += group.score_data(shared, rng);
-        }
-        return score;
-    }
-
-    // this slow version should be overridden
-    void score_data_grid (
-            const std::vector<Shared> & shareds,
-            AlignedFloats scores_out,
-            rng_t & rng) const
-    {
-        DIST_ASSERT_EQ(shareds.size(), scores_out.size());
-        for (size_t i = 0, size = scores_out.size(); i < size; ++i) {
-            scores_out[i] = score_data(shareds[i], rng);
-        }
-    }
-
     void validate (const Shared & shared) const
     {
         for (const auto & group : groups_) {
@@ -286,6 +243,220 @@ private:
     Packed_<Group> groups_;
 };
 
+template<class Model_, class Derived>
+struct MixtureSlaveDataScorerMixin
+{
+    const Derived & self () const
+    {
+        return static_cast<const Derived &>(*this);
+    }
+
+    typedef Model_ Model;
+    typedef typename Model::Value Value;
+    typedef typename Model::Shared Shared;
+    typedef typename Model::Group Group;
+
+    void score_data_grid (
+            const std::vector<Shared> & shareds,
+            const std::vector<Group> & groups,
+            AlignedFloats scores_out,
+            rng_t & rng) const
+    {
+        DIST_ASSERT_EQ(shareds.size(), scores_out.size());
+        for (size_t i = 0, size = scores_out.size(); i < size; ++i) {
+            scores_out[i] = self().score_data(shareds[i], groups, rng);
+        }
+    }
+
+    void validate (const Shared &, const std::vector<Group> &) const {}
+};
+
+template<class Model>
+struct SmallMixtureSlaveDataScorer :
+    MixtureSlaveDataScorerMixin<Model, SmallMixtureSlaveDataScorer<Model>>
+{
+    typedef typename Model::Shared Shared;
+    typedef typename Model::Group Group;
+
+    float score_data (
+            const Shared & shared,
+            const std::vector<Group> & groups,
+            rng_t & rng) const
+    {
+        float score = 0;
+        for (const Group & group : groups) {
+            score += group.score_data(shared, rng);
+        }
+        return score;
+    }
+};
+
+template<class Model_>
+struct MixtureSlaveValueScorerMixin
+{
+    typedef Model_ Model;
+    typedef typename Model::Value Value;
+    typedef typename Model::Shared Shared;
+    typedef typename Model::Group Group;
+
+    void resize (const Shared &, size_t) {}
+    void add_group (const Shared &, rng_t &) {}
+    void remove_group (const Shared &, size_t) {}
+    void update_group ( const Shared &, size_t, const Group &, rng_t &) {}
+    void update_all (const Shared &, const std::vector<Group> &, rng_t &) {}
+
+    void add_value (
+            const Shared &,
+            size_t,
+            const Group &,
+            const Value &,
+            rng_t &)
+    {}
+
+    void remove_value (
+            const Shared &,
+            size_t,
+            const Group &,
+            const Value &,
+            rng_t &)
+    {}
+
+    void validate (const Shared &, const std::vector<Group> &) const {}
+};
+
+template<class Model>
+struct SmallMixtureSlaveValueScorer : MixtureSlaveValueScorerMixin<Model>
+{
+    typedef typename Model::Value Value;
+    typedef typename Model::Shared Shared;
+    typedef typename Model::Group Group;
+
+    void score_value (
+            const Shared & shared,
+            const std::vector<Group> & groups,
+            const Value & value,
+            AlignedFloats scores_accum,
+            rng_t & rng) const
+    {
+        if (DIST_DEBUG_LEVEL >= 2) {
+            DIST_ASSERT_EQ(scores_accum.size(), groups.size());
+        }
+
+        const size_t group_count = groups.size();
+        for (size_t i = 0; i < group_count; ++i) {
+            scores_accum[i] += groups[i].score_value(shared, value, rng);
+        }
+    }
+};
+
+template<
+    class Model,
+    class DataScorer = SmallMixtureSlaveDataScorer<Model>,
+    class ValueScorer = SmallMixtureSlaveValueScorer<Model>>
+struct MixtureSlave
+{
+    typedef typename Model::Value Value;
+    typedef typename Model::Shared Shared;
+    typedef typename Model::Group Group;
+
+    std::vector<Group> & groups () { return groups_.groups(); }
+    Group & groups (size_t i) { return groups_.groups(i); }
+    const std::vector<Group> & groups () const { return groups_.groups(); }
+    const Group & groups (size_t i) const { return groups_.groups(i); }
+
+    void init (
+            const Shared & shared,
+            rng_t & rng)
+    {
+        groups_.init(shared, rng);
+        value_scorer_.resize(shared, groups().size());
+        value_scorer_.update_all(shared, groups(), rng);
+    }
+
+    void add_group (
+            const Shared & shared,
+            rng_t & rng)
+    {
+        const size_t groupid = groups().size();
+        groups_.add_group(shared, rng);
+        value_scorer_.add_group(shared, rng);
+        value_scorer_.update_group(shared, groupid, groups(groupid), rng);
+    }
+
+    void remove_group (
+            const Shared & shared,
+            size_t groupid)
+    {
+        groups_.remove_group(shared, groupid);
+        value_scorer_.remove_group(shared, groupid);
+    }
+
+    void add_value (
+            const Shared & shared,
+            size_t groupid,
+            const Value & value,
+            rng_t & rng)
+    {
+        groups_.add_value(shared, groupid, value, rng);
+        value_scorer_.add_value(shared, groupid, groups(groupid), value, rng);
+    }
+
+    void remove_value (
+            const Shared & shared,
+            size_t groupid,
+            const Value & value,
+            rng_t & rng)
+    {
+        groups_.remove_value(shared, groupid, value, rng);
+        value_scorer_.remove_value(
+            shared,
+            groupid,
+            groups(groupid),
+            value,
+            rng);
+    }
+
+    void score_value (
+            const Shared & shared,
+            const Value & value,
+            AlignedFloats scores_accum,
+            rng_t & rng) const
+    {
+        if (DIST_DEBUG_LEVEL >= 2) {
+            DIST_ASSERT_EQ(scores_accum.size(), groups().size());
+        }
+        value_scorer_.score_value(shared, groups(), value, scores_accum, rng);
+    }
+
+    float score_data (
+            const Shared & shared,
+            rng_t & rng) const
+    {
+        return data_scorer_.score_data(shared, groups(), rng);
+    }
+
+    void score_data_grid (
+            const std::vector<Shared> & shareds,
+            AlignedFloats scores_out,
+            rng_t & rng) const
+    {
+        data_scorer_.score_data_grid(shareds, groups(), scores_out, rng);
+    }
+
+    void validate (const Shared & shared) const
+    {
+        groups_.validate(shared);
+        value_scorer_.validate(shared, groups());
+        data_scorer_.validate(shared, groups());
+    }
+
+private:
+
+    MixtureSlaveGroups<Shared> groups_;
+    ValueScorer value_scorer_;
+    DataScorer data_scorer_;
+};
+
 
 //----------------------------------------------------------------------------
 // Mixture Id Tracker
@@ -294,10 +465,8 @@ private:
 // and fixed unique "global" ids.  Packed ids can change when groups are
 // added or removed, but global ids never change.
 
-class MixtureIdTracker
+struct MixtureIdTracker
 {
-public:
-
     typedef uint32_t Id;
 
     void init (size_t group_count = 0)
@@ -365,110 +534,5 @@ private:
     std::unordered_map<Id, Id, TrivialHash<Id>> global_to_packed_;
     size_t global_size_;
 };
-
-
-//----------------------------------------------------------------------------
-// GroupScorerMixture
-
-
-template<class _Scorer>
-struct GroupScorerMixture
-{
-    typedef typename _Scorer::Value Value;
-    typedef typename _Scorer::Shared Shared;
-    typedef typename _Scorer::Group Group;
-    typedef typename _Scorer::Model::Scorer Scorer;
-    typedef _Scorer VectorizedScorer;
-
-    std::vector<Group> & groups () { return slave_.groups(); }
-    Group & groups (size_t i) { return slave_.groups(i); }
-    const std::vector<Group> & groups () const { return slave_.groups(); }
-    const Group & groups (size_t i) const { return slave_.groups(i); }
-
-    void init (
-            const Shared & shared,
-            rng_t & rng)
-    {
-        slave_.init(shared, rng);
-        scorer_.resize(shared, slave_.groups().size());
-        scorer_.update_all(shared, slave_, rng);
-    }
-
-    void add_group (
-            const Shared & shared,
-            rng_t & rng)
-    {
-        const size_t groupid = slave_.groups().size();
-        slave_.add_group(shared, rng);
-        scorer_.add_group(shared, rng);
-        scorer_.update_group(shared, groupid, groups()[groupid], rng);
-    }
-
-    void remove_group (
-            const Shared & shared,
-            size_t groupid)
-    {
-        slave_.remove_group(shared, groupid);
-        scorer_.remove_group(shared, groupid);
-    }
-
-    void add_value (
-            const Shared & shared,
-            size_t groupid,
-            const Value & value,
-            rng_t & rng)
-    {
-        slave_.add_value(shared, groupid, value, rng);
-        scorer_.add_value(shared, groupid, groups()[groupid], value, rng);
-    }
-
-    void remove_value (
-            const Shared & shared,
-            size_t groupid,
-            const Value & value,
-            rng_t & rng)
-    {
-        slave_.remove_value(shared, groupid, value, rng);
-        scorer_.remove_value(shared, groupid, groups()[groupid], value, rng);
-    }
-
-    void score_value (
-            const Shared & shared,
-            const Value & value,
-            VectorFloat & scores_accum,
-            rng_t & rng) const
-    {
-        if (DIST_DEBUG_LEVEL >= 2) {
-            DIST_ASSERT_EQ(scores_accum.size(), slave_.groups().size());
-        }
-        scorer_.score_value(shared, slave_, value, scores_accum, rng);
-    }
-
-    float score_data (
-            const Shared & shared,
-            rng_t & rng) const
-    {
-        return scorer_.score_data(shared, slave_, rng);
-    }
-
-    void score_data_grid (
-            const std::vector<Shared> & shareds,
-            AlignedFloats scores_out,
-            rng_t & rng) const
-    {
-        scorer_.score_data_grid(shareds, slave_, scores_out, rng);
-    }
-
-    void validate (const Shared & shared) const
-    {
-        scorer_.validate(shared, slave_);
-    }
-
-private:
-
-    MixtureSlave<Shared> slave_;
-    VectorizedScorer scorer_;
-};
-
 
 } // namespace distributions

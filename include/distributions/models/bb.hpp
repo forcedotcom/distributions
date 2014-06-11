@@ -46,8 +46,11 @@ typedef bool Value;
 struct Group;
 struct Scorer;
 struct Sampler;
-struct VectorizedScorer;
-typedef GroupScorerMixture<VectorizedScorer> Mixture;
+struct MixtureDataScorer;
+struct MixtureValueScorer;
+typedef MixtureSlave<Model, MixtureDataScorer> SmallMixture;
+typedef MixtureSlave<Model, MixtureDataScorer, MixtureValueScorer> FastMixture;
+typedef FastMixture Mixture;
 
 
 struct Shared : SharedMixin<Model>
@@ -215,7 +218,32 @@ struct Scorer
     }
 };
 
-struct VectorizedScorer : VectorizedScorerMixin<Model>
+struct MixtureDataScorer : MixtureSlaveDataScorerMixin<Model, MixtureDataScorer>
+{
+    float score_data (
+            const Shared & shared,
+            const std::vector<Group> & groups,
+            rng_t &) const
+    {
+        const float shared_part =
+               + fast_lgamma(shared.alpha + shared.beta)
+               - fast_lgamma(shared.alpha)
+               - fast_lgamma(shared.beta);
+        float score = 0;
+        for (const auto & group : groups) {
+            float alpha = shared.alpha + group.heads;
+            float beta = shared.beta + group.tails;
+            float group_part =
+                   + fast_lgamma(alpha)
+                   + fast_lgamma(beta)
+                   - fast_lgamma(alpha + beta);
+            score += shared_part + group_part;
+        }
+        return score;
+    }
+};
+
+struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
 {
     void resize (const Shared &, size_t size)
     {
@@ -269,14 +297,14 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
 
     void update_all (
             const Shared & shared,
-            const MixtureSlave<Shared> & slave,
+            const std::vector<Group> & groups,
             rng_t &)
     {
-        const size_t group_count = slave.groups().size();
+        const size_t group_count = groups.size();
         heads_scores_.resize(group_count);
         tails_scores_.resize(group_count);
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
-            const Group & group = slave.groups()[groupid];
+            const Group & group = groups[groupid];
             float heads = shared.alpha + group.heads;
             float tails = shared.beta + group.tails;
             heads_scores_[groupid] = heads / (heads + tails);
@@ -288,49 +316,15 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
 
     void score_value(
             const Shared &,
-            const MixtureSlave<Shared> &,
+            const std::vector<Group> &,
             const Value & value,
-            VectorFloat & scores_accum,
+            AlignedFloats scores_accum,
             rng_t &) const
     {
         vector_add(
             scores_accum.size(),
             scores_accum.data(),
             (value ? heads_scores_.data() : tails_scores_.data()));
-    }
-
-    float score_data (
-            const Shared & shared,
-            const MixtureSlave<Shared> & slave,
-            rng_t &) const
-    {
-        const float shared_part =
-               + fast_lgamma(shared.alpha + shared.beta)
-               - fast_lgamma(shared.alpha)
-               - fast_lgamma(shared.beta);
-        float score = 0;
-        for (const auto & group : slave.groups()) {
-            float alpha = shared.alpha + group.heads;
-            float beta = shared.beta + group.tails;
-            float group_part =
-                   + fast_lgamma(alpha)
-                   + fast_lgamma(beta)
-                   - fast_lgamma(alpha + beta);
-            score += shared_part + group_part;
-        }
-        return score;
-    }
-
-    void score_data_grid (
-            const std::vector<Shared> & shareds,
-            const MixtureSlave<Shared> & slave,
-            AlignedFloats scores_out,
-            rng_t & rng) const
-    {
-        DIST_ASSERT_EQ(shareds.size(), scores_out.size());
-        for (size_t i = 0, size = scores_out.size(); i < size; ++i) {
-            scores_out[i] = score_data(shareds[i], slave, rng);
-        }
     }
 
 private:

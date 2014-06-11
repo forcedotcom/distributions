@@ -47,8 +47,12 @@ typedef uint32_t Value;
 struct Group;
 struct Scorer;
 struct Sampler;
-struct VectorizedScorer;
-typedef GroupScorerMixture<VectorizedScorer> Mixture;
+struct MixtureDataScorer;
+struct MixtureValueScorer;
+typedef MixtureSlave<Model, MixtureDataScorer> SmallMixture;
+typedef MixtureSlave<Model, MixtureDataScorer, MixtureValueScorer> FastMixture;
+typedef FastMixture Mixture;
+
 
 struct Shared : SharedMixin<Model>
 {
@@ -347,7 +351,40 @@ struct Scorer
     }
 };
 
-struct VectorizedScorer : VectorizedScorerMixin<Model>
+struct MixtureDataScorer : MixtureSlaveDataScorerMixin<Model, MixtureDataScorer>
+{
+    float score_data (
+            const Shared & shared,
+            const std::vector<Group> & groups,
+            rng_t &) const
+    {
+        const float alpha = shared.alpha;
+
+        Sparse_<Value, float> shared_part;
+        for (auto & i : shared.betas) {
+            shared_part.add(i.first, fast_lgamma(alpha * i.second));
+        }
+        const float shared_total = fast_lgamma(alpha);
+
+        float score = 0;
+        for (const auto & group : groups) {
+            if (group.counts.get_total()) {
+                for (auto & i : group.counts) {
+                    Value value = i.first;
+                    float prior_i = shared.betas.get(value) * alpha;
+                    score += fast_lgamma(prior_i + i.second)
+                           - shared_part.get(value);
+                }
+                score += shared_total
+                       - fast_lgamma(alpha + group.counts.get_total());
+            }
+        }
+
+        return score;
+    }
+};
+
+struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
 {
     void resize (const Shared & shared, size_t size)
     {
@@ -435,25 +472,25 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
 
     void update_all (
             const Shared & shared,
-            const MixtureSlave<Shared> & slave,
+            const std::vector<Group> & groups,
             rng_t &)
     {
-        const size_t group_count = slave.groups().size();
+        const size_t group_count = groups.size();
         const float alpha = shared.alpha;
 
         for (auto & i : scores_) {
             Value value = i.first;
-            VectorFloat & scores = i.second;
+            AlignedFloats scores = i.second;
             const float beta = shared.betas.get(value);
             for (size_t groupid = 0; groupid < group_count; ++groupid) {
-                auto count = slave.groups(groupid).counts.get_count(value);
+                auto count = groups[groupid].counts.get_count(value);
                 scores[groupid] = alpha * beta + count;
             }
             vector_log(group_count, scores.data());
         }
 
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
-            auto total = slave.groups(groupid).counts.get_total();
+            auto total = groups[groupid].counts.get_total();
             scores_shift_[groupid] = alpha + total;
         }
         vector_log(group_count, scores_shift_.data());
@@ -461,9 +498,9 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
 
     void score_value (
             const Shared & shared,
-            const MixtureSlave<Shared> &,
+            const std::vector<Group> &,
             const Value & value,
-            VectorFloat & scores_accum,
+            AlignedFloats scores_accum,
             rng_t &) const
     {
         if (DIST_LIKELY(scores_.contains(value))) {
@@ -485,62 +522,6 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
                 scores_accum.data(),
                 score,
                 scores_shift_.data());
-        }
-    }
-
-    float score_data (
-            const Shared & shared,
-            const MixtureSlave<Shared> & slave,
-            rng_t &) const
-    {
-        const float alpha = shared.alpha;
-
-        Sparse_<Value, float> shared_part;
-        for (auto & i : shared.betas) {
-            shared_part.add(i.first, fast_lgamma(alpha * i.second));
-        }
-        const float shared_total = fast_lgamma(alpha);
-
-        float score = 0;
-        for (const auto & group : slave.groups()) {
-            if (group.counts.get_total()) {
-                for (auto & i : group.counts) {
-                    Value value = i.first;
-                    float prior_i = shared.betas.get(value) * alpha;
-                    score += fast_lgamma(prior_i + i.second)
-                           - shared_part.get(value);
-                }
-                score += shared_total
-                       - fast_lgamma(alpha + group.counts.get_total());
-            }
-        }
-
-        return score;
-    }
-
-    void score_data_grid (
-            const std::vector<Shared> & shareds,
-            const MixtureSlave<Shared> & slave,
-            AlignedFloats scores_out,
-            rng_t & rng) const
-    {
-        slave.score_data_grid(shareds, scores_out, rng);
-    }
-
-    void validate (
-            const Shared & shared,
-            const MixtureSlave<Shared> & slave) const
-    {
-        SparseCounter<Value, count_t> counts;
-        for (const auto & group : slave.groups()) {
-            for (const auto & i : group.counts) {
-                counts.add(i.first, i.second);
-            }
-        }
-        for (const auto & i : counts) {
-            auto mixture_count = i.second;
-            auto shared_count = shared.counts.get_count(i.first);
-            DIST_ASSERT_LE(mixture_count, shared_count);
         }
     }
 

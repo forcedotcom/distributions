@@ -31,9 +31,9 @@
 namespace distributions
 {
 
-void NormalInverseChiSq::VectorizedScorer::score_value (
+void NormalInverseChiSq::MixtureValueScorer::score_value (
         const Shared &,
-        const MixtureSlave<Shared> &,
+        const std::vector<Group> &,
         const Value & value,
         AlignedFloats scores_accum,
         rng_t &) const

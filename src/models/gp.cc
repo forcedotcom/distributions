@@ -31,11 +31,11 @@
 namespace distributions
 {
 
-void GammaPoisson::VectorizedScorer::score_value (
+void GammaPoisson::MixtureValueScorer::score_value (
         const Shared &,
-        const MixtureSlave<Shared> &,
+        const std::vector<Group> &,
         const Value & value,
-        VectorFloat & scores_accum,
+        AlignedFloats scores_accum,
         rng_t &) const
 {
     const size_t size = scores_accum.size();

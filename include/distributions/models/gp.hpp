@@ -44,8 +44,11 @@ typedef uint32_t Value;
 struct Group;
 struct Scorer;
 struct Sampler;
-struct VectorizedScorer;
-typedef GroupScorerMixture<VectorizedScorer> Mixture;
+struct MixtureDataScorer;
+struct MixtureValueScorer;
+typedef MixtureSlave<Model, MixtureDataScorer> SmallMixture;
+typedef MixtureSlave<Model, MixtureDataScorer, MixtureValueScorer> FastMixture;
+typedef FastMixture Mixture;
 
 
 struct Shared : SharedMixin<Model>
@@ -227,7 +230,31 @@ struct Scorer
     }
 };
 
-struct VectorizedScorer : VectorizedScorerMixin<Model>
+struct MixtureDataScorer : MixtureSlaveDataScorerMixin<Model, MixtureDataScorer>
+{
+    float score_data (
+            const Shared & shared,
+            const std::vector<Group> & groups,
+            rng_t &) const
+    {
+        const float alpha_part = fast_lgamma(shared.alpha);
+        const float beta_part = shared.alpha * fast_log(shared.inv_beta);
+
+        float score = 0;
+        for (const auto & group : groups) {
+            if (group.count) {
+                Shared post = shared.plus_group(group);
+                score += fast_lgamma(post.alpha) - alpha_part;
+                score += beta_part - post.alpha * fast_log(post.inv_beta);
+                score += -group.log_prod;
+            }
+        }
+
+        return score;
+    }
+};
+
+struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
 {
     void resize(const Shared &, size_t size)
     {
@@ -289,52 +316,22 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
 
     void update_all (
             const Shared & shared,
-            const MixtureSlave<Shared> & slave,
+            const std::vector<Group> & groups,
             rng_t & rng)
     {
-        const size_t group_count = slave.groups().size();
+        const size_t group_count = groups.size();
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
-            update_group(shared, groupid, slave.groups()[groupid], rng);
+            update_group(shared, groupid, groups[groupid], rng);
         }
     }
 
     // not thread safe
     void score_value (
             const Shared & shared,
-            const MixtureSlave<Shared> &,
+            const std::vector<Group> &,
             const Value & value,
-            VectorFloat & scores_accum,
+            AlignedFloats scores_accum,
             rng_t &) const;
-
-    float score_data (
-            const Shared & shared,
-            const MixtureSlave<Shared> & slave,
-            rng_t &) const
-    {
-        const float alpha_part = fast_lgamma(shared.alpha);
-        const float beta_part = shared.alpha * fast_log(shared.inv_beta);
-
-        float score = 0;
-        for (const auto & group : slave.groups()) {
-            if (group.count) {
-                Shared post = shared.plus_group(group);
-                score += fast_lgamma(post.alpha) - alpha_part;
-                score += beta_part - post.alpha * fast_log(post.inv_beta);
-                score += -group.log_prod;
-            }
-        }
-
-        return score;
-    }
-
-    void score_data_grid (
-            const std::vector<Shared> & shareds,
-            const MixtureSlave<Shared> & slave,
-            AlignedFloats scores_out,
-            rng_t & rng) const
-    {
-        slave.score_data_grid(shareds, scores_out, rng);
-    }
 
 private:
 

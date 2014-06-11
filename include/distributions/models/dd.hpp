@@ -49,8 +49,11 @@ typedef int Value;
 struct Group;
 struct Scorer;
 struct Sampler;
-struct VectorizedScorer;
-typedef GroupScorerMixture<VectorizedScorer> Mixture;
+struct MixtureDataScorer;
+struct MixtureValueScorer;
+typedef MixtureSlave<Model, MixtureDataScorer> SmallMixture;
+typedef MixtureSlave<Model, MixtureDataScorer, MixtureValueScorer> FastMixture;
+typedef FastMixture Mixture;
 
 
 struct Shared : SharedMixin<Model>
@@ -254,17 +257,52 @@ struct Scorer
     }
 };
 
-class CachedDataScorer
+struct MixtureDataScorer : MixtureSlaveDataScorerMixin<Model, MixtureDataScorer>
 {
-    double alpha_sum_;
-    VectorFloat shared_part_;
-    VectorFloat scores_;
-
-public:
-
-    void init (
+    // not thread safe
+    float score_data (
             const Shared & shared,
-            const std::vector<Group> & groups)
+            const std::vector<Group> & groups,
+            rng_t &) const
+    {
+        _init(shared, groups);
+        return _eval();
+    }
+
+    // not thread safe
+    void score_data_grid (
+            const std::vector<Shared> & shareds,
+            const std::vector<Group> & groups,
+            AlignedFloats scores_out,
+            rng_t &) const
+    {
+        DIST_ASSERT_EQ(shareds.size(), scores_out.size());
+        if (const size_t size = shareds.size()) {
+            const size_t dim = shareds[0].dim;
+
+            _init(shareds[0], groups);
+            scores_out[0] = _eval();
+
+            for (size_t i = 1; i < size; ++i) {
+                const float * old_alphas = shareds[i-1].alphas;
+                const float * new_alphas = shareds[i].alphas;
+                for (Value value = 0; value < dim; ++value) {
+                    const float & old_alpha = old_alphas[value];
+                    const float & new_alpha = new_alphas[value];
+                    if (DIST_UNLIKELY(new_alpha != old_alpha)) {
+                        _update(value, old_alpha, new_alpha, groups);
+                    }
+                }
+                scores_out[i] = _eval();
+            }
+        }
+    }
+
+private:
+
+    void _init (
+            const Shared & shared,
+            const std::vector<Group> & groups) const
     {
         const size_t dim = shared.dim;
         shared_part_.resize(dim + 1);
@@ -292,16 +330,16 @@ public:
         }
     }
 
-    float eval () const
+    float _eval () const
     {
         return vector_sum(scores_.size(), scores_.data());
     }
 
-    void update (
+    void _update (
             Value value,
             float old_alpha,
             float new_alpha,
-            const std::vector<Group> & groups)
+            const std::vector<Group> & groups) const
     {
         shared_part_[value] = fast_lgamma(new_alpha);
         alpha_sum_ += double(new_alpha) - double(old_alpha);
@@ -317,11 +355,15 @@ public:
                            - fast_lgamma(alpha_sum + group.count_sum);
         }
     }
+
+    mutable double alpha_sum_;
+    mutable VectorFloat shared_part_;
+    mutable VectorFloat scores_;
 };
 
-struct VectorizedScorer : VectorizedScorerMixin<Model>
+struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
 {
-    void resize(const Shared & shared, size_t size)
+    void resize (const Shared & shared, size_t size)
     {
         scores_shift_.resize(size);
         scores_.resize(shared.dim);
@@ -381,17 +423,17 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
 
     void update_all (
             const Shared & shared,
-            const MixtureSlave<Shared> & slave,
+            const std::vector<Group> & groups,
             rng_t &)
     {
-        const size_t group_count = slave.groups().size();
+        const size_t group_count = groups.size();
 
         alpha_sum_ = 0;
         for (Value value = 0; value < shared.dim; ++value) {
             alpha_sum_ += shared.alphas[value];
         }
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
-            const Group & group = slave.groups()[groupid];
+            const Group & group = groups[groupid];
             for (Value value = 0; value < shared.dim; ++value) {
                 scores_[value][groupid] =
                     shared.alphas[value] + group.counts[value];
@@ -406,9 +448,9 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
 
     void score_value(
             const Shared & shared,
-            const MixtureSlave<Shared> &,
+            const std::vector<Group> &,
             const Value & value,
-            VectorFloat & scores_accum,
+            AlignedFloats scores_accum,
             rng_t &) const
     {
         DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
@@ -417,49 +459,6 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
             scores_accum.data(),
             scores_[value].data(),
             scores_shift_.data());
-    }
-
-    // not thread safe
-    float score_data (
-            const Shared & shared,
-            const MixtureSlave<Shared> & slave,
-            rng_t &) const
-    {
-        cached_data_scorer_.init(shared, slave.groups());
-        return cached_data_scorer_.eval();
-    }
-
-    // not thread safe
-    void score_data_grid (
-            const std::vector<Shared> & shareds,
-            const MixtureSlave<Shared> & slave,
-            AlignedFloats scores_out,
-            rng_t &) const
-    {
-        DIST_ASSERT_EQ(shareds.size(), scores_out.size());
-        if (const size_t size = shareds.size()) {
-            const size_t dim = shareds[0].dim;
-
-            cached_data_scorer_.init(shareds[0], slave.groups());
-            scores_out[0] = cached_data_scorer_.eval();
-
-            for (size_t i = 1; i < size; ++i) {
-                const float * old_alphas = shareds[i-1].alphas;
-                const float * new_alphas = shareds[i].alphas;
-                for (Value value = 0; value < dim; ++value) {
-                    const float & old_alpha = old_alphas[value];
-                    const float & new_alpha = new_alphas[value];
-                    if (DIST_UNLIKELY(new_alpha != old_alpha)) {
-                        cached_data_scorer_.update(
-                            value,
-                            old_alpha,
-                            new_alpha,
-                            slave.groups());
-                    }
-                }
-                scores_out[i] = cached_data_scorer_.eval();
-            }
-        }
     }
 
 private:
@@ -479,8 +478,6 @@ private:
     float alpha_sum_;
     std::vector<VectorFloat> scores_;
     VectorFloat scores_shift_;
-
-    mutable CachedDataScorer cached_data_scorer_;
 };
 
 }; // struct DirichletDiscrete

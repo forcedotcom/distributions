@@ -41,19 +41,20 @@ using namespace distributions;
 
 rng_t rng;
 
-template<class Mixture>
+template<class Model>
 struct Scorers
 {
-    struct Group {
-        typename Mixture::Group group;
-        typename Mixture::Scorer scorer;
+    struct Group
+    {
+        typename Model::Group group;
+        typename Model::Scorer scorer;
     };
 
     std::vector<Group> groups;
 
     Scorers (
-            const typename Mixture::Shared & shared,
-            const Mixture & mixture)
+            const typename Model::Shared & shared,
+            const typename Model::Mixture & mixture)
     {
         const size_t group_count = mixture.groups().size();
         groups.resize(group_count);
@@ -67,8 +68,8 @@ struct Scorers
     }
 
     void score (
-            const typename Mixture::Shared & shared,
-            const typename Mixture::Value & value,
+            const typename Model::Shared & shared,
+            const typename Model::Value & value,
             VectorFloat & scores) const
     {
         const size_t group_count = groups.size();
@@ -79,30 +80,30 @@ struct Scorers
     }
 };
 
-template<class Mixture>
+template<class Model>
 void speedtest (
-        const typename Mixture::Shared & shared,
+        const typename Model::Shared & shared,
         size_t group_count,
         size_t iters)
 {
-    Mixture mixture;
+    typename Model::Mixture mixture;
     mixture.groups().resize(group_count);
-    std::vector<typename Mixture::Value> values;
+    std::vector<typename Model::Value> values;
     std::vector<size_t> assignments;
     for (size_t groupid = 0; groupid < group_count; ++groupid) {
-        typename Mixture::Group & group = mixture.groups()[groupid];
+        typename Model::Group & group = mixture.groups()[groupid];
         group.init(shared, rng);
     }
     for (size_t i = 0; i < 4 * group_count; ++i) {
         size_t groupid = sample_int(rng, 0, group_count - 1);
-        typename Mixture::Group & group = mixture.groups()[groupid];
-        typename Mixture::Value value = group.sample_value(shared, rng);
+        typename Model::Group & group = mixture.groups()[groupid];
+        typename Model::Value value = group.sample_value(shared, rng);
         group.add_value(shared, value, rng);
         values.push_back(value);
         assignments.push_back(groupid);
     }
     mixture.init(shared, rng);
-    Scorers<Mixture> scorers(shared, mixture);
+    Scorers<Model> scorers(shared, mixture);
     VectorFloat scores(group_count);
 
     int64_t time = -current_time_us();
@@ -110,7 +111,7 @@ void speedtest (
         vector_zero(scores.size(), scores.data());
         for (size_t j = 0; j < 8; ++j) {
             size_t k = (8 * i + j) % values.size();
-            typename Mixture::Value value = values[k];
+            typename Model::Value value = values[k];
             size_t groupid = assignments[k];
             mixture.remove_value(shared, groupid, value, rng);
             mixture.score_value(shared, value, scores, rng);
@@ -125,9 +126,9 @@ void speedtest (
         vector_zero(scores.size(), scores.data());
         for (size_t j = 0; j < 8; ++j) {
             size_t k = (8 * i + j) % values.size();
-            typename Mixture::Value value = values[k];
+            typename Model::Value value = values[k];
             size_t groupid = assignments[k];
-            typename Scorers<Mixture>::Group & group = scorers.groups[groupid];
+            typename Scorers<Model>::Group & group = scorers.groups[groupid];
             group.group.remove_value(shared, value, rng);
             group.scorer.init(shared, group.group, rng);
             scorers.score(shared, value, scores);
@@ -147,30 +148,30 @@ void speedtest (
         mixture_rate << '\n';
 }
 
-template<class Mixture>
+template<class Model>
 void speedtests ()
 {
     std::cout <<
-        demangle(typeid(typename Mixture::Shared).name()) << '\n' <<
+        demangle(typeid(typename Model::Shared).name()) << '\n' <<
         "Groups" << '\t' <<
         "Scorers" << '\t' <<
         "Mixture (cells/us)" << '\n';
 
-    const auto shared = Mixture::Shared::EXAMPLE();
+    const auto shared = Model::Shared::EXAMPLE();
     for (int group_count = 1; group_count <= 1000; group_count *= 10) {
         int iters = 500000 / group_count;
-        speedtest<Mixture>(shared, group_count, iters);
+        speedtest<Model>(shared, group_count, iters);
     }
 }
 
 int main()
 {
-    speedtests<BetaBernoulli::Mixture>();
-    speedtests<DirichletDiscrete<4>::Mixture>();
-    speedtests<DirichletProcessDiscrete::Mixture>();
-    speedtests<GammaPoisson::Mixture>();
-    speedtests<BetaNegativeBinomial::Mixture>();
-    speedtests<NormalInverseChiSq::Mixture>();
+    speedtests<BetaBernoulli>();
+    speedtests<DirichletDiscrete<4>>();
+    speedtests<DirichletProcessDiscrete>();
+    speedtests<GammaPoisson>();
+    speedtests<BetaNegativeBinomial>();
+    speedtests<NormalInverseChiSq>();
 
     return 0;
 }
