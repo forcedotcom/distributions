@@ -82,7 +82,7 @@ else:
         #'-mavx',
         #'-mrecip',
         #'-march=native',
-        '-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION',
+        #'-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION',
     ])
 
 
