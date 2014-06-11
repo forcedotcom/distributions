@@ -388,7 +388,9 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         scores_shift_.resize(size);
         for (const auto & i : shared.betas) {
             Value value = i.first;
-            scores_.get_or_add(value).scores.resize(size);
+            auto & entry = scores_.get_or_add(value);
+            entry.ref_count = 1;
+            entry.scores.resize(size);
         }
         if (scores_.size() != shared.betas.size()) {
             for (auto i = scores_.begin(); i != scores_.end();) {
@@ -546,7 +548,7 @@ private:
     void _validate (const Shared & shared, size_t group_count) const
     {
         if (DIST_DEBUG_LEVEL >= 2) {
-            DIST_ASSERT_EQ(scores_.size(), shared.betas.size());
+            DIST_ASSERT_LE(scores_.size(), shared.betas.size());
             DIST_ASSERT_EQ(scores_shift_.size(), group_count);
         }
         if (DIST_DEBUG_LEVEL >= 3) {
