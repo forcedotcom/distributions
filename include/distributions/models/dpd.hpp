@@ -388,7 +388,7 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         scores_shift_.resize(size);
         for (const auto & i : shared.betas) {
             Value value = i.first;
-            scores_.get_or_add(value).resize(size);
+            scores_.get_or_add(value).scores.resize(size);
         }
         if (scores_.size() != shared.betas.size()) {
             for (auto i = scores_.begin(); i != scores_.end();) {
@@ -399,13 +399,16 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
                 }
             }
         }
+
+        _validate(shared, size);
     }
 
     void add_group (const Shared & shared, rng_t &)
     {
         const float alpha = shared.alpha;
         for (auto & i : scores_) {
-            i.second.packed_add(fast_log(alpha * shared.betas.get(i.first)));
+            i.second.scores.packed_add(
+                fast_log(alpha * shared.betas.get(i.first)));
         }
         scores_shift_.packed_add(fast_log(alpha));
     }
@@ -413,7 +416,7 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
     void remove_group (const Shared &, size_t groupid)
     {
         for (auto & i : scores_) {
-            i.second.packed_remove(groupid);
+            i.second.scores.packed_remove(groupid);
         }
         scores_shift_.packed_remove(groupid);
     }
@@ -427,12 +430,12 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         const float alpha = shared.alpha;
         for (auto & i : scores_) {
             Value value = i.first;
+            auto & entry = i.second;
             count_t count = group.counts.get_count(value);
-            i.second[groupid] =
+            entry.scores[groupid] =
                 fast_log(alpha * shared.betas.get(value) + count);
         }
-        count_t count_sum = group.counts.get_total();
-        scores_shift_[groupid] = fast_log(alpha + count_sum);
+        scores_shift_[groupid] = fast_log(alpha + group.counts.get_total());
     }
 
     void add_value (
@@ -443,13 +446,18 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
             rng_t &)
     {
         DIST_ASSERT1(value != shared.OTHER(), "cannot add OTHER");
-        if (DIST_UNLIKELY(not scores_.contains(value))) {
+        auto & entry = scores_.get_or_add(value);
+        ++entry.ref_count;
+        if (DIST_UNLIKELY(entry.ref_count == 1)) {
             const size_t group_count = scores_shift_.size();
             const float beta = shared.alpha * shared.betas.get(value);
-            scores_.add(value).resize(group_count, fast_log(beta));
+            entry.scores.resize(group_count, fast_log(beta));
         }
-
-        _update_group_value(shared, groupid, group, value);
+        entry.scores[groupid] = fast_log(
+            shared.alpha * shared.betas.get(value) +
+            group.counts.get_count(value));
+        scores_shift_[groupid] = fast_log(
+            shared.alpha + group.counts.get_total());
     }
 
     void remove_value (
@@ -460,11 +468,17 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
             rng_t &)
     {
         DIST_ASSERT1(value != shared.OTHER(), "cannot remove OTHER");
-        if (DIST_UNLIKELY(not shared.betas.contains(value))) {
+        auto & entry = scores_.get(value);
+        --entry.ref_count;
+        if (DIST_UNLIKELY(entry.ref_count == 0)) {
             scores_.remove(value);
+        } else {
+            entry.scores[groupid] = fast_log(
+                shared.alpha * shared.betas.get(value) +
+                group.counts.get_count(value));
         }
-
-        _update_group_value(shared, groupid, group, value);
+        scores_shift_[groupid] = fast_log(
+            shared.alpha + group.counts.get_total());
     }
 
     void update_all (
@@ -472,18 +486,21 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
             const std::vector<Group> & groups,
             rng_t &)
     {
+        _validate(shared, groups.size());
         const size_t group_count = groups.size();
         const float alpha = shared.alpha;
 
         for (auto & i : scores_) {
             Value value = i.first;
-            AlignedFloats scores = i.second;
+            auto & entry = i.second;
+            entry.ref_count = 0;
             const float beta = shared.betas.get(value);
             for (size_t groupid = 0; groupid < group_count; ++groupid) {
                 auto count = groups[groupid].counts.get_count(value);
-                scores[groupid] = alpha * beta + count;
+                entry.ref_count += count;
+                entry.scores[groupid] = alpha * beta + count;
             }
-            vector_log(group_count, scores.data());
+            vector_log(group_count, entry.scores.data());
         }
 
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
@@ -495,17 +512,19 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
 
     void score_value (
             const Shared & shared,
-            const std::vector<Group> &,
+            const std::vector<Group> & groups,
             const Value & value,
             AlignedFloats scores_accum,
             rng_t &) const
     {
+        _validate(shared, groups.size());
+
         if (DIST_LIKELY(scores_.contains(value))) {
 
             vector_add_subtract(
                 scores_accum.size(),
                 scores_accum.data(),
-                scores_.get(value).data(),
+                scores_.get(value).scores.data(),
                 scores_shift_.data());
 
         } else {
@@ -524,21 +543,31 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
 
 private:
 
-    void _update_group_value (
-            const Shared & shared,
-            size_t groupid,
-            const Group & group,
-            const Value & value)
+    void _validate (const Shared & shared, size_t group_count) const
     {
-        const float alpha = shared.alpha;
-        count_t count = group.counts.get_count(value);
-        count_t count_sum = group.counts.get_total();
-        scores_.get(value)[groupid] =
-            fast_log(alpha * shared.betas.get(value) + count);
-        scores_shift_[groupid] = fast_log(alpha + count_sum);
+        if (DIST_DEBUG_LEVEL >= 2) {
+            DIST_ASSERT_EQ(scores_.size(), shared.betas.size());
+            DIST_ASSERT_EQ(scores_shift_.size(), group_count);
+        }
+        if (DIST_DEBUG_LEVEL >= 3) {
+            for (const auto & i : scores_) {
+                const Value & value = i.first;
+                const auto & entry = i.second;
+                DIST_ASSERT(
+                    shared.betas.contains(value),
+                    "missing value: " << value);
+                DIST_ASSERT_EQ(entry.scores.size(), group_count);
+            }
+        }
     }
 
-    Sparse_<Value, VectorFloat> scores_;
+    struct CountAndScores
+    {
+        uint32_t ref_count;
+        VectorFloat scores;
+        CountAndScores () : ref_count(0), scores() {}
+    };
+    Sparse_<Value, CountAndScores> scores_;
     VectorFloat scores_shift_;
 };
 
