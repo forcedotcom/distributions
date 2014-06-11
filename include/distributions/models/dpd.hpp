@@ -243,9 +243,6 @@ struct Group : GroupMixin<Model>
         float score = 0;
         for (auto & i : counts) {
             Value value = i.first;
-            DIST_ASSERT3(
-                shared.betas.contains(value),
-                "shared.betas is missing value: " << value);
             float prior_i = alpha * shared.betas.get(value);
             score += fast_lgamma(prior_i + i.second)
                    - fast_lgamma(prior_i);
