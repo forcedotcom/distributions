@@ -68,6 +68,7 @@ else:
         '-std=c++0x',
         '-Wall',
         '-Werror',
+        '-Wno-error=cpp',  # avoid #warning "Using deprecated NumPy API,..."
         '-Wno-unused-function',
         '-Wno-sign-compare',
         '-Wno-strict-aliasing',
