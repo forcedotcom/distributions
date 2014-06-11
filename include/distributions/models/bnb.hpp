@@ -300,6 +300,7 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
 
     void score_value (
             const Shared &,
+            const MixtureSlave<Shared> &,
             const Value & value,
             VectorFloat & scores_accum,
             rng_t &) const

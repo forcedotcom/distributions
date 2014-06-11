@@ -46,7 +46,8 @@ typedef bool Value;
 struct Group;
 struct Scorer;
 struct Sampler;
-struct Mixture;
+struct VectorizedScorer;
+typedef GroupScorerMixture<VectorizedScorer> Mixture;
 
 
 struct Shared : SharedMixin<Model>
@@ -287,6 +288,7 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
 
     void score_value(
             const Shared &,
+            const MixtureSlave<Shared> &,
             const Value & value,
             VectorFloat & scores_accum,
             rng_t &) const
@@ -336,9 +338,6 @@ private:
     VectorFloat heads_scores_;
     VectorFloat tails_scores_;
 };
-
-struct Mixture : public GroupScorerMixture<VectorizedScorer>
-{};
 
 }; // struct BetaBernoulli
 } // namespace distributions

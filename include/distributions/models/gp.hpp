@@ -301,6 +301,7 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
     // not thread safe
     void score_value (
             const Shared & shared,
+            const MixtureSlave<Shared> &,
             const Value & value,
             VectorFloat & scores_accum,
             rng_t &) const;

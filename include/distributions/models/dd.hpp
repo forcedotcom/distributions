@@ -49,7 +49,8 @@ typedef int Value;
 struct Group;
 struct Scorer;
 struct Sampler;
-struct Mixture;
+struct VectorizedScorer;
+typedef GroupScorerMixture<VectorizedScorer> Mixture;
 
 
 struct Shared : SharedMixin<Model>
@@ -193,6 +194,11 @@ struct Group : GroupMixin<Model>
         Sampler sampler;
         sampler.init(shared, *this, rng);
         return sampler.eval(shared, rng);
+    }
+
+    void validate (const Shared & shared) const
+    {
+        DIST_ASSERT_EQ(dim, shared.dim);
     }
 };
 
@@ -400,6 +406,7 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
 
     void score_value(
             const Shared & shared,
+            const MixtureSlave<Shared> &,
             const Value & value,
             VectorFloat & scores_accum,
             rng_t &) const
@@ -475,9 +482,6 @@ private:
 
     mutable CachedDataScorer cached_data_scorer_;
 };
-
-struct Mixture : public GroupScorerMixture<VectorizedScorer>
-{};
 
 }; // struct DirichletDiscrete
 } // namespace distributions

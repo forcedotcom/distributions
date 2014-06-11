@@ -260,6 +260,15 @@ struct Group : GroupMixin<Model>
         sampler.init(shared, *this, rng);
         return sampler.eval(shared, rng);
     }
+
+    void validate (const Shared & shared) const
+    {
+        for (const auto & i : counts) {
+            auto group_count = i.second;
+            auto shared_count = shared.counts.get_count(i.first);
+            DIST_ASSERT_LE(group_count, shared_count);
+        }
+    }
 };
 
 struct Sampler
@@ -452,6 +461,7 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
 
     void score_value (
             const Shared & shared,
+            const MixtureSlave<Shared> &,
             const Value & value,
             VectorFloat & scores_accum,
             rng_t &) const
@@ -515,6 +525,23 @@ struct VectorizedScorer : VectorizedScorerMixin<Model>
             rng_t & rng) const
     {
         slave.score_data_grid(shareds, scores_out, rng);
+    }
+
+    void validate (
+            const Shared & shared,
+            const MixtureSlave<Shared> & slave) const
+    {
+        SparseCounter<Value, count_t> counts;
+        for (const auto & group : slave.groups()) {
+            for (const auto & i : group.counts) {
+                counts.add(i.first, i.second);
+            }
+        }
+        for (const auto & i : counts) {
+            auto mixture_count = i.second;
+            auto shared_count = shared.counts.get_count(i.first);
+            DIST_ASSERT_LE(mixture_count, shared_count);
+        }
     }
 
 private:

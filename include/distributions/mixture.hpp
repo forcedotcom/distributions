@@ -274,6 +274,13 @@ public:
         }
     }
 
+    void validate (const Shared & shared) const
+    {
+        for (const auto & group : groups_) {
+            group.validate(shared);
+        }
+    }
+
 private:
 
     Packed_<Group> groups_;
@@ -434,7 +441,7 @@ struct GroupScorerMixture
         if (DIST_DEBUG_LEVEL >= 2) {
             DIST_ASSERT_EQ(scores_accum.size(), slave_.groups().size());
         }
-        scorer_.score_value(shared, value, scores_accum, rng);
+        scorer_.score_value(shared, slave_, value, scores_accum, rng);
     }
 
     float score_data (
@@ -450,6 +457,11 @@ struct GroupScorerMixture
             rng_t & rng) const
     {
         scorer_.score_data_grid(shareds, slave_, scores_out, rng);
+    }
+
+    void validate (const Shared & shared) const
+    {
+        scorer_.validate(shared, slave_);
     }
 
 private:

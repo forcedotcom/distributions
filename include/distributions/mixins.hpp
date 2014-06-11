@@ -51,6 +51,8 @@ struct GroupMixin
     typedef Model_ Model;
     typedef typename Model::Value Value;
     typedef typename Model::Shared Shared;
+
+    void validate (const Shared &) const {}
 };
 
 template<class Model_>
@@ -61,6 +63,13 @@ struct VectorizedScorerMixin
     typedef typename Model::Shared Shared;
     typedef typename Model::Group Group;
     typedef MixtureSlave<Shared> Slave;
+
+    void validate (const Shared & shared, const Slave & slave) const
+    {
+        for (const auto & group : slave.groups()) {
+            group.validate(shared);
+        }
+    }
 };
 
 } // namespace distributions
