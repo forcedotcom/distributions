@@ -101,6 +101,23 @@ message DirichletProcessDiscrete {
   }
 }
 
+message PitmanYorProcessDiscrete {
+  message Shared {
+    required float alpha = 1;
+    repeated float d = 2;
+    repeated uint64 counts = 3;
+  }
+
+  message GridPrior {
+    repeated Clustering.PitmanYor alpha_d = 1;
+  }
+
+  message Group {
+    repeated uint32 keys = 1;
+    repeated uint64 values = 2;
+  }
+}
+
 message GammaPoisson {
   message Shared {
     required float alpha = 1;

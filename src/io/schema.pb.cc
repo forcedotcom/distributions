@@ -63,6 +63,18 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* DirichletProcessDiscrete_Group_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   DirichletProcessDiscrete_Group_reflection_ = NULL;
+const ::google::protobuf::Descriptor* PitmanYorProcessDiscrete_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  PitmanYorProcessDiscrete_reflection_ = NULL;
+const ::google::protobuf::Descriptor* PitmanYorProcessDiscrete_Shared_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  PitmanYorProcessDiscrete_Shared_reflection_ = NULL;
+const ::google::protobuf::Descriptor* PitmanYorProcessDiscrete_GridPrior_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  PitmanYorProcessDiscrete_GridPrior_reflection_ = NULL;
+const ::google::protobuf::Descriptor* PitmanYorProcessDiscrete_Group_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  PitmanYorProcessDiscrete_Group_reflection_ = NULL;
 const ::google::protobuf::Descriptor* GammaPoisson_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   GammaPoisson_reflection_ = NULL;
@@ -342,7 +354,69 @@ void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(DirichletProcessDiscrete_Group));
-  GammaPoisson_descriptor_ = file->message_type(4);
+  PitmanYorProcessDiscrete_descriptor_ = file->message_type(4);
+  static const int PitmanYorProcessDiscrete_offsets_[1] = {
+  };
+  PitmanYorProcessDiscrete_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      PitmanYorProcessDiscrete_descriptor_,
+      PitmanYorProcessDiscrete::default_instance_,
+      PitmanYorProcessDiscrete_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(PitmanYorProcessDiscrete));
+  PitmanYorProcessDiscrete_Shared_descriptor_ = PitmanYorProcessDiscrete_descriptor_->nested_type(0);
+  static const int PitmanYorProcessDiscrete_Shared_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete_Shared, alpha_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete_Shared, d_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete_Shared, counts_),
+  };
+  PitmanYorProcessDiscrete_Shared_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      PitmanYorProcessDiscrete_Shared_descriptor_,
+      PitmanYorProcessDiscrete_Shared::default_instance_,
+      PitmanYorProcessDiscrete_Shared_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete_Shared, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete_Shared, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(PitmanYorProcessDiscrete_Shared));
+  PitmanYorProcessDiscrete_GridPrior_descriptor_ = PitmanYorProcessDiscrete_descriptor_->nested_type(1);
+  static const int PitmanYorProcessDiscrete_GridPrior_offsets_[1] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete_GridPrior, alpha_d_),
+  };
+  PitmanYorProcessDiscrete_GridPrior_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      PitmanYorProcessDiscrete_GridPrior_descriptor_,
+      PitmanYorProcessDiscrete_GridPrior::default_instance_,
+      PitmanYorProcessDiscrete_GridPrior_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete_GridPrior, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete_GridPrior, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(PitmanYorProcessDiscrete_GridPrior));
+  PitmanYorProcessDiscrete_Group_descriptor_ = PitmanYorProcessDiscrete_descriptor_->nested_type(2);
+  static const int PitmanYorProcessDiscrete_Group_offsets_[2] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete_Group, keys_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete_Group, values_),
+  };
+  PitmanYorProcessDiscrete_Group_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      PitmanYorProcessDiscrete_Group_descriptor_,
+      PitmanYorProcessDiscrete_Group::default_instance_,
+      PitmanYorProcessDiscrete_Group_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete_Group, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete_Group, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(PitmanYorProcessDiscrete_Group));
+  GammaPoisson_descriptor_ = file->message_type(5);
   static const int GammaPoisson_offsets_[1] = {
   };
   GammaPoisson_reflection_ =
@@ -405,7 +479,7 @@ void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(GammaPoisson_Group));
-  BetaNegativeBinomial_descriptor_ = file->message_type(5);
+  BetaNegativeBinomial_descriptor_ = file->message_type(6);
   static const int BetaNegativeBinomial_offsets_[1] = {
   };
   BetaNegativeBinomial_reflection_ =
@@ -469,7 +543,7 @@ void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(BetaNegativeBinomial_Group));
-  NormalInverseChiSq_descriptor_ = file->message_type(6);
+  NormalInverseChiSq_descriptor_ = file->message_type(7);
   static const int NormalInverseChiSq_offsets_[1] = {
   };
   NormalInverseChiSq_reflection_ =
@@ -579,6 +653,14 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     DirichletProcessDiscrete_Group_descriptor_, &DirichletProcessDiscrete_Group::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    PitmanYorProcessDiscrete_descriptor_, &PitmanYorProcessDiscrete::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    PitmanYorProcessDiscrete_Shared_descriptor_, &PitmanYorProcessDiscrete_Shared::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    PitmanYorProcessDiscrete_GridPrior_descriptor_, &PitmanYorProcessDiscrete_GridPrior::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    PitmanYorProcessDiscrete_Group_descriptor_, &PitmanYorProcessDiscrete_Group::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     GammaPoisson_descriptor_, &GammaPoisson::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     GammaPoisson_Shared_descriptor_, &GammaPoisson_Shared::default_instance());
@@ -637,6 +719,14 @@ void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto() {
   delete DirichletProcessDiscrete_GridPrior_reflection_;
   delete DirichletProcessDiscrete_Group::default_instance_;
   delete DirichletProcessDiscrete_Group_reflection_;
+  delete PitmanYorProcessDiscrete::default_instance_;
+  delete PitmanYorProcessDiscrete_reflection_;
+  delete PitmanYorProcessDiscrete_Shared::default_instance_;
+  delete PitmanYorProcessDiscrete_Shared_reflection_;
+  delete PitmanYorProcessDiscrete_GridPrior::default_instance_;
+  delete PitmanYorProcessDiscrete_GridPrior_reflection_;
+  delete PitmanYorProcessDiscrete_Group::default_instance_;
+  delete PitmanYorProcessDiscrete_Group_reflection_;
   delete GammaPoisson::default_instance_;
   delete GammaPoisson_reflection_;
   delete GammaPoisson_Shared::default_instance_;
@@ -687,21 +777,26 @@ void protobuf_AddDesc_distributions_2fio_2fschema_2eproto() {
     "gamma\030\001 \002(\002\022\r\n\005alpha\030\002 \002(\002\022\016\n\006values\030\003 \003"
     "(\r\022\r\n\005betas\030\004 \003(\002\022\016\n\006counts\030\005 \003(\004\032)\n\tGri"
     "dPrior\022\r\n\005gamma\030\001 \003(\002\022\r\n\005alpha\030\002 \003(\002\032%\n\005"
-    "Group\022\014\n\004keys\030\001 \003(\r\022\016\n\006values\030\002 \003(\004\"\236\001\n\014"
-    "GammaPoisson\032)\n\006Shared\022\r\n\005alpha\030\001 \002(\002\022\020\n"
-    "\010inv_beta\030\002 \002(\002\032,\n\tGridPrior\022\r\n\005alpha\030\001 "
-    "\003(\002\022\020\n\010inv_beta\030\002 \003(\002\0325\n\005Group\022\r\n\005count\030"
-    "\001 \002(\004\022\013\n\003sum\030\002 \002(\004\022\020\n\010log_prod\030\003 \002(\002\"\242\001\n"
-    "\024BetaNegativeBinomial\0320\n\006Shared\022\r\n\005alpha"
-    "\030\001 \002(\002\022\014\n\004beta\030\002 \002(\002\022\t\n\001r\030\003 \002(\004\0323\n\tGridP"
-    "rior\022\r\n\005alpha\030\001 \003(\002\022\014\n\004beta\030\002 \003(\002\022\t\n\001r\030\003"
-    " \003(\004\032#\n\005Group\022\r\n\005count\030\001 \002(\004\022\013\n\003sum\030\002 \002("
-    "\004\"\337\001\n\022NormalInverseChiSq\032@\n\006Shared\022\n\n\002mu"
-    "\030\001 \002(\002\022\r\n\005kappa\030\002 \002(\002\022\017\n\007sigmasq\030\003 \002(\002\022\n"
-    "\n\002nu\030\004 \002(\002\032C\n\tGridPrior\022\n\n\002mu\030\001 \003(\002\022\r\n\005k"
-    "appa\030\002 \003(\002\022\017\n\007sigmasq\030\003 \003(\002\022\n\n\002nu\030\004 \003(\002\032"
-    "B\n\005Group\022\r\n\005count\030\001 \002(\004\022\014\n\004mean\030\002 \002(\002\022\034\n"
-    "\024count_times_variance\030\003 \002(\002", 1267);
+    "Group\022\014\n\004keys\030\001 \003(\r\022\016\n\006values\030\002 \003(\004\"\301\001\n\030"
+    "PitmanYorProcessDiscrete\0322\n\006Shared\022\r\n\005al"
+    "pha\030\001 \002(\002\022\t\n\001d\030\002 \003(\002\022\016\n\006counts\030\003 \003(\004\032J\n\t"
+    "GridPrior\022=\n\007alpha_d\030\001 \003(\0132,.protobuf.di"
+    "stributions.Clustering.PitmanYor\032%\n\005Grou"
+    "p\022\014\n\004keys\030\001 \003(\r\022\016\n\006values\030\002 \003(\004\"\236\001\n\014Gamm"
+    "aPoisson\032)\n\006Shared\022\r\n\005alpha\030\001 \002(\002\022\020\n\010inv"
+    "_beta\030\002 \002(\002\032,\n\tGridPrior\022\r\n\005alpha\030\001 \003(\002\022"
+    "\020\n\010inv_beta\030\002 \003(\002\0325\n\005Group\022\r\n\005count\030\001 \002("
+    "\004\022\013\n\003sum\030\002 \002(\004\022\020\n\010log_prod\030\003 \002(\002\"\242\001\n\024Bet"
+    "aNegativeBinomial\0320\n\006Shared\022\r\n\005alpha\030\001 \002"
+    "(\002\022\014\n\004beta\030\002 \002(\002\022\t\n\001r\030\003 \002(\004\0323\n\tGridPrior"
+    "\022\r\n\005alpha\030\001 \003(\002\022\014\n\004beta\030\002 \003(\002\022\t\n\001r\030\003 \003(\004"
+    "\032#\n\005Group\022\r\n\005count\030\001 \002(\004\022\013\n\003sum\030\002 \002(\004\"\337\001"
+    "\n\022NormalInverseChiSq\032@\n\006Shared\022\n\n\002mu\030\001 \002"
+    "(\002\022\r\n\005kappa\030\002 \002(\002\022\017\n\007sigmasq\030\003 \002(\002\022\n\n\002nu"
+    "\030\004 \002(\002\032C\n\tGridPrior\022\n\n\002mu\030\001 \003(\002\022\r\n\005kappa"
+    "\030\002 \003(\002\022\017\n\007sigmasq\030\003 \003(\002\022\n\n\002nu\030\004 \003(\002\032B\n\005G"
+    "roup\022\r\n\005count\030\001 \002(\004\022\014\n\004mean\030\002 \002(\002\022\034\n\024cou"
+    "nt_times_variance\030\003 \002(\002", 1463);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "distributions/io/schema.proto", &protobuf_RegisterTypes);
   Clustering::default_instance_ = new Clustering();
@@ -719,6 +814,10 @@ void protobuf_AddDesc_distributions_2fio_2fschema_2eproto() {
   DirichletProcessDiscrete_Shared::default_instance_ = new DirichletProcessDiscrete_Shared();
   DirichletProcessDiscrete_GridPrior::default_instance_ = new DirichletProcessDiscrete_GridPrior();
   DirichletProcessDiscrete_Group::default_instance_ = new DirichletProcessDiscrete_Group();
+  PitmanYorProcessDiscrete::default_instance_ = new PitmanYorProcessDiscrete();
+  PitmanYorProcessDiscrete_Shared::default_instance_ = new PitmanYorProcessDiscrete_Shared();
+  PitmanYorProcessDiscrete_GridPrior::default_instance_ = new PitmanYorProcessDiscrete_GridPrior();
+  PitmanYorProcessDiscrete_Group::default_instance_ = new PitmanYorProcessDiscrete_Group();
   GammaPoisson::default_instance_ = new GammaPoisson();
   GammaPoisson_Shared::default_instance_ = new GammaPoisson_Shared();
   GammaPoisson_GridPrior::default_instance_ = new GammaPoisson_GridPrior();
@@ -746,6 +845,10 @@ void protobuf_AddDesc_distributions_2fio_2fschema_2eproto() {
   DirichletProcessDiscrete_Shared::default_instance_->InitAsDefaultInstance();
   DirichletProcessDiscrete_GridPrior::default_instance_->InitAsDefaultInstance();
   DirichletProcessDiscrete_Group::default_instance_->InitAsDefaultInstance();
+  PitmanYorProcessDiscrete::default_instance_->InitAsDefaultInstance();
+  PitmanYorProcessDiscrete_Shared::default_instance_->InitAsDefaultInstance();
+  PitmanYorProcessDiscrete_GridPrior::default_instance_->InitAsDefaultInstance();
+  PitmanYorProcessDiscrete_Group::default_instance_->InitAsDefaultInstance();
   GammaPoisson::default_instance_->InitAsDefaultInstance();
   GammaPoisson_Shared::default_instance_->InitAsDefaultInstance();
   GammaPoisson_GridPrior::default_instance_->InitAsDefaultInstance();
@@ -4208,6 +4311,923 @@ void DirichletProcessDiscrete::Swap(DirichletProcessDiscrete* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = DirichletProcessDiscrete_descriptor_;
   metadata.reflection = DirichletProcessDiscrete_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int PitmanYorProcessDiscrete_Shared::kAlphaFieldNumber;
+const int PitmanYorProcessDiscrete_Shared::kDFieldNumber;
+const int PitmanYorProcessDiscrete_Shared::kCountsFieldNumber;
+#endif  // !_MSC_VER
+
+PitmanYorProcessDiscrete_Shared::PitmanYorProcessDiscrete_Shared()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void PitmanYorProcessDiscrete_Shared::InitAsDefaultInstance() {
+}
+
+PitmanYorProcessDiscrete_Shared::PitmanYorProcessDiscrete_Shared(const PitmanYorProcessDiscrete_Shared& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void PitmanYorProcessDiscrete_Shared::SharedCtor() {
+  _cached_size_ = 0;
+  alpha_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+PitmanYorProcessDiscrete_Shared::~PitmanYorProcessDiscrete_Shared() {
+  SharedDtor();
+}
+
+void PitmanYorProcessDiscrete_Shared::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void PitmanYorProcessDiscrete_Shared::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* PitmanYorProcessDiscrete_Shared::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return PitmanYorProcessDiscrete_Shared_descriptor_;
+}
+
+const PitmanYorProcessDiscrete_Shared& PitmanYorProcessDiscrete_Shared::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fio_2fschema_2eproto();  return *default_instance_;
+}
+
+PitmanYorProcessDiscrete_Shared* PitmanYorProcessDiscrete_Shared::default_instance_ = NULL;
+
+PitmanYorProcessDiscrete_Shared* PitmanYorProcessDiscrete_Shared::New() const {
+  return new PitmanYorProcessDiscrete_Shared;
+}
+
+void PitmanYorProcessDiscrete_Shared::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    alpha_ = 0;
+  }
+  d_.Clear();
+  counts_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool PitmanYorProcessDiscrete_Shared::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required float alpha = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &alpha_)));
+          set_has_alpha();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(21)) goto parse_d;
+        break;
+      }
+      
+      // repeated float d = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_d:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 1, 21, input, this->mutable_d())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, this->mutable_d())));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(21)) goto parse_d;
+        if (input->ExpectTag(24)) goto parse_counts;
+        break;
+      }
+      
+      // repeated uint64 counts = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_counts:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 1, 24, input, this->mutable_counts())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, this->mutable_counts())));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(24)) goto parse_counts;
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void PitmanYorProcessDiscrete_Shared::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required float alpha = 1;
+  if (has_alpha()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(1, this->alpha(), output);
+  }
+  
+  // repeated float d = 2;
+  for (int i = 0; i < this->d_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(
+      2, this->d(i), output);
+  }
+  
+  // repeated uint64 counts = 3;
+  for (int i = 0; i < this->counts_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(
+      3, this->counts(i), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* PitmanYorProcessDiscrete_Shared::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required float alpha = 1;
+  if (has_alpha()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(1, this->alpha(), target);
+  }
+  
+  // repeated float d = 2;
+  for (int i = 0; i < this->d_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteFloatToArray(2, this->d(i), target);
+  }
+  
+  // repeated uint64 counts = 3;
+  for (int i = 0; i < this->counts_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteUInt64ToArray(3, this->counts(i), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int PitmanYorProcessDiscrete_Shared::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required float alpha = 1;
+    if (has_alpha()) {
+      total_size += 1 + 4;
+    }
+    
+  }
+  // repeated float d = 2;
+  {
+    int data_size = 0;
+    data_size = 4 * this->d_size();
+    total_size += 1 * this->d_size() + data_size;
+  }
+  
+  // repeated uint64 counts = 3;
+  {
+    int data_size = 0;
+    for (int i = 0; i < this->counts_size(); i++) {
+      data_size += ::google::protobuf::internal::WireFormatLite::
+        UInt64Size(this->counts(i));
+    }
+    total_size += 1 * this->counts_size() + data_size;
+  }
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void PitmanYorProcessDiscrete_Shared::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const PitmanYorProcessDiscrete_Shared* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const PitmanYorProcessDiscrete_Shared*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void PitmanYorProcessDiscrete_Shared::MergeFrom(const PitmanYorProcessDiscrete_Shared& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  d_.MergeFrom(from.d_);
+  counts_.MergeFrom(from.counts_);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_alpha()) {
+      set_alpha(from.alpha());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void PitmanYorProcessDiscrete_Shared::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void PitmanYorProcessDiscrete_Shared::CopyFrom(const PitmanYorProcessDiscrete_Shared& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool PitmanYorProcessDiscrete_Shared::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+  
+  return true;
+}
+
+void PitmanYorProcessDiscrete_Shared::Swap(PitmanYorProcessDiscrete_Shared* other) {
+  if (other != this) {
+    std::swap(alpha_, other->alpha_);
+    d_.Swap(&other->d_);
+    counts_.Swap(&other->counts_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata PitmanYorProcessDiscrete_Shared::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = PitmanYorProcessDiscrete_Shared_descriptor_;
+  metadata.reflection = PitmanYorProcessDiscrete_Shared_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#ifndef _MSC_VER
+const int PitmanYorProcessDiscrete_GridPrior::kAlphaDFieldNumber;
+#endif  // !_MSC_VER
+
+PitmanYorProcessDiscrete_GridPrior::PitmanYorProcessDiscrete_GridPrior()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void PitmanYorProcessDiscrete_GridPrior::InitAsDefaultInstance() {
+}
+
+PitmanYorProcessDiscrete_GridPrior::PitmanYorProcessDiscrete_GridPrior(const PitmanYorProcessDiscrete_GridPrior& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void PitmanYorProcessDiscrete_GridPrior::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+PitmanYorProcessDiscrete_GridPrior::~PitmanYorProcessDiscrete_GridPrior() {
+  SharedDtor();
+}
+
+void PitmanYorProcessDiscrete_GridPrior::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void PitmanYorProcessDiscrete_GridPrior::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* PitmanYorProcessDiscrete_GridPrior::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return PitmanYorProcessDiscrete_GridPrior_descriptor_;
+}
+
+const PitmanYorProcessDiscrete_GridPrior& PitmanYorProcessDiscrete_GridPrior::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fio_2fschema_2eproto();  return *default_instance_;
+}
+
+PitmanYorProcessDiscrete_GridPrior* PitmanYorProcessDiscrete_GridPrior::default_instance_ = NULL;
+
+PitmanYorProcessDiscrete_GridPrior* PitmanYorProcessDiscrete_GridPrior::New() const {
+  return new PitmanYorProcessDiscrete_GridPrior;
+}
+
+void PitmanYorProcessDiscrete_GridPrior::Clear() {
+  alpha_d_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool PitmanYorProcessDiscrete_GridPrior::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated .protobuf.distributions.Clustering.PitmanYor alpha_d = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
+         parse_alpha_d:
+          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
+                input, add_alpha_d()));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(10)) goto parse_alpha_d;
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void PitmanYorProcessDiscrete_GridPrior::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // repeated .protobuf.distributions.Clustering.PitmanYor alpha_d = 1;
+  for (int i = 0; i < this->alpha_d_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
+      1, this->alpha_d(i), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* PitmanYorProcessDiscrete_GridPrior::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // repeated .protobuf.distributions.Clustering.PitmanYor alpha_d = 1;
+  for (int i = 0; i < this->alpha_d_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteMessageNoVirtualToArray(
+        1, this->alpha_d(i), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int PitmanYorProcessDiscrete_GridPrior::ByteSize() const {
+  int total_size = 0;
+  
+  // repeated .protobuf.distributions.Clustering.PitmanYor alpha_d = 1;
+  total_size += 1 * this->alpha_d_size();
+  for (int i = 0; i < this->alpha_d_size(); i++) {
+    total_size +=
+      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
+        this->alpha_d(i));
+  }
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void PitmanYorProcessDiscrete_GridPrior::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const PitmanYorProcessDiscrete_GridPrior* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const PitmanYorProcessDiscrete_GridPrior*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void PitmanYorProcessDiscrete_GridPrior::MergeFrom(const PitmanYorProcessDiscrete_GridPrior& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  alpha_d_.MergeFrom(from.alpha_d_);
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void PitmanYorProcessDiscrete_GridPrior::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void PitmanYorProcessDiscrete_GridPrior::CopyFrom(const PitmanYorProcessDiscrete_GridPrior& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool PitmanYorProcessDiscrete_GridPrior::IsInitialized() const {
+  
+  for (int i = 0; i < alpha_d_size(); i++) {
+    if (!this->alpha_d(i).IsInitialized()) return false;
+  }
+  return true;
+}
+
+void PitmanYorProcessDiscrete_GridPrior::Swap(PitmanYorProcessDiscrete_GridPrior* other) {
+  if (other != this) {
+    alpha_d_.Swap(&other->alpha_d_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata PitmanYorProcessDiscrete_GridPrior::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = PitmanYorProcessDiscrete_GridPrior_descriptor_;
+  metadata.reflection = PitmanYorProcessDiscrete_GridPrior_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#ifndef _MSC_VER
+const int PitmanYorProcessDiscrete_Group::kKeysFieldNumber;
+const int PitmanYorProcessDiscrete_Group::kValuesFieldNumber;
+#endif  // !_MSC_VER
+
+PitmanYorProcessDiscrete_Group::PitmanYorProcessDiscrete_Group()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void PitmanYorProcessDiscrete_Group::InitAsDefaultInstance() {
+}
+
+PitmanYorProcessDiscrete_Group::PitmanYorProcessDiscrete_Group(const PitmanYorProcessDiscrete_Group& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void PitmanYorProcessDiscrete_Group::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+PitmanYorProcessDiscrete_Group::~PitmanYorProcessDiscrete_Group() {
+  SharedDtor();
+}
+
+void PitmanYorProcessDiscrete_Group::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void PitmanYorProcessDiscrete_Group::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* PitmanYorProcessDiscrete_Group::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return PitmanYorProcessDiscrete_Group_descriptor_;
+}
+
+const PitmanYorProcessDiscrete_Group& PitmanYorProcessDiscrete_Group::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fio_2fschema_2eproto();  return *default_instance_;
+}
+
+PitmanYorProcessDiscrete_Group* PitmanYorProcessDiscrete_Group::default_instance_ = NULL;
+
+PitmanYorProcessDiscrete_Group* PitmanYorProcessDiscrete_Group::New() const {
+  return new PitmanYorProcessDiscrete_Group;
+}
+
+void PitmanYorProcessDiscrete_Group::Clear() {
+  keys_.Clear();
+  values_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool PitmanYorProcessDiscrete_Group::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated uint32 keys = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_keys:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 1, 8, input, this->mutable_keys())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   ::google::protobuf::uint32, ::google::protobuf::internal::WireFormatLite::TYPE_UINT32>(
+                 input, this->mutable_keys())));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(8)) goto parse_keys;
+        if (input->ExpectTag(16)) goto parse_values;
+        break;
+      }
+      
+      // repeated uint64 values = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_values:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 1, 16, input, this->mutable_values())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
+                 input, this->mutable_values())));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(16)) goto parse_values;
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void PitmanYorProcessDiscrete_Group::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // repeated uint32 keys = 1;
+  for (int i = 0; i < this->keys_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt32(
+      1, this->keys(i), output);
+  }
+  
+  // repeated uint64 values = 2;
+  for (int i = 0; i < this->values_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteUInt64(
+      2, this->values(i), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* PitmanYorProcessDiscrete_Group::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // repeated uint32 keys = 1;
+  for (int i = 0; i < this->keys_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteUInt32ToArray(1, this->keys(i), target);
+  }
+  
+  // repeated uint64 values = 2;
+  for (int i = 0; i < this->values_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteUInt64ToArray(2, this->values(i), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int PitmanYorProcessDiscrete_Group::ByteSize() const {
+  int total_size = 0;
+  
+  // repeated uint32 keys = 1;
+  {
+    int data_size = 0;
+    for (int i = 0; i < this->keys_size(); i++) {
+      data_size += ::google::protobuf::internal::WireFormatLite::
+        UInt32Size(this->keys(i));
+    }
+    total_size += 1 * this->keys_size() + data_size;
+  }
+  
+  // repeated uint64 values = 2;
+  {
+    int data_size = 0;
+    for (int i = 0; i < this->values_size(); i++) {
+      data_size += ::google::protobuf::internal::WireFormatLite::
+        UInt64Size(this->values(i));
+    }
+    total_size += 1 * this->values_size() + data_size;
+  }
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void PitmanYorProcessDiscrete_Group::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const PitmanYorProcessDiscrete_Group* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const PitmanYorProcessDiscrete_Group*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void PitmanYorProcessDiscrete_Group::MergeFrom(const PitmanYorProcessDiscrete_Group& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  keys_.MergeFrom(from.keys_);
+  values_.MergeFrom(from.values_);
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void PitmanYorProcessDiscrete_Group::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void PitmanYorProcessDiscrete_Group::CopyFrom(const PitmanYorProcessDiscrete_Group& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool PitmanYorProcessDiscrete_Group::IsInitialized() const {
+  
+  return true;
+}
+
+void PitmanYorProcessDiscrete_Group::Swap(PitmanYorProcessDiscrete_Group* other) {
+  if (other != this) {
+    keys_.Swap(&other->keys_);
+    values_.Swap(&other->values_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata PitmanYorProcessDiscrete_Group::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = PitmanYorProcessDiscrete_Group_descriptor_;
+  metadata.reflection = PitmanYorProcessDiscrete_Group_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#ifndef _MSC_VER
+#endif  // !_MSC_VER
+
+PitmanYorProcessDiscrete::PitmanYorProcessDiscrete()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void PitmanYorProcessDiscrete::InitAsDefaultInstance() {
+}
+
+PitmanYorProcessDiscrete::PitmanYorProcessDiscrete(const PitmanYorProcessDiscrete& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void PitmanYorProcessDiscrete::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+PitmanYorProcessDiscrete::~PitmanYorProcessDiscrete() {
+  SharedDtor();
+}
+
+void PitmanYorProcessDiscrete::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void PitmanYorProcessDiscrete::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* PitmanYorProcessDiscrete::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return PitmanYorProcessDiscrete_descriptor_;
+}
+
+const PitmanYorProcessDiscrete& PitmanYorProcessDiscrete::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fio_2fschema_2eproto();  return *default_instance_;
+}
+
+PitmanYorProcessDiscrete* PitmanYorProcessDiscrete::default_instance_ = NULL;
+
+PitmanYorProcessDiscrete* PitmanYorProcessDiscrete::New() const {
+  return new PitmanYorProcessDiscrete;
+}
+
+void PitmanYorProcessDiscrete::Clear() {
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool PitmanYorProcessDiscrete::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+        ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+      return true;
+    }
+    DO_(::google::protobuf::internal::WireFormat::SkipField(
+          input, tag, mutable_unknown_fields()));
+  }
+  return true;
+#undef DO_
+}
+
+void PitmanYorProcessDiscrete::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* PitmanYorProcessDiscrete::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int PitmanYorProcessDiscrete::ByteSize() const {
+  int total_size = 0;
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void PitmanYorProcessDiscrete::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const PitmanYorProcessDiscrete* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const PitmanYorProcessDiscrete*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void PitmanYorProcessDiscrete::MergeFrom(const PitmanYorProcessDiscrete& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void PitmanYorProcessDiscrete::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void PitmanYorProcessDiscrete::CopyFrom(const PitmanYorProcessDiscrete& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool PitmanYorProcessDiscrete::IsInitialized() const {
+  
+  return true;
+}
+
+void PitmanYorProcessDiscrete::Swap(PitmanYorProcessDiscrete* other) {
+  if (other != this) {
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata PitmanYorProcessDiscrete::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = PitmanYorProcessDiscrete_descriptor_;
+  metadata.reflection = PitmanYorProcessDiscrete_reflection_;
   return metadata;
 }
 

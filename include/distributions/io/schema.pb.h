@@ -48,6 +48,10 @@ class DirichletProcessDiscrete;
 class DirichletProcessDiscrete_Shared;
 class DirichletProcessDiscrete_GridPrior;
 class DirichletProcessDiscrete_Group;
+class PitmanYorProcessDiscrete;
+class PitmanYorProcessDiscrete_Shared;
+class PitmanYorProcessDiscrete_GridPrior;
+class PitmanYorProcessDiscrete_Group;
 class GammaPoisson;
 class GammaPoisson_Shared;
 class GammaPoisson_GridPrior;
@@ -1423,6 +1427,373 @@ class DirichletProcessDiscrete : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static DirichletProcessDiscrete* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class PitmanYorProcessDiscrete_Shared : public ::google::protobuf::Message {
+ public:
+  PitmanYorProcessDiscrete_Shared();
+  virtual ~PitmanYorProcessDiscrete_Shared();
+  
+  PitmanYorProcessDiscrete_Shared(const PitmanYorProcessDiscrete_Shared& from);
+  
+  inline PitmanYorProcessDiscrete_Shared& operator=(const PitmanYorProcessDiscrete_Shared& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const PitmanYorProcessDiscrete_Shared& default_instance();
+  
+  void Swap(PitmanYorProcessDiscrete_Shared* other);
+  
+  // implements Message ----------------------------------------------
+  
+  PitmanYorProcessDiscrete_Shared* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const PitmanYorProcessDiscrete_Shared& from);
+  void MergeFrom(const PitmanYorProcessDiscrete_Shared& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required float alpha = 1;
+  inline bool has_alpha() const;
+  inline void clear_alpha();
+  static const int kAlphaFieldNumber = 1;
+  inline float alpha() const;
+  inline void set_alpha(float value);
+  
+  // repeated float d = 2;
+  inline int d_size() const;
+  inline void clear_d();
+  static const int kDFieldNumber = 2;
+  inline float d(int index) const;
+  inline void set_d(int index, float value);
+  inline void add_d(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      d() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_d();
+  
+  // repeated uint64 counts = 3;
+  inline int counts_size() const;
+  inline void clear_counts();
+  static const int kCountsFieldNumber = 3;
+  inline ::google::protobuf::uint64 counts(int index) const;
+  inline void set_counts(int index, ::google::protobuf::uint64 value);
+  inline void add_counts(::google::protobuf::uint64 value);
+  inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >&
+      counts() const;
+  inline ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >*
+      mutable_counts();
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.PitmanYorProcessDiscrete.Shared)
+ private:
+  inline void set_has_alpha();
+  inline void clear_has_alpha();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::RepeatedField< float > d_;
+  ::google::protobuf::RepeatedField< ::google::protobuf::uint64 > counts_;
+  float alpha_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static PitmanYorProcessDiscrete_Shared* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class PitmanYorProcessDiscrete_GridPrior : public ::google::protobuf::Message {
+ public:
+  PitmanYorProcessDiscrete_GridPrior();
+  virtual ~PitmanYorProcessDiscrete_GridPrior();
+  
+  PitmanYorProcessDiscrete_GridPrior(const PitmanYorProcessDiscrete_GridPrior& from);
+  
+  inline PitmanYorProcessDiscrete_GridPrior& operator=(const PitmanYorProcessDiscrete_GridPrior& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const PitmanYorProcessDiscrete_GridPrior& default_instance();
+  
+  void Swap(PitmanYorProcessDiscrete_GridPrior* other);
+  
+  // implements Message ----------------------------------------------
+  
+  PitmanYorProcessDiscrete_GridPrior* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const PitmanYorProcessDiscrete_GridPrior& from);
+  void MergeFrom(const PitmanYorProcessDiscrete_GridPrior& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // repeated .protobuf.distributions.Clustering.PitmanYor alpha_d = 1;
+  inline int alpha_d_size() const;
+  inline void clear_alpha_d();
+  static const int kAlphaDFieldNumber = 1;
+  inline const ::protobuf::distributions::Clustering_PitmanYor& alpha_d(int index) const;
+  inline ::protobuf::distributions::Clustering_PitmanYor* mutable_alpha_d(int index);
+  inline ::protobuf::distributions::Clustering_PitmanYor* add_alpha_d();
+  inline const ::google::protobuf::RepeatedPtrField< ::protobuf::distributions::Clustering_PitmanYor >&
+      alpha_d() const;
+  inline ::google::protobuf::RepeatedPtrField< ::protobuf::distributions::Clustering_PitmanYor >*
+      mutable_alpha_d();
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.PitmanYorProcessDiscrete.GridPrior)
+ private:
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::RepeatedPtrField< ::protobuf::distributions::Clustering_PitmanYor > alpha_d_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static PitmanYorProcessDiscrete_GridPrior* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class PitmanYorProcessDiscrete_Group : public ::google::protobuf::Message {
+ public:
+  PitmanYorProcessDiscrete_Group();
+  virtual ~PitmanYorProcessDiscrete_Group();
+  
+  PitmanYorProcessDiscrete_Group(const PitmanYorProcessDiscrete_Group& from);
+  
+  inline PitmanYorProcessDiscrete_Group& operator=(const PitmanYorProcessDiscrete_Group& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const PitmanYorProcessDiscrete_Group& default_instance();
+  
+  void Swap(PitmanYorProcessDiscrete_Group* other);
+  
+  // implements Message ----------------------------------------------
+  
+  PitmanYorProcessDiscrete_Group* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const PitmanYorProcessDiscrete_Group& from);
+  void MergeFrom(const PitmanYorProcessDiscrete_Group& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // repeated uint32 keys = 1;
+  inline int keys_size() const;
+  inline void clear_keys();
+  static const int kKeysFieldNumber = 1;
+  inline ::google::protobuf::uint32 keys(int index) const;
+  inline void set_keys(int index, ::google::protobuf::uint32 value);
+  inline void add_keys(::google::protobuf::uint32 value);
+  inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
+      keys() const;
+  inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
+      mutable_keys();
+  
+  // repeated uint64 values = 2;
+  inline int values_size() const;
+  inline void clear_values();
+  static const int kValuesFieldNumber = 2;
+  inline ::google::protobuf::uint64 values(int index) const;
+  inline void set_values(int index, ::google::protobuf::uint64 value);
+  inline void add_values(::google::protobuf::uint64 value);
+  inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >&
+      values() const;
+  inline ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >*
+      mutable_values();
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.PitmanYorProcessDiscrete.Group)
+ private:
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::RepeatedField< ::google::protobuf::uint32 > keys_;
+  ::google::protobuf::RepeatedField< ::google::protobuf::uint64 > values_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static PitmanYorProcessDiscrete_Group* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class PitmanYorProcessDiscrete : public ::google::protobuf::Message {
+ public:
+  PitmanYorProcessDiscrete();
+  virtual ~PitmanYorProcessDiscrete();
+  
+  PitmanYorProcessDiscrete(const PitmanYorProcessDiscrete& from);
+  
+  inline PitmanYorProcessDiscrete& operator=(const PitmanYorProcessDiscrete& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const PitmanYorProcessDiscrete& default_instance();
+  
+  void Swap(PitmanYorProcessDiscrete* other);
+  
+  // implements Message ----------------------------------------------
+  
+  PitmanYorProcessDiscrete* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const PitmanYorProcessDiscrete& from);
+  void MergeFrom(const PitmanYorProcessDiscrete& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  typedef PitmanYorProcessDiscrete_Shared Shared;
+  typedef PitmanYorProcessDiscrete_GridPrior GridPrior;
+  typedef PitmanYorProcessDiscrete_Group Group;
+  
+  // accessors -------------------------------------------------------
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.PitmanYorProcessDiscrete)
+ private:
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[1];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static PitmanYorProcessDiscrete* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -3205,6 +3576,169 @@ DirichletProcessDiscrete_Group::mutable_values() {
 // -------------------------------------------------------------------
 
 // DirichletProcessDiscrete
+
+// -------------------------------------------------------------------
+
+// PitmanYorProcessDiscrete_Shared
+
+// required float alpha = 1;
+inline bool PitmanYorProcessDiscrete_Shared::has_alpha() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void PitmanYorProcessDiscrete_Shared::set_has_alpha() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void PitmanYorProcessDiscrete_Shared::clear_has_alpha() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void PitmanYorProcessDiscrete_Shared::clear_alpha() {
+  alpha_ = 0;
+  clear_has_alpha();
+}
+inline float PitmanYorProcessDiscrete_Shared::alpha() const {
+  return alpha_;
+}
+inline void PitmanYorProcessDiscrete_Shared::set_alpha(float value) {
+  set_has_alpha();
+  alpha_ = value;
+}
+
+// repeated float d = 2;
+inline int PitmanYorProcessDiscrete_Shared::d_size() const {
+  return d_.size();
+}
+inline void PitmanYorProcessDiscrete_Shared::clear_d() {
+  d_.Clear();
+}
+inline float PitmanYorProcessDiscrete_Shared::d(int index) const {
+  return d_.Get(index);
+}
+inline void PitmanYorProcessDiscrete_Shared::set_d(int index, float value) {
+  d_.Set(index, value);
+}
+inline void PitmanYorProcessDiscrete_Shared::add_d(float value) {
+  d_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+PitmanYorProcessDiscrete_Shared::d() const {
+  return d_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+PitmanYorProcessDiscrete_Shared::mutable_d() {
+  return &d_;
+}
+
+// repeated uint64 counts = 3;
+inline int PitmanYorProcessDiscrete_Shared::counts_size() const {
+  return counts_.size();
+}
+inline void PitmanYorProcessDiscrete_Shared::clear_counts() {
+  counts_.Clear();
+}
+inline ::google::protobuf::uint64 PitmanYorProcessDiscrete_Shared::counts(int index) const {
+  return counts_.Get(index);
+}
+inline void PitmanYorProcessDiscrete_Shared::set_counts(int index, ::google::protobuf::uint64 value) {
+  counts_.Set(index, value);
+}
+inline void PitmanYorProcessDiscrete_Shared::add_counts(::google::protobuf::uint64 value) {
+  counts_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >&
+PitmanYorProcessDiscrete_Shared::counts() const {
+  return counts_;
+}
+inline ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >*
+PitmanYorProcessDiscrete_Shared::mutable_counts() {
+  return &counts_;
+}
+
+// -------------------------------------------------------------------
+
+// PitmanYorProcessDiscrete_GridPrior
+
+// repeated .protobuf.distributions.Clustering.PitmanYor alpha_d = 1;
+inline int PitmanYorProcessDiscrete_GridPrior::alpha_d_size() const {
+  return alpha_d_.size();
+}
+inline void PitmanYorProcessDiscrete_GridPrior::clear_alpha_d() {
+  alpha_d_.Clear();
+}
+inline const ::protobuf::distributions::Clustering_PitmanYor& PitmanYorProcessDiscrete_GridPrior::alpha_d(int index) const {
+  return alpha_d_.Get(index);
+}
+inline ::protobuf::distributions::Clustering_PitmanYor* PitmanYorProcessDiscrete_GridPrior::mutable_alpha_d(int index) {
+  return alpha_d_.Mutable(index);
+}
+inline ::protobuf::distributions::Clustering_PitmanYor* PitmanYorProcessDiscrete_GridPrior::add_alpha_d() {
+  return alpha_d_.Add();
+}
+inline const ::google::protobuf::RepeatedPtrField< ::protobuf::distributions::Clustering_PitmanYor >&
+PitmanYorProcessDiscrete_GridPrior::alpha_d() const {
+  return alpha_d_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::protobuf::distributions::Clustering_PitmanYor >*
+PitmanYorProcessDiscrete_GridPrior::mutable_alpha_d() {
+  return &alpha_d_;
+}
+
+// -------------------------------------------------------------------
+
+// PitmanYorProcessDiscrete_Group
+
+// repeated uint32 keys = 1;
+inline int PitmanYorProcessDiscrete_Group::keys_size() const {
+  return keys_.size();
+}
+inline void PitmanYorProcessDiscrete_Group::clear_keys() {
+  keys_.Clear();
+}
+inline ::google::protobuf::uint32 PitmanYorProcessDiscrete_Group::keys(int index) const {
+  return keys_.Get(index);
+}
+inline void PitmanYorProcessDiscrete_Group::set_keys(int index, ::google::protobuf::uint32 value) {
+  keys_.Set(index, value);
+}
+inline void PitmanYorProcessDiscrete_Group::add_keys(::google::protobuf::uint32 value) {
+  keys_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >&
+PitmanYorProcessDiscrete_Group::keys() const {
+  return keys_;
+}
+inline ::google::protobuf::RepeatedField< ::google::protobuf::uint32 >*
+PitmanYorProcessDiscrete_Group::mutable_keys() {
+  return &keys_;
+}
+
+// repeated uint64 values = 2;
+inline int PitmanYorProcessDiscrete_Group::values_size() const {
+  return values_.size();
+}
+inline void PitmanYorProcessDiscrete_Group::clear_values() {
+  values_.Clear();
+}
+inline ::google::protobuf::uint64 PitmanYorProcessDiscrete_Group::values(int index) const {
+  return values_.Get(index);
+}
+inline void PitmanYorProcessDiscrete_Group::set_values(int index, ::google::protobuf::uint64 value) {
+  values_.Set(index, value);
+}
+inline void PitmanYorProcessDiscrete_Group::add_values(::google::protobuf::uint64 value) {
+  values_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >&
+PitmanYorProcessDiscrete_Group::values() const {
+  return values_;
+}
+inline ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >*
+PitmanYorProcessDiscrete_Group::mutable_values() {
+  return &values_;
+}
+
+// -------------------------------------------------------------------
+
+// PitmanYorProcessDiscrete
 
 // -------------------------------------------------------------------
 
