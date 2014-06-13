@@ -30,7 +30,7 @@ package protobuf.distributions;
 //----------------------------------------------------------------------------
 // Clustering
 
-message Clustering  // simulates a sum type
+message Clustering
 {
   message PitmanYor
   {
@@ -43,6 +43,7 @@ message Clustering  // simulates a sum type
     required uint64 dataset_size = 1;
   }
 
+  // simulate a sum type
   optional PitmanYor pitman_yor = 1;
   optional LowEntropy low_entropy = 2;
 }
@@ -56,11 +57,6 @@ message BetaBernoulli {
     required float beta = 2;
   }
 
-  message GridPrior {
-    repeated float alpha = 1;
-    repeated float beta = 2;
-  }
-
   message Group {
     required uint64 heads = 1;
     required uint64 tails = 2;
@@ -70,10 +66,6 @@ message BetaBernoulli {
 message DirichletDiscrete {
   message Shared {
     repeated float alphas = 1;
-  }
-
-  message GridPrior {
-    repeated float alpha = 1;
   }
 
   message Group {
@@ -90,11 +82,6 @@ message DirichletProcessDiscrete {
     repeated uint64 counts = 5;
   }
 
-  message GridPrior {
-    repeated float gamma = 1;
-    repeated float alpha = 2;
-  }
-
   message Group {
     repeated uint32 keys = 1;
     repeated uint64 values = 2;
@@ -108,10 +95,6 @@ message PitmanYorProcessDiscrete {
     repeated uint64 counts = 3;
   }
 
-  message GridPrior {
-    repeated Clustering.PitmanYor alpha_d = 1;
-  }
-
   message Group {
     repeated uint32 keys = 1;
     repeated uint64 values = 2;
@@ -122,11 +105,6 @@ message GammaPoisson {
   message Shared {
     required float alpha = 1;
     required float inv_beta = 2;
-  }
-
-  message GridPrior {
-    repeated float alpha = 1;
-    repeated float inv_beta = 2;
   }
 
   message Group {
@@ -143,12 +121,6 @@ message BetaNegativeBinomial {
     required uint64 r = 3;
   }
 
-  message GridPrior {
-    repeated float alpha = 1;
-    repeated float beta = 2;
-    repeated uint64 r = 3;
-  }
-
   message Group {
     required uint64 count = 1;
     required uint64 sum = 2;
@@ -161,13 +133,6 @@ message NormalInverseChiSq {
     required float kappa = 2;
     required float sigmasq = 3;
     required float nu = 4;
-  }
-
-  message GridPrior {
-    repeated float mu = 1;
-    repeated float kappa = 2;
-    repeated float sigmasq = 3;
-    repeated float nu = 4;
   }
 
   message Group {
