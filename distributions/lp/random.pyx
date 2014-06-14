@@ -30,7 +30,7 @@ from libcpp.vector cimport vector
 from libcpp.utility cimport pair
 cimport numpy
 numpy.import_array()
-from python cimport PyObject
+from cpython cimport PyObject
 from distributions.rng_cc cimport rng_t
 from distributions.global_rng cimport get_rng
 
