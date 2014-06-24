@@ -33,13 +33,14 @@ from distutils.core import setup, Extension
 from distutils.version import LooseVersion
 
 try:
-    from Cython.Build import cythonize
-    from Cython.Compiler.Main import Version as cython_version
+    import cython
+    cython_version = cython.__version__
     min_cython_version = '0.20.1'
-    if LooseVersion(cython_version.version) < LooseVersion(min_cython_version):
+    if LooseVersion(cython_version) < LooseVersion(min_cython_version):
         raise ValueError(
             'cython support requires cython>={}'.format(min_cython_version))
     cython = True
+    from Cython.Build import cythonize
 except ImportError:
     cython = False
 
