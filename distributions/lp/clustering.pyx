@@ -34,7 +34,7 @@ from cython.operator cimport dereference as deref, preincrement as inc
 from distributions.rng_cc cimport rng_t
 from distributions.global_rng cimport get_rng
 from distributions.lp.vector cimport VectorFloat, vector_float_to_ndarray
-from distributions.mixins import Serializable, ProtobufSerializable
+from distributions.mixins import SharedIoMixin
 
 
 cdef extern from 'distributions/mixture.hpp':
@@ -257,7 +257,7 @@ cdef class PitmanYorMixture:
         vector_float_to_ndarray(scores_cc, scores)
 
 
-class PitmanYor(PitmanYor_cy, Serializable, ProtobufSerializable):
+class PitmanYor(PitmanYor_cy, SharedIoMixin):
 
     def load_protobuf(self, message):
         self.load({'alpha': message.alpha, 'd': message.d})
@@ -380,7 +380,7 @@ cdef class LowEntropyMixture:
         vector_float_to_ndarray(scores_cc, scores)
 
 
-class LowEntropy(LowEntropy_cy, Serializable, ProtobufSerializable):
+class LowEntropy(LowEntropy_cy, SharedIoMixin):
 
     def load_protobuf(self, message):
         self.load({'dataset_size': message.dataset_size})

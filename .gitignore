@@ -4,6 +4,7 @@ dist/
 temp.*
 *.egg-info
 *.pyc
+*.pyo
 *.cpp
 *.so
 *.profile

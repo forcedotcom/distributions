@@ -42,7 +42,6 @@ class SharedMixin(object):
 
 
 class ProtobufSerializable(object):
-
     @classmethod
     def to_protobuf(cls, raw, message):
         model = cls()
@@ -78,7 +77,3 @@ class SharedIoMixin(ProtobufSerializable):
         model = cls()
         model.load(raw)
         return model
-
-
-# temporary refactoring kludge
-Serializable = SharedIoMixin

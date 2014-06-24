@@ -27,10 +27,10 @@
 
 from distributions.dbg.special import log
 from distributions.dbg.random import sample_discrete_log
-from distributions.mixins import Serializable, ProtobufSerializable
+from distributions.mixins import SharedIoMixin
 
 
-class LowEntropy(Serializable, ProtobufSerializable):
+class LowEntropy(SharedIoMixin):
     '''
     A parameter-free clustering prior based on partition entropy.
 
