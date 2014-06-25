@@ -27,10 +27,13 @@
 
 import os
 import re
+import subprocess
 import sys
-import numpy
 from distutils.core import setup, Extension
 from distutils.version import LooseVersion
+
+import numpy
+
 
 try:
     from Cython.Build import cythonize
@@ -48,6 +51,14 @@ clang = False
 if sys.platform.lower().startswith('darwin'):
     clang = True
 
+use_protobuf = False
+try:
+    subprocess.check_call(['protoc', '--version'])
+    use_protobuf = True
+except OSError:
+    pass
+except subprocess.CalledProcessError:
+    pass
 
 include_dirs = ['include', 'distributions']
 include_dirs.append(numpy.get_include())
@@ -88,7 +99,6 @@ else:
 
 
 use_libdistributions = 'PYDISTRIBUTIONS_USE_LIB' in os.environ
-use_protobuf = 'DISTRIBUTIONS_USE_PROTOBUF' in os.environ
 
 
 def make_extension(name):
