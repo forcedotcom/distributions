@@ -10,8 +10,15 @@ set(DISTRIBUTIONS_SOURCE_FILES
   models/gp.cc
 )
 
+install(DIRECTORY ../include/ DESTINATION include
+  FILES_MATCHING PATTERN "*.h*")
+
 if(PROTOBUF_FOUND)
   set(DISTRIBUTIONS_SOURCE_FILES io/schema.pb.cc ${DISTRIBUTIONS_SOURCE_FILES})
+  install(DIRECTORY ../distributions/ DESTINATION include/distributions
+    FILES_MATCHING PATTERN "*.proto")
+  install(DIRECTORY ../include/ DESTINATION include
+    FILES_MATCHING PATTERN "*.cc")
 endif()
 
 add_library(distributions_shared SHARED ${DISTRIBUTIONS_SOURCE_FILES})
