@@ -52,6 +52,9 @@ install_cy: $(install_cy_deps) FORCE
 
 install: install_cc install_cy FORCE
 
+package: build_cc FORCE
+	cd build && $(MAKE) package
+
 install_cc_examples: install_cc FORCE
 
 test_cc_examples: install_cc_examples FORCE

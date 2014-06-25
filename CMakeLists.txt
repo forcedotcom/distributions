@@ -64,3 +64,7 @@ include(CTest)
 
 add_subdirectory(src)
 add_subdirectory(benchmarks)
+
+set(CPACK_GENERATOR "TGZ")
+set(CPACK_PACKAGE_FILE_NAME "distributions")
+include(CPack)
