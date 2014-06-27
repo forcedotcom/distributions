@@ -52,8 +52,10 @@ endif()
 
 if (DEFINED ENV{DISTRIBUTIONS_USE_PROTOBUF})
   find_package(Protobuf)
-endif()
-if(PROTOBUF_FOUND)
+  if(NOT PROTOBUF_FOUND)
+    message(FATAL_ERROR
+      "DISTRIBUTIONS_USE_PROTOBUF specified but protobuf not found")
+  endif()
   message(STATUS "Using Google Protocol Buffers")
   set(DISTRIBUTIONS_SHARED_LIBS ${DISTRIBUTIONS_SHARED_LIBS} protobuf)
   set(DISTRIBUTIONS_STATIC_LIBS ${DISTRIBUTIONS_STATIC_LIBS} protobuf)
