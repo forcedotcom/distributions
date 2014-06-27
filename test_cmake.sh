@@ -6,10 +6,5 @@ ROOT=$PWD
 mkdir -p $BUILD
 cd $BUILD
 
-echo '------------'
-echo 'REMOTE BUILD'
+export CMAKE_PREFIX_PATH=$VIRTUAL_ENV
 cmake .. && make && ./foo
-
-echo '-----------'
-echo 'LOCAL BUILD'
-DISTRIBUTIONS_PATH=$ROOT cmake .. && make && ./foo
