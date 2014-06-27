@@ -24,7 +24,7 @@ endif
 
 cy_deps=
 ifdef PYDISTRIBUTIONS_USE_LIB
-	install_cy_deps=install_cc
+	cy_deps=install_cc
 endif
 
 all: test
@@ -46,9 +46,14 @@ build_cc: configure_cc FORCE
 install_cc: build_cc FORCE
 	cd build && $(MAKE) install
 
-install_cy: $(install_cy_deps) FORCE
+deps_cy: $(cy_deps) FORCE
 	pip install -r requirements.txt
+
+dev_cy: deps_cy FORCE
 	LIBRARY_PATH=$(library_path) pip install -e .
+
+install_cy: deps_cy FORCE
+	LIBRARY_PATH=$(library_path) pip install .
 
 install: install_cc install_cy FORCE
 
@@ -69,7 +74,7 @@ test_cc: install_cc FORCE
 
 PY_SOURCES=setup.py update_license.py distributions derivations examples/mixture
 
-test_cy: install_cy FORCE
+test_cy: dev_cy FORCE
 	pyflakes $(PY_SOURCES)
 	pep8 --repeat --ignore=E265 --exclude=*_pb2.py $(PY_SOURCES)
 	$(nose_env) nosetests -v distributions derivations examples
