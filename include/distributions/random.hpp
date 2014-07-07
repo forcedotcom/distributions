@@ -211,6 +211,7 @@ inline size_t sample_discrete (
         size_t dim,
         const float * probs)
 {
+    DIST_ASSERT_LT(0, dim);
     float t = sample_unif01(rng);
     for (size_t i = 0; DIST_LIKELY(i < dim - 1); ++i) {
         t -= probs[i];
@@ -228,6 +229,7 @@ inline size_t sample_from_likelihoods (
         float total_likelihood)
 {
     const size_t size = likelihoods.size();
+    DIST_ASSERT_LT(0, size);
 
     float t = total_likelihood * sample_unif01(rng);
 
