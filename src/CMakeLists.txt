@@ -22,6 +22,7 @@ if(PROTOBUF_FOUND)
 endif()
 
 add_library(distributions_shared SHARED ${DISTRIBUTIONS_SOURCE_FILES})
+target_link_libraries(distributions_shared ${DISTRIBUTIONS_SHARED_LIBS})
 add_library(distributions_static STATIC ${DISTRIBUTIONS_SOURCE_FILES})
 install(TARGETS distributions_shared LIBRARY DESTINATION lib)
 install(TARGETS distributions_static ARCHIVE DESTINATION lib)
