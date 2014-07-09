@@ -274,9 +274,6 @@ def test_add_remove(module, EXAMPLE):
 @for_each_model()
 def test_add_repeated(module, EXAMPLE):
     # Test add_repeated value vs n * add
-    if module.Value not in [int, bool]:
-        raise SkipTest('Not implemented for {}'.format(module.Value))
-
     shared = module.Shared.from_dict(EXAMPLE['shared'])
     shared.realize()
     for value in EXAMPLE['values']:

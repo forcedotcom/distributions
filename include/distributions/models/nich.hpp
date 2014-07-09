@@ -144,6 +144,18 @@ struct Group : GroupMixin<Model>
         count_times_variance += delta * (value - mean);
     }
 
+    void add_repeated_value (
+            const Shared &,
+            const Value & value,
+            const int & n,
+            rng_t &)
+    {
+        count += n;
+        float delta = n * value - mean;
+        mean += delta / count;
+        count_times_variance += delta * (value - mean);
+    }
+
     void remove_value (
             const Shared &,
             const Value & value,
