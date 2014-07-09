@@ -271,28 +271,25 @@ def test_add_remove(module, EXAMPLE):
         err_msg='group - values + values != group')
 
 
-@for_each_model(lambda module: hasattr(module.Group, 'add_repeated_value'))
+@for_each_model()
 def test_add_repeated(module, EXAMPLE):
     # Test add_repeated value vs n * add
-    if module.Value == bool:
-        value = False
-    elif module.Value == int:
-        value = 0
-    else:
+    if module.Value not in [int, bool]:
         raise SkipTest('Not implemented for {}'.format(module.Value))
 
     shared = module.Shared.from_dict(EXAMPLE['shared'])
     shared.realize()
-    group = module.Group.from_values(shared)
-    for _ in range(DATA_COUNT):
-        group.add_value(shared, value)
+    for value in EXAMPLE['values']:
+        group = module.Group.from_values(shared)
+        for _ in range(DATA_COUNT):
+            group.add_value(shared, value)
 
-    group_repeated = module.Group.from_values(shared)
-    group_repeated.add_repeated_value(shared, value, DATA_COUNT)
-    assert_close(
-        group.dump(),
-        group_repeated.dump(),
-        err_msg='n * add_value != add_repeated_value n')
+        group_repeated = module.Group.from_values(shared)
+        group_repeated.add_repeated_value(shared, value, DATA_COUNT)
+        assert_close(
+            group.dump(),
+            group_repeated.dump(),
+            err_msg='n * add_value != add_repeated_value n')
 
 
 @for_each_model()
