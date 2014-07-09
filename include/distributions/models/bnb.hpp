@@ -127,6 +127,16 @@ struct Group : GroupMixin<Model>
         sum += value;
     }
 
+    void add_repeated_value (
+            const Shared &,
+            const Value & value,
+            const int & n,
+            rng_t &)
+    {
+        count += n;
+        sum += n * value;
+    }
+
     void remove_value (
             const Shared &,
             const Value & value,

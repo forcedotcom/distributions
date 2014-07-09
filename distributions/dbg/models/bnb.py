@@ -106,6 +106,10 @@ class Group(GroupIoMixin):
         self.count += 1
         self.sum += int(value)
 
+    def add_repeated_value(self, shared, value, n):
+        self.count += n
+        self.sum += n * int(value)
+
     def remove_value(self, shared, value):
         self.count -= 1
         self.sum -= int(value)
