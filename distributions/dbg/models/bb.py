@@ -79,6 +79,12 @@ class Group(GroupIoMixin):
         else:
             self.tails += 1
 
+    def add_repeated_value(self, shared, value, n):
+        if value:
+            self.heads += n
+        else:
+            self.tails += n
+
     def remove_value(self, shared, value):
         if value:
             self.heads -= 1

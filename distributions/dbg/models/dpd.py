@@ -183,6 +183,15 @@ class Group(GroupIoMixin):
             self.counts[value] = 1
         self.total += 1
 
+    def add_repeated_value(self, shared, value, n):
+        assert value != OTHER, 'cannot add OTHER'
+        assert value in shared.betas, 'unknown value: {}'.format(value)
+        try:
+            self.counts[value] += n
+        except KeyError:
+            self.counts[value] = n
+        self.total += n
+
     def remove_value(self, shared, value):
         assert value != OTHER, 'cannot remove OTHER'
         assert value in shared.betas, 'unknown value: {}'.format(value)
