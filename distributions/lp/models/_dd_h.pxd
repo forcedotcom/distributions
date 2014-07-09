@@ -47,6 +47,7 @@ cdef extern from "distributions/models/dd.hpp" namespace "distributions::Dirichl
         uint32_t counts[]
         void init (Shared &, rng_t &) nogil except +
         void add_value (Shared &, Value &, rng_t &) nogil except +
+        void add_repeated_value (Shared &, Value &, int &, rng_t &) nogil except +
         void remove_value (Shared &, Value &, rng_t &) nogil except +
         void merge (Shared &, Group &, rng_t &) nogil except +
         float score_value (Shared &, Value &, rng_t &) nogil except +

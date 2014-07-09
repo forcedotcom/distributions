@@ -127,6 +127,17 @@ struct Group : GroupMixin<Model>
         log_prod += fast_log_factorial(value);
     }
 
+    void add_repeated_value (
+            const Shared &,
+            const Value & value,
+            const int & n,
+            rng_t &)
+    {
+        count += n;
+        sum += n * value;
+        log_prod += n * fast_log_factorial(value);
+    }
+
     void remove_value (
             const Shared &,
             const Value & value,

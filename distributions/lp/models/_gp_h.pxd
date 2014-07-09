@@ -48,6 +48,7 @@ cdef extern from "distributions/models/gp.hpp" namespace "distributions::GammaPo
         float log_prod
         void init (Shared &, rng_t &) nogil except +
         void add_value (Shared &, Value &, rng_t &) nogil except +
+        void add_repeated_value (Shared &, Value &, int &, rng_t &) nogil except +
         void remove_value (Shared &, Value &, rng_t &) nogil except +
         void merge (Shared &, Group &, rng_t &) nogil except +
         float score_value (Shared &, Value &, rng_t &) nogil except +
