@@ -41,7 +41,7 @@ struct BetaBernoulli
 {
 
 typedef BetaBernoulli Model;
-typedef uint32_t count_t;
+typedef int count_t;
 typedef bool Value;
 struct Group;
 struct Scorer;

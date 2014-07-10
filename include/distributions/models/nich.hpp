@@ -104,7 +104,7 @@ struct Shared : SharedMixin<Model>
 
 struct Group : GroupMixin<Model>
 {
-    uint32_t count;
+    int count;
     float mean;
     float count_times_variance;
 
@@ -183,7 +183,7 @@ struct Group : GroupMixin<Model>
             const Group & source,
             rng_t &)
     {
-        uint32_t total_count = count + source.count;
+        auto total_count = count + source.count;
         float delta = source.mean - mean;
         float source_part = float(source.count) / total_count;
         float cross_part = count * source_part;

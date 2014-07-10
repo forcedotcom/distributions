@@ -232,7 +232,6 @@ def test_add_remove(module, EXAMPLE):
 
     shared = module.Shared.from_dict(EXAMPLE['shared'])
     shared.realize()
-    print 'DEBUG', shared.dump()
 
     values = []
     group = module.Group.from_values(shared)
@@ -328,6 +327,32 @@ def test_group_merge(module, EXAMPLE):
         actual.load(group1.dump())
         actual.merge(shared, group2)
         assert_close(actual.dump(), expected.dump())
+
+
+@for_each_model(lambda module: module.Value in [bool, int])
+def test_group_allows_debt(module, EXAMPLE):
+    # Test that group.add_value can safely go into data debt
+    shared = module.Shared.from_dict(EXAMPLE['shared'])
+    shared.realize()
+    values = []
+    group1 = module.Group.from_values(shared, values)
+    for _ in range(DATA_COUNT):
+        value = group1.sample_value(shared)
+        values.append(value)
+        group1.add_value(shared, value)
+
+    group2 = module.Group.from_values(shared)
+    pos_values = [(value, +1) for value in values]
+    neg_values = [(value, -1) for value in values]
+    signed_values = pos_values * 3 + neg_values * 2
+    numpy.random.shuffle(signed_values)
+    for value, sign in signed_values:
+        if sign > 0:
+            group2.add_value(shared, value)
+        else:
+            group2.remove_value(shared, value)
+
+    assert_close(group1.dump(), group2.dump())
 
 
 @for_each_model()

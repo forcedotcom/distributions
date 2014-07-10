@@ -44,7 +44,7 @@ struct DirichletDiscrete
 enum { max_dim = max_dim_ };
 
 typedef DirichletDiscrete<max_dim> Model;
-typedef uint32_t count_t;
+typedef int count_t;
 typedef int Value;
 struct Group;
 struct Scorer;

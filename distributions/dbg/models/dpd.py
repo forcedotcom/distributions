@@ -174,33 +174,25 @@ class Group(GroupIoMixin):
         self.counts = {}  # sparse
         self.total = 0
 
-    def add_value(self, shared, value):
-        assert value != OTHER, 'cannot add OTHER'
-        assert value in shared.betas, 'unknown value: {}'.format(value)
-        try:
-            self.counts[value] += 1
-        except KeyError:
-            self.counts[value] = 1
-        self.total += 1
-
     def add_repeated_value(self, shared, value, count):
         assert value != OTHER, 'cannot add OTHER'
         assert value in shared.betas, 'unknown value: {}'.format(value)
-        try:
-            self.counts[value] += count
-        except KeyError:
-            self.counts[value] = count
-        self.total += count
+        if count:
+            self.total += count
+            try:
+                count += self.counts[value]
+                if count:
+                    self.counts[value] = count
+                else:
+                    del self.counts[value]
+            except KeyError:
+                self.counts[value] = count
+
+    def add_value(self, shared, value):
+        self.add_repeated_value(shared, value, 1)
 
     def remove_value(self, shared, value):
-        assert value != OTHER, 'cannot remove OTHER'
-        assert value in shared.betas, 'unknown value: {}'.format(value)
-        new_count = self.counts[value] - 1
-        if new_count == 0:
-            del self.counts[value]
-        else:
-            self.counts[value] = new_count
-        self.total -= 1
+        self.add_repeated_value(shared, value, -1)
 
     def score_value(self, shared, value):
         """
@@ -211,9 +203,9 @@ class Group(GroupIoMixin):
         if value == OTHER:
             numer = shared.beta0 * shared.alpha
         else:
-            numer = (
-                shared.betas[value] * shared.alpha +
-                self.counts.get(value, 0))
+            count = self.counts.get(value, 0)
+            assert count >= 0, "cannot score while in debt"
+            numer = shared.betas[value] * shared.alpha + count
         return log(numer / denom)
 
     def score_data(self, shared):
@@ -223,6 +215,7 @@ class Group(GroupIoMixin):
         """
         score = 0.
         for i, count in self.counts.iteritems():
+            assert count >= 0, "cannot score while in debt"
             prior_i = shared.betas[i] * shared.alpha
             score += gammaln(prior_i + count) - gammaln(prior_i)
         score += gammaln(shared.alpha) - gammaln(shared.alpha + self.total)
@@ -235,7 +228,7 @@ class Group(GroupIoMixin):
 
     def merge(self, shared, source):
         for i, count in source.counts.iteritems():
-            self.counts[i] = self.counts.get(i, 0) + count
+            self.add_repeated_value(shared, i, count)
         self.total += source.total
 
     def load(self, raw):
