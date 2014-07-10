@@ -342,8 +342,8 @@ def test_group_allows_debt(module, EXAMPLE):
         group1.add_value(shared, value)
 
     group2 = module.Group.from_values(shared)
-    pos_values = [(value, +1) for value in values]
-    neg_values = [(value, -1) for value in values]
+    pos_values = [(v, +1) for v in values]
+    neg_values = [(v, -1) for v in values]
     signed_values = pos_values * 3 + neg_values * 2
     numpy.random.shuffle(signed_values)
     for value, sign in signed_values:
