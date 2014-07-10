@@ -142,10 +142,11 @@ public:
 
     void init_count (key_t key, value_t value)
     {
-        DIST_ASSERT1(value > 0, "expected value > 0, actual: " << value);
-        bool success = map_.insert(std::make_pair(key, value)).second;
-        DIST_ASSERT1(success, "duplicate key: " << key);
-        total_ += value;
+        if (DIST_LIKELY(value)) {
+            bool success = map_.insert(std::make_pair(key, value)).second;
+            DIST_ASSERT1(success, "duplicate key: " << key);
+            total_ += value;
+        }
     }
 
     value_t get_count (key_t key) const
@@ -156,32 +157,26 @@ public:
 
     value_t get_total () const { return total_; }
 
-    value_t add (const key_t & key, const value_t & value = 1)
+    value_t add (const key_t & key, value_t value = 1)
     {
-        DIST_ASSERT1(value > 0, "expected value > 0, actual: " << value);
-        total_ += value;
-        auto pair = map_.insert(std::make_pair(key, value));
-        bool inserted = pair.second;
-        if (inserted) {
+        static_assert(value_t(-1) < value_t(0), "value_t must be signed");
+        if (DIST_LIKELY(value)) {
+            total_ += value;
+            auto pair = map_.insert(std::make_pair(key, value));
+            bool inserted = pair.second;
+            if (not inserted) {
+                value = pair.first->second += value;
+                if (DIST_UNLIKELY(value == 0)) {
+                    map_.erase(pair.first);
+                }
+            }
             return value;
         } else {
-            return pair.first->second += value;
+            return get_count(key);
         }
     }
 
-    value_t remove (const key_t & key)
-    {
-        total_ -= 1;
-        auto i = map_.find(key);
-        DIST_ASSERT1(i != map_.end(), "missing key: " << key);
-        auto & value = i->second;
-        DIST_ASSERT1(value > 0, "expected value > 0, actual: " << value);
-        value -= 1;
-        if (value == 0) {
-            map_.erase(i);
-        }
-        return value;
-    }
+    value_t remove (const key_t & key) { return add(key, -1); }
 
     void merge (const SparseCounter<key_t, value_t> & other)
     {

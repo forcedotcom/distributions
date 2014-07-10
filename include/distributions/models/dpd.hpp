@@ -42,7 +42,7 @@ struct DirichletProcessDiscrete
 {
 
 typedef DirichletProcessDiscrete Model;
-typedef uint32_t count_t;
+typedef int count_t;
 typedef uint32_t Value;
 struct Group;
 struct Scorer;

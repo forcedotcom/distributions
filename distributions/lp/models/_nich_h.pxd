@@ -25,7 +25,6 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from libc.stdint cimport uint32_t
 from libcpp.vector cimport vector
 
 from distributions.rng_cc cimport rng_t
@@ -45,7 +44,7 @@ cdef extern from "distributions/models/nich.hpp" namespace "distributions::Norma
 
 
     cppclass Group:
-        uint32_t count
+        int count
         float mean
         float count_times_variance
         void init (Shared &, rng_t &) nogil except +

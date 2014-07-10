@@ -29,9 +29,9 @@ from libc.stdint cimport uint32_t
 from libcpp.utility cimport pair
 
 cdef extern from "distributions/sparse.hpp":
-    cppclass SparseCounter "distributions::SparseCounter<uint32_t, uint32_t>":
+    cppclass SparseCounter "distributions::SparseCounter<uint32_t, int>":
         cppclass iterator:
-            pair[uint32_t, uint32_t]& operator* () nogil
+            pair[uint32_t, int]& operator* () nogil
             iterator operator++ () nogil
             iterator operator-- () nogil
             bint operator== (iterator) nogil
@@ -39,11 +39,11 @@ cdef extern from "distributions/sparse.hpp":
         SparseCounter () nogil except +
         SparseCounter (SparseCounter&) nogil except +
         void clear () nogil
-        void init_count (uint32_t, uint32_t) nogil
-        uint32_t get_count (uint32_t) nogil
-        uint32_t get_total () nogil
-        uint32_t add (uint32_t, uint32_t) nogil
-        uint32_t remove (uint32_t) nogil
+        void init_count (uint32_t, int) nogil
+        int get_count (uint32_t) nogil
+        int get_total () nogil
+        int add (uint32_t, int) nogil
+        int remove (uint32_t) nogil
         void merge (SparseCounter&) nogil
         #SparseCounter& operator= (SparseCounter&)
         iterator begin () nogil

@@ -25,7 +25,6 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from libc.stdint cimport uint32_t
 from libcpp.vector cimport vector
 
 from distributions.rng_cc cimport rng_t
@@ -40,12 +39,12 @@ cdef extern from "distributions/models/bnb.hpp" namespace "distributions::BetaNe
     cppclass Shared:
         float alpha
         float beta
-        uint32_t r
+        int r
 
 
     cppclass Group:
-        uint32_t count
-        uint32_t sum
+        int count
+        int sum
         void init (Shared &, rng_t &) nogil except +
         void add_value (Shared &, Value &, rng_t &) nogil except +
         void add_repeated_value (Shared &, Value &, int &, rng_t &) nogil except +
