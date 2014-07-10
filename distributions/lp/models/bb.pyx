@@ -37,6 +37,10 @@ EXAMPLES = [
         'shared': {'alpha': 0.5, 'beta': 2.0},
         'values': [False, False, True, False, True, True, False, False],
     },
+    {
+        'shared': {'alpha': 10.5, 'beta': 0.5},
+        'values': [False, False, False, False, False, False, False, True],
+    },
 ]
 Value = bool
 
