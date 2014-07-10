@@ -140,6 +140,17 @@ struct Group : GroupMixin<Model>
         counts[value] += 1;
     }
 
+    void add_repeated_value(
+            const Shared &,
+            const Value & value,
+            const int & count,
+            rng_t &)
+    {
+        DIST_ASSERT1(value < dim, "value out of bounds: " << value);
+        count_sum += count;
+        counts[value] += count;
+    }
+
     void remove_value (
             const Shared &,
             const Value & value,

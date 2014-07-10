@@ -117,6 +117,15 @@ struct Group : GroupMixin<Model>
         (value ? heads : tails) += 1;
     }
 
+    void add_repeated_value (
+            const Shared &,
+            const Value & value,
+            const int & count,
+            rng_t &)
+    {
+        (value ? heads : tails) += count;
+    }
+
     void remove_value (
             const Shared &,
             const Value & value,

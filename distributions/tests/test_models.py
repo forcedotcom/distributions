@@ -272,6 +272,24 @@ def test_add_remove(module, EXAMPLE):
 
 
 @for_each_model()
+def test_add_repeated(module, EXAMPLE):
+    # Test add_repeated value vs n * add
+    shared = module.Shared.from_dict(EXAMPLE['shared'])
+    shared.realize()
+    for value in EXAMPLE['values']:
+        group = module.Group.from_values(shared)
+        for _ in range(DATA_COUNT):
+            group.add_value(shared, value)
+
+        group_repeated = module.Group.from_values(shared)
+        group_repeated.add_repeated_value(shared, value, count=DATA_COUNT)
+        assert_close(
+            group.dump(),
+            group_repeated.dump(),
+            err_msg='n * add_value != add_repeated_value n')
+
+
+@for_each_model()
 def test_add_merge(module, EXAMPLE):
     # Test group_add_value, group_merge
     shared = module.Shared.from_dict(EXAMPLE['shared'])

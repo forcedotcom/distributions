@@ -131,6 +131,11 @@ cdef class _Group:
         self.mean += delta / self.count
         self.count_times_variance += delta * (value - self.mean)
 
+    def add_repeated_value(self, _Shared shared, double value, int count):
+        self.count += count
+        cdef double delta = count * value - self.mean
+        self.mean += delta / self.count
+        self.count_times_variance += delta * (value - self.mean)
 
     def remove_value(self, _Shared shared, double value):
         cdef double total = self.mean * self.count

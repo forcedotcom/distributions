@@ -47,6 +47,7 @@ cdef extern from "distributions/models/bb.hpp" namespace "distributions::BetaBer
         uint32_t tails
         void init (Shared &, rng_t &) nogil except +
         void add_value (Shared &, Value &, rng_t &) nogil except +
+        void add_repeated_value (Shared &, Value &, int &, rng_t &) nogil except +
         void remove_value (Shared &, Value &, rng_t &) nogil except +
         void merge (Shared &, Group &, rng_t &) nogil except +
         float score_value (Shared &, Value &, rng_t &) nogil except +
