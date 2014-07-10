@@ -130,11 +130,11 @@ struct Group : GroupMixin<Model>
     void add_repeated_value (
             const Shared &,
             const Value & value,
-            const int & n,
+            const int & count,
             rng_t &)
     {
-        count += n;
-        sum += n * value;
+        this->count += count;
+        sum += count * value;
     }
 
     void remove_value (

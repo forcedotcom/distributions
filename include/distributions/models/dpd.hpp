@@ -207,12 +207,12 @@ struct Group : GroupMixin<Model>
     void add_repeated_value (
             const Shared & shared,
             const Value & value,
-            const int & n,
+            const int & count,
             rng_t &)
     {
         DIST_ASSERT1(value != OTHER(), "cannot add OTHER");
         DIST_ASSERT1(shared.betas.contains(value), "unknown value: " << value);
-        counts.add(value, n);
+        counts.add(value, count);
     }
 
     void remove_value (

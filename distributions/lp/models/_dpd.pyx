@@ -58,8 +58,8 @@ cdef class Group:
     def add_value(self, Shared shared, Value value):
         self.ptr.add_value(shared.ptr[0], value, get_rng()[0])
 
-    def add_repeated_value(self, Shared shared, Value value, int n):
-        self.ptr.add_repeated_value(shared.ptr[0], value, n, get_rng()[0])
+    def add_repeated_value(self, Shared shared, Value value, int count):
+        self.ptr.add_repeated_value(shared.ptr[0], value, count, get_rng()[0])
 
     def remove_value(self, Shared shared, Value value):
         self.ptr.remove_value(shared.ptr[0], value, get_rng()[0])

@@ -147,12 +147,12 @@ struct Group : GroupMixin<Model>
     void add_repeated_value (
             const Shared &,
             const Value & value,
-            const int & n,
+            const int & count,
             rng_t &)
     {
-        count += n;
-        float delta = n * value - mean;
-        mean += delta / count;
+        this->count += count;
+        float delta = count * value - mean;
+        mean += delta / this->count;
         count_times_variance += delta * (value - mean);
     }
 

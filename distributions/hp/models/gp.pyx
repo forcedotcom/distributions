@@ -86,10 +86,10 @@ cdef class _Group:
         self.sum += value
         self.log_prod += log_factorial(value)
 
-    def add_repeated_value(self, _Shared shared, int value, int n):
-        self.count += n
-        self.sum += n * value
-        self.log_prod += n * log_factorial(value)
+    def add_repeated_value(self, _Shared shared, int value, int count):
+        self.count += count 
+        self.sum += count * value
+        self.log_prod += count * log_factorial(value)
 
     def remove_value(self, _Shared shared, int value):
         self.count -= 1

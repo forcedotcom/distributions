@@ -87,10 +87,10 @@ class Group(GroupIoMixin):
         self.sum += int(value)
         self.log_prod += log(factorial(value))
 
-    def add_repeated_value(self, shared, value, n):
-        self.count += n
-        self.sum += int(n * value)
-        self.log_prod += n * log(factorial(value))
+    def add_repeated_value(self, shared, value, count):
+        self.count += count
+        self.sum += int(count * value)
+        self.log_prod += count * log(factorial(value))
 
     def remove_value(self, shared, value):
         self.count -= 1

@@ -82,8 +82,8 @@ class Group(GroupIoMixin):
     def add_value(self, shared, value):
         self.counts[value] += 1
 
-    def add_repeated_value(self, shared, value, n):
-        self.counts[value] += n
+    def add_repeated_value(self, shared, value, count):
+        self.counts[value] += count
 
     def remove_value(self, shared, value):
         self.counts[value] -= 1

@@ -94,8 +94,8 @@ cdef class _Group:
     def add_value(self, _Shared shared, int value):
         self.counts[value] += 1
 
-    def add_repeated_value(self, _Shared shared, int value, int n):
-        self.counts[value] += n
+    def add_repeated_value(self, _Shared shared, int value, int count):
+        self.counts[value] += count 
 
     def remove_value(self, _Shared shared, int value):
         self.counts[value] -= 1

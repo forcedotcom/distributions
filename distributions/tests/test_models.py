@@ -282,7 +282,7 @@ def test_add_repeated(module, EXAMPLE):
             group.add_value(shared, value)
 
         group_repeated = module.Group.from_values(shared)
-        group_repeated.add_repeated_value(shared, value, DATA_COUNT)
+        group_repeated.add_repeated_value(shared, value, count=DATA_COUNT)
         assert_close(
             group.dump(),
             group_repeated.dump(),

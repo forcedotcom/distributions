@@ -136,9 +136,9 @@ class Group(GroupIoMixin):
         self.mean += delta / self.count
         self.count_times_variance += delta * (value - self.mean)
 
-    def add_repeated_value(self, shared, value, n):
-        self.count += n
-        delta = n * value - self.mean
+    def add_repeated_value(self, shared, value, count):
+        self.count += count
+        delta = count * value - self.mean
         self.mean += delta / self.count
         self.count_times_variance += delta * (value - self.mean)
 
