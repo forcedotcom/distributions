@@ -323,6 +323,16 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         vector_log(group_count, tails_scores_.data());
     }
 
+    float score_value_group(
+            const Shared &,
+            const std::vector<Group> &,
+            size_t groupid,
+            const Value & value,
+            rng_t &) const
+    {
+        return value ? heads_scores_[groupid] : tails_scores_[groupid];
+    }
+
     void score_value(
             const Shared &,
             const std::vector<Group> &,

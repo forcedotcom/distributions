@@ -119,6 +119,13 @@ cdef class Mixture:
     def remove_value(self, Shared shared, int groupid, Value value):
         self.ptr.remove_value(shared.ptr[0], groupid, value, get_rng()[0])
 
+    def score_value_group(self, Shared shared, int groupid, Value value):
+        return self.ptr.score_value_group(
+            shared.ptr[0],
+            groupid,
+            value,
+            get_rng()[0])
+
     def score_value(self, Shared shared, Value value,
               numpy.ndarray[numpy.float32_t, ndim=1] scores_accum):
         assert len(scores_accum) == self.ptr.groups.size(), \

@@ -387,6 +387,17 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         }
     }
 
+    float score_value_group (
+            const Shared &,
+            const std::vector<Group> &,
+            size_t groupid,
+            const Value & value,
+            rng_t &) const
+    {
+        float temp = 1.f + precision_[groupid] * sqr(value - mean_[groupid]);
+        return score_[groupid] + log_coeff_[groupid] * fast_log(temp);
+    }
+
     // not thread safe
     void score_value (
             const Shared &,

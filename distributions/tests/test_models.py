@@ -553,6 +553,14 @@ def test_mixture_score(module, EXAMPLE):
         mixture.score_value(shared, value, actual)
         actual -= noise
         assert_close(actual, expected, err_msg='score_value {}'.format(value))
+        another = [
+            mixture.score_value_group(shared, i, value)
+            for i in xrange(len(groups))
+        ]
+        assert_close(
+            another,
+            expected,
+            err_msg='score_value_group {}'.format(value))
         return actual
 
     def check_score_data():

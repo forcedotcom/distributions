@@ -126,9 +126,10 @@ struct MixtureDriver
         return remove_group;
     }
 
-    // this slow uncached version should be overridden
     void score_value (const Model & model, AlignedFloats scores) const
     {
+        DIST_THIS_SLOW_FALLBACK_SHOULD_BE_OVERRIDDEN
+
         if (DIST_DEBUG_LEVEL >= 1) {
             DIST_ASSERT_EQ(scores.size(), counts_.size());
         }
@@ -302,7 +303,7 @@ struct MixtureSlaveValueScorerMixin
     void resize (const Shared &, size_t) {}
     void add_group (const Shared &, rng_t &) {}
     void remove_group (const Shared &, size_t) {}
-    void update_group ( const Shared &, size_t, const Group &, rng_t &) {}
+    void update_group (const Shared &, size_t, const Group &, rng_t &) {}
     void update_all (const Shared &, const std::vector<Group> &, rng_t &) {}
 
     void add_value (
@@ -331,6 +332,22 @@ struct SmallMixtureSlaveValueScorer : MixtureSlaveValueScorerMixin<Model>
     typedef typename Model::Shared Shared;
     typedef typename Model::Group Group;
 
+    float score_value_group (
+            const Shared & shared,
+            const std::vector<Group> & groups,
+            size_t groupid,
+            const Value & value,
+            rng_t & rng) const
+    {
+        DIST_THIS_SLOW_FALLBACK_SHOULD_BE_OVERRIDDEN
+
+        if (DIST_DEBUG_LEVEL >= 2) {
+            DIST_ASSERT_LT(groupid, groups.size());
+        }
+
+        return groups[groupid].score_value(shared, value, rng);
+    }
+
     void score_value (
             const Shared & shared,
             const std::vector<Group> & groups,
@@ -338,6 +355,8 @@ struct SmallMixtureSlaveValueScorer : MixtureSlaveValueScorerMixin<Model>
             AlignedFloats scores_accum,
             rng_t & rng) const
     {
+        DIST_THIS_SLOW_FALLBACK_SHOULD_BE_OVERRIDDEN
+
         if (DIST_DEBUG_LEVEL >= 2) {
             DIST_ASSERT_EQ(scores_accum.size(), groups.size());
         }
@@ -412,6 +431,23 @@ struct MixtureSlave
             shared,
             groupid,
             groups(groupid),
+            value,
+            rng);
+    }
+
+    float score_value_group (
+            const Shared & shared,
+            size_t groupid,
+            const Value & value,
+            rng_t & rng) const
+    {
+        if (DIST_DEBUG_LEVEL >= 2) {
+            DIST_ASSERT_LT(groupid, groups().size());
+        }
+        return value_scorer_.score_value_group(
+            shared,
+            groups(),
+            groupid,
             value,
             rng);
     }

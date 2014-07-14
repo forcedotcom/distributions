@@ -335,6 +335,18 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         }
     }
 
+    float score_value_group (
+            const Shared &,
+            const std::vector<Group> &,
+            size_t groupid,
+            const Value & value,
+            rng_t &) const
+    {
+        float beta = post_beta_[groupid] + value;
+        return score_[groupid] + fast_lgamma(beta)
+                               - fast_lgamma(beta + alpha_[groupid]);
+    }
+
     void score_value (
             const Shared &,
             const std::vector<Group> &,

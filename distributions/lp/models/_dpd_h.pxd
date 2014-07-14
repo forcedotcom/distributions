@@ -74,6 +74,8 @@ cdef extern from "distributions/models/dpd.hpp" namespace "distributions::Dirich
             (Shared &, size_t, Value &, rng_t &) nogil except +
         void remove_value \
             (Shared &, size_t, Value &, rng_t &) nogil except +
+        float score_value_group \
+            (Shared &, size_t, Value &, rng_t &) nogil except +
         void score_value \
             (Shared &, Value &, VectorFloat &, rng_t &) nogil except +
         float score_data (Shared &, rng_t &) nogil except +

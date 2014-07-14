@@ -31,8 +31,8 @@
 #include <sstream>
 
 #ifdef __GNUG__
-#include <cxxabi.h>
-#include <memory>
+#  include <cxxabi.h>
+#  include <memory>
 #endif // __GNUG__
 
 #ifdef __GNUG__
@@ -45,9 +45,9 @@
 #endif // __GNUG__
 
 #ifdef DIST_THROW_ON_ERROR
-#include <sstream>
-#include <stdexcept>
-#define DIST_ERROR(message) {                           \
+#  include <sstream>
+#  include <stdexcept>
+#  define DIST_ERROR(message) {                         \
     std::ostringstream PRIVATE_message;                 \
     PRIVATE_message                                     \
         << "ERROR " << message << "\n\t"                \
@@ -55,7 +55,7 @@
         << __PRETTY_FUNCTION__ << '\n';                 \
     throw std::runtime_error(PRIVATE_message.str()); }
 #else // DIST_THROW_ON_ERROR
-#define DIST_ERROR(message) {                           \
+#  define DIST_ERROR(message) {                         \
     std::ostringstream PRIVATE_message;                 \
     PRIVATE_message                                     \
         << "ERROR " << message << "\n\t"                \
@@ -65,26 +65,28 @@
     abort(); }
 #endif // DIST_THROW_ON_ERROR
 
-#define DIST_DEBUG(message) {\
-    std::ostringstream PRIVATE_message; \
-    PRIVATE_message << "DEBUG " << message << '\n'; \
-    std::cout << PRIVATE_message.str() << std::flush; }
+#ifdef DIST_DISALLOW_SLOW_FALLBACKS
+#  define DIST_THIS_SLOW_FALLBACK_SHOULD_BE_OVERRIDDEN \
+    DIST_ERROR("slow fallback has not been overridden");
+#else // DIST_DISALLOW_SLOW_FALLBACKS
+#  define DIST_THIS_SLOW_FALLBACK_SHOULD_BE_OVERRIDDEN
+#endif // DIST_DISALLOW_SLOW_FALLBACKS
 
 #define DIST_ASSERT(cond, message) \
     { if (DIST_UNLIKELY(not (cond))) DIST_ERROR(message) }
 
 #define DIST_ASSERT_EQ(x, y) \
     DIST_ASSERT((x) == (y), \
-            "expected " #x " == " #y "; actual " << (x) << " vs " << (y))
+        "expected " #x " == " #y "; actual " << (x) << " vs " << (y))
 #define DIST_ASSERT_LE(x, y) \
     DIST_ASSERT((x) <= (y), \
-            "expected " #x " <= " #y "; actual " << (x) << " vs " << (y))
+        "expected " #x " <= " #y "; actual " << (x) << " vs " << (y))
 #define DIST_ASSERT_LT(x, y) \
     DIST_ASSERT((x) < (y), \
-            "expected " #x " < " #y "; actual " << (x) << " vs " << (y))
+        "expected " #x " < " #y "; actual " << (x) << " vs " << (y))
 #define DIST_ASSERT_NE(x, y) \
     DIST_ASSERT((x) != (y), \
-            "expected " #x " != " #y "; actual " << (x) << " vs " << (y))
+        "expected " #x " != " #y "; actual " << (x) << " vs " << (y))
 
 #ifndef DIST_DEBUG_LEVEL
 #  define DIST_DEBUG_LEVEL 0

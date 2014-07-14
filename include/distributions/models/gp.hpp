@@ -336,6 +336,19 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         }
     }
 
+    float score_value_group (
+            const Shared &,
+            const std::vector<Group> &,
+            size_t groupid,
+            const Value & value,
+            rng_t &) const
+    {
+        return score_[groupid]
+            + fast_lgamma(post_alpha_[groupid] + value)
+            - fast_log_factorial(value)
+            + score_coeff_[groupid] * value;
+    }
+
     // not thread safe
     void score_value (
             const Shared & shared,

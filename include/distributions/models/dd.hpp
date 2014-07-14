@@ -457,6 +457,17 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         }
     }
 
+    float score_value_group(
+            const Shared & shared,
+            const std::vector<Group> &,
+            size_t groupid,
+            const Value & value,
+            rng_t &) const
+    {
+        DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
+        return scores_[value][groupid] - scores_shift_[groupid];
+    }
+
     void score_value(
             const Shared & shared,
             const std::vector<Group> &,

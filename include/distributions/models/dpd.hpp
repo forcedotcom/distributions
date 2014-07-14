@@ -525,6 +525,25 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         vector_log(group_count, scores_shift_.data());
     }
 
+    float score_value_group (
+            const Shared & shared,
+            const std::vector<Group> & groups,
+            size_t groupid,
+            const Value & value,
+            rng_t &) const
+    {
+        _validate(shared, groups.size());
+
+        if (DIST_LIKELY(scores_.contains(value))) {
+            return scores_.get(value).scores[groupid] - scores_shift_[groupid];
+        } else {
+            float beta = (value == OTHER())
+                       ? shared.beta0
+                       : shared.betas.get(value);
+            return fast_log(shared.alpha * beta) - scores_shift_[groupid];
+        }
+    }
+
     void score_value (
             const Shared & shared,
             const std::vector<Group> & groups,
