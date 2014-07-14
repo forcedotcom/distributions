@@ -67,6 +67,7 @@ def _test_group(name):
         temp_shared = modules[0].Shared.from_dict(raw_shared)
         for value in values:
             temp_shared.add_value(value)
+        temp_shared.realize()
         raw_shared = temp_shared.dump()
 
         shareds = [module.Shared.from_dict(raw_shared) for module in modules]
