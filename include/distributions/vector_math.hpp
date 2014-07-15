@@ -61,8 +61,19 @@ void vector_scale (
         float * __restrict__ io,
         const float scale);
 
+// io = -io
+void vector_negate (
+        const size_t size,
+        float * __restrict__ io);
+
 // io += in
 void vector_add (
+        const size_t size,
+        float * __restrict__ io,
+        const float * __restrict__ in);
+
+// io = in - io
+void vector_negate_and_add (
         const size_t size,
         float * __restrict__ io,
         const float * __restrict__ in);

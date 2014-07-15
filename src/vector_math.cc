@@ -132,6 +132,15 @@ void vector_scale (
     }
 }
 
+void vector_negate (
+        const size_t size,
+        float * __restrict__ io)
+{
+    for (size_t i = 0; i < size; ++i) {
+        io[i] = -io[i];
+    }
+}
+
 void vector_add (
         const size_t size,
         float * __restrict__ io,
@@ -139,6 +148,16 @@ void vector_add (
 {
     for (size_t i = 0; i < size; ++i) {
         io[i] += in[i];
+    }
+}
+
+void vector_negate_and_add (
+        const size_t size,
+        float * __restrict__ io,
+        const float * __restrict__ in)
+{
+    for (size_t i = 0; i < size; ++i) {
+        io[i] = in[i] - io[i];
     }
 }
 
