@@ -278,9 +278,12 @@ struct Group : GroupMixin<Model>
     void validate (const Shared & shared) const
     {
         for (const auto & i : counts) {
-            auto group_count = i.second;
-            auto shared_count = shared.counts.get_count(i.first);
-            DIST_ASSERT_LE(group_count, shared_count);
+            if (auto group_count = i.second) {
+                auto shared_count = shared.counts.get_count(i.first);
+                DIST_ASSERT(
+                    shared_count,
+                    "shared_count = 0 but group_count = " << group_count);
+            }
         }
     }
 };
