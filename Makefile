@@ -3,11 +3,14 @@ cpu_count=$(shell python -c 'import multiprocessing as m; print m.cpu_count()')
 
 
 ld_library_path=
+sed_no_backup_arg=
 ifeq ($(uname),Linux)
 	ld_library_path=LD_LIBRARY_PATH
+	sed_no_backup_arg=-i
 endif
 ifeq ($(uname),Darwin)
 	ld_library_path=DYLD_LIBRARY_PATH
+	sed_no_backup_arg=-i ''
 endif
 
 cmake_args=
@@ -90,7 +93,7 @@ protobuf: FORCE
 	mkdir -p src/io && cp include/distributions/io/schema.pb.cc src/io/
 	@pyflakes distributions/io/schema_pb2.py \
 	  || (echo '...patching schema_pb2.py' \
-	    ; sed -i '/descriptor_pb2/d' distributions/io/schema_pb2.py)  # HACK
+	    ; sed $(sed_no_backup_arg) '/descriptor_pb2/d' distributions/io/schema_pb2.py)  # HACK
 
 profile: install_cc FORCE
 	build/benchmarks/sample_from_scores
