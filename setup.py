@@ -62,12 +62,15 @@ include_dirs.append(numpy.get_include())
 extra_compile_args = [
     '-DDIST_DEBUG_LEVEL=3',
     '-DDIST_THROW_ON_ERROR=1',
+    '-Wno-unused-function',
 ]
 if clang:
     extra_compile_args.extend([
         '-mmacosx-version-min=10.7',  # for anaconda
         '-std=c++0x',
         '-stdlib=libc++',
+        '-Wno-deprecated-register',
+        '-Wno-#warnings', # avoid #warning "Using deprecated NumPy API,..."
     ])
 else:
     extra_compile_args.extend([
