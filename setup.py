@@ -58,6 +58,8 @@ if sys.platform.lower().startswith('darwin'):
 include_dirs = ['include', 'distributions']
 include_dirs.append(numpy.get_include())
 
+if 'EXTRA_INCLUDE_PATH' in os.environ:
+    include_dirs.append(os.environ['EXTRA_INCLUDE_PATH'])
 
 extra_compile_args = [
     '-DDIST_DEBUG_LEVEL=3',
