@@ -70,7 +70,7 @@ if clang:
         '-std=c++0x',
         '-stdlib=libc++',
         '-Wno-deprecated-register',
-        '-Wno-#warnings', # avoid #warning "Using deprecated NumPy API,..."
+        '-Wno-#warnings',  # avoid #warning "Using deprecated NumPy API,..."
     ])
 else:
     extra_compile_args.extend([
