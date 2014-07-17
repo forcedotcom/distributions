@@ -24,6 +24,10 @@ if(DEFINED ENV{CXX_FLAGS})
 endif()
 message("CXX_FLAGS =${CMAKE_CXX_FLAGS}")
 
+if(DEFINED EXTRA_INCLUDE_PATH)
+  include_directories(${EXTRA_INCLUDE_PATH})
+endif()
+
 find_package(Yeppp)
 if(YEPPP_FOUND)
   message(STATUS "Using YEPPP")
