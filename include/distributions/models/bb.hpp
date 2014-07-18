@@ -346,6 +346,14 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
             (value ? heads_scores_.data() : tails_scores_.data()));
     }
 
+    void validate (
+            const Shared &,
+            const std::vector<Group> & groups) const
+    {
+        DIST_ASSERT_EQ(heads_scores_.size(), groups.size());
+        DIST_ASSERT_EQ(tails_scores_.size(), groups.size());
+    }
+
 private:
 
     VectorFloat heads_scores_;

@@ -578,23 +578,33 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         }
     }
 
+    void validate (const Shared & shared, size_t group_count) const
+    {
+        DIST_ASSERT_LE(scores_.size(), shared.betas.size());
+        DIST_ASSERT_EQ(scores_shift_.size(), group_count);
+        for (const auto & i : scores_) {
+            const Value & value = i.first;
+            const auto & entry = i.second;
+            DIST_ASSERT(
+                shared.betas.contains(value),
+                "missing value: " << value);
+            DIST_ASSERT_EQ(entry.scores.size(), group_count);
+        }
+    }
+
+    void validate (
+            const Shared & shared,
+            const std::vector<Group> & groups) const
+    {
+        validate(shared, groups.size());
+    }
+
 private:
 
     void _validate (const Shared & shared, size_t group_count) const
     {
-        if (DIST_DEBUG_LEVEL >= 2) {
-            DIST_ASSERT_LE(scores_.size(), shared.betas.size());
-            DIST_ASSERT_EQ(scores_shift_.size(), group_count);
-        }
         if (DIST_DEBUG_LEVEL >= 3) {
-            for (const auto & i : scores_) {
-                const Value & value = i.first;
-                const auto & entry = i.second;
-                DIST_ASSERT(
-                    shared.betas.contains(value),
-                    "missing value: " << value);
-                DIST_ASSERT_EQ(entry.scores.size(), group_count);
-            }
+            validate(shared, group_count);
         }
     }
 

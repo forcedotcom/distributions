@@ -406,6 +406,17 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
             AlignedFloats scores_accum,
             rng_t &) const;
 
+    void validate (
+            const Shared &,
+            const std::vector<Group> & groups) const
+    {
+        DIST_ASSERT_EQ(score_.size(), groups.size());
+        DIST_ASSERT_EQ(log_coeff_.size(), groups.size());
+        DIST_ASSERT_EQ(precision_.size(), groups.size());
+        DIST_ASSERT_EQ(mean_.size(), groups.size());
+        DIST_ASSERT_EQ(temp_.size(), groups.size());
+    }
+
 private:
 
     VectorFloat score_;
