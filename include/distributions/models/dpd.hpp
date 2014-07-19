@@ -158,7 +158,8 @@ struct Shared : SharedMixin<Model>
     }
 };
 
-
+// Group supports data debt, i.e., negative counts.
+// Other scoring classes below do not support data debt.
 struct Group : GroupMixin<Model>
 {
     SparseCounter<Value, count_t> counts;
