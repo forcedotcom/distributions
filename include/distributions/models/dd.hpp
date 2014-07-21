@@ -483,6 +483,17 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
             scores_shift_.data());
     }
 
+    void validate (
+            const Shared & shared,
+            const std::vector<Group> & groups) const
+    {
+        DIST_ASSERT_EQ(scores_.size(), shared.dim);
+        for (Value value = 0; value < shared.dim; ++value) {
+            DIST_ASSERT_EQ(scores_[value].size(), groups.size());
+        }
+        DIST_ASSERT_EQ(scores_shift_.size(), groups.size());
+    }
+
 private:
 
     void _update_group_value (

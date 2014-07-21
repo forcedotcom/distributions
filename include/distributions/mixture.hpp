@@ -196,8 +196,6 @@ struct MixtureSlaveGroups
         return groups_[groupid];
     }
 
-    void init (const Shared &, rng_t &) {}
-
     // add_group is called whenever driver.add_value returns true
     void add_group (
             const Shared & shared,
@@ -387,7 +385,6 @@ struct MixtureSlave
             const Shared & shared,
             rng_t & rng)
     {
-        groups_.init(shared, rng);
         value_scorer_.resize(shared, groups().size());
         value_scorer_.update_all(shared, groups(), rng);
     }
