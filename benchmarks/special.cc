@@ -58,7 +58,7 @@ struct glibc_exp
     {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
-        for (int i = 0; i < size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
             data[i] = expf(data[i]);
         }
     }
@@ -73,7 +73,7 @@ struct fmath_exp
     {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
-        for (int i = 0; i < size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
             data[i] = fmath::exp(data[i]);
         }
     }
@@ -89,7 +89,7 @@ struct yeppp_exp
     {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
-        for (int i = 0; i < size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
             data[i] = yepBuiltin_Exp_32f_32f(data[i]);
         }
     }
@@ -136,7 +136,7 @@ struct glibc_log
     {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
-        for (int i = 0; i < size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
             data[i] = logf(data[i]);
         }
     }
@@ -151,7 +151,7 @@ struct fmath_log
     {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
-        for (int i = 0; i < size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
             data[i] = fmath::log(data[i]);
         }
     }
@@ -166,7 +166,7 @@ struct _eric_log
     {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
-        for (int i = 0; i < size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
             data[i] = distributions::eric_log(data[i]);
         }
     }
@@ -182,7 +182,7 @@ struct yeppp_log
     {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
-        for (int i = 0; i < size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
             data[i] = yepBuiltin_Log_32f_32f(data[i]);
         }
     }
@@ -229,7 +229,7 @@ struct glibc_lgamma
     {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
-        for (int i = 0; i < size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
             data[i] = lgammaf(data[i]);
         }
     }
@@ -244,7 +244,7 @@ struct eric_lgamma
     {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
-        for (int i = 0; i < size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
             data[i] = fast_lgamma(data[i]);
         }
     }
@@ -275,7 +275,7 @@ struct glibc_lgamma_nu
     {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
-        for (int i = 0; i < size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
             data[i] = lgammaf(data[i] * 0.5f + 0.5f)
                     - lgammaf(data[i] * 0.5f);
         }
@@ -291,7 +291,7 @@ struct eric_lgamma_nu
     {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
-        for (int i = 0; i < size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
             data[i] = fast_lgamma_nu(data[i]);
         }
     }
@@ -313,14 +313,14 @@ struct mkl_lgamma_nu
         float * __restrict__ data = & values[0];
         float * __restrict__ temp = & temp_[0];
 
-        for (int i = 0; i < size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
             temp[i] = 0.5f + (data[i] *= 0.5f);
         }
 
         vsLGamma(size, data, data);
         vsLGamma(size, temp, temp);
 
-        for (int i = 0; i < size; ++i) {
+        for (size_t i = 0; i < size; ++i) {
             data[i] -= temp[i];
         }
     }
@@ -333,7 +333,7 @@ void speedtest (size_t size, size_t iters)
 {
     rng_t rng;
     Vector scores(size);
-    for (int i = 0; i < size; ++i){
+    for (size_t i = 0; i < size; ++i){
         scores[i] = 100 * sample_unif01(rng);
     }
 
@@ -341,14 +341,14 @@ void speedtest (size_t size, size_t iters)
 
     long time = -current_time_us();
 
-    for (int i = 0; i < iters; ++i) {
+    for (size_t i = 0; i < iters; ++i) {
         impl::inplace(scores_copy);
         scores_copy = scores;
     }
 
     time += 2 * current_time_us();
 
-    for (int i = 0; i < iters; ++i) {
+    for (size_t i = 0; i < iters; ++i) {
         scores_copy = scores;
     }
 

@@ -63,7 +63,7 @@ size_t speedtest (size_t size, size_t iters, float alpha, float d)
     int64_t time = -current_time_us();
 
     double bogus = 0;
-    for (int i = 0; i < iters; ++i) {
+    for (size_t i = 0; i < iters; ++i) {
         bogus += model.score_counts(counts);
     }
 
@@ -89,11 +89,11 @@ int main (int argc, char ** argv)
     std::cout << "size" << '\t' << "max cat" << '\t' << "scores/sec";
     std::cout << " (alpha = " << alpha << ", d = " << d << ")\n";
 
-    int min_exponent = 3;
-    int max_exponent = 7;
-    for (int i = min_exponent; i <= max_exponent; ++i) {
-        int size = int(round(pow(10, i)));
-        int iters = 10000000 / size;
+    size_t min_exponent = 3;
+    size_t max_exponent = 7;
+    for (size_t i = min_exponent; i <= max_exponent; ++i) {
+        size_t size = size_t(round(pow(10, i)));
+        size_t iters = 10000000 / size;
         speedtest(size, iters, alpha, d);
     }
 
