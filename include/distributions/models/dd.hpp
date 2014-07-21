@@ -66,7 +66,7 @@ struct Shared : SharedMixin<Model>
     {
         dim = message.alphas_size();
         DIST_ASSERT_LE(dim, max_dim);
-        for (size_t i = 0; i < dim; ++i) {
+        for (int i = 0; i < dim; ++i) {
             alphas[i] = message.alphas(i);
         }
     }
@@ -75,7 +75,7 @@ struct Shared : SharedMixin<Model>
     void protobuf_dump (Message & message) const
     {
         message.Clear();
-        for (size_t i = 0; i < dim; ++i) {
+        for (int i = 0; i < dim; ++i) {
             message.add_alphas(alphas[i]);
         }
     }
@@ -104,7 +104,7 @@ struct Group : GroupMixin<Model>
         dim = message.counts_size();
         DIST_ASSERT_LE(dim, max_dim);
         count_sum = 0;
-        for (size_t i = 0; i < dim; ++i) {
+        for (int i = 0; i < dim; ++i) {
             count_sum += counts[i] = message.counts(i);
         }
     }
@@ -114,7 +114,7 @@ struct Group : GroupMixin<Model>
     {
         message.Clear();
         auto & message_counts = * message.mutable_counts();
-        for (size_t i = 0; i < dim; ++i) {
+        for (int i = 0; i < dim; ++i) {
             message_counts.Add(counts[i]);
         }
     }
