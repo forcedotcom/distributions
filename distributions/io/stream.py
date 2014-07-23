@@ -33,6 +33,10 @@ import struct
 
 
 def open_compressed(filename, mode='r'):
+    if 'w' in mode:
+        dirname = os.path.dirname(filename)
+        if dirname and not os.path.exists(dirname):
+            os.makedirs(dirname)
     if filename.endswith('.bz2'):
         return bz2.BZ2File(filename, mode.replace('b', ''))
     elif filename.endswith('.gz'):
@@ -42,9 +46,6 @@ def open_compressed(filename, mode='r'):
 
 
 def json_dump(data, filename, **kwargs):
-    dirname = os.path.dirname(filename)
-    if dirname and not os.path.exists(dirname):
-        os.makedirs(dirname)
     with open_compressed(filename, 'w') as f:
         simplejson.dump(data, f, **kwargs)
 
@@ -57,9 +58,6 @@ def json_load(filename):
 def json_stream_dump(stream, filename, **kwargs):
     kwargs['separators'] = (',', ':')
     stream = iter(stream)
-    dirname = os.path.dirname(filename)
-    if dirname and not os.path.exists(dirname):
-        os.makedirs(dirname)
     with open_compressed(filename, 'w') as f:
         f.write('[')
         try:
@@ -76,9 +74,6 @@ def json_stream_dump(stream, filename, **kwargs):
 
 def json_costream_dump(filename, **kwargs):
     kwargs['separators'] = (',', ':')
-    dirname = os.path.dirname(filename)
-    if dirname and not os.path.exists(dirname):
-        os.makedirs(dirname)
     with open_compressed(filename, 'w') as f:
         f.write('[')
         try:
@@ -148,9 +143,6 @@ def protobuf_stream_read(fd):
 
 
 def protobuf_stream_dump(stream, filename):
-    dirname = os.path.dirname(filename)
-    if dirname and not os.path.exists(dirname):
-        os.makedirs(dirname)
     with open_compressed(filename, 'wb') as f:
         for item in stream:
             protobuf_stream_write(item, f)
