@@ -70,15 +70,19 @@ Each feature model API consist of:
     These should be simple and fast::
 
         shared = Model.Shared()
+        shared.protobuf_load(message)
+        shared.protobuf_dump(message)
         shared.load(json)                               # python only
         shared.dump() -> json                           # python only
-        Model.shared_load(json) -> shared               # python only
-        Model.shared_dump(shared) -> json               # python only
-        shared.protobuf_load(message)
-        shared.protobuf_dump_protobuf(message)
+
+        Shared.from_dict(json) -> shared                # python only
+        Shared.from_protobuf(json, message)             # python only
+        Shared.to_protobuf(message) -> json             # python only
 
         shared.add_value(value)
+        shared.add_repeated_value(value)
         shared.remove_value(value)
+        shared.realize()
         shared.plus_group(group) -> shared              # optional
 
 *   Group operations.
@@ -86,19 +90,24 @@ Each feature model API consist of:
     These may consume entropy::
 
         group = Model.Group()
+        group.protobuf_load(message)
+        group.protobuf_dump(message)
         group.load(json)                                # python only
         group.dump() -> json                            # python only
-        Model.group_load(json) -> group                 # python only
-        Model.group_dump(group) -> json                 # python only
-        group.protobuf_load(message)
-        group.protobuf_dump_protobuf(message)
+
+        Group.from_values(shared, values) -> group      # python only
+        Group.from_dict(json) -> group                  # python only
+        Group.from_protobuf(json, message)              # python only
+        Group.to_protobuf(message) -> json              # python only
 
         group.init(shared)
         group.add_value(shared, value)
+        group.add_repeated_value(shared, value, count)
         group.remove_value(shared, value)
         group.merge(shared, other_group)
         group.sample_value(shared)
         group.score_value(shared)
+        group.vaidate()                                 # C++ only
 
 *   Sampling.
     These may consume entropy::

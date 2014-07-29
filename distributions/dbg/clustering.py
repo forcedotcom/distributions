@@ -98,10 +98,10 @@ class LowEntropy(SharedIoMixin):
     def dump(self):
         return {'dataset_size': self.dataset_size}
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         self.dataset_size = int(message.dataset_size)
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         message.Clear()
         message.dataset_size = self.dataset_size
 

@@ -110,7 +110,7 @@ class Shared(SharedMixin, SharedIoMixin):
             'counts': self.counts.copy(),
         }
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         assert len(message.betas) == len(message.values), "invalid message"
         assert len(message.counts) == len(message.values), "invalid message"
         self.gamma = float(message.gamma)
@@ -125,7 +125,7 @@ class Shared(SharedMixin, SharedIoMixin):
         }
         self._load_beta0()
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         message.Clear()
         message.gamma = self.gamma
         message.alpha = self.alpha
@@ -247,7 +247,7 @@ class Group(GroupIoMixin):
         }
         return {'counts': counts}
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         self.counts = {}
         self.total = 0
         for i, count in izip(message.keys, message.values):
@@ -255,7 +255,7 @@ class Group(GroupIoMixin):
                 self.counts[int(i)] = int(count)
                 self.total += count
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         message.Clear()
         for i, count in self.counts.iteritems():
             if count:

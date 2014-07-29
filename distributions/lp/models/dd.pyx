@@ -65,14 +65,14 @@ cdef class _Shared(_dd.Shared):
             alphas.append(float(self.ptr.alphas[i]))
         return {'alphas': alphas}
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         cdef int dim = len(message.alphas)
         self.ptr.dim = dim
         cdef int i
         for i in xrange(self.ptr.dim):
             self.ptr.alphas[i] = message.alphas[i]
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         message.Clear()
         cdef int i
         for i in xrange(self.ptr.dim):

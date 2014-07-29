@@ -25,6 +25,23 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import warnings
+import functools
+
+
+def deprecated(message='function will be removed in the future'):
+
+    def decorator(fun):
+
+        @functools.wraps(fun)
+        def deprecated_fun(*args, **kwargs):
+            warnings.warn('DEPRECATED {}: {}'.format(fun.__name__, message))
+            return fun(*args, **kwargs)
+
+        return deprecated_fun
+
+    return decorator
+
 
 class ComponentModel(object):
     pass
@@ -46,13 +63,21 @@ class ProtobufSerializable(object):
     def to_protobuf(cls, raw, message):
         model = cls()
         model.load(raw)
-        model.dump_protobuf(message)
+        model.protobuf_dump(message)
 
     @classmethod
     def from_protobuf(cls, message):
         model = cls()
-        model.load_protobuf(message)
+        model.protobuf_load(message)
         return model.dump()
+
+    @deprecated('use protobuf_dump(message) instead')
+    def dump_protobuf(self, message):
+        self.protobuf_dump(message)
+
+    @deprecated('use protobuf_load(message) instead')
+    def load_protobuf(self, message):
+        self.protobuf_load(message)
 
 
 class GroupIoMixin(ProtobufSerializable):

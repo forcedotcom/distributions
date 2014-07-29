@@ -52,11 +52,11 @@ cdef class _Shared(_gp.Shared):
             'inv_beta': self.ptr.inv_beta,
         }
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         self.ptr.alpha = message.alpha
         self.ptr.inv_beta = message.inv_beta
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         message.alpha = self.ptr.alpha
         message.inv_beta = self.ptr.inv_beta
 
