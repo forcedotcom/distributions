@@ -289,7 +289,7 @@ struct MixtureDataScorer : MixtureSlaveDataScorerMixin<Model, MixtureDataScorer>
     {
         DIST_ASSERT_EQ(shareds.size(), scores_out.size());
         if (const size_t size = shareds.size()) {
-            const size_t dim = shareds[0].dim;
+            const int dim = shareds[0].dim;
 
             _init(shareds[0], groups);
             scores_out[0] = _eval();
@@ -487,7 +487,7 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
             const Shared & shared,
             const std::vector<Group> & groups) const
     {
-        DIST_ASSERT_EQ(scores_.size(), shared.dim);
+        DIST_ASSERT_EQ(scores_.size(), (size_t)shared.dim);
         for (Value value = 0; value < shared.dim; ++value) {
             DIST_ASSERT_EQ(scores_[value].size(), groups.size());
         }
