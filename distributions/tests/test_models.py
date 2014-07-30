@@ -190,7 +190,7 @@ def test_group(module, EXAMPLE):
     group2.score_data(shared)
 
 
-@for_each_model(lambda module: hasattr(module.Shared, 'load_protobuf'))
+@for_each_model(lambda module: hasattr(module.Shared, 'protobuf_load'))
 def test_protobuf(module, EXAMPLE):
     if not has_protobuf:
         raise SkipTest('protobuf not available')
@@ -199,9 +199,9 @@ def test_protobuf(module, EXAMPLE):
     Message = getattr(distributions.io.schema_pb2, module.NAME)
 
     message = Message.Shared()
-    shared.dump_protobuf(message)
+    shared.protobuf_dump(message)
     shared2 = module.Shared()
-    shared2.load_protobuf(message)
+    shared2.protobuf_load(message)
     assert_close(shared2.dump(), shared.dump())
 
     message.Clear()
@@ -209,15 +209,15 @@ def test_protobuf(module, EXAMPLE):
     module.Shared.to_protobuf(dumped, message)
     assert_close(module.Shared.from_protobuf(message), dumped)
 
-    if hasattr(module.Group, 'load_protobuf'):
+    if hasattr(module.Group, 'protobuf_load'):
         for value in values:
             shared.add_value(value)
         group = module.Group.from_values(shared, values)
 
         message = Message.Group()
-        group.dump_protobuf(message)
+        group.protobuf_dump(message)
         group2 = module.Group()
-        group2.load_protobuf(message)
+        group2.protobuf_load(message)
         assert_close(group2.dump(), group.dump())
 
         message.Clear()

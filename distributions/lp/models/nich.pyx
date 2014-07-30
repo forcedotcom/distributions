@@ -56,13 +56,13 @@ cdef class _Shared(_nich.Shared):
             'nu': self.ptr.nu,
         }
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         self.ptr.mu = message.mu
         self.ptr.kappa = message.kappa
         self.ptr.sigmasq = message.sigmasq
         self.ptr.nu = message.nu
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         message.Clear()
         message.mu = self.ptr.mu
         message.kappa = self.ptr.kappa

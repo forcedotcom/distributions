@@ -54,12 +54,12 @@ cdef class _Shared(_bnb.Shared):
             'r': self.ptr.r,
         }
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         self.ptr.alpha = message.alpha
         self.ptr.beta = message.beta
         self.ptr.r = message.r
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         message.alpha = self.ptr.alpha
         message.beta = self.ptr.beta
         message.r = self.ptr.r

@@ -259,10 +259,10 @@ cdef class PitmanYorMixture:
 
 class PitmanYor(PitmanYor_cy, SharedIoMixin):
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         self.load({'alpha': message.alpha, 'd': message.d})
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         dumped = self.dump()
         message.Clear()
         message.alpha = dumped['alpha']
@@ -382,10 +382,10 @@ cdef class LowEntropyMixture:
 
 class LowEntropy(LowEntropy_cy, SharedIoMixin):
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         self.load({'dataset_size': message.dataset_size})
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         dumped = self.dump()
         message.Clear()
         message.datset_size = dumped['dataset_size']

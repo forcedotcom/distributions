@@ -105,13 +105,13 @@ class Shared(SharedMixin, SharedIoMixin):
             'nu': self.nu,
         }
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         self.mu = float(message.mu)
         self.kappa = float(message.kappa)
         self.sigmasq = float(message.sigmasq)
         self.nu = float(message.nu)
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         message.Clear()
         message.mu = self.mu
         message.kappa = self.kappa
@@ -204,12 +204,12 @@ class Group(GroupIoMixin):
             'count_times_variance': self.count_times_variance,
         }
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         self.count = int(message.count)
         self.mean = float(message.mean)
         self.count_times_variance = float(message.count_times_variance)
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         message.count = self.count
         message.mean = self.mean
         message.count_times_variance = self.count_times_variance

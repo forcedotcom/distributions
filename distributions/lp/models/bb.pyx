@@ -56,11 +56,11 @@ cdef class _Shared(_bb.Shared):
             'beta': self.ptr.beta,
         }
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         self.ptr.alpha = message.alpha
         self.ptr.beta = message.beta
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         message.alpha = float(self.ptr.alpha)
         message.beta = float(self.ptr.beta)
 

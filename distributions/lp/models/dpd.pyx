@@ -102,7 +102,7 @@ cdef class _Shared(_dpd.Shared):
             'counts': counts,
         }
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         self.ptr.gamma = message.gamma
         self.ptr.alpha = message.alpha
         self.ptr.betas.clear()
@@ -119,7 +119,7 @@ cdef class _Shared(_dpd.Shared):
             beta0 -= beta
         self.ptr.beta0 = beta0
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         message.Clear()
         message.gamma = self.ptr.gamma
         message.alpha = self.ptr.alpha

@@ -81,12 +81,12 @@ class Shared(SharedMixin, SharedIoMixin):
             'r': self.r,
         }
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         self.alpha = float(message.alpha)
         self.beta = float(message.beta)
         self.r = int(message.r)
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         message.Clear()
         message.alpha = self.alpha
         message.beta = self.beta
@@ -151,11 +151,11 @@ class Group(GroupIoMixin):
         self.count = int(raw['count'])
         self.sum = int(raw['sum'])
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         self.count = int(message.count)
         self.sum = int(message.sum)
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         message.count = self.count
         message.sum = self.sum
 

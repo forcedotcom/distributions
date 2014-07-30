@@ -59,11 +59,11 @@ class Shared(SharedMixin, SharedIoMixin):
             'beta': self.beta,
         }
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         self.alpha = float(message.alpha)
         self.beta = float(message.beta)
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         message.alpha = self.alpha
         message.beta = self.beta
 
@@ -139,11 +139,11 @@ class Group(GroupIoMixin):
             'tails': self.tails,
         }
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         self.heads = message.heads
         self.tails = message.tails
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         message.heads = self.heads
         message.tails = self.tails
 

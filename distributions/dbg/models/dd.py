@@ -63,10 +63,10 @@ class Shared(SharedMixin, SharedIoMixin):
     def dump(self):
         return {'alphas': self.alphas.tolist()}
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         self.alphas = numpy.array(message.alphas, dtype=numpy.float)
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         message.Clear()
         for alpha in self.alphas:
             message.alphas.append(alpha)
@@ -128,10 +128,10 @@ class Group(GroupIoMixin):
     def dump(self):
         return {'counts': self.counts.tolist()}
 
-    def load_protobuf(self, message):
+    def protobuf_load(self, message):
         self.counts = numpy.array(message.counts, dtype=numpy.int)
 
-    def dump_protobuf(self, message):
+    def protobuf_dump(self, message):
         message.Clear()
         for count in self.counts:
             message.counts.append(count)

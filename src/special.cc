@@ -74,7 +74,7 @@ inline void log_stirling1_cache_add ()
     }
 }
 
-inline void get_log_stirling1_row_exact (const int n, float * row)
+inline void get_log_stirling1_row_exact (const size_t n, float * row)
 {
     // this could really be a readers-writer shared_mutex
     std::unique_lock<std::mutex> lock(log_stirling1_mutex);
@@ -87,7 +87,7 @@ inline void get_log_stirling1_row_exact (const int n, float * row)
     memcpy(row, cached.data(), cached.size() * sizeof(float));
 }
 
-inline void get_log_stirling1_row_approx (const int n, float * row)
+inline void get_log_stirling1_row_approx (const size_t n, float * row)
 {
     // Approximation #1 is taken from Eqn 26.8.40 of [1],
     // whose unsigned version is
@@ -126,7 +126,7 @@ inline void get_log_stirling1_row_approx (const int n, float * row)
     row[n] = 0;
 
     // internal points
-    for (int k = 1; k < n; ++k) {
+    for (size_t k = 1; k < n; ++k) {
         float approx1 = log_factorial_n_minus_1
                       - fast_log_factorial(k - 1)
                       + (k - 1) * log_stuff;
@@ -138,7 +138,7 @@ inline void get_log_stirling1_row_approx (const int n, float * row)
     }
 }
 
-void get_log_stirling1_row (int n, float * result)
+void get_log_stirling1_row (size_t n, float * result)
 {
     if (n < 32) {
         get_log_stirling1_row_exact(n, result);
@@ -280,7 +280,7 @@ const float lgamma_nu_func_approx_coeff3[] =
 } // namespace detail
 
 template<class Alloc>
-void get_log_stirling1_row (int n, std::vector<float, Alloc> & result)
+void get_log_stirling1_row (size_t n, std::vector<float, Alloc> & result)
 {
     result.resize(n + 1);
     detail::get_log_stirling1_row(n, result.data());
@@ -291,7 +291,7 @@ void get_log_stirling1_row (int n, std::vector<float, Alloc> & result)
 
 #define INSTANTIATE_TEMPLATES(Alloc)                \
     template void get_log_stirling1_row (           \
-            int n,                                  \
+            size_t n,                               \
             std::vector<float, Alloc> & result);
 
 INSTANTIATE_TEMPLATES(std::allocator<float>)
