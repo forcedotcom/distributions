@@ -78,14 +78,14 @@ def log_sum_exp(list scores):
     return log_sum_exp_cc(_scores)
 
 
-def sample_prob_from_scores(RNG rng, list scores):
+def sample_prob_from_scores(list scores):
     cdef vector[float] _scores = scores
-    return sample_prob_from_scores_overwrite(rng.ptr[0], _scores)
+    return sample_prob_from_scores_overwrite(get_rng()[0], _scores)
 
 
-def prob_from_scores(RNG rng, int sample, list scores):
+def prob_from_scores(int sample, list scores):
     cdef vector[float] _scores = scores
-    cdef float score = score_from_scores_overwrite(rng.ptr[0], sample, _scores)
+    cdef float score = score_from_scores_overwrite(get_rng()[0], sample, _scores)
     cdef float prob = exp(score)
     return prob
 
@@ -98,7 +98,7 @@ def sample_pair_from_urn(list urn):
     return (<object> result.first, <object> result.second)
 
 
-def sample_discrete(RNG rng, numpy.ndarray[numpy.float32_t, ndim=1] probs):
+def sample_discrete(numpy.ndarray[numpy.float32_t, ndim=1] probs):
     cdef size_t size = probs.shape[0]
     cdef float * data = <float *> probs.data
-    return sample_discrete_cc(rng.ptr[0], size, data)
+    return sample_discrete_cc(get_rng()[0], size, data)
