@@ -206,3 +206,29 @@ def test_log_sum_exp():
         expected = numpy.logaddexp.reduce(scores) if size else 0.0
         actual = distributions.lp.random.log_sum_exp(scores)
         assert_close(actual, expected, err_msg='log_sum_exp')
+
+
+def test_sample_discrete():
+    require_cython()
+    import distributions.lp.random
+
+    assert_equal(
+        distributions.lp.random.sample_discrete(
+            numpy.array([.5], dtype=numpy.float32)),
+        0)
+    assert_equal(
+        distributions.lp.random.sample_discrete(
+            numpy.array([1.], dtype=numpy.float32)),
+        0)
+    assert_equal(
+        distributions.lp.random.sample_discrete(
+            numpy.array([1e-3], dtype=numpy.float32)),
+        0)
+    assert_equal(
+        distributions.lp.random.sample_discrete(
+            numpy.array([1 - 1e-3, 1e-3], dtype=numpy.float32)),
+        0)
+    assert_equal(
+        distributions.lp.random.sample_discrete(
+            numpy.array([1e-3, 1 - 1e-3], dtype=numpy.float32)),
+        1)
