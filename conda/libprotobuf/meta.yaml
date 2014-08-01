@@ -1,0 +1,18 @@
+package:
+  name: libprotobuf
+  version: "2.5.0"
+
+source:
+  fn: libprotobuf-2.5.0.tar.gz
+  url: https://protobuf.googlecode.com/files/protobuf-2.5.0.tar.gz
+  sha1: 7f6ea7bc1382202fb1ce8c6933f1ef8fea0c0148
+
+test:
+  files:
+    - schema.proto
+    - test.cc
+
+about:
+  home: http://code.google.com/p/protobuf/
+  license: New BSD License
+  summary: 'Protocol Buffers C library/compiler'

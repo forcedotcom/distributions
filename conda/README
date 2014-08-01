@@ -1,0 +1,8 @@
+libprotobuf recipe is copied from:
+    https://github.com/stephentu/conda-recipes/tree/master/libprotobuf
+
+it is not pushed to conda-recipes since it builds against libc++ instead of libstdc++,
+and is replicated here for convenience
+
+the protobuf recipe is pushed mainstream to conda/conda-recipes:
+    https://github.com/conda/conda-recipes/tree/master/protobuf
