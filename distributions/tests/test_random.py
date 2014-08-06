@@ -170,17 +170,13 @@ def test_sample_pair_from_urn():
 def test_prob_from_scores():
     require_cython()
     import distributions.lp.random
-    rng1 = distributions.lp.random.RNG(0)
-    rng2 = distributions.lp.random.RNG(0)
     for size in range(1, 100):
         scores = numpy.random.normal(size=size).tolist()
         for _ in xrange(size):
             sample, prob1 = distributions.lp.random.sample_prob_from_scores(
-                rng1,
                 scores)
             assert 0 <= sample and sample < size
             prob2 = distributions.lp.random.prob_from_scores(
-                rng2,
                 sample,
                 scores)
             assert_close(
@@ -192,12 +188,11 @@ def test_prob_from_scores():
 def test_sample_prob_from_scores():
     require_cython()
     import distributions.lp.random
-    rng = distributions.lp.random.RNG(0)
     for size in range(1, 10):
         scores = numpy.random.normal(size=size).tolist()
 
         def sampler():
-            return distributions.lp.random.sample_prob_from_scores(rng, scores)
+            return distributions.lp.random.sample_prob_from_scores(scores)
 
         assert_samples_match_scores(sampler)
 
@@ -211,3 +206,29 @@ def test_log_sum_exp():
         expected = numpy.logaddexp.reduce(scores) if size else 0.0
         actual = distributions.lp.random.log_sum_exp(scores)
         assert_close(actual, expected, err_msg='log_sum_exp')
+
+
+def test_sample_discrete():
+    require_cython()
+    import distributions.lp.random
+
+    assert_equal(
+        distributions.lp.random.sample_discrete(
+            numpy.array([.5], dtype=numpy.float32)),
+        0)
+    assert_equal(
+        distributions.lp.random.sample_discrete(
+            numpy.array([1.], dtype=numpy.float32)),
+        0)
+    assert_equal(
+        distributions.lp.random.sample_discrete(
+            numpy.array([1e-3], dtype=numpy.float32)),
+        0)
+    assert_equal(
+        distributions.lp.random.sample_discrete(
+            numpy.array([1 - 1e-3, 1e-3], dtype=numpy.float32)),
+        0)
+    assert_equal(
+        distributions.lp.random.sample_discrete(
+            numpy.array([1e-3, 1 - 1e-3], dtype=numpy.float32)),
+        1)
