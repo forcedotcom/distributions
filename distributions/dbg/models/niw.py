@@ -42,7 +42,15 @@ EXAMPLES = [
                 'psi' : np.eye(2),
                 'nu' : 3.,
         },
-        'values': [np.array(v) for v in ([1., 2.], [-2., 3.], [-0.2, -0.2])],
+        'values': [np.array(v) for v in (
+            [1., 2.],
+            [-2., 3.],
+            [-0.2, -0.2],
+            [-0.1, 0.5],
+            [0.8, 0.5],
+            [0.8, 0.3],
+            [-9., 0.2],
+        )],
     },
 ]
 Value = np.ndarray
@@ -116,8 +124,9 @@ class Shared(SharedMixin, SharedIoMixin):
         self.mu = np.array(message.mu, dtype=np.float)
         self.kappa = message.kappa
         self.psi = np.array(message.psi, dtype=np.float)
-        assert self.psi.shape[0] == self._D * self._D
-        self.psi = self.psi.reshape((self._D, self._D))
+        D = self.dim()
+        assert self.psi.shape[0] == (D * D)
+        self.psi = self.psi.reshape((D, D))
         self.nu = message.nu
         assert self.nu >= self.dim()
 
@@ -143,6 +152,11 @@ class Group(GroupIoMixin):
         self.sum_x += value
         self.sum_xxT += np.outer(value, value)
 
+    def add_repeated_value(self, shared, value, count):
+        self.count +=count
+        self.sum_x += (count * value)
+        self.sum_xxT += (count * np.outer(value, value))
+
     def remove_value(self, shared, value):
         self.count -= 1
         self.sum_x -= value
@@ -151,12 +165,12 @@ class Group(GroupIoMixin):
     def merge(self, shared, source):
         self.count += source.count
         self.sum_x += source.sum_x
-        self.sum_xxT += seource.sum_xxT
+        self.sum_xxT += source.sum_xxT
 
     def _post_params(self, shared):
         mu0, lam0, psi0, nu0 = shared.mu, shared.kappa, shared.psi, shared.nu
         n, sum_x, sum_xxT = self.count, self.sum_x, self.sum_xxT
-        xbar = sum_x / n if n else np.zeros(shared._D)
+        xbar = sum_x / n if n else np.zeros(shared.dim())
         mu_n = lam0/(lam0 + n)*mu0 + n/(lam0 + n)*xbar
         lam_n = lam0 + n
         nu_n = nu0 + n
