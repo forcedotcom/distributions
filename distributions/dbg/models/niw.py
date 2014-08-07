@@ -102,11 +102,11 @@ class Shared(SharedMixin, SharedIoMixin):
         return self.mu.shape[0]
 
     def load(self, raw):
-        self.mu = raw['mu']
+        self.mu = raw['mu'].copy()
         assert len(self.mu.shape) == 1
         self.kappa = float(raw['kappa'])
         assert self.kappa > 0.
-        self.psi = raw['psi']
+        self.psi = raw['psi'].copy()
         assert self.mu.shape[0] == self.psi.shape[0]
         assert self.psi.shape[0] == self.psi.shape[1]
         self.nu = float(raw['nu'])
@@ -114,9 +114,9 @@ class Shared(SharedMixin, SharedIoMixin):
 
     def dump(self):
         return {
-            'mu' : self.mu,
+            'mu' : self.mu.copy(),
             'kappa' : self.kappa,
-            'psi' : self.psi,
+            'psi' : self.psi.copy(),
             'nu' : self.nu,
         }
 
@@ -211,16 +211,16 @@ class Group(GroupIoMixin):
     def load(self, raw):
         self.count = int(raw['count'])
         assert self.count >= 0
-        self.sum_x = raw['sum_x']
-        self.sum_xxT = raw['sum_xxT']
+        self.sum_x = raw['sum_x'].copy()
+        self.sum_xxT = raw['sum_xxT'].copy()
         D = self.sum_x.shape[0]
         assert self.sum_xxT.shape == (D,D)
 
     def dump(self):
         return {
             'count' : self.count,
-            'sum_x' : self.sum_x,
-            'sum_xxT' : self.sum_xxT,
+            'sum_x' : self.sum_x.copy(),
+            'sum_xxT' : self.sum_xxT.copy(),
         }
 
     def protobuf_load(self, message):
