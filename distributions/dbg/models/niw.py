@@ -84,7 +84,7 @@ def sample_niw(mu0, lambda0, psi0, nu0):
     assert psi0.shape == (D,D)
     assert lambda0 > 0.0
     assert nu0 > D - 1
-    cov = sample_iw(nu0, psi0)
+    cov = sample_iw(psi0, nu0)
     mu = np.random.multivariate_normal(mean=mu0, cov=1./lambda0*cov)
     return mu, cov
 
@@ -181,7 +181,7 @@ class Group(GroupIoMixin):
         mu0, lam0, psi0, nu0 = shared.mu, shared.kappa, shared.psi, shared.nu
         mu_n, lam_n, psi_n, nu_n = self._post_params(shared)
         n = self.count
-        D = shared.dimension()
+        D = shared.dim()
         return multigammaln(nu_n/2., D) \
             + nu0/2.*np.log(np.linalg.det(psi0)) \
             - (n*D/2.)*np.log(math.pi) \
@@ -228,13 +228,13 @@ class Group(GroupIoMixin):
 class Sampler(object):
     def init(self, shared, group=None):
         if group is not None:
-            mu0, lam0, psi0, nu0 = group._post_params(self)
+            mu0, kappa0, psi0, nu0 = group._post_params(shared)
         else:
-            mu0, lam0, psi0, nu0 = shared.mu, shared.kappa, shared.psi, shared.nu
-        self._mu, self._sigma = sample_niw(mu0, lam0, psi0, nu0)
+            mu0, kappa0, psi0, nu0 = shared.mu, shared.kappa, shared.psi, shared.nu
+        self.mu, self.sigma = sample_niw(mu0, kappa0, psi0, nu0)
 
     def eval(self, shared):
-        return np.random.multivariate_normal(self._mu, self._sigma)
+        return np.random.multivariate_normal(self.mu, self.sigma)
 
 def sample_group(shared, size):
     group = Group()
