@@ -8,6 +8,7 @@ set(DISTRIBUTIONS_SOURCE_FILES
   clustering.cc
   models/nich.cc
   models/gp.cc
+  models/niw.cc
 )
 
 install(DIRECTORY ../include/ DESTINATION include
