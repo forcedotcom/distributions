@@ -168,6 +168,8 @@ lp_extensions = make_extensions([
     'lp.models._bnb',
     'lp.models.nich',
     'lp.models._nich',
+    'lp.models.niw',
+    'lp.models._niw',
     'lp.clustering',
     'lp.mixture',
 ])
