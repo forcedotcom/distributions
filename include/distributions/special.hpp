@@ -300,12 +300,12 @@ inline float fast_lgamma_nu (float nu)
  */
 inline float lmultigamma(unsigned d, float a)
 {
-  DIST_ASSERT1(d > 0, "zero dim lmultigamma");
-  const float term1 = 0.25*float(d*(d-1))*1.1447298858494002 /* log(pi) */;
-  float term2 = 0.;
-  for (int j = 1; j <= (int)d; j++)
-    term2 += fast_lgamma(a + 0.5*float(1-j));
-  return term1 + term2;
+    DIST_ASSERT1(d > 0, "zero dim lmultigamma");
+    const float term1 = 0.25*float(d*(d-1))*1.1447298858494002 /* log(pi) */;
+    float term2 = 0.;
+    for (int j = 1; j <= (int)d; j++)
+        term2 += fast_lgamma(a + 0.5*float(1-j));
+    return term1 + term2;
 }
 
 
