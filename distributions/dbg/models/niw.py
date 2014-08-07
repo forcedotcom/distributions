@@ -37,12 +37,12 @@ NAME = 'NormalInverseWishart'
 EXAMPLES = [
     {
         'shared': {
-                'mu0': np.zeros(2),
-                'lambda': 2.,
+                'mu': np.zeros(2),
+                'kappa': 2.,
                 'psi' : np.eye(2),
                 'nu' : 3.,
         },
-        'values': [np.array(v) for v in ([1., 2.], [-2., 3.])],
+        'values': [np.array(v) for v in ([1., 2.], [-2., 3.], [-0.2, -0.2])],
     },
 ]
 Value = np.ndarray
@@ -89,37 +89,32 @@ def sample_niw(mu0, lambda0, psi0, nu0):
     return mu, cov
 
 class Shared(SharedMixin, SharedIoMixin):
-    def __init__(self):
-        self.mu0 = None
-        self.lambda_ = None
-        self.psi = None
-        self.nu = None
 
     def dim(self):
-        return self.mu0.shape[0]
+        return self.mu.shape[0]
 
     def load(self, raw):
-        self.mu0 = raw['mu0']
-        assert len(self.mu0.shape) == 1
-        self.lambda_ = float(raw['lambda'])
-        assert self.lambda_ > 0.
+        self.mu = raw['mu']
+        assert len(self.mu.shape) == 1
+        self.kappa = float(raw['kappa'])
+        assert self.kappa > 0.
         self.psi = raw['psi']
-        assert self.mu0.shape[0] == self.psi.shape[0]
+        assert self.mu.shape[0] == self.psi.shape[0]
         assert self.psi.shape[0] == self.psi.shape[1]
         self.nu = float(raw['nu'])
         assert self.nu >= self.dim()
 
     def dump(self):
         return {
-            'mu0' : self.mu0,
-            'lambda' : self.lambda_,
+            'mu' : self.mu,
+            'kappa' : self.kappa,
             'psi' : self.psi,
             'nu' : self.nu,
         }
 
     def protobuf_load(self, message):
-        self.mu0 = np.array(message.mu0, dtype=np.float)
-        self.lambda_ = getattr(message, 'lambda')
+        self.mu = np.array(message.mu, dtype=np.float)
+        self.kappa = message.kappa
         self.psi = np.array(message.psi, dtype=np.float)
         assert self.psi.shape[0] == self._D * self._D
         self.psi = self.psi.reshape((self._D, self._D))
@@ -128,9 +123,9 @@ class Shared(SharedMixin, SharedIoMixin):
 
     def protobuf_dump(self, message):
         message.Clear()
-        for x in self.mu0:
-            message.mu0.append(x)
-        setattr(message, 'lambda', self.lambda_)
+        for x in self.mu:
+            message.mu.append(x)
+        message.kappa = self.kappa
         for x in self.psi:
             for y in x:
                 message.psi.append(y)
@@ -159,7 +154,7 @@ class Group(GroupIoMixin):
         self.sum_xxT += seource.sum_xxT
 
     def _post_params(self, shared):
-        mu0, lam0, psi0, nu0 = shared.mu0, shared.lambda_, shared.psi, shared.nu
+        mu0, lam0, psi0, nu0 = shared.mu, shared.kappa, shared.psi, shared.nu
         n, sum_x, sum_xxT = self.count, self.sum_x, self.sum_xxT
         xbar = sum_x / n if n else np.zeros(shared._D)
         mu_n = lam0/(lam0 + n)*mu0 + n/(lam0 + n)*xbar
@@ -183,7 +178,7 @@ class Group(GroupIoMixin):
         """
         Eq. 266
         """
-        mu0, lam0, psi0, nu0 = shared.mu0, shared.lambda_, shared.psi, shared.nu
+        mu0, lam0, psi0, nu0 = shared.mu, shared.kappa, shared.psi, shared.nu
         mu_n, lam_n, psi_n, nu_n = self._post_params(shared)
         n = self.count
         D = shared.dimension()
@@ -235,7 +230,7 @@ class Sampler(object):
         if group is not None:
             mu0, lam0, psi0, nu0 = group._post_params(self)
         else:
-            mu0, lam0, psi0, nu0 = shared.mu0, shared.lambda_, shared.psi, shared.nu
+            mu0, lam0, psi0, nu0 = shared.mu, shared.kappa, shared.psi, shared.nu
         self._mu, self._sigma = sample_niw(mu0, lam0, psi0, nu0)
 
     def eval(self, shared):

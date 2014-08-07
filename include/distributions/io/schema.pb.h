@@ -2307,24 +2307,24 @@ class NormalInverseWishart_Shared : public ::google::protobuf::Message {
 
   // accessors -------------------------------------------------------
 
-  // repeated float mu0 = 1;
-  inline int mu0_size() const;
-  inline void clear_mu0();
-  static const int kMu0FieldNumber = 1;
-  inline float mu0(int index) const;
-  inline void set_mu0(int index, float value);
-  inline void add_mu0(float value);
+  // repeated float mu = 1;
+  inline int mu_size() const;
+  inline void clear_mu();
+  static const int kMuFieldNumber = 1;
+  inline float mu(int index) const;
+  inline void set_mu(int index, float value);
+  inline void add_mu(float value);
   inline const ::google::protobuf::RepeatedField< float >&
-      mu0() const;
+      mu() const;
   inline ::google::protobuf::RepeatedField< float >*
-      mutable_mu0();
+      mutable_mu();
 
-  // required float lambda = 2;
-  inline bool has_lambda() const;
-  inline void clear_lambda();
-  static const int kLambdaFieldNumber = 2;
-  inline float lambda() const;
-  inline void set_lambda(float value);
+  // required float kappa = 2;
+  inline bool has_kappa() const;
+  inline void clear_kappa();
+  static const int kKappaFieldNumber = 2;
+  inline float kappa() const;
+  inline void set_kappa(float value);
 
   // repeated float psi = 3;
   inline int psi_size() const;
@@ -2347,16 +2347,16 @@ class NormalInverseWishart_Shared : public ::google::protobuf::Message {
 
   // @@protoc_insertion_point(class_scope:protobuf.distributions.NormalInverseWishart.Shared)
  private:
-  inline void set_has_lambda();
-  inline void clear_has_lambda();
+  inline void set_has_kappa();
+  inline void clear_has_kappa();
   inline void set_has_nu();
   inline void clear_has_nu();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
-  ::google::protobuf::RepeatedField< float > mu0_;
+  ::google::protobuf::RepeatedField< float > mu_;
   ::google::protobuf::RepeatedField< float > psi_;
-  float lambda_;
+  float kappa_;
   float nu_;
 
   mutable int _cached_size_;
@@ -3600,51 +3600,51 @@ inline void NormalInverseChiSq_Group::set_count_times_variance(float value) {
 
 // NormalInverseWishart_Shared
 
-// repeated float mu0 = 1;
-inline int NormalInverseWishart_Shared::mu0_size() const {
-  return mu0_.size();
+// repeated float mu = 1;
+inline int NormalInverseWishart_Shared::mu_size() const {
+  return mu_.size();
 }
-inline void NormalInverseWishart_Shared::clear_mu0() {
-  mu0_.Clear();
+inline void NormalInverseWishart_Shared::clear_mu() {
+  mu_.Clear();
 }
-inline float NormalInverseWishart_Shared::mu0(int index) const {
-  return mu0_.Get(index);
+inline float NormalInverseWishart_Shared::mu(int index) const {
+  return mu_.Get(index);
 }
-inline void NormalInverseWishart_Shared::set_mu0(int index, float value) {
-  mu0_.Set(index, value);
+inline void NormalInverseWishart_Shared::set_mu(int index, float value) {
+  mu_.Set(index, value);
 }
-inline void NormalInverseWishart_Shared::add_mu0(float value) {
-  mu0_.Add(value);
+inline void NormalInverseWishart_Shared::add_mu(float value) {
+  mu_.Add(value);
 }
 inline const ::google::protobuf::RepeatedField< float >&
-NormalInverseWishart_Shared::mu0() const {
-  return mu0_;
+NormalInverseWishart_Shared::mu() const {
+  return mu_;
 }
 inline ::google::protobuf::RepeatedField< float >*
-NormalInverseWishart_Shared::mutable_mu0() {
-  return &mu0_;
+NormalInverseWishart_Shared::mutable_mu() {
+  return &mu_;
 }
 
-// required float lambda = 2;
-inline bool NormalInverseWishart_Shared::has_lambda() const {
+// required float kappa = 2;
+inline bool NormalInverseWishart_Shared::has_kappa() const {
   return (_has_bits_[0] & 0x00000002u) != 0;
 }
-inline void NormalInverseWishart_Shared::set_has_lambda() {
+inline void NormalInverseWishart_Shared::set_has_kappa() {
   _has_bits_[0] |= 0x00000002u;
 }
-inline void NormalInverseWishart_Shared::clear_has_lambda() {
+inline void NormalInverseWishart_Shared::clear_has_kappa() {
   _has_bits_[0] &= ~0x00000002u;
 }
-inline void NormalInverseWishart_Shared::clear_lambda() {
-  lambda_ = 0;
-  clear_has_lambda();
+inline void NormalInverseWishart_Shared::clear_kappa() {
+  kappa_ = 0;
+  clear_has_kappa();
 }
-inline float NormalInverseWishart_Shared::lambda() const {
-  return lambda_;
+inline float NormalInverseWishart_Shared::kappa() const {
+  return kappa_;
 }
-inline void NormalInverseWishart_Shared::set_lambda(float value) {
-  set_has_lambda();
-  lambda_ = value;
+inline void NormalInverseWishart_Shared::set_kappa(float value) {
+  set_has_kappa();
+  kappa_ = value;
 }
 
 // repeated float psi = 3;

@@ -504,8 +504,8 @@ void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto() {
       sizeof(NormalInverseWishart));
   NormalInverseWishart_Shared_descriptor_ = NormalInverseWishart_descriptor_->nested_type(0);
   static const int NormalInverseWishart_Shared_offsets_[4] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart_Shared, mu0_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart_Shared, lambda_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart_Shared, mu_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart_Shared, kappa_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart_Shared, psi_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart_Shared, nu_),
   };
@@ -698,11 +698,11 @@ void protobuf_AddDesc_distributions_2fio_2fschema_2eproto() {
     "rseChiSq\032@\n\006Shared\022\n\n\002mu\030\001 \002(\002\022\r\n\005kappa\030"
     "\002 \002(\002\022\017\n\007sigmasq\030\003 \002(\002\022\n\n\002nu\030\004 \002(\002\032B\n\005Gr"
     "oup\022\r\n\005count\030\001 \002(\004\022\014\n\004mean\030\002 \002(\002\022\034\n\024coun"
-    "t_times_variance\030\003 \002(\002\"\216\001\n\024NormalInverse"
-    "Wishart\032>\n\006Shared\022\013\n\003mu0\030\001 \003(\002\022\016\n\006lambda"
-    "\030\002 \002(\002\022\013\n\003psi\030\003 \003(\002\022\n\n\002nu\030\004 \002(\002\0326\n\005Group"
-    "\022\r\n\005count\030\001 \002(\005\022\r\n\005sum_x\030\002 \003(\002\022\017\n\007sum_xx"
-    "T\030\003 \003(\002", 1247);
+    "t_times_variance\030\003 \002(\002\"\214\001\n\024NormalInverse"
+    "Wishart\032<\n\006Shared\022\n\n\002mu\030\001 \003(\002\022\r\n\005kappa\030\002"
+    " \002(\002\022\013\n\003psi\030\003 \003(\002\022\n\n\002nu\030\004 \002(\002\0326\n\005Group\022\r"
+    "\n\005count\030\001 \002(\005\022\r\n\005sum_x\030\002 \003(\002\022\017\n\007sum_xxT\030"
+    "\003 \003(\002", 1245);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "distributions/io/schema.proto", &protobuf_RegisterTypes);
   Clustering::default_instance_ = new Clustering();
@@ -6371,8 +6371,8 @@ void NormalInverseChiSq::Swap(NormalInverseChiSq* other) {
 // ===================================================================
 
 #ifndef _MSC_VER
-const int NormalInverseWishart_Shared::kMu0FieldNumber;
-const int NormalInverseWishart_Shared::kLambdaFieldNumber;
+const int NormalInverseWishart_Shared::kMuFieldNumber;
+const int NormalInverseWishart_Shared::kKappaFieldNumber;
 const int NormalInverseWishart_Shared::kPsiFieldNumber;
 const int NormalInverseWishart_Shared::kNuFieldNumber;
 #endif  // !_MSC_VER
@@ -6393,7 +6393,7 @@ NormalInverseWishart_Shared::NormalInverseWishart_Shared(const NormalInverseWish
 
 void NormalInverseWishart_Shared::SharedCtor() {
   _cached_size_ = 0;
-  lambda_ = 0;
+  kappa_ = 0;
   nu_ = 0;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
@@ -6430,10 +6430,10 @@ NormalInverseWishart_Shared* NormalInverseWishart_Shared::New() const {
 
 void NormalInverseWishart_Shared::Clear() {
   if (_has_bits_[1 / 32] & (0xffu << (1 % 32))) {
-    lambda_ = 0;
+    kappa_ = 0;
     nu_ = 0;
   }
-  mu0_.Clear();
+  mu_.Clear();
   psi_.Clear();
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -6445,37 +6445,37 @@ bool NormalInverseWishart_Shared::MergePartialFromCodedStream(
   ::google::protobuf::uint32 tag;
   while ((tag = input->ReadTag()) != 0) {
     switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated float mu0 = 1;
+      // repeated float mu = 1;
       case 1: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_mu0:
+         parse_mu:
           DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 1, 13, input, this->mutable_mu0())));
+                 1, 13, input, this->mutable_mu())));
         } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
                    == ::google::protobuf::internal::WireFormatLite::
                       WIRETYPE_LENGTH_DELIMITED) {
           DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, this->mutable_mu0())));
+                 input, this->mutable_mu())));
         } else {
           goto handle_uninterpreted;
         }
-        if (input->ExpectTag(13)) goto parse_mu0;
-        if (input->ExpectTag(21)) goto parse_lambda;
+        if (input->ExpectTag(13)) goto parse_mu;
+        if (input->ExpectTag(21)) goto parse_kappa;
         break;
       }
 
-      // required float lambda = 2;
+      // required float kappa = 2;
       case 2: {
         if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
             ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_lambda:
+         parse_kappa:
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, &lambda_)));
-          set_has_lambda();
+                 input, &kappa_)));
+          set_has_kappa();
         } else {
           goto handle_uninterpreted;
         }
@@ -6539,15 +6539,15 @@ bool NormalInverseWishart_Shared::MergePartialFromCodedStream(
 
 void NormalInverseWishart_Shared::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated float mu0 = 1;
-  for (int i = 0; i < this->mu0_size(); i++) {
+  // repeated float mu = 1;
+  for (int i = 0; i < this->mu_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteFloat(
-      1, this->mu0(i), output);
+      1, this->mu(i), output);
   }
 
-  // required float lambda = 2;
-  if (has_lambda()) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->lambda(), output);
+  // required float kappa = 2;
+  if (has_kappa()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->kappa(), output);
   }
 
   // repeated float psi = 3;
@@ -6569,15 +6569,15 @@ void NormalInverseWishart_Shared::SerializeWithCachedSizes(
 
 ::google::protobuf::uint8* NormalInverseWishart_Shared::SerializeWithCachedSizesToArray(
     ::google::protobuf::uint8* target) const {
-  // repeated float mu0 = 1;
-  for (int i = 0; i < this->mu0_size(); i++) {
+  // repeated float mu = 1;
+  for (int i = 0; i < this->mu_size(); i++) {
     target = ::google::protobuf::internal::WireFormatLite::
-      WriteFloatToArray(1, this->mu0(i), target);
+      WriteFloatToArray(1, this->mu(i), target);
   }
 
-  // required float lambda = 2;
-  if (has_lambda()) {
-    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->lambda(), target);
+  // required float kappa = 2;
+  if (has_kappa()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->kappa(), target);
   }
 
   // repeated float psi = 3;
@@ -6602,8 +6602,8 @@ int NormalInverseWishart_Shared::ByteSize() const {
   int total_size = 0;
 
   if (_has_bits_[1 / 32] & (0xffu << (1 % 32))) {
-    // required float lambda = 2;
-    if (has_lambda()) {
+    // required float kappa = 2;
+    if (has_kappa()) {
       total_size += 1 + 4;
     }
 
@@ -6613,11 +6613,11 @@ int NormalInverseWishart_Shared::ByteSize() const {
     }
 
   }
-  // repeated float mu0 = 1;
+  // repeated float mu = 1;
   {
     int data_size = 0;
-    data_size = 4 * this->mu0_size();
-    total_size += 1 * this->mu0_size() + data_size;
+    data_size = 4 * this->mu_size();
+    total_size += 1 * this->mu_size() + data_size;
   }
 
   // repeated float psi = 3;
@@ -6652,11 +6652,11 @@ void NormalInverseWishart_Shared::MergeFrom(const ::google::protobuf::Message& f
 
 void NormalInverseWishart_Shared::MergeFrom(const NormalInverseWishart_Shared& from) {
   GOOGLE_CHECK_NE(&from, this);
-  mu0_.MergeFrom(from.mu0_);
+  mu_.MergeFrom(from.mu_);
   psi_.MergeFrom(from.psi_);
   if (from._has_bits_[1 / 32] & (0xffu << (1 % 32))) {
-    if (from.has_lambda()) {
-      set_lambda(from.lambda());
+    if (from.has_kappa()) {
+      set_kappa(from.kappa());
     }
     if (from.has_nu()) {
       set_nu(from.nu());
@@ -6685,8 +6685,8 @@ bool NormalInverseWishart_Shared::IsInitialized() const {
 
 void NormalInverseWishart_Shared::Swap(NormalInverseWishart_Shared* other) {
   if (other != this) {
-    mu0_.Swap(&other->mu0_);
-    std::swap(lambda_, other->lambda_);
+    mu_.Swap(&other->mu_);
+    std::swap(kappa_, other->kappa_);
     psi_.Swap(&other->psi_);
     std::swap(nu_, other->nu_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);

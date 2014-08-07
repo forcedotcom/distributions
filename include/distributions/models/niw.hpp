@@ -78,23 +78,23 @@ struct Sampler;
 
 struct Shared : SharedMixin<Model>
 {
-    Vector mu0;
-    float lambda;
+    Vector mu;
+    float kappa;
     Matrix psi;
     float nu;
 
     template<class Message>
     void protobuf_load (const Message & message)
     {
-        // mu0
-        check_row_or_col_size(message.mu0_size());
-        mu0.resize(message.mu0_size(), Eigen::NoChange);
-        for (size_t i = 0; i < (size_t)mu0.rows(); i++)
-            mu0(i) = message.mu0(i);
+        // mu
+        check_row_or_col_size(message.mu_size());
+        mu.resize(message.mu_size(), Eigen::NoChange);
+        for (size_t i = 0; i < (size_t)mu.rows(); i++)
+            mu(i) = message.mu(i);
 
-        // lambda
-        DIST_ASSERT_GT(message.lambda(), 0.);
-        lambda = message.lambda();
+        // kappa
+        DIST_ASSERT_GT(message.kappa(), 0.);
+        kappa = message.kappa();
 
         // psi
         check_rowcol_size(message.psi_size());
@@ -104,10 +104,10 @@ struct Shared : SharedMixin<Model>
                 psi(i, j) = message.psi(i*size_t(psi.cols()) + j);
         DIST_ASSERT3(is_symmetric_positive_definite(psi),
                      "expected SPD matrix");
-        DIST_ASSERT_EQ(mu0.rows(), psi.rows());
+        DIST_ASSERT_EQ(mu.rows(), psi.rows());
 
         // nu
-        DIST_ASSERT_GT(message.nu(), float(mu0.rows()) - 1.);
+        DIST_ASSERT_GT(message.nu(), float(mu.rows()) - 1.);
         nu = message.nu();
     }
 
@@ -116,10 +116,10 @@ struct Shared : SharedMixin<Model>
     {
         message.Clear();
 
-        for (size_t i = 0; i < (size_t)mu0.size(); i++)
-            message.add_mu0(mu0(i));
+        for (size_t i = 0; i < (size_t)mu.size(); i++)
+            message.add_mu(mu(i));
 
-        message.set_lambda(lambda);
+        message.set_kappa(kappa);
 
         for (size_t i = 0; i < (size_t)psi.rows(); i++)
             for (size_t j = 0; j < (size_t)psi.cols(); j++)
@@ -128,15 +128,15 @@ struct Shared : SharedMixin<Model>
         message.set_nu(nu);
     }
 
-    inline unsigned dim() const { return mu0.rows(); }
+    inline unsigned dim() const { return mu.rows(); }
 
     static Shared EXAMPLE ()
     {
         const size_t actual_dim = (dim_ == -1) ? 3 : size_t(dim_);
         Shared shared;
-        shared.mu0.resize(actual_dim, Eigen::NoChange);
-        shared.mu0.setZero();
-        shared.lambda = 1.0;
+        shared.mu.resize(actual_dim, Eigen::NoChange);
+        shared.mu.setZero();
+        shared.kappa = 1.0;
         shared.psi.resize(actual_dim, actual_dim);
         shared.psi.setIdentity();
         shared.nu = float(actual_dim) + 1;
@@ -279,7 +279,7 @@ struct Group : GroupMixin<Model>
             - float(count*shared.dim())*0.5*1.1447298858494002 /* log(pi) */
             - lmultigamma(shared.dim(), shared.nu*0.5)
             - post.nu*0.5*fast_log(post.psi.determinant())
-            + float(shared.dim())*0.5*fast_log(shared.lambda/post.lambda);
+            + float(shared.dim())*0.5*fast_log(shared.kappa/post.kappa);
     }
 
     Value sample_value (
@@ -308,18 +308,18 @@ struct Group : GroupMixin<Model>
             xbar = sum_x / n;
         else
             xbar = Vector::Zero(shared.dim());
-        post.mu0 = shared.lambda/(shared.lambda + n)*shared.mu0
-            + n/(shared.lambda + n)*xbar;
-        post.lambda = shared.lambda + n;
+        post.mu = shared.kappa/(shared.kappa + n)*shared.mu
+            + n/(shared.kappa + n)*xbar;
+        post.kappa = shared.kappa + n;
         post.nu = shared.nu + n;
-        const Vector &diff = xbar - shared.mu0;
+        const Vector &diff = xbar - shared.mu;
         const Matrix &C_n = sum_xxT
             - sum_x*xbar.transpose()
             - xbar*sum_x.transpose()
             + n*xbar*xbar.transpose();
         post.psi = shared.psi
             + C_n
-            + shared.lambda*n/(shared.lambda + n)*diff*diff.transpose();
+            + shared.kappa*n/(shared.kappa + n)*diff*diff.transpose();
     }
 };
 
@@ -336,7 +336,7 @@ struct Sampler
         Shared post;
         group.advance(shared, post);
         const auto p = sample_normal_inverse_wishart(
-                post.mu0, post.lambda, post.psi, post.nu, rng);
+                post.mu, post.kappa, post.psi, post.nu, rng);
         mu.swap(p.first);
         cov.swap(p.second);
     }
@@ -367,8 +367,8 @@ struct Scorer
             rng_t &) const
     {
         const float dof = post.nu - float(shared.dim()) + 1.;
-        const Matrix sigma = post.psi * (post.lambda+1.)/(post.lambda*dof);
-        return score_mv_student_t(value, dof, post.mu0, sigma);
+        const Matrix sigma = post.psi * (post.kappa+1.)/(post.kappa*dof);
+        return score_mv_student_t(value, dof, post.mu, sigma);
     }
 };
 

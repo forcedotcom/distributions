@@ -144,8 +144,8 @@ message NormalInverseChiSq {
 
 message NormalInverseWishart {
   message Shared {
-    repeated float mu0 = 1;
-    required float lambda = 2;
+    repeated float mu = 1;
+    required float kappa = 2;
     repeated float psi = 3;
     required float nu = 4;
   }
