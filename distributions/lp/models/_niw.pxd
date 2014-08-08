@@ -31,7 +31,7 @@ cimport _niw_h as _h
 from libc.stdint cimport uint32_t
 from libcpp.vector cimport vector
 cimport numpy as np
-np.import_array()
+import numpy as np
 from distributions.rng_cc cimport rng_t
 from distributions.global_rng cimport get_rng
 

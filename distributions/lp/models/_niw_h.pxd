@@ -45,7 +45,7 @@ cdef extern from "eigen3/Eigen/Dense" namespace "Eigen":
 cdef extern from "distributions/cython.hpp" namespace "distributions":
     float float_op_get2(const MatrixXf &, unsigned, unsigned)
     void float_op_set2(MatrixXf &, unsigned, unsigned, float)
- 
+
 ctypedef VectorXf Value
 
 cdef extern from "distributions/models/niw.hpp" namespace "distributions::NormalInverseWishart<-1>":
@@ -56,7 +56,7 @@ cdef extern from "distributions/models/niw.hpp" namespace "distributions::Normal
         float nu
 
     cppclass Group:
-        unsigned count
+        int count
         VectorXf sum_x
         MatrixXf sum_xxT
 

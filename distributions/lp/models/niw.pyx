@@ -63,6 +63,7 @@ cdef class _Shared(_niw.Shared):
         # XXX: validate raw['mu'] and raw['psi']
         self.ptr.mu = to_eigen_vecf(raw['mu'])
         self.ptr.kappa = raw['kappa']
+        assert raw['psi'] is not None
         self.ptr.psi = to_eigen_matf(raw['psi'])
         self.ptr.nu = raw['nu']
 
@@ -79,8 +80,8 @@ cdef class _Shared(_niw.Shared):
         self.ptr.mu = to_eigen_vecf(np.array(message.mu, dtype=float))
         self.ptr.kappa = message.kappa
         D = len(message.mu)
-        self.ptr.psi = to_eigen_matf(
-             np.array(message.psi, dtype=float).resize((D, D)))
+        psi = np.array(message.psi, dtype=float).reshape((D, D))
+        self.ptr.psi = to_eigen_matf(psi)
         self.ptr.nu = message.nu
 
     def protobuf_dump(self, message):
@@ -103,6 +104,7 @@ cdef class _Group(_niw.Group):
         # XXX: validate raw['sum_x'] and raw['sum_xxT']
         self.ptr.count = raw['count']
         self.ptr.sum_x = to_eigen_vecf(raw['sum_x'])
+        assert raw['sum_xxT'] is not None
         self.ptr.sum_xxT = to_eigen_matf(raw['sum_xxT'])
 
     def dump(self):

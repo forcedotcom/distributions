@@ -27,6 +27,9 @@
 
 ctypedef np.ndarray Value
 
+import numpy as np
+cimport numpy as np
+
 ### Helpers to convert Eigen <-> numpy
 
 cdef VectorXf to_eigen_vecf(x):
@@ -115,6 +118,7 @@ cdef class Sampler:
 
 def sample_group(Shared shared, int size):
     cdef Group group = Group()
+    group.init(shared)
     cdef _h.Sampler sampler
     sampler.init(shared.ptr[0], group.ptr[0], get_rng()[0])
     cdef list result = []

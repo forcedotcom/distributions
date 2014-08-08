@@ -162,7 +162,7 @@ struct Shared : SharedMixin<Model>
 
 struct Group : GroupMixin<Model>
 {
-    unsigned count;
+    int count;
     Vector sum_x;
     Matrix sum_xxT;
 
@@ -242,7 +242,6 @@ struct Group : GroupMixin<Model>
             rng_t &)
     {
         DIST_ASSERT3(shared.dim() == (size_t)value.size(), "dim mismatch");
-        DIST_ASSERT3(count > 0, "nothing to remove");
         count--;
         sum_x -= value;
         sum_xxT -= value * value.transpose();
@@ -302,6 +301,7 @@ struct Group : GroupMixin<Model>
             const Shared & shared,
             Shared & post) const
     {
+        DIST_ASSERT3(shared.dim() > 0, "uninitialized");
         const float n = count;
         Vector xbar;
         if (count)
