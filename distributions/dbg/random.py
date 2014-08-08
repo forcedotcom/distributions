@@ -41,6 +41,7 @@ from scipy.special import gammaln
 from distributions.util import scores_to_probs
 import logging
 
+from distributions.vendor.stats import sample_invwishart as _sample_inverse_wishart
 
 LOG = logging.getLogger(__name__)
 
@@ -159,24 +160,8 @@ def sample_wishart_v2(nu, Lambda):
     return dot(dot(dot(ch, T), T.T), ch.T)
 
 def sample_inverse_wishart(nu, S):
-    """
-    https://github.com/mattjj/pyhsmm/blob/master/util/stats.py#L140
-    """
-
-    # TODO make a version that returns the cholesky
-    # TODO allow passing in chol/cholinv of matrix parameter lmbda
-    # TODO lowmem! memoize! dchud (eigen?)
-    n = S.shape[0]
-    chol = np.linalg.cholesky(S)
-
-    if (nu <= 81+n) and (nu == np.round(nu)):
-        x = np.random.randn(nu,n)
-    else:
-        x = np.diag(np.sqrt(np.atleast_1d(chi2.rvs(nu-np.arange(n)))))
-        x[np.triu_indices_from(x,1)] = np.random.randn(n*(n-1)/2)
-    R = np.linalg.qr(x,'r')
-    T = scipy.linalg.solve_triangular(R.T,chol.T,lower=True).T
-    return np.dot(T,T.T)
+    # matt's parameters are reversed
+    return _sample_inverse_wishart(S, nu)
 
 def sample_normal_inverse_wishart(mu0, lambda0, psi0, nu0):
     D, = mu0.shape
