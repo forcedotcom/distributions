@@ -40,7 +40,8 @@ from distributions.dbg.random import sample_chi2, sample_normal
 from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 
-# FIXME how does this relate to distributions.dbg.random.score_student_t
+# scalar score_student_t, see distributions.dbg.random.score_student_t
+# for the multivariate generalization
 def score_student_t(x, nu, mu, sigmasq):
     """
     \cite{murphy2007conjugate}, Eq. 304

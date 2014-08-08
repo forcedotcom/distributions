@@ -107,17 +107,19 @@ def sample_student_t(dof, mu, Sigma):
     z = numpy.random.multivariate_normal(numpy.zeros(p), Sigma, (1,))
     return (mu + z / numpy.sqrt(x))[0]
 
-def score_student_t(x, n, mu, sigma):
+def score_student_t(x, nu, mu, sigma):
     """
     multivariate score_student_t
+
+    \cite{murphy2007conjugate}, Eq. 313
     """
     p = len(mu)
     z = x - mu
     S = inner(inner(z, inv(sigma)), z)
     score = (
-        gammaln(0.5 * (n + p))
-        - gammaln(0.5 * n)
-        - 0.5 * (p * log(n * pi) + log(det(sigma)) + (n + p) * log(1 + S / n))
+        gammaln(0.5 * (nu + p))
+        - gammaln(0.5 * nu)
+        - 0.5 * (p * log(nu * pi) + log(det(sigma)) + (nu + p) * log(1 + S / nu))
     )
     return score
 

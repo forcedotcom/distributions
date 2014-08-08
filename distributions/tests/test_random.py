@@ -38,7 +38,9 @@ from distributions.dbg.random import (
     sample_stick,
     sample_discrete_log,
     sample_inverse_wishart,
+    score_student_t as score_mv_student_t,
 )
+from distributions.dbg.models.nich import score_student_t
 from distributions.tests.util import (
     require_cython,
     assert_close,
@@ -264,3 +266,10 @@ def test_sample_iw():
         ntries -= 1
 
     assert False, "mean did not converge"
+
+def test_score_student_t():
+    x, nu, mu, sigmasq = 1.2, 5., -0.2, 0.7
+    scalar_score = score_student_t(x, nu, mu, sigmasq)
+    mv_score = score_mv_student_t(
+        numpy.array([x]), nu, numpy.array([mu]), numpy.array([[sigmasq]]))
+    assert_close(scalar_score, mv_score)
