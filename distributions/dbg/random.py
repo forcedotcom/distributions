@@ -26,6 +26,7 @@
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from math import log, pi, sqrt, factorial
+import numpy as np
 import numpy.random
 from numpy.random.mtrand import dirichlet as sample_dirichlet
 from numpy import dot, inner
@@ -34,6 +35,7 @@ from numpy.random import multivariate_normal
 from numpy.random import beta as sample_beta
 from numpy.random import poisson as sample_poisson
 from numpy.random import gamma as sample_gamma
+import scipy.linalg
 from scipy.stats import norm, chi2, bernoulli, nbinom
 from scipy.special import gammaln
 from distributions.util import scores_to_probs
@@ -105,8 +107,10 @@ def sample_student_t(dof, mu, Sigma):
     z = numpy.random.multivariate_normal(numpy.zeros(p), Sigma, (1,))
     return (mu + z / numpy.sqrt(x))[0]
 
-
 def score_student_t(x, n, mu, sigma):
+    """
+    multivariate score_student_t
+    """
     p = len(mu)
     z = x - mu
     S = inner(inner(z, inv(sigma)), z)
@@ -116,7 +120,6 @@ def score_student_t(x, n, mu, sigma):
         - 0.5 * (p * log(n * pi) + log(det(sigma)) + (n + p) * log(1 + S / n))
     )
     return score
-
 
 def sample_wishart_naive(nu, Lambda):
     """
@@ -128,7 +131,6 @@ def sample_wishart_naive(nu, Lambda):
     S = numpy.dot(X.T, X)
     return S
 
-
 def sample_wishart(nu, Lambda):
     ch = cholesky(Lambda)
     d = Lambda.shape[0]
@@ -138,7 +140,6 @@ def sample_wishart(nu, Lambda):
             z[i, :i] = numpy.random.normal(size=(i,))
         z[i, i] = sqrt(numpy.random.gamma(0.5 * nu - d + 1, 2.0))
     return dot(dot(dot(ch, z), z.T), ch.T)
-
 
 def sample_wishart_v2(nu, Lambda):
     """
@@ -155,6 +156,34 @@ def sample_wishart_v2(nu, Lambda):
         T[i, i] = sqrt(chi2.rvs(nu - i + 1))
     return dot(dot(dot(ch, T), T.T), ch.T)
 
+def sample_inverse_wishart(nu, S):
+    """
+    https://github.com/mattjj/pyhsmm/blob/master/util/stats.py#L140
+    """
+
+    # TODO make a version that returns the cholesky
+    # TODO allow passing in chol/cholinv of matrix parameter lmbda
+    # TODO lowmem! memoize! dchud (eigen?)
+    n = S.shape[0]
+    chol = np.linalg.cholesky(S)
+
+    if (nu <= 81+n) and (nu == np.round(nu)):
+        x = np.random.randn(nu,n)
+    else:
+        x = np.diag(np.sqrt(np.atleast_1d(chi2.rvs(nu-np.arange(n)))))
+        x[np.triu_indices_from(x,1)] = np.random.randn(n*(n-1)/2)
+    R = np.linalg.qr(x,'r')
+    T = scipy.linalg.solve_triangular(R.T,chol.T,lower=True).T
+    return np.dot(T,T.T)
+
+def sample_normal_inverse_wishart(mu0, lambda0, psi0, nu0):
+    D, = mu0.shape
+    assert psi0.shape == (D,D)
+    assert lambda0 > 0.0
+    assert nu0 > D - 1
+    cov = sample_inverse_wishart(nu0, psi0)
+    mu = np.random.multivariate_normal(mean=mu0, cov=1./lambda0*cov)
+    return mu, cov
 
 def sample_partition_from_counts(items, counts):
     """

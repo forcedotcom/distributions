@@ -30,7 +30,7 @@ import scipy.linalg
 import math
 
 from scipy.special import multigammaln
-from distributions.dbg.special import gammaln
+from distributions.dbg.random import score_student_t, sample_normal_inverse_wishart
 from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 NAME = 'NormalInverseWishart'
@@ -54,47 +54,6 @@ EXAMPLES = [
     },
 ]
 Value = np.ndarray
-
-def score_mv_student_t(x, nu, mu, sigma):
-    """
-    Eq. 313
-    """
-    d = x.shape[0]
-    term1 = gammaln(nu/2. + d/2.) - gammaln(nu/2.)
-    sigmainv = np.linalg.inv(sigma)
-    term2 = -0.5*np.log(np.linalg.det(sigma)) - d/2.*np.log(nu*math.pi)
-    diff = x - mu
-    term3 = -0.5*(nu+d)*np.log(1. + 1./nu*np.dot(diff, np.dot(sigmainv, diff)))
-    return term1 + term2 + term3
-
-def sample_iw(S, nu):
-    """
-    https://github.com/mattjj/pyhsmm/blob/master/util/stats.py#L140
-    """
-
-    # TODO make a version that returns the cholesky
-    # TODO allow passing in chol/cholinv of matrix parameter lmbda
-    # TODO lowmem! memoize! dchud (eigen?)
-    n = S.shape[0]
-    chol = np.linalg.cholesky(S)
-
-    if (nu <= 81+n) and (nu == np.round(nu)):
-        x = np.random.randn(nu,n)
-    else:
-        x = np.diag(np.sqrt(np.atleast_1d(stats.chi2.rvs(nu-np.arange(n)))))
-        x[np.triu_indices_from(x,1)] = np.random.randn(n*(n-1)/2)
-    R = np.linalg.qr(x,'r')
-    T = scipy.linalg.solve_triangular(R.T,chol.T,lower=True).T
-    return np.dot(T,T.T)
-
-def sample_niw(mu0, lambda0, psi0, nu0):
-    D, = mu0.shape
-    assert psi0.shape == (D,D)
-    assert lambda0 > 0.0
-    assert nu0 > D - 1
-    cov = sample_iw(psi0, nu0)
-    mu = np.random.multivariate_normal(mean=mu0, cov=1./lambda0*cov)
-    return mu, cov
 
 class Shared(SharedMixin, SharedIoMixin):
 
@@ -186,7 +145,7 @@ class Group(GroupIoMixin):
         mu_n, lam_n, psi_n, nu_n = self._post_params(shared)
         dof = nu_n-shared.dim()+1.
         sigma_n = psi_n*(lam_n+1.)/(lam_n*dof)
-        return score_mv_student_t(value, dof, mu_n, sigma_n)
+        return score_student_t(value, dof, mu_n, sigma_n)
 
     def score_data(self, shared):
         """
@@ -245,8 +204,8 @@ class Sampler(object):
             mu0, kappa0, psi0, nu0 = group._post_params(shared)
         else:
             mu0, kappa0, psi0, nu0 = shared.mu, shared.kappa, shared.psi, shared.nu
-        self.mu, self.sigma = sample_niw(mu0, kappa0, psi0, nu0)
-
+        self.mu, self.sigma = sample_normal_inverse_wishart(
+            mu0, kappa0, psi0, nu0)
     def eval(self, shared):
         return np.random.multivariate_normal(self.mu, self.sigma)
 

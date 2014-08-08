@@ -34,7 +34,11 @@ from nose.tools import (
     assert_almost_equal,
     assert_raises,
 )
-from distributions.dbg.random import sample_stick, sample_discrete_log
+from distributions.dbg.random import (
+    sample_stick,
+    sample_discrete_log,
+    sample_inverse_wishart,
+)
 from distributions.tests.util import (
     require_cython,
     assert_close,
@@ -232,3 +236,31 @@ def test_sample_discrete():
         distributions.lp.random.sample_discrete(
             numpy.array([1e-3, 1 - 1e-3], dtype=numpy.float32)),
         1)
+
+def test_sample_iw():
+
+    def random_orthogonal_matrix(m, n):
+        A, _ = numpy.linalg.qr(numpy.random.random((m, n)))
+        return A
+    def random_orthonormal_matrix(n):
+        A = random_orthogonal_matrix(n, n)
+        return A
+
+    Q = random_orthonormal_matrix(2)
+    nu = 4
+    S = numpy.dot(Q, numpy.dot(numpy.diag([1.0, 0.5]), Q.T))
+    invS = numpy.linalg.inv(S)
+
+    true_mean = 1./(nu-S.shape[0]-1)*S
+
+    ntries = 100
+    samples = []
+    while ntries:
+        samples.extend([sample_inverse_wishart(nu, S) for _ in xrange(10000)])
+        mean = sum(samples) / len(samples)
+        diff = numpy.linalg.norm(true_mean - mean)
+        if diff <= 0.1:
+            return
+        ntries -= 1
+
+    assert False, "mean did not converge"
