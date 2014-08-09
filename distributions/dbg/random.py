@@ -35,7 +35,6 @@ from numpy.random import multivariate_normal
 from numpy.random import beta as sample_beta
 from numpy.random import poisson as sample_poisson
 from numpy.random import gamma as sample_gamma
-import scipy.linalg
 from scipy.stats import norm, chi2, bernoulli, nbinom
 from scipy.special import gammaln
 from distributions.util import scores_to_probs

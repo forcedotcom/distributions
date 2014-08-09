@@ -33,6 +33,7 @@ from nose.tools import (
     assert_equal,
     assert_almost_equal,
     assert_raises,
+    assert_true,
 )
 from distributions.dbg.random import (
     sample_stick,
@@ -251,7 +252,6 @@ def test_sample_iw():
     Q = random_orthonormal_matrix(2)
     nu = 4
     S = numpy.dot(Q, numpy.dot(numpy.diag([1.0, 0.5]), Q.T))
-    invS = numpy.linalg.inv(S)
 
     true_mean = 1./(nu-S.shape[0]-1)*S
 

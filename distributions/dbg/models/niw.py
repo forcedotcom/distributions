@@ -25,8 +25,6 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 
 import numpy as np
-import scipy.stats as stats
-import scipy.linalg
 import math
 
 from scipy.special import multigammaln
@@ -162,9 +160,9 @@ class Group(GroupIoMixin):
         """
         \cite{murphy2007conjugate}, Eq. 266
         """
-        mu0, kappa0, psi0, nu0 = shared.mu, shared.kappa, shared.psi, shared.nu
+        kappa0, psi0, nu0 = shared.kappa, shared.psi, shared.nu
         post = shared.plus_group(self)
-        mu_n, kappa_n, psi_n, nu_n = post.mu, post.kappa, post.psi, post.nu
+        kappa_n, psi_n, nu_n = post.kappa, post.psi, post.nu
         n = self.count
         D = shared.dim()
         return (
