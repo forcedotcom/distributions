@@ -25,34 +25,33 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from libcpp.vector cimport vector
+cimport numpy as np
+import numpy as np
 
-from distributions.rng_cc cimport rng_t
-from distributions._eigen_h cimport VectorXf, MatrixXf
+### Helpers to convert Eigen <-> numpy
 
-ctypedef VectorXf Value
+cdef VectorXf to_eigen_vecf(np.ndarray x):
+    cdef VectorXf v = VectorXf(x.shape[0])
+    for i, e in enumerate(x):
+        v[i] = float(e)
+    return v
 
-cdef extern from "distributions/models/niw.hpp" namespace "distributions::NormalInverseWishart<-1>":
-    cppclass Shared:
-        VectorXf mu
-        float kappa
-        MatrixXf psi
-        float nu
+cdef MatrixXf to_eigen_matf(np.ndarray x):
+    cdef MatrixXf m = MatrixXf(x.shape[0], x.shape[1])
+    for i, a in enumerate(x):
+        for j, b in enumerate(a):
+            _h.float_op_set2(m, i, j, b)
+    return m
 
-    cppclass Group:
-        int count
-        VectorXf sum_x
-        MatrixXf sum_xxT
+cdef np.ndarray to_np_1darray(const VectorXf &x):
+    cdef np.ndarray v = np.zeros(x.size())
+    for i in xrange(x.size()):
+        v[i] = x[i]
+    return v
 
-        void init (Shared &, rng_t &) nogil except +
-        void add_value (Shared &, Value &, rng_t &) nogil except +
-        void add_repeated_value (Shared &, Value &, int &, rng_t &) nogil except +
-        void remove_value (Shared &, Value &, rng_t &) nogil except +
-        void merge (Shared &, Group &, rng_t &) nogil except +
-        float score_value (Shared &, Value &, rng_t &) nogil except +
-        float score_data (Shared &, rng_t &) nogil except +
-        Value sample_value (Shared &, rng_t &) nogil except +
-
-    cppclass Sampler:
-        void init (Shared &, Group &, rng_t &) nogil except +
-        Value eval (Shared &, rng_t &) nogil except +
+cdef np.ndarray to_np_2darray(const MatrixXf &x):
+    cdef np.ndarray m = np.zeros((x.rows(), x.cols()))
+    for i in xrange(x.rows()):
+        for j in xrange(x.cols()):
+            m[i, j] = _h.float_op_get2(x, i, j)
+    return m

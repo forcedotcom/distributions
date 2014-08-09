@@ -25,34 +25,19 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from libcpp.vector cimport vector
+cdef extern from "eigen3/Eigen/Dense" namespace "Eigen":
+    cdef cppclass VectorXf:
+        VectorXf()
+        VectorXf(int) except +
+        int size()
+        float & operator[](int) except +
 
-from distributions.rng_cc cimport rng_t
-from distributions._eigen_h cimport VectorXf, MatrixXf
+    cdef cppclass MatrixXf:
+        MatrixXf()
+        MatrixXf(int, int) except +
+        int rows()
+        int cols()
 
-ctypedef VectorXf Value
-
-cdef extern from "distributions/models/niw.hpp" namespace "distributions::NormalInverseWishart<-1>":
-    cppclass Shared:
-        VectorXf mu
-        float kappa
-        MatrixXf psi
-        float nu
-
-    cppclass Group:
-        int count
-        VectorXf sum_x
-        MatrixXf sum_xxT
-
-        void init (Shared &, rng_t &) nogil except +
-        void add_value (Shared &, Value &, rng_t &) nogil except +
-        void add_repeated_value (Shared &, Value &, int &, rng_t &) nogil except +
-        void remove_value (Shared &, Value &, rng_t &) nogil except +
-        void merge (Shared &, Group &, rng_t &) nogil except +
-        float score_value (Shared &, Value &, rng_t &) nogil except +
-        float score_data (Shared &, rng_t &) nogil except +
-        Value sample_value (Shared &, rng_t &) nogil except +
-
-    cppclass Sampler:
-        void init (Shared &, Group &, rng_t &) nogil except +
-        Value eval (Shared &, rng_t &) nogil except +
+cdef extern from "distributions/cython.hpp" namespace "distributions":
+    float float_op_get2(const MatrixXf &, unsigned, unsigned)
+    void float_op_set2(MatrixXf &, unsigned, unsigned, float)

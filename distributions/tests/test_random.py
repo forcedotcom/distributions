@@ -39,13 +39,19 @@ from distributions.dbg.random import (
     sample_stick,
     sample_discrete_log,
     sample_inverse_wishart,
-    score_student_t as score_mv_student_t,
+    score_student_t as dbg_score_student_t,
 )
-from distributions.dbg.models.nich import score_student_t
+from distributions.lp.random import (
+    score_student_t as lp_score_student_t,
+)
+from distributions.dbg.models.nich import (
+    score_student_t as scalar_score_student_t,
+)
 from distributions.tests.util import (
     require_cython,
     assert_close,
     assert_samples_match_scores,
+    seed_all,
 )
 
 
@@ -241,15 +247,17 @@ def test_sample_discrete():
         1)
 
 
+def random_orthogonal_matrix(m, n):
+    A, _ = numpy.linalg.qr(numpy.random.random((m, n)))
+    return A
+
+
+def random_orthonormal_matrix(n):
+    A = random_orthogonal_matrix(n, n)
+    return A
+
+
 def test_sample_iw():
-
-    def random_orthogonal_matrix(m, n):
-        A, _ = numpy.linalg.qr(numpy.random.random((m, n)))
-        return A
-
-    def random_orthonormal_matrix(n):
-        A = random_orthogonal_matrix(n, n)
-        return A
 
     Q = random_orthonormal_matrix(2)
     nu = 4
@@ -270,9 +278,49 @@ def test_sample_iw():
     assert_true(False, "mean did not converge")
 
 
-def test_score_student_t():
-    x, nu, mu, sigmasq = 1.2, 5., -0.2, 0.7
-    scalar_score = score_student_t(x, nu, mu, sigmasq)
-    mv_score = score_mv_student_t(
-        numpy.array([x]), nu, numpy.array([mu]), numpy.array([[sigmasq]]))
-    assert_close(scalar_score, mv_score)
+def test_score_student_t_scalar_equiv():
+    values = (
+        (1.2, 5., -0.2, 0.7),
+        (-3., 3., 1.2, 1.3),
+    )
+    for x, nu, mu, sigmasq in values:
+        mv_args = [
+            numpy.array([x]),
+            nu,
+            numpy.array([mu]),
+            numpy.array([[sigmasq]])]
+
+        scalar_score = scalar_score_student_t(x, nu, mu, sigmasq)
+        dbg_mv_score = dbg_score_student_t(*mv_args)
+        lp_mv_score = lp_score_student_t(*mv_args)
+
+        assert_close(scalar_score, dbg_mv_score)
+        assert_close(scalar_score, lp_mv_score)
+        assert_close(dbg_mv_score, lp_mv_score)
+
+
+def test_score_student_t_dbg_lp_equiv():
+    seed_all(0)
+
+    def random_vec(dim):
+        return numpy.random.uniform(low=-3., high=3., size=dim)
+
+    def random_cov(dim):
+        Q = random_orthonormal_matrix(dim)
+        return numpy.dot(Q, Q.T)
+
+    def random_values(dim):
+        return (random_vec(dim),
+                float(dim) + 1.,
+                random_vec(dim),
+                random_cov(dim))
+
+    values = (
+        [random_values(2) for _ in xrange(10)] +
+        [random_values(3) for _ in xrange(10)]
+    )
+
+    for x, nu, mu, cov in values:
+        dbg_mv_score = dbg_score_student_t(x, nu, mu, cov)
+        lp_mv_score = lp_score_student_t(x, nu, mu, cov)
+        assert_close(dbg_mv_score, lp_mv_score)

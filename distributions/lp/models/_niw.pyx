@@ -30,35 +30,6 @@ ctypedef np.ndarray Value
 import numpy as np
 cimport numpy as np
 
-### Helpers to convert Eigen <-> numpy
-
-cdef VectorXf to_eigen_vecf(x):
-    cdef VectorXf v = VectorXf(x.shape[0])
-    for i, e in enumerate(x):
-        v[i] = float(e)
-    return v
-
-cdef MatrixXf to_eigen_matf(x):
-    cdef MatrixXf m = MatrixXf(x.shape[0], x.shape[1])
-    for i, a in enumerate(x):
-        for j, b in enumerate(a):
-            _h.float_op_set2(m, i, j, b)
-    return m
-
-cdef np.ndarray to_np_1darray(const VectorXf &x):
-    cdef np.ndarray v = np.zeros(x.size())
-    for i in xrange(x.size()):
-        v[i] = x[i]
-    return v
-
-cdef np.ndarray to_np_2darray(const MatrixXf &x):
-    cdef np.ndarray m = np.zeros((x.rows(), x.cols()))
-    for i in xrange(x.rows()):
-        for j in xrange(x.cols()):
-            m[i, j] = _h.float_op_get2(x, i, j)
-    return m
-
-
 cdef class Shared:
     def __cinit__(self):
         self.ptr = new _h.Shared()

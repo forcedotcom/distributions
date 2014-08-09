@@ -144,6 +144,7 @@ hp_extensions = make_extensions([
     'has_cython',
     'rng_cc',
     'global_rng',
+    '_eigen',
     'hp.special',
     'hp.random',
     'hp.models.dd',

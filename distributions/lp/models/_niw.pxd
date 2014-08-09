@@ -25,20 +25,15 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from _niw_h cimport VectorXf, MatrixXf
+from distributions._eigen_h cimport VectorXf, MatrixXf
+from distributions._eigen cimport to_np_1darray, to_eigen_vecf
 cimport _niw_h as _h
 
 from libc.stdint cimport uint32_t
 from libcpp.vector cimport vector
 cimport numpy as np
-import numpy as np
 from distributions.rng_cc cimport rng_t
 from distributions.global_rng cimport get_rng
-
-cdef VectorXf to_eigen_vecf(x)
-cdef MatrixXf to_eigen_matf(x)
-cdef np.ndarray to_np_1darray(const VectorXf &)
-cdef np.ndarray to_np_2darray(const MatrixXf &x)
 
 cdef class Shared:
     cdef _h.Shared * ptr

@@ -33,6 +33,8 @@ numpy.import_array()
 from cpython cimport PyObject
 from distributions.rng_cc cimport rng_t
 from distributions.global_rng cimport get_rng
+from distributions._eigen_h cimport VectorXf, MatrixXf
+from distributions._eigen cimport to_eigen_vecf, to_eigen_matf
 
 ctypedef PyObject* O
 
@@ -55,6 +57,11 @@ cdef extern from "distributions/random.hpp" namespace "distributions":
             rng_t & rng,
             size_t dim,
             const float * probs) nogil
+    cdef float score_student_t_cc "distributions::score_mv_student_t" (
+            const VectorXf &,
+            float,
+            const VectorXf &,
+            const MatrixXf &) nogil
 
 cdef class RNG:
     cdef rng_t * ptr
@@ -102,3 +109,12 @@ def sample_discrete(numpy.ndarray[numpy.float32_t, ndim=1] probs):
     cdef size_t size = probs.shape[0]
     cdef float * data = <float *> probs.data
     return sample_discrete_cc(get_rng()[0], size, data)
+
+def score_student_t(numpy.ndarray v,
+                    float nu,
+                    numpy.ndarray mu,
+                    numpy.ndarray sigma):
+    cdef VectorXf c_v = to_eigen_vecf(v)
+    cdef VectorXf c_mu = to_eigen_vecf(mu)
+    cdef MatrixXf c_sigma = to_eigen_matf(sigma)
+    return score_student_t_cc(c_v, nu, c_mu, c_sigma)

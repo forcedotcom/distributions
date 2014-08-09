@@ -92,6 +92,12 @@ def _test_group(name):
                 group.score_value(shared, value)
                 for module, shared, group in modules_shareds_groups
             ]
+            for module, shared, group in modules_shareds_groups:
+                print "------------------"
+                print module
+                print shared.dump()
+                print group.dump()
+            print value
             assert_all_close(scores, err_msg='score_value')
 
         scores = [

@@ -25,8 +25,13 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from _niw_h cimport VectorXf, MatrixXf
-from _niw cimport to_eigen_vecf, to_eigen_matf, to_np_1darray, to_np_2darray
+from distributions._eigen_h cimport VectorXf, MatrixXf
+from distributions._eigen cimport (
+    to_eigen_vecf,
+    to_eigen_matf,
+    to_np_1darray,
+    to_np_2darray,
+)
 
 cimport _niw
 import _niw
