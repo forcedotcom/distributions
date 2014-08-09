@@ -97,12 +97,12 @@ struct Shared : SharedMixin<Model>
         post.mu = kappa / (kappa + n) * mu + n / (kappa + n) * xbar;
         post.kappa = kappa + n;
         post.nu = nu + n;
-        const Vector & diff = xbar - mu;
-        const Matrix & C_n = group.sum_xxT
+        const Vector diff = xbar - mu;
+        const Matrix C_n = group.sum_xxT
             - group.sum_x * xbar.transpose()
             - xbar * group.sum_x.transpose()
             + n * xbar * xbar.transpose();
-        const Matrix & ddT = diff * diff.transpose();
+        const Matrix ddT = diff * diff.transpose();
         post.psi = psi + C_n + kappa * n / (kappa + n) * ddT;
         return post;
     }

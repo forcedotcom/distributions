@@ -180,7 +180,7 @@ inline float score_mv_student_t (
       - fast_lgamma(nu / 2.);
 
   // XXX: use Cholesky decomposition to make this faster
-  const Matrix & sigma_inv = sigma.inverse();
+  const Matrix sigma_inv = sigma.inverse();
   const float sigma_det = sigma.determinant();
 
   const float log_pi = 1.1447298858494002;
@@ -188,7 +188,7 @@ inline float score_mv_student_t (
   const float term2 = -0.5 * fast_log(sigma_det)
       - float(d) / 2. * (fast_log(nu) + log_pi);
 
-  const Vector & diff = v - mu;
+  const Vector diff = v - mu;
 
   const float term3 = -0.5 * (nu + float(d)) *
       fast_log(1. + 1. / nu * (diff.dot(sigma_inv * diff)));
