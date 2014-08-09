@@ -265,7 +265,7 @@ def test_sample_iw():
             return
         ntries -= 1
 
-    assert False, "mean did not converge"
+    assert_true(False, "mean did not converge")
 
 def test_score_student_t():
     x, nu, mu, sigmasq = 1.2, 5., -0.2, 0.7

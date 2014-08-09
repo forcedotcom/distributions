@@ -167,7 +167,7 @@ inline float score_student_t (
     return p;
 }
 
-// XXX: horrible
+// XXX: not optimized for speed
 template <typename Vector, typename Matrix>
 inline float score_mv_student_t (
         const Vector & v,
@@ -182,13 +182,15 @@ inline float score_mv_student_t (
   const Matrix &sigma_inv = sigma.inverse();
   const float sigma_det = sigma.determinant();
 
-  const float term2 = -0.5*fast_log(sigma_det) - float(d)/2.*(
-      fast_log(nu) + 1.1447298858494002 /* log(pi) */);
+  const float log_pi = 1.1447298858494002;
+
+  const float term2 = -0.5 * fast_log(sigma_det)
+      - float(d) / 2. * (fast_log(nu) + log_pi);
 
   const Vector &diff = v - mu;
 
-  const float term3 =
-      -0.5*(nu+float(d))*fast_log(1.+1./nu*(diff.dot(sigma_inv*diff)));
+  const float term3 = -0.5 * (nu + float(d)) *
+      fast_log(1. + 1. / nu * (diff.dot(sigma_inv * diff)));
 
   return term1 + term2 + term3;
 }
@@ -214,7 +216,7 @@ inline Vector sample_multivariate_normal (
     return mu + llt.matrixL() * z;
 }
 
-// Taken from:
+// Based on:
 // http://www.mit.edu/~mattjj/released-code/hsmm/stats_util.py
 template <typename Matrix>
 inline Matrix sample_wishart (
@@ -229,29 +231,27 @@ inline Matrix sample_wishart (
 
     Matrix A = Matrix::Zero(scale.rows(), scale.rows());
 
-    for (unsigned i = 0; i < scale.rows(); i++) {
-        std::chi_squared_distribution<float> dist(nu - float(i));
-        A(i, i) = sqrt(dist(rng));
-    }
+    for (unsigned i = 0; i < scale.rows(); i++)
+        A(i, i) = sqrt(sample_chisq(rng, nu - float(i)));
 
     std::normal_distribution<float> norm;
     for (unsigned i = 1; i < scale.rows(); i++)
         for (unsigned j = 0; j < i; j++)
             A(i, j) = norm(rng);
 
-    Matrix X = llt.matrixL() * A;
+    const Matrix X = llt.matrixL() * A;
     return X * X.transpose();
 }
 
-// XXX: horrible
+// XXX: not optimized for speed
 template <typename Matrix>
 inline Matrix sample_inverse_wishart (
         float nu,
         const Matrix & psi,
         rng_t & rng)
 {
-    Matrix psi_inv = psi.inverse();
-    Matrix sigma_inv = sample_wishart(nu, psi_inv, rng);
+    const Matrix psi_inv = psi.inverse();
+    const Matrix sigma_inv = sample_wishart(nu, psi_inv, rng);
     return sigma_inv.inverse();
 }
 

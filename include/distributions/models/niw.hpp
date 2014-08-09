@@ -83,6 +83,30 @@ struct Shared : SharedMixin<Model>
     Matrix psi;
     float nu;
 
+    Shared plus_group (const Group & group) const
+    {
+        Shared post;
+        DIST_ASSERT3(dim() > 0, "uninitialized");
+        const float n = group.count;
+        Vector xbar;
+        if (group.count) {
+            xbar = group.sum_x / n;
+        } else {
+            xbar = Vector::Zero(dim());
+        }
+        post.mu = kappa / (kappa + n) * mu + n / (kappa + n) * xbar;
+        post.kappa = kappa + n;
+        post.nu = nu + n;
+        const Vector & diff = xbar - mu;
+        const Matrix & C_n = group.sum_xxT
+            - group.sum_x * xbar.transpose()
+            - xbar * group.sum_x.transpose()
+            + n * xbar * xbar.transpose();
+        const Matrix & ddT = diff * diff.transpose();
+        post.psi = psi + C_n + kappa * n / (kappa + n) * ddT;
+        return post;
+    }
+
     template<class Message>
     void protobuf_load (const Message & message)
     {
@@ -271,14 +295,14 @@ struct Group : GroupMixin<Model>
             const Shared & shared,
             rng_t &) const
     {
-        Shared post;
-        advance(shared, post);
-        return lmultigamma(shared.dim(), post.nu*0.5)
-            + shared.nu*0.5*fast_log(shared.psi.determinant())
-            - float(count*shared.dim())*0.5*1.1447298858494002 /* log(pi) */
-            - lmultigamma(shared.dim(), shared.nu*0.5)
-            - post.nu*0.5*fast_log(post.psi.determinant())
-            + float(shared.dim())*0.5*fast_log(shared.kappa/post.kappa);
+        Shared post = shared.plus_group(*this);
+        const float log_pi = 1.1447298858494002;
+        return lmultigamma(shared.dim(), post.nu * 0.5)
+            + shared.nu * 0.5 * fast_log(shared.psi.determinant())
+            - float(count * shared.dim()) * 0.5 * log_pi
+            - lmultigamma(shared.dim(), shared.nu * 0.5)
+            - post.nu * 0.5 * fast_log(post.psi.determinant())
+            + float(shared.dim()) * 0.5 * fast_log(shared.kappa / post.kappa);
     }
 
     Value sample_value (
@@ -294,33 +318,6 @@ struct Group : GroupMixin<Model>
     {
 
     }
-
-    // XXX: some more cleverness is needed, but let's just
-    // get this working for now
-    inline void advance (
-            const Shared & shared,
-            Shared & post) const
-    {
-        DIST_ASSERT3(shared.dim() > 0, "uninitialized");
-        const float n = count;
-        Vector xbar;
-        if (count)
-            xbar = sum_x / n;
-        else
-            xbar = Vector::Zero(shared.dim());
-        post.mu = shared.kappa/(shared.kappa + n)*shared.mu
-            + n/(shared.kappa + n)*xbar;
-        post.kappa = shared.kappa + n;
-        post.nu = shared.nu + n;
-        const Vector &diff = xbar - shared.mu;
-        const Matrix &C_n = sum_xxT
-            - sum_x*xbar.transpose()
-            - xbar*sum_x.transpose()
-            + n*xbar*xbar.transpose();
-        post.psi = shared.psi
-            + C_n
-            + shared.kappa*n/(shared.kappa + n)*diff*diff.transpose();
-    }
 };
 
 struct Sampler
@@ -333,8 +330,7 @@ struct Sampler
             const Group & group,
             rng_t & rng)
     {
-        Shared post;
-        group.advance(shared, post);
+        Shared post = shared.plus_group(group);
         const auto p = sample_normal_inverse_wishart(
                 post.mu, post.kappa, post.psi, post.nu, rng);
         mu.swap(p.first);
@@ -358,7 +354,7 @@ struct Scorer
             const Group & group,
             rng_t &)
     {
-        group.advance(shared, post);
+        post = shared.plus_group(group);
     }
 
     float eval (
@@ -367,7 +363,7 @@ struct Scorer
             rng_t &) const
     {
         const float dof = post.nu - float(shared.dim()) + 1.;
-        const Matrix sigma = post.psi * (post.kappa+1.)/(post.kappa*dof);
+        const Matrix sigma = post.psi * (post.kappa + 1.) / (post.kappa * dof);
         return score_mv_student_t(value, dof, post.mu, sigma);
     }
 };

@@ -60,6 +60,28 @@ class Shared(SharedMixin, SharedIoMixin):
     def dim(self):
         return self.mu.shape[0]
 
+    def plus_group(self, group):
+        """
+        \cite{murphy2007conjugate}, Eq. 251-254
+        """
+        mu0, kappa0, psi0, nu0 = self.mu, self.kappa, self.psi, self.nu
+        n, sum_x, sum_xxT = group.count, group.sum_x, group.sum_xxT
+        xbar = sum_x / n if n else np.zeros(self.dim())
+        mu_n = kappa0 / (kappa0 + n) * mu0 + n / (kappa0 + n) * xbar
+        kappa_n = kappa0 + n
+        nu_n = nu0 + n
+        diff = xbar - mu0
+        C_n = (
+            sum_xxT
+            - np.outer(sum_x, xbar)
+            - np.outer(xbar, sum_x)
+            + n * np.outer(xbar, xbar)
+        )
+        psi_n = psi0 + C_n + kappa0 * n / (kappa0 + n) * np.outer(diff, diff)
+        post = Shared()
+        post.mu, post.kappa, post.psi, post.nu = mu_n, kappa_n, psi_n, nu_n
+        return post
+
     def load(self, raw):
         self.mu = raw['mu'].copy()
         assert len(self.mu.shape) == 1
@@ -126,41 +148,32 @@ class Group(GroupIoMixin):
         self.sum_x += source.sum_x
         self.sum_xxT += source.sum_xxT
 
-    def _post_params(self, shared):
-        mu0, lam0, psi0, nu0 = shared.mu, shared.kappa, shared.psi, shared.nu
-        n, sum_x, sum_xxT = self.count, self.sum_x, self.sum_xxT
-        xbar = sum_x / n if n else np.zeros(shared.dim())
-        mu_n = lam0/(lam0 + n)*mu0 + n/(lam0 + n)*xbar
-        lam_n = lam0 + n
-        nu_n = nu0 + n
-        diff = xbar - mu0
-        C_n = sum_xxT - np.outer(sum_x, xbar) - np.outer(xbar, sum_x) + n*np.outer(xbar, xbar)
-        psi_n = psi0 + C_n + lam0*n/(lam0+n)*np.outer(diff, diff)
-        return mu_n, lam_n, psi_n, nu_n
-
     def score_value(self, shared, value):
         """
-        Eq. 258
+        \cite{murphy2007conjugate}, Eq. 258
         """
-        mu_n, lam_n, psi_n, nu_n = self._post_params(shared)
-        dof = nu_n-shared.dim()+1.
-        sigma_n = psi_n*(lam_n+1.)/(lam_n*dof)
+        post = shared.plus_group(self)
+        mu_n, kappa_n, psi_n, nu_n = post.mu, post.kappa, post.psi, post.nu
+        dof = nu_n - shared.dim() + 1.
+        sigma_n = psi_n * (kappa_n + 1.) / (kappa_n * dof)
         return score_student_t(value, dof, mu_n, sigma_n)
 
     def score_data(self, shared):
         """
-        Eq. 266
+        \cite{murphy2007conjugate}, Eq. 266
         """
-        mu0, lam0, psi0, nu0 = shared.mu, shared.kappa, shared.psi, shared.nu
-        mu_n, lam_n, psi_n, nu_n = self._post_params(shared)
+        mu0, kappa0, psi0, nu0 = shared.mu, shared.kappa, shared.psi, shared.nu
+        post = shared.plus_group(self)
+        mu_n, kappa_n, psi_n, nu_n = post.mu, post.kappa, post.psi, post.nu
         n = self.count
         D = shared.dim()
-        return multigammaln(nu_n/2., D) \
-            + nu0/2.*np.log(np.linalg.det(psi0)) \
-            - (n*D/2.)*np.log(math.pi) \
-            - multigammaln(nu0/2., D) \
-            - nu_n/2.*np.log(np.linalg.det(psi_n)) \
-            + D/2.*np.log(lam0/lam_n)
+        return (
+            multigammaln(nu_n / 2., D)
+            + nu0 / 2. * np.log(np.linalg.det(psi0))
+            - (n * D / 2.) * np.log(math.pi)
+            - multigammaln(nu0 / 2., D)
+            - nu_n / 2. * np.log(np.linalg.det(psi_n))
+            + D / 2. * np.log(kappa0 / kappa_n))
 
     def sample_value(self, shared):
         sampler = Sampler()
@@ -201,11 +214,9 @@ class Group(GroupIoMixin):
 class Sampler(object):
     def init(self, shared, group=None):
         if group is not None:
-            mu0, kappa0, psi0, nu0 = group._post_params(shared)
-        else:
-            mu0, kappa0, psi0, nu0 = shared.mu, shared.kappa, shared.psi, shared.nu
+            shared = shared.plus_group(group)
         self.mu, self.sigma = sample_normal_inverse_wishart(
-            mu0, kappa0, psi0, nu0)
+            shared.mu, shared.kappa, shared.psi, shared.nu)
     def eval(self, shared):
         return np.random.multivariate_normal(self.mu, self.sigma)
 
