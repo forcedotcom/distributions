@@ -28,17 +28,20 @@ import numpy as np
 import math
 
 from scipy.special import multigammaln
-from distributions.dbg.random import score_student_t, sample_normal_inverse_wishart
+from distributions.dbg.random import (
+    score_student_t,
+    sample_normal_inverse_wishart,
+)
 from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 NAME = 'NormalInverseWishart'
 EXAMPLES = [
     {
         'shared': {
-                'mu': np.zeros(2),
-                'kappa': 2.,
-                'psi' : np.eye(2),
-                'nu' : 3.,
+            'mu': np.zeros(2),
+            'kappa': 2.,
+            'psi': np.eye(2),
+            'nu': 3.,
         },
         'values': [np.array(v) for v in (
             [1., 2.],
@@ -52,6 +55,7 @@ EXAMPLES = [
     },
 ]
 Value = np.ndarray
+
 
 class Shared(SharedMixin, SharedIoMixin):
 
@@ -93,10 +97,10 @@ class Shared(SharedMixin, SharedIoMixin):
 
     def dump(self):
         return {
-            'mu' : self.mu.copy(),
-            'kappa' : self.kappa,
-            'psi' : self.psi.copy(),
-            'nu' : self.nu,
+            'mu': self.mu.copy(),
+            'kappa': self.kappa,
+            'psi': self.psi.copy(),
+            'nu': self.nu,
         }
 
     def protobuf_load(self, message):
@@ -119,6 +123,7 @@ class Shared(SharedMixin, SharedIoMixin):
                 message.psi.append(y)
         message.nu = self.nu
 
+
 class Group(GroupIoMixin):
 
     def init(self, shared):
@@ -132,7 +137,7 @@ class Group(GroupIoMixin):
         self.sum_xxT += np.outer(value, value)
 
     def add_repeated_value(self, shared, value, count):
-        self.count +=count
+        self.count += count
         self.sum_x += (count * value)
         self.sum_xxT += (count * np.outer(value, value))
 
@@ -184,13 +189,13 @@ class Group(GroupIoMixin):
         self.sum_x = raw['sum_x'].copy()
         self.sum_xxT = raw['sum_xxT'].copy()
         D = self.sum_x.shape[0]
-        assert self.sum_xxT.shape == (D,D)
+        assert self.sum_xxT.shape == (D, D)
 
     def dump(self):
         return {
-            'count' : self.count,
-            'sum_x' : self.sum_x.copy(),
-            'sum_xxT' : self.sum_xxT.copy(),
+            'count': self.count,
+            'sum_x': self.sum_x.copy(),
+            'sum_xxT': self.sum_xxT.copy(),
         }
 
     def protobuf_load(self, message):
@@ -209,14 +214,17 @@ class Group(GroupIoMixin):
             for y in x:
                 message.sum_xxT.append(y)
 
+
 class Sampler(object):
     def init(self, shared, group=None):
         if group is not None:
             shared = shared.plus_group(group)
         self.mu, self.sigma = sample_normal_inverse_wishart(
             shared.mu, shared.kappa, shared.psi, shared.nu)
+
     def eval(self, shared):
         return np.random.multivariate_normal(self.mu, self.sigma)
+
 
 def sample_group(shared, size):
     group = Group()

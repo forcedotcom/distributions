@@ -240,11 +240,13 @@ def test_sample_discrete():
             numpy.array([1e-3, 1 - 1e-3], dtype=numpy.float32)),
         1)
 
+
 def test_sample_iw():
 
     def random_orthogonal_matrix(m, n):
         A, _ = numpy.linalg.qr(numpy.random.random((m, n)))
         return A
+
     def random_orthonormal_matrix(n):
         A = random_orthogonal_matrix(n, n)
         return A
@@ -253,7 +255,7 @@ def test_sample_iw():
     nu = 4
     S = numpy.dot(Q, numpy.dot(numpy.diag([1.0, 0.5]), Q.T))
 
-    true_mean = 1./(nu-S.shape[0]-1)*S
+    true_mean = 1. / (nu - S.shape[0] - 1) * S
 
     ntries = 100
     samples = []
@@ -266,6 +268,7 @@ def test_sample_iw():
         ntries -= 1
 
     assert_true(False, "mean did not converge")
+
 
 def test_score_student_t():
     x, nu, mu, sigmasq = 1.2, 5., -0.2, 0.7

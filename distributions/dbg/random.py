@@ -40,7 +40,9 @@ from scipy.special import gammaln
 from distributions.util import scores_to_probs
 import logging
 
-from distributions.vendor.stats import sample_invwishart as _sample_inverse_wishart
+from distributions.vendor.stats import (
+    sample_invwishart as _sample_inverse_wishart
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -107,6 +109,7 @@ def sample_student_t(dof, mu, Sigma):
     z = numpy.random.multivariate_normal(numpy.zeros(p), Sigma, (1,))
     return (mu + z / numpy.sqrt(x))[0]
 
+
 def score_student_t(x, nu, mu, sigma):
     """
     multivariate score_student_t
@@ -119,9 +122,14 @@ def score_student_t(x, nu, mu, sigma):
     score = (
         gammaln(0.5 * (nu + p))
         - gammaln(0.5 * nu)
-        - 0.5 * (p * log(nu * pi) + log(det(sigma)) + (nu + p) * log(1 + S / nu))
+        - 0.5 * (
+            p * log(nu * pi)
+            + log(det(sigma))
+            + (nu + p) * log(1 + S / nu)
+        )
     )
     return score
+
 
 def sample_wishart_naive(nu, Lambda):
     """
@@ -133,6 +141,7 @@ def sample_wishart_naive(nu, Lambda):
     S = numpy.dot(X.T, X)
     return S
 
+
 def sample_wishart(nu, Lambda):
     ch = cholesky(Lambda)
     d = Lambda.shape[0]
@@ -142,6 +151,7 @@ def sample_wishart(nu, Lambda):
             z[i, :i] = numpy.random.normal(size=(i,))
         z[i, i] = sqrt(numpy.random.gamma(0.5 * nu - d + 1, 2.0))
     return dot(dot(dot(ch, z), z.T), ch.T)
+
 
 def sample_wishart_v2(nu, Lambda):
     """
@@ -158,18 +168,21 @@ def sample_wishart_v2(nu, Lambda):
         T[i, i] = sqrt(chi2.rvs(nu - i + 1))
     return dot(dot(dot(ch, T), T.T), ch.T)
 
+
 def sample_inverse_wishart(nu, S):
     # matt's parameters are reversed
     return _sample_inverse_wishart(S, nu)
 
+
 def sample_normal_inverse_wishart(mu0, lambda0, psi0, nu0):
     D, = mu0.shape
-    assert psi0.shape == (D,D)
+    assert psi0.shape == (D, D)
     assert lambda0 > 0.0
     assert nu0 > D - 1
     cov = sample_inverse_wishart(nu0, psi0)
-    mu = np.random.multivariate_normal(mean=mu0, cov=1./lambda0*cov)
+    mu = np.random.multivariate_normal(mean=mu0, cov=(1. / lambda0) * cov)
     return mu, cov
+
 
 def sample_partition_from_counts(items, counts):
     """

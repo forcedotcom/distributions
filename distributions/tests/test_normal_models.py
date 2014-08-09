@@ -30,6 +30,7 @@ import numpy as np
 from nose import SkipTest
 from distributions.tests.util import assert_close
 
+
 def _test_normals(nich, niw):
     mu = np.array([30.0])
     kappa = 0.3
@@ -38,13 +39,18 @@ def _test_normals(nich, niw):
 
     # make the NIW case
     niw_shared = niw.Shared()
-    niw_shared.load({'mu':mu,'kappa':kappa,'psi':psi,'nu':nu})
+    niw_shared.load({'mu': mu, 'kappa': kappa, 'psi': psi, 'nu': nu})
     niw_group = niw.Group()
     niw_group.init(niw_shared)
 
     # make the NIX case
     nix_shared = nich.Shared()
-    nix_shared.load({'mu':mu[0],'kappa':kappa,'sigmasq':psi[0,0]/nu,'nu':nu})
+    nix_shared.load({
+        'mu': mu[0],
+        'kappa': kappa,
+        'sigmasq': psi[0, 0] / nu,
+        'nu': nu
+    })
     nix_group = nich.Group()
     nix_group.init(nix_shared)
 
@@ -77,12 +83,14 @@ def _test_normals(nich, niw):
         assert_close(niw_group.score_value(niw_shared, np.array([value])),
                      nix_group.score_value(nix_shared, value))
 
+
 def test_normals_dbg():
     try:
         from distributions.dbg.models import nich, niw
     except ImportError:
         raise SkipTest("no dbg.{nich,niw}")
     _test_normals(nich, niw)
+
 
 def test_normals_lp():
     try:
