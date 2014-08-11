@@ -211,8 +211,9 @@ inline Vector sample_multivariate_normal (
 
     Vector z(mu.size());
     std::normal_distribution<float> norm;
-    for (unsigned i = 0; i < mu.size(); i++)
+    for (unsigned i = 0; i < mu.size(); i++) {
         z(i) = norm(rng);
+    }
 
     return mu + llt.matrixL() * z;
 }
@@ -232,13 +233,16 @@ inline Matrix sample_wishart (
 
     Matrix A = Matrix::Zero(scale.rows(), scale.rows());
 
-    for (unsigned i = 0; i < scale.rows(); i++)
+    for (unsigned i = 0; i < scale.rows(); i++) {
         A(i, i) = sqrt(sample_chisq(rng, nu - float(i)));
+    }
 
     std::normal_distribution<float> norm;
-    for (unsigned i = 1; i < scale.rows(); i++)
-        for (unsigned j = 0; j < i; j++)
+    for (unsigned i = 1; i < scale.rows(); i++) {
+        for (unsigned j = 0; j < i; j++) {
             A(i, j) = norm(rng);
+        }
+    }
 
     const Matrix X = llt.matrixL() * A;
     return X * X.transpose();
@@ -414,5 +418,3 @@ inline size_t sample_from_scores (
 }
 
 } // namespace distributions
-
-/* vim: set ts=4 sw=4 sts=4 expandtab : */

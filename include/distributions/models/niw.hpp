@@ -45,8 +45,9 @@ template <typename Matrix>
 static inline bool
 is_symmetric(const Matrix &m)
 {
-    if (!m.isApprox(m.transpose()))
+    if (!m.isApprox(m.transpose())) {
         return false;
+    }
     return true;
 }
 
@@ -54,8 +55,9 @@ template <typename Matrix>
 static inline bool
 is_symmetric_positive_definite(const Matrix &m)
 {
-    if (!is_symmetric(m))
+    if (!is_symmetric(m)) {
         return false;
+    }
     Eigen::LDLT<Matrix> ldlt;
     ldlt.compute(m);
     return ldlt.isPositive();
@@ -113,8 +115,10 @@ struct Shared : SharedMixin<Model>
         // mu
         check_row_or_col_size(message.mu_size());
         mu.resize(message.mu_size(), Eigen::NoChange);
-        for (size_t i = 0; i < (size_t)mu.rows(); i++)
+        const size_t mu_size = mu.size();
+        for (size_t i = 0; i < mu_size; i++) {
             mu(i) = message.mu(i);
+        }
 
         // kappa
         DIST_ASSERT_GT(message.kappa(), 0.);
@@ -123,9 +127,13 @@ struct Shared : SharedMixin<Model>
         // psi
         check_rowcol_size(message.psi_size());
         psi.resize(message.psi_size() / 2, message.psi_size() / 2);
-        for (size_t i = 0; i < (size_t)psi.rows(); i++)
-            for (size_t j = 0; j < (size_t)psi.cols(); j++)
-                psi(i, j) = message.psi(i*size_t(psi.cols()) + j);
+        const size_t psi_rows = psi.rows();
+        const size_t psi_cols = psi.cols();
+        for (size_t i = 0; i < psi_rows; i++) {
+            for (size_t j = 0; j < psi_cols; j++) {
+                psi(i, j) = message.psi(i * psi_cols + j);
+            }
+        }
         DIST_ASSERT3(is_symmetric_positive_definite(psi),
                      "expected SPD matrix");
         DIST_ASSERT_EQ(mu.rows(), psi.rows());
@@ -140,14 +148,20 @@ struct Shared : SharedMixin<Model>
     {
         message.Clear();
 
-        for (size_t i = 0; i < (size_t)mu.size(); i++)
+        const size_t mu_size = mu.size();
+        for (size_t i = 0; i < mu_size; i++) {
             message.add_mu(mu(i));
+        }
 
         message.set_kappa(kappa);
 
-        for (size_t i = 0; i < (size_t)psi.rows(); i++)
-            for (size_t j = 0; j < (size_t)psi.cols(); j++)
+        const size_t psi_rows = psi.rows();
+        const size_t psi_cols = psi.cols();
+        for (size_t i = 0; i < psi_rows; i++) {
+            for (size_t j = 0; j < psi_cols; j++) {
                 message.add_psi(psi(i, j));
+            }
+        }
 
         message.set_nu(nu);
     }
@@ -170,16 +184,18 @@ struct Shared : SharedMixin<Model>
     static inline DIST_ALWAYS_INLINE void
     check_row_or_col_size(size_t size)
     {
-        if (dim_ == -1)
+        if (dim_ == -1) {
             return;
+        }
         DIST_ASSERT_EQ(size_t(dim_), size);
     }
 
     static inline DIST_ALWAYS_INLINE void
     check_rowcol_size(size_t size)
     {
-        if (dim_ == -1)
+        if (dim_ == -1) {
             return;
+        }
         DIST_ASSERT_EQ(size_t(dim_*dim_), size);
     }
 };
@@ -199,15 +215,21 @@ struct Group : GroupMixin<Model>
         // sum_x
         Shared::check_row_or_col_size(message.sum_x_size());
         sum_x.resize(message.sum_x_size(), Eigen::NoChange);
-        for (size_t i = 0; i < (size_t)sum_x.rows(); i++)
+        const size_t sum_x_size = sum_x.size();
+        for (size_t i = 0; i < sum_x_size; i++) {
             sum_x(i) = message.sum_x(i);
+        }
 
         // sum_xxT
         Shared::check_rowcol_size(message.sum_xxt_size());
         sum_xxT.resize(message.sum_xxt_size() / 2, message.sum_xxt_size() / 2);
-        for (size_t i = 0; i < (size_t)sum_xxT.rows(); i++)
-            for (size_t j = 0; j < (size_t)sum_xxT.cols(); j++)
-                sum_xxT(i, j) = message.sum_xxt(i*size_t(sum_xxT.cols()) + j);
+        const size_t sum_xxT_rows = sum_xxT.rows();
+        const size_t sum_xxT_cols = sum_xxT.cols();
+        for (size_t i = 0; i < sum_xxT_rows; i++) {
+            for (size_t j = 0; j < sum_xxT_cols; j++) {
+                sum_xxT(i, j) = message.sum_xxt(i * sum_xxT_cols + j);
+            }
+        }
         // XXX(stephentu): should also assert positive semi-definite
         DIST_ASSERT3(is_symmetric(sum_xxT), "expected sym matrix");
         DIST_ASSERT_EQ(sum_x.rows(), sum_xxT.rows());
@@ -218,11 +240,18 @@ struct Group : GroupMixin<Model>
     {
         message.Clear();
         message.set_count(count);
-        for (size_t i = 0; i < (size_t)sum_x.rows(); i++)
+        const size_t sum_x_size = sum_x.size();
+        for (size_t i = 0; i < sum_x_size; i++) {
             message.add_sum_x(sum_x(i));
-        for (size_t i = 0; i < (size_t)sum_xxT.rows(); i++)
-            for (size_t j = 0; j < (size_t)sum_xxT.cols(); j++)
+        }
+
+        const size_t sum_xxT_rows = sum_xxT.rows();
+        const size_t sum_xxT_cols = sum_xxT.cols();
+        for (size_t i = 0; i < sum_xxT_rows; i++) {
+            for (size_t j = 0; j < sum_xxT_cols; j++) {
                 message.add_sum_xxt(sum_xxT(i, j));
+            }
+        }
     }
 
     void init (
@@ -375,5 +404,3 @@ extern template struct NormalInverseWishart<2>;
 extern template struct NormalInverseWishart<3>;
 
 } // namespace distributions
-
-/* vim: set ts=4 sw=4 sts=4 expandtab : */
