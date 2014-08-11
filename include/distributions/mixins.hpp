@@ -55,4 +55,4 @@ struct GroupMixin
     void validate (const Shared &) const {}
 };
 
-} // namespace distributions
+}   // namespace distributions

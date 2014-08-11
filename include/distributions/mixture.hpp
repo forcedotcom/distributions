@@ -568,4 +568,4 @@ private:
     size_t global_size_;
 };
 
-} // namespace distributions
+}   // namespace distributions

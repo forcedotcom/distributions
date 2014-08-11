@@ -277,7 +277,7 @@ const float lgamma_nu_func_approx_coeff3[] =
 6.53187647875674e-10, 9.49630979931091e+00
 };
 
-} // namespace detail
+}   // namespace detail
 
 template<class Alloc>
 void get_log_stirling1_row (size_t n, std::vector<float, Alloc> & result)
@@ -299,4 +299,4 @@ INSTANTIATE_TEMPLATES(aligned_allocator<float>)
 
 #undef INSTANTIATE_TEMPLATES
 
-} // namespace distributions
+}   // namespace distributions

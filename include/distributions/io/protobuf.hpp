@@ -40,16 +40,16 @@ template<special_> struct Protobuf<Typename params_>                \
     typedef ::protobuf::distributions::Typename t;                  \
 };
 
-DECLARE_MESSAGE(BetaBernoulli,,,)
+DECLARE_MESSAGE(BetaBernoulli, , , )
 DECLARE_MESSAGE(DirichletDiscrete,
     template<int max_dim>, int max_dim, <max_dim>)
-DECLARE_MESSAGE(DirichletProcessDiscrete,,,)
-DECLARE_MESSAGE(GammaPoisson,,,)
-DECLARE_MESSAGE(BetaNegativeBinomial,,,)
-DECLARE_MESSAGE(NormalInverseChiSq,,,)
+DECLARE_MESSAGE(DirichletProcessDiscrete, , , )
+DECLARE_MESSAGE(GammaPoisson, , , )
+DECLARE_MESSAGE(BetaNegativeBinomial, , , )
+DECLARE_MESSAGE(NormalInverseChiSq, , , )
 
 #undef DECLARE_MESSAGE
 
-namespace protobuf { using namespace ::protobuf::distributions; }
+namespace protobuf { using namespace ::protobuf::distributions; }  // NOLINT(*)
 
-} // namespace distributions
+}  // namespace distributions

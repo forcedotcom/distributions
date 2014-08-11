@@ -89,4 +89,4 @@ void NormalInverseChiSq::MixtureValueScorer::score_value (
     //}
 }
 
-} // namespace distributions
+}   // namespace distributions

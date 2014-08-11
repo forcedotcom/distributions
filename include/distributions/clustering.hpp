@@ -360,4 +360,4 @@ private:
 };
 
 }; // struct Clustering<count_t>
-} // namespace distributions
+}   // namespace distributions

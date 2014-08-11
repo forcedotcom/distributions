@@ -141,5 +141,5 @@ void vector_lgamma_nu (
         const size_t size,
         float * __restrict__ io);
 
-} // namespace distributions
+}   // namespace distributions
 

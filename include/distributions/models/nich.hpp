@@ -427,4 +427,4 @@ private:
 };
 
 }; // struct NormalInverseChiSq
-} // namespace distributions
+}   // namespace distributions

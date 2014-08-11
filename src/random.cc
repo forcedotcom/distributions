@@ -151,4 +151,4 @@ INSTANTIATE_TEMPLATES(aligned_allocator<float>)
 
 #undef INSTANTIATE_TEMPLATES
 
-} // namespace distributions
+}   // namespace distributions

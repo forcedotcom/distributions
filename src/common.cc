@@ -35,4 +35,4 @@ int foo ()
     return 4;
 }
 
-} // namespace distributions
+}   // namespace distributions

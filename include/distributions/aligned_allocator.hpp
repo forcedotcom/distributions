@@ -148,4 +148,4 @@ inline bool operator!= (
     return false;
 }
 
-} // namespace distributions
+}   // namespace distributions

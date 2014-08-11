@@ -620,4 +620,4 @@ private:
 };
 
 }; // struct DirichletProcessDiscrete
-} // namespace distributions
+}   // namespace distributions

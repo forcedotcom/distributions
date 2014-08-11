@@ -376,4 +376,4 @@ private:
 };
 
 }; // struct GammaPoisson
-} // namespace distributions
+}   // namespace distributions

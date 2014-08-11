@@ -378,4 +378,4 @@ private:
 };
 
 }; // struct BetaNegativeBinomial
-} // namespace distributions
+}   // namespace distributions

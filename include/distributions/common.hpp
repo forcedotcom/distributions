@@ -124,4 +124,4 @@ enum { SYNCHRONIZE_ENTROPY_FOR_UNIT_TESTING = 1 };
 
 int foo ();
 
-} // namespace distributions
+}   // namespace distributions

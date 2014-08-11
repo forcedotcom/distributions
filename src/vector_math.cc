@@ -48,7 +48,7 @@ struct InitializeMKL
 };
 InitializeMKL initialize_mkl;
 
-} // anonymous namespace
+}   // anonymous namespace
 
 #endif // defined USE_YEPPP || defined USE_INTEL_MKL
 
@@ -316,5 +316,5 @@ void vector_lgamma_nu (
     }
 }
 
-} // namespace distributions
+}   // namespace distributions
 

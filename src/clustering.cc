@@ -307,4 +307,4 @@ template struct Clustering<int32_t>;
 //template struct Clustering<uint32_t>;
 //template struct Clustering<uint64_t>;
 
-} // namespace distributions
+}   // namespace distributions

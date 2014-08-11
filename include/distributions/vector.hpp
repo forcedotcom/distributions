@@ -98,4 +98,4 @@ private:
 typedef Packed_<float, aligned_allocator<float>> VectorFloat;
 typedef Aligned_<float> AlignedFloats;
 
-} // namespace distributions
+}   // namespace distributions

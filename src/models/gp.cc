@@ -61,4 +61,4 @@ void GammaPoisson::MixtureValueScorer::score_value (
     }
 }
 
-} // namespace distributions
+}   // namespace distributions

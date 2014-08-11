@@ -361,4 +361,4 @@ private:
 };
 
 }; // struct BetaBernoulli
-} // namespace distributions
+}   // namespace distributions

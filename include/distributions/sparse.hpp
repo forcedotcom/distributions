@@ -32,52 +32,44 @@
 #include <distributions/common.hpp>
 #include <distributions/trivial_hash.hpp>
 
-namespace distributions
-{
+namespace distributions {
 
 template<class Key, class Value>
-class Sparse_
-{
+class Sparse_ {
     typedef std::unordered_map<Key, Value, TrivialHash<Key>> map_t;
 
     map_t map_;
 
-public:
-
+  public:
     typedef Key key_t;
     typedef Value value_t;
     typedef typename map_t::iterator iterator;
     typedef typename map_t::const_iterator const_iterator;
 
-    size_t size () const { return map_.size(); }
-    void clear () { map_.clear(); }
+    size_t size() const { return map_.size(); }
+    void clear() { map_.clear(); }
 
-    bool contains (const Key & key) const
-    {
+    bool contains(const Key & key) const {
         return map_.find(key) != map_.end();
     }
 
-    Value & add (const Key & key)
-    {
+    Value & add(const Key & key) {
         auto pair = map_.insert(std::make_pair(key, Value()));
         DIST_ASSERT1(pair.second, "duplicate key: " << key);
         return pair.first->second;
     }
 
-    void add (const Key & key, const Value & value)
-    {
+    void add(const Key & key, const Value & value) {
         auto pair = map_.insert(std::make_pair(key, value));
         DIST_ASSERT1(pair.second, "duplicate key: " << key);
     }
 
-    void remove (const Key & key)
-    {
+    void remove(const Key & key) {
         bool removed = map_.erase(key);
         DIST_ASSERT1(removed, "missing key: " << key);
     }
 
-    Value pop (const Key & key)
-    {
+    Value pop(const Key & key) {
         auto i = map_.find(key);
         DIST_ASSERT1(i != map_.end(), "missing key: " << key);
         Value result = std::move(i->second);
@@ -85,63 +77,55 @@ public:
         return result;
     }
 
-    void set (const Key & key, const Value & value)
-    {
+    void set(const Key & key, const Value & value) {
         auto i = map_.find(key);
         DIST_ASSERT1(i != map_.end(), "missing key: " << key);
         i->second = value;
     }
 
-    Value & get (const Key & key)
-    {
+    Value & get(const Key & key) {
         auto i = map_.find(key);
         DIST_ASSERT1(i != map_.end(), "missing key: " << key);
         return i->second;
     }
 
-    Value & get_or_add (const Key & key)
-    {
+    Value & get_or_add(const Key & key) {
         return map_.operator[](key);
     }
 
-    const Value & get (const Key & key) const
-    {
+    const Value & get(const Key & key) const {
         auto i = map_.find(key);
         DIST_ASSERT1(i != map_.end(), "missing key: " << key);
         return i->second;
     }
 
-    void unsafe_erase (iterator i) { map_.erase(i); }
+    void unsafe_erase(iterator i) { map_.erase(i); }
 
-    iterator begin () { return map_.begin(); }
-    iterator end () { return map_.end(); }
-    const_iterator begin () const { return map_.begin(); }
-    const_iterator end () const { return map_.end(); }
+    iterator begin() { return map_.begin(); }
+    iterator end() { return map_.end(); }
+    const_iterator begin() const { return map_.begin(); }
+    const_iterator end() const { return map_.end(); }
 };
 
 
 template<class Key, class Value>
-class SparseCounter
-{
+class SparseCounter {
     typedef std::unordered_map<Key, Value, TrivialHash<Key>> map_t;
 
     map_t map_;
     Value total_;
 
-public:
-
+  public:
     typedef Key key_t;
     typedef Value value_t;
     typedef typename map_t::const_iterator iterator;
 
-    void clear ()
-    {
+    void clear() {
         map_.clear();
         total_ = 0;
     }
 
-    void init_count (key_t key, value_t value)
-    {
+    void init_count(key_t key, value_t value) {
         if (DIST_LIKELY(value)) {
             bool success = map_.insert(std::make_pair(key, value)).second;
             DIST_ASSERT1(success, "duplicate key: " << key);
@@ -149,16 +133,14 @@ public:
         }
     }
 
-    value_t get_count (key_t key) const
-    {
+    value_t get_count(key_t key) const {
         auto i = map_.find(key);
         return i == map_.end() ? 0 : i->second;
     }
 
-    value_t get_total () const { return total_; }
+    value_t get_total() const { return total_; }
 
-    value_t add (const key_t & key, value_t value = 1)
-    {
+    value_t add(const key_t & key, value_t value = 1) {
         static_assert(value_t(-1) < value_t(0), "value_t must be signed");
         if (DIST_LIKELY(value)) {
             total_ += value;
@@ -176,18 +158,16 @@ public:
         }
     }
 
-    value_t remove (const key_t & key) { return add(key, -1); }
+    value_t remove(const key_t & key) { return add(key, -1); }
 
-    void merge (const SparseCounter<key_t, value_t> & other)
-    {
+    void merge(const SparseCounter<key_t, value_t> & other) {
         for (auto & i : other.map_) {
             add(i.first, i.second);
         }
         total_ += other.total_;
     }
 
-    void rename (key_t old_key, key_t new_key)
-    {
+    void rename(key_t old_key, key_t new_key) {
         auto i = map_.find(old_key);
         if (i != map_.end()) {
             value_t value = i->second;
@@ -197,8 +177,8 @@ public:
         }
     }
 
-    iterator begin () const { return map_.begin(); }
-    iterator end () const { return map_.end(); }
+    iterator begin() const { return map_.begin(); }
+    iterator end() const { return map_.end(); }
 };
 
-} // namespace distributions
+}  // namespace distributions

@@ -514,4 +514,4 @@ private:
 };
 
 }; // struct DirichletDiscrete
-} // namespace distributions
+}   // namespace distributions
