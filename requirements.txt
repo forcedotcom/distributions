@@ -8,3 +8,4 @@ parsable
 pyflakes
 pep8
 nose
+cpplint

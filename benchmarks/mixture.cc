@@ -37,25 +37,22 @@
 #include <distributions/models/nich.hpp>
 #include <distributions/timers.hpp>
 
-using namespace distributions;
+using namespace distributions;  // NOLINT(*)
 
 rng_t rng;
 
 template<class Model>
-struct Scorers
-{
-    struct Group
-    {
+struct Scorers {
+    struct Group {
         typename Model::Group group;
         typename Model::Scorer scorer;
     };
 
     std::vector<Group> groups;
 
-    Scorers (
+    Scorers(
             const typename Model::Shared & shared,
-            const typename Model::Mixture & mixture)
-    {
+            const typename Model::Mixture & mixture) {
         const size_t group_count = mixture.groups().size();
         groups.resize(group_count);
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
@@ -67,11 +64,10 @@ struct Scorers
         }
     }
 
-    void score (
+    void score(
             const typename Model::Shared & shared,
             const typename Model::Value & value,
-            VectorFloat & scores) const
-    {
+            VectorFloat & scores) const {
         const size_t group_count = groups.size();
         for (size_t groupid = 0; groupid < group_count; ++groupid) {
             float score = groups[groupid].scorer.eval(shared, value, rng);
@@ -81,11 +77,10 @@ struct Scorers
 };
 
 template<class Model>
-void speedtest (
+void speedtest(
         const typename Model::Shared & shared,
         size_t group_count,
-        size_t iters)
-{
+        size_t iters) {
     typename Model::Mixture mixture;
     mixture.groups().resize(group_count);
     std::vector<typename Model::Value> values;
@@ -149,23 +144,21 @@ void speedtest (
 }
 
 template<class Model>
-void speedtests ()
-{
+void speedtests() {
     std::cout <<
         demangle(typeid(typename Model::Shared).name()) << '\n' <<
         "Groups" << '\t' <<
         "Scorers" << '\t' <<
         "Mixture (cells/us)" << '\n';
 
-    const auto shared = Model::Shared::EXAMPLE();
+    auto const shared = Model::Shared::EXAMPLE();
     for (int group_count = 1; group_count <= 1000; group_count *= 10) {
         int iters = 500000 / group_count;
         speedtest<Model>(shared, group_count, iters);
     }
 }
 
-int main()
-{
+int main() {
     speedtests<BetaBernoulli>();
     speedtests<DirichletDiscrete<4>>();
     speedtests<DirichletProcessDiscrete>();

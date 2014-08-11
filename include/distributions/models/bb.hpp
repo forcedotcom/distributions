@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <vector>
 #include <distributions/common.hpp>
 #include <distributions/special.hpp>
 #include <distributions/random.hpp>
@@ -35,11 +36,8 @@
 #include <distributions/mixins.hpp>
 #include <distributions/mixture.hpp>
 
-namespace distributions
-{
-struct BetaBernoulli
-{
-
+namespace distributions {
+struct BetaBernoulli {
 typedef BetaBernoulli Model;
 typedef int count_t;
 typedef bool Value;
@@ -53,27 +51,23 @@ typedef MixtureSlave<Model, MixtureDataScorer, MixtureValueScorer> FastMixture;
 typedef FastMixture Mixture;
 
 
-struct Shared : SharedMixin<Model>
-{
+struct Shared : SharedMixin<Model> {
     float alpha;
     float beta;
 
     template<class Message>
-    void protobuf_load (const Message & message)
-    {
+    void protobuf_load(const Message & message) {
         alpha = message.alpha();
         beta = message.beta();
     }
 
     template<class Message>
-    void protobuf_dump (Message & message) const
-    {
+    void protobuf_dump(Message & message) const {
         message.set_alpha(alpha);
         message.set_beta(beta);
     }
 
-    static Shared EXAMPLE ()
-    {
+    static Shared EXAMPLE() {
         Shared shared;
         shared.alpha = 0.5;
         shared.beta = 2.0;
@@ -82,81 +76,71 @@ struct Shared : SharedMixin<Model>
 };
 
 
-struct Group : GroupMixin<Model>
-{
+struct Group : GroupMixin<Model> {
     count_t heads;
     count_t tails;
 
     template<class Message>
-    void protobuf_load (const Message & message)
-    {
+    void protobuf_load(const Message & message) {
         heads = message.heads();
         tails = message.tails();
     }
 
     template<class Message>
-    void protobuf_dump (Message & message) const
-    {
+    void protobuf_dump(Message & message) const {
         message.set_heads(heads);
         message.set_tails(tails);
     }
 
-    void init (
+    void init(
             const Shared &,
-            rng_t &)
-    {
+            rng_t &) {
         heads = 0;
         tails = 0;
     }
 
-    void add_value (
+    void add_value(
             const Shared &,
             const Value & value,
-            rng_t &)
-    {
+            rng_t &) {
         (value ? heads : tails) += 1;
     }
 
-    void add_repeated_value (
+    void add_repeated_value(
             const Shared &,
             const Value & value,
             const int & count,
-            rng_t &)
-    {
+            rng_t &) {
         (value ? heads : tails) += count;
     }
 
-    void remove_value (
+    void remove_value(
             const Shared &,
             const Value & value,
-            rng_t &)
-    {
+            rng_t &) {
         (value ? heads : tails) -= 1;
     }
 
-    void merge (
+    void merge(
             const Shared &,
             const Group & source,
-            rng_t &)
-    {
+            rng_t &) {
         heads += source.heads;
         tails += source.tails;
     }
 
-    float score_value (
+    float score_value(
             const Shared & shared,
             const Value & value,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         Scorer scorer;
         scorer.init(shared, *this, rng);
         return scorer.eval(shared, value, rng);
     }
 
-    float score_data (
+    float score_data(
             const Shared & shared,
-            rng_t &) const
-    {
+            rng_t &) const {
         float alpha = shared.alpha + heads;
         float beta = shared.beta + tails;
         float score = 0;
@@ -167,25 +151,22 @@ struct Group : GroupMixin<Model>
         return score;
     }
 
-    Value sample_value (
+    Value sample_value(
             const Shared & shared,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         Sampler sampler;
         sampler.init(shared, *this, rng);
         return sampler.eval(shared, rng);
     }
 };
 
-struct Sampler
-{
+struct Sampler {
     float heads_prob;
 
-    void init (
+    void init(
             const Shared & shared,
             const Group & group,
-            rng_t & rng)
-    {
+            rng_t & rng) {
         float ps[2] = {
             shared.alpha + group.heads,
             shared.beta + group.tails
@@ -194,52 +175,47 @@ struct Sampler
         heads_prob = ps[0];
     }
 
-    Value eval (
+    Value eval(
             const Shared &,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         return sample_bernoulli(rng, heads_prob);
     }
 };
 
-struct Scorer
-{
+struct Scorer {
     float heads_score;
     float tails_score;
 
-    void init (
+    void init(
             const Shared & shared,
             const Group & group,
-            rng_t &)
-    {
+            rng_t &) {
         float alpha = shared.alpha + group.heads;
         float beta = shared.beta + group.tails;
         heads_score = fast_log(alpha / (alpha + beta));
         tails_score = fast_log(beta / (alpha + beta));
     }
 
-    float eval (
+    float eval(
             const Shared &,
             const Value & value,
-            rng_t &) const
-    {
+            rng_t &) const {
         return value ? heads_score : tails_score;
     }
 };
 
-struct MixtureDataScorer : MixtureSlaveDataScorerMixin<Model, MixtureDataScorer>
-{
-    float score_data (
+struct MixtureDataScorer
+    : MixtureSlaveDataScorerMixin<Model, MixtureDataScorer> {
+    float score_data(
             const Shared & shared,
             const std::vector<Group> & groups,
-            rng_t &) const
-    {
+            rng_t &) const {
         const float shared_part =
                + fast_lgamma(shared.alpha + shared.beta)
                - fast_lgamma(shared.alpha)
                - fast_lgamma(shared.beta);
         float score = 0;
-        for (const auto & group : groups) {
+        for (auto const & group : groups) {
             float alpha = shared.alpha + group.heads;
             float beta = shared.beta + group.tails;
             float group_part =
@@ -252,63 +228,55 @@ struct MixtureDataScorer : MixtureSlaveDataScorerMixin<Model, MixtureDataScorer>
     }
 };
 
-struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
-{
-    void resize (const Shared &, size_t size)
-    {
+struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model> {
+    void resize(const Shared &, size_t size) {
         heads_scores_.resize(size);
         tails_scores_.resize(size);
     }
 
-    void add_group (const Shared &, rng_t &)
-    {
+    void add_group(const Shared &, rng_t &) {
         heads_scores_.packed_add(0);
         tails_scores_.packed_add(0);
     }
 
-    void remove_group (const Shared &, size_t groupid)
-    {
+    void remove_group(const Shared &, size_t groupid) {
         heads_scores_.packed_remove(groupid);
         tails_scores_.packed_remove(groupid);
     }
 
-    void update_group (
+    void update_group(
             const Shared & shared,
             size_t groupid,
             const Group & group,
-            rng_t & rng)
-    {
+            rng_t & rng) {
         Scorer scorer;
         scorer.init(shared, group, rng);
         heads_scores_[groupid] = scorer.heads_score;
         tails_scores_[groupid] = scorer.tails_score;
     }
 
-    void add_value (
+    void add_value(
             const Shared & shared,
             size_t groupid,
             const Group & group,
             const Value &,
-            rng_t & rng)
-    {
+            rng_t & rng) {
         update_group(shared, groupid, group, rng);
     }
 
-    void remove_value (
+    void remove_value(
             const Shared & shared,
             size_t groupid,
             const Group & group,
             const Value &,
-            rng_t & rng)
-    {
+            rng_t & rng) {
         update_group(shared, groupid, group, rng);
     }
 
-    void update_all (
+    void update_all(
             const Shared & shared,
             const std::vector<Group> & groups,
-            rng_t &)
-    {
+            rng_t &) {
         const size_t group_count = groups.size();
         heads_scores_.resize(group_count);
         tails_scores_.resize(group_count);
@@ -328,8 +296,7 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
             const std::vector<Group> &,
             size_t groupid,
             const Value & value,
-            rng_t &) const
-    {
+            rng_t &) const {
         return value ? heads_scores_[groupid] : tails_scores_[groupid];
     }
 
@@ -338,27 +305,23 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
             const std::vector<Group> &,
             const Value & value,
             AlignedFloats scores_accum,
-            rng_t &) const
-    {
+            rng_t &) const {
         vector_add(
             scores_accum.size(),
             scores_accum.data(),
             (value ? heads_scores_.data() : tails_scores_.data()));
     }
 
-    void validate (
+    void validate(
             const Shared &,
-            const std::vector<Group> & groups) const
-    {
+            const std::vector<Group> & groups) const {
         DIST_ASSERT_EQ(heads_scores_.size(), groups.size());
         DIST_ASSERT_EQ(tails_scores_.size(), groups.size());
     }
 
-private:
-
+  private:
     VectorFloat heads_scores_;
     VectorFloat tails_scores_;
 };
-
-}; // struct BetaBernoulli
-} // namespace distributions
+};  // struct BetaBernoulli
+}   // namespace distributions

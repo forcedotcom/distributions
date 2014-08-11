@@ -30,13 +30,12 @@
 #include <distributions/random.hpp>
 #include <distributions/timers.hpp>
 
-using namespace distributions;
+using namespace distributions;  // NOLINT(*)
 
-size_t speedtest (size_t size, size_t iters)
-{
+size_t speedtest(size_t size, size_t iters) {
     rng_t rng;
     std::vector<float> scores(size);
-    for (size_t i = 0; i < size; ++i){
+    for (size_t i = 0; i < size; ++i) {
         scores[i] = 10 * sample_unif01(rng);
     }
 
@@ -68,8 +67,7 @@ size_t speedtest (size_t size, size_t iters)
     return bogus;
 }
 
-int main()
-{
+int main() {
     std::cout << "size" << '\t' << "choices/us" << '\n';
 
     size_t max_exponent = 15;

@@ -28,16 +28,13 @@
 #include <distributions/models/gp.hpp>
 #include <distributions/vector_math.hpp>
 
-namespace distributions
-{
-
-void GammaPoisson::MixtureValueScorer::score_value (
+namespace distributions {
+void GammaPoisson::MixtureValueScorer::score_value(
         const Shared &,
         const std::vector<Group> &,
         const Value & value,
         AlignedFloats scores_accum,
-        rng_t &) const
-{
+        rng_t &) const {
     const size_t size = scores_accum.size();
     const float value_noalias = value;
     float * __restrict__ scores_accum_noalias =
@@ -61,4 +58,4 @@ void GammaPoisson::MixtureValueScorer::score_value (
     }
 }
 
-} // namespace distributions
+}   // namespace distributions
