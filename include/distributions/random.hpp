@@ -231,14 +231,15 @@ inline Matrix sample_wishart (
     Eigen::LLT<Matrix> llt(scale);
     DIST_ASSERT_EQ(llt.info(), Eigen::Success);
 
-    Matrix A = Matrix::Zero(scale.rows(), scale.rows());
+    const unsigned size = scale.rows();
+    Matrix A = Matrix::Zero(size, size);
 
-    for (unsigned i = 0; i < scale.rows(); i++) {
+    for (unsigned i = 0; i < size; i++) {
         A(i, i) = sqrt(sample_chisq(rng, nu - float(i)));
     }
 
     std::normal_distribution<float> norm;
-    for (unsigned i = 1; i < scale.rows(); i++) {
+    for (unsigned i = 1; i < size; i++) {
         for (unsigned j = 0; j < i; j++) {
             A(i, j) = norm(rng);
         }
