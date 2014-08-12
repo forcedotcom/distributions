@@ -39,7 +39,7 @@ Branch-specific documentation lives at
 * Eric Jonas <https://twitter.com/stochastician>
 * Fritz Obermeyer <https://github.com/fritzo>
 * Cap Petschulat <https://github.com/cap>
-
+* Stephen Tu <https://github.com/stephentu>
 
 ## License
 
