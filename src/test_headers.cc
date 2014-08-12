@@ -1,6 +1,7 @@
 #include <distributions/aligned_allocator.hpp>
 #include <distributions/clustering.hpp>
 #include <distributions/common.hpp>
+#include <distributions/cython.hpp>
 #include <distributions/mixins.hpp>
 #include <distributions/mixture.hpp>
 #include <distributions/models/bb.hpp>
@@ -9,6 +10,7 @@
 #include <distributions/models/dpd.hpp>
 #include <distributions/models/gp.hpp>
 #include <distributions/models/nich.hpp>
+#include <distributions/models/niw.hpp>
 #include <distributions/random_fwd.hpp>
 #include <distributions/random.hpp>
 #include <distributions/sparse.hpp>

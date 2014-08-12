@@ -124,6 +124,8 @@ def make_extension(name):
                 sources.append('src/clustering.cc')
             elif name in ('lp.models.nich', 'lp.models._nich'):
                 sources.append('src/models/nich.cc')
+            elif name in ('lp.models.niw', 'lp.models._niw'):
+                sources.append('src/models/niw.cc')
             elif name in ('lp.models.gp', 'lp.models._gp'):
                 sources.append('src/models/gp.cc')
     return Extension(
@@ -144,6 +146,7 @@ hp_extensions = make_extensions([
     'has_cython',
     'rng_cc',
     'global_rng',
+    '_eigen',
     'hp.special',
     'hp.random',
     'hp.models.dd',
@@ -168,6 +171,8 @@ lp_extensions = make_extensions([
     'lp.models._bnb',
     'lp.models.nich',
     'lp.models._nich',
+    'lp.models.niw',
+    'lp.models._niw',
     'lp.clustering',
     'lp.mixture',
 ])

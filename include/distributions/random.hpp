@@ -35,6 +35,8 @@
 #include <distributions/vector_math.hpp>
 #include <distributions/random_fwd.hpp>
 
+#include <eigen3/Eigen/Cholesky>
+
 namespace distributions {
 
 inline int sample_int(rng_t & rng, int low, int high) {
@@ -150,6 +152,108 @@ inline float score_student_t(
     p += 0.5f * logf(lambda / (M_PIf * nu));
     p += (-0.5f * nu - 0.5f) * logf(1.f + (lambda * sqr(x - mu)) / nu);
     return p;
+}
+
+// XXX: not optimized for speed
+template <typename Vector, typename Matrix>
+inline float score_mv_student_t(
+        const Vector & v,
+        float nu,
+        const Vector & mu,
+        const Matrix & sigma) {
+  const unsigned d = v.size();
+  const float term1 = fast_lgamma(nu / 2. + static_cast<float>(d) / 2.)
+      - fast_lgamma(nu / 2.);
+
+  // XXX: use Cholesky decomposition to make this faster
+  const Matrix sigma_inv = sigma.inverse();
+  const float sigma_det = sigma.determinant();
+
+  const float log_pi = 1.1447298858494002;
+
+  const float term2 = -0.5 * fast_log(sigma_det)
+      - static_cast<float>(d) / 2. * (fast_log(nu) + log_pi);
+
+  const Vector diff = v - mu;
+
+  const float term3 = -0.5 * (nu + static_cast<float>(d)) *
+      fast_log(1. + 1. / nu * (diff.dot(sigma_inv * diff)));
+
+  return term1 + term2 + term3;
+}
+
+// Assumes sigma is positive definite
+template <typename Vector, typename Matrix>
+inline Vector sample_multivariate_normal(
+        const Vector & mu,
+        const Matrix & sigma,
+        rng_t & rng) {
+    DIST_ASSERT_EQ(sigma.rows(), sigma.cols());
+    DIST_ASSERT_EQ(mu.size(), sigma.rows());
+
+    Eigen::LLT<Matrix> llt(sigma);
+    DIST_ASSERT_EQ(llt.info(), Eigen::Success);
+
+    Vector z(mu.size());
+    std::normal_distribution<float> norm;
+    for (unsigned i = 0; i < mu.size(); i++) {
+        z(i) = norm(rng);
+    }
+
+    return mu + llt.matrixL() * z;
+}
+
+// Based on:
+// http://www.mit.edu/~mattjj/released-code/hsmm/stats_util.py
+template <typename Matrix>
+inline Matrix sample_wishart(
+        float nu,
+        const Matrix & scale,
+        rng_t & rng) {
+    DIST_ASSERT_EQ(scale.rows(), scale.cols());
+
+    Eigen::LLT<Matrix> llt(scale);
+    DIST_ASSERT_EQ(llt.info(), Eigen::Success);
+
+    const unsigned size = scale.rows();
+    Matrix A = Matrix::Zero(size, size);
+
+    for (unsigned i = 0; i < size; i++) {
+        A(i, i) = sqrt(sample_chisq(rng, nu - static_cast<float>(i)));
+    }
+
+    std::normal_distribution<float> norm;
+    for (unsigned i = 1; i < size; i++) {
+        for (unsigned j = 0; j < i; j++) {
+            A(i, j) = norm(rng);
+        }
+    }
+
+    const Matrix X = llt.matrixL() * A;
+    return X * X.transpose();
+}
+
+// XXX: not optimized for speed
+template <typename Matrix>
+inline Matrix sample_inverse_wishart(
+        float nu,
+        const Matrix & psi,
+        rng_t & rng) {
+    const Matrix psi_inv = psi.inverse();
+    const Matrix sigma_inv = sample_wishart(nu, psi_inv, rng);
+    return sigma_inv.inverse();
+}
+
+template <typename Vector, typename Matrix>
+inline std::pair<Vector, Matrix> sample_normal_inverse_wishart(
+        const Vector & mu0,
+        float lambda,
+        const Matrix & psi,
+        float nu,
+        rng_t & rng) {
+    Matrix cov = 1./lambda * sample_inverse_wishart(nu, psi, rng);
+    Vector mu = sample_multivariate_normal(mu0, cov, rng);
+    return std::make_pair(std::move(mu), std::move(cov));
 }
 
 template<class T>

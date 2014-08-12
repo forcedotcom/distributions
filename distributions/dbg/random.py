@@ -26,6 +26,7 @@
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from math import log, pi, sqrt, factorial
+import numpy as np
 import numpy.random
 from numpy.random.mtrand import dirichlet as sample_dirichlet
 from numpy import dot, inner
@@ -39,6 +40,9 @@ from scipy.special import gammaln
 from distributions.util import scores_to_probs
 import logging
 
+from distributions.vendor.stats import (
+    sample_invwishart as _sample_inverse_wishart
+)
 
 LOG = logging.getLogger(__name__)
 
@@ -106,14 +110,23 @@ def sample_student_t(dof, mu, Sigma):
     return (mu + z / numpy.sqrt(x))[0]
 
 
-def score_student_t(x, n, mu, sigma):
+def score_student_t(x, nu, mu, sigma):
+    """
+    multivariate score_student_t
+
+    \cite{murphy2007conjugate}, Eq. 313
+    """
     p = len(mu)
     z = x - mu
     S = inner(inner(z, inv(sigma)), z)
     score = (
-        gammaln(0.5 * (n + p))
-        - gammaln(0.5 * n)
-        - 0.5 * (p * log(n * pi) + log(det(sigma)) + (n + p) * log(1 + S / n))
+        gammaln(0.5 * (nu + p))
+        - gammaln(0.5 * nu)
+        - 0.5 * (
+            p * log(nu * pi)
+            + log(det(sigma))
+            + (nu + p) * log(1 + S / nu)
+        )
     )
     return score
 
@@ -154,6 +167,21 @@ def sample_wishart_v2(nu, Lambda):
             T[i, :i] = numpy.random.normal(size=(i,))
         T[i, i] = sqrt(chi2.rvs(nu - i + 1))
     return dot(dot(dot(ch, T), T.T), ch.T)
+
+
+def sample_inverse_wishart(nu, S):
+    # matt's parameters are reversed
+    return _sample_inverse_wishart(S, nu)
+
+
+def sample_normal_inverse_wishart(mu0, lambda0, psi0, nu0):
+    D, = mu0.shape
+    assert psi0.shape == (D, D)
+    assert lambda0 > 0.0
+    assert nu0 > D - 1
+    cov = sample_inverse_wishart(nu0, psi0)
+    mu = np.random.multivariate_normal(mean=mu0, cov=(1. / lambda0) * cov)
+    return mu, cov
 
 
 def sample_partition_from_counts(items, counts):

@@ -38,32 +38,28 @@ class Clustering_PitmanYor;
 class Clustering_LowEntropy;
 class BetaBernoulli;
 class BetaBernoulli_Shared;
-class BetaBernoulli_GridPrior;
 class BetaBernoulli_Group;
 class DirichletDiscrete;
 class DirichletDiscrete_Shared;
-class DirichletDiscrete_GridPrior;
 class DirichletDiscrete_Group;
 class DirichletProcessDiscrete;
 class DirichletProcessDiscrete_Shared;
-class DirichletProcessDiscrete_GridPrior;
 class DirichletProcessDiscrete_Group;
 class PitmanYorProcessDiscrete;
 class PitmanYorProcessDiscrete_Shared;
-class PitmanYorProcessDiscrete_GridPrior;
 class PitmanYorProcessDiscrete_Group;
 class GammaPoisson;
 class GammaPoisson_Shared;
-class GammaPoisson_GridPrior;
 class GammaPoisson_Group;
 class BetaNegativeBinomial;
 class BetaNegativeBinomial_Shared;
-class BetaNegativeBinomial_GridPrior;
 class BetaNegativeBinomial_Group;
 class NormalInverseChiSq;
 class NormalInverseChiSq_Shared;
-class NormalInverseChiSq_GridPrior;
 class NormalInverseChiSq_Group;
+class NormalInverseWishart;
+class NormalInverseWishart_Shared;
+class NormalInverseWishart_Group;
 
 // ===================================================================
 
@@ -430,104 +426,6 @@ class BetaBernoulli_Shared : public ::google::protobuf::Message {
 };
 // -------------------------------------------------------------------
 
-class BetaBernoulli_GridPrior : public ::google::protobuf::Message {
- public:
-  BetaBernoulli_GridPrior();
-  virtual ~BetaBernoulli_GridPrior();
-  
-  BetaBernoulli_GridPrior(const BetaBernoulli_GridPrior& from);
-  
-  inline BetaBernoulli_GridPrior& operator=(const BetaBernoulli_GridPrior& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-  
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-  
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const BetaBernoulli_GridPrior& default_instance();
-  
-  void Swap(BetaBernoulli_GridPrior* other);
-  
-  // implements Message ----------------------------------------------
-  
-  BetaBernoulli_GridPrior* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const BetaBernoulli_GridPrior& from);
-  void MergeFrom(const BetaBernoulli_GridPrior& from);
-  void Clear();
-  bool IsInitialized() const;
-  
-  int ByteSize() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
-  int GetCachedSize() const { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  public:
-  
-  ::google::protobuf::Metadata GetMetadata() const;
-  
-  // nested types ----------------------------------------------------
-  
-  // accessors -------------------------------------------------------
-  
-  // repeated float alpha = 1;
-  inline int alpha_size() const;
-  inline void clear_alpha();
-  static const int kAlphaFieldNumber = 1;
-  inline float alpha(int index) const;
-  inline void set_alpha(int index, float value);
-  inline void add_alpha(float value);
-  inline const ::google::protobuf::RepeatedField< float >&
-      alpha() const;
-  inline ::google::protobuf::RepeatedField< float >*
-      mutable_alpha();
-  
-  // repeated float beta = 2;
-  inline int beta_size() const;
-  inline void clear_beta();
-  static const int kBetaFieldNumber = 2;
-  inline float beta(int index) const;
-  inline void set_beta(int index, float value);
-  inline void add_beta(float value);
-  inline const ::google::protobuf::RepeatedField< float >&
-      beta() const;
-  inline ::google::protobuf::RepeatedField< float >*
-      mutable_beta();
-  
-  // @@protoc_insertion_point(class_scope:protobuf.distributions.BetaBernoulli.GridPrior)
- private:
-  
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-  
-  ::google::protobuf::RepeatedField< float > alpha_;
-  ::google::protobuf::RepeatedField< float > beta_;
-  
-  mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
-  
-  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
-  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
-  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
-  
-  void InitAsDefaultInstance();
-  static BetaBernoulli_GridPrior* default_instance_;
-};
-// -------------------------------------------------------------------
-
 class BetaBernoulli_Group : public ::google::protobuf::Message {
  public:
   BetaBernoulli_Group();
@@ -673,7 +571,6 @@ class BetaBernoulli : public ::google::protobuf::Message {
   // nested types ----------------------------------------------------
   
   typedef BetaBernoulli_Shared Shared;
-  typedef BetaBernoulli_GridPrior GridPrior;
   typedef BetaBernoulli_Group Group;
   
   // accessors -------------------------------------------------------
@@ -778,91 +675,6 @@ class DirichletDiscrete_Shared : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static DirichletDiscrete_Shared* default_instance_;
-};
-// -------------------------------------------------------------------
-
-class DirichletDiscrete_GridPrior : public ::google::protobuf::Message {
- public:
-  DirichletDiscrete_GridPrior();
-  virtual ~DirichletDiscrete_GridPrior();
-  
-  DirichletDiscrete_GridPrior(const DirichletDiscrete_GridPrior& from);
-  
-  inline DirichletDiscrete_GridPrior& operator=(const DirichletDiscrete_GridPrior& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-  
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-  
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const DirichletDiscrete_GridPrior& default_instance();
-  
-  void Swap(DirichletDiscrete_GridPrior* other);
-  
-  // implements Message ----------------------------------------------
-  
-  DirichletDiscrete_GridPrior* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const DirichletDiscrete_GridPrior& from);
-  void MergeFrom(const DirichletDiscrete_GridPrior& from);
-  void Clear();
-  bool IsInitialized() const;
-  
-  int ByteSize() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
-  int GetCachedSize() const { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  public:
-  
-  ::google::protobuf::Metadata GetMetadata() const;
-  
-  // nested types ----------------------------------------------------
-  
-  // accessors -------------------------------------------------------
-  
-  // repeated float alpha = 1;
-  inline int alpha_size() const;
-  inline void clear_alpha();
-  static const int kAlphaFieldNumber = 1;
-  inline float alpha(int index) const;
-  inline void set_alpha(int index, float value);
-  inline void add_alpha(float value);
-  inline const ::google::protobuf::RepeatedField< float >&
-      alpha() const;
-  inline ::google::protobuf::RepeatedField< float >*
-      mutable_alpha();
-  
-  // @@protoc_insertion_point(class_scope:protobuf.distributions.DirichletDiscrete.GridPrior)
- private:
-  
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-  
-  ::google::protobuf::RepeatedField< float > alpha_;
-  
-  mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
-  
-  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
-  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
-  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
-  
-  void InitAsDefaultInstance();
-  static DirichletDiscrete_GridPrior* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -1004,7 +816,6 @@ class DirichletDiscrete : public ::google::protobuf::Message {
   // nested types ----------------------------------------------------
   
   typedef DirichletDiscrete_Shared Shared;
-  typedef DirichletDiscrete_GridPrior GridPrior;
   typedef DirichletDiscrete_Group Group;
   
   // accessors -------------------------------------------------------
@@ -1155,104 +966,6 @@ class DirichletProcessDiscrete_Shared : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static DirichletProcessDiscrete_Shared* default_instance_;
-};
-// -------------------------------------------------------------------
-
-class DirichletProcessDiscrete_GridPrior : public ::google::protobuf::Message {
- public:
-  DirichletProcessDiscrete_GridPrior();
-  virtual ~DirichletProcessDiscrete_GridPrior();
-  
-  DirichletProcessDiscrete_GridPrior(const DirichletProcessDiscrete_GridPrior& from);
-  
-  inline DirichletProcessDiscrete_GridPrior& operator=(const DirichletProcessDiscrete_GridPrior& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-  
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-  
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const DirichletProcessDiscrete_GridPrior& default_instance();
-  
-  void Swap(DirichletProcessDiscrete_GridPrior* other);
-  
-  // implements Message ----------------------------------------------
-  
-  DirichletProcessDiscrete_GridPrior* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const DirichletProcessDiscrete_GridPrior& from);
-  void MergeFrom(const DirichletProcessDiscrete_GridPrior& from);
-  void Clear();
-  bool IsInitialized() const;
-  
-  int ByteSize() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
-  int GetCachedSize() const { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  public:
-  
-  ::google::protobuf::Metadata GetMetadata() const;
-  
-  // nested types ----------------------------------------------------
-  
-  // accessors -------------------------------------------------------
-  
-  // repeated float gamma = 1;
-  inline int gamma_size() const;
-  inline void clear_gamma();
-  static const int kGammaFieldNumber = 1;
-  inline float gamma(int index) const;
-  inline void set_gamma(int index, float value);
-  inline void add_gamma(float value);
-  inline const ::google::protobuf::RepeatedField< float >&
-      gamma() const;
-  inline ::google::protobuf::RepeatedField< float >*
-      mutable_gamma();
-  
-  // repeated float alpha = 2;
-  inline int alpha_size() const;
-  inline void clear_alpha();
-  static const int kAlphaFieldNumber = 2;
-  inline float alpha(int index) const;
-  inline void set_alpha(int index, float value);
-  inline void add_alpha(float value);
-  inline const ::google::protobuf::RepeatedField< float >&
-      alpha() const;
-  inline ::google::protobuf::RepeatedField< float >*
-      mutable_alpha();
-  
-  // @@protoc_insertion_point(class_scope:protobuf.distributions.DirichletProcessDiscrete.GridPrior)
- private:
-  
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-  
-  ::google::protobuf::RepeatedField< float > gamma_;
-  ::google::protobuf::RepeatedField< float > alpha_;
-  
-  mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
-  
-  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
-  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
-  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
-  
-  void InitAsDefaultInstance();
-  static DirichletProcessDiscrete_GridPrior* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -1407,7 +1120,6 @@ class DirichletProcessDiscrete : public ::google::protobuf::Message {
   // nested types ----------------------------------------------------
   
   typedef DirichletProcessDiscrete_Shared Shared;
-  typedef DirichletProcessDiscrete_GridPrior GridPrior;
   typedef DirichletProcessDiscrete_Group Group;
   
   // accessors -------------------------------------------------------
@@ -1535,91 +1247,6 @@ class PitmanYorProcessDiscrete_Shared : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static PitmanYorProcessDiscrete_Shared* default_instance_;
-};
-// -------------------------------------------------------------------
-
-class PitmanYorProcessDiscrete_GridPrior : public ::google::protobuf::Message {
- public:
-  PitmanYorProcessDiscrete_GridPrior();
-  virtual ~PitmanYorProcessDiscrete_GridPrior();
-  
-  PitmanYorProcessDiscrete_GridPrior(const PitmanYorProcessDiscrete_GridPrior& from);
-  
-  inline PitmanYorProcessDiscrete_GridPrior& operator=(const PitmanYorProcessDiscrete_GridPrior& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-  
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-  
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const PitmanYorProcessDiscrete_GridPrior& default_instance();
-  
-  void Swap(PitmanYorProcessDiscrete_GridPrior* other);
-  
-  // implements Message ----------------------------------------------
-  
-  PitmanYorProcessDiscrete_GridPrior* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const PitmanYorProcessDiscrete_GridPrior& from);
-  void MergeFrom(const PitmanYorProcessDiscrete_GridPrior& from);
-  void Clear();
-  bool IsInitialized() const;
-  
-  int ByteSize() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
-  int GetCachedSize() const { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  public:
-  
-  ::google::protobuf::Metadata GetMetadata() const;
-  
-  // nested types ----------------------------------------------------
-  
-  // accessors -------------------------------------------------------
-  
-  // repeated .protobuf.distributions.Clustering.PitmanYor alpha_d = 1;
-  inline int alpha_d_size() const;
-  inline void clear_alpha_d();
-  static const int kAlphaDFieldNumber = 1;
-  inline const ::protobuf::distributions::Clustering_PitmanYor& alpha_d(int index) const;
-  inline ::protobuf::distributions::Clustering_PitmanYor* mutable_alpha_d(int index);
-  inline ::protobuf::distributions::Clustering_PitmanYor* add_alpha_d();
-  inline const ::google::protobuf::RepeatedPtrField< ::protobuf::distributions::Clustering_PitmanYor >&
-      alpha_d() const;
-  inline ::google::protobuf::RepeatedPtrField< ::protobuf::distributions::Clustering_PitmanYor >*
-      mutable_alpha_d();
-  
-  // @@protoc_insertion_point(class_scope:protobuf.distributions.PitmanYorProcessDiscrete.GridPrior)
- private:
-  
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-  
-  ::google::protobuf::RepeatedPtrField< ::protobuf::distributions::Clustering_PitmanYor > alpha_d_;
-  
-  mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(1 + 31) / 32];
-  
-  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
-  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
-  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
-  
-  void InitAsDefaultInstance();
-  static PitmanYorProcessDiscrete_GridPrior* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -1774,7 +1401,6 @@ class PitmanYorProcessDiscrete : public ::google::protobuf::Message {
   // nested types ----------------------------------------------------
   
   typedef PitmanYorProcessDiscrete_Shared Shared;
-  typedef PitmanYorProcessDiscrete_GridPrior GridPrior;
   typedef PitmanYorProcessDiscrete_Group Group;
   
   // accessors -------------------------------------------------------
@@ -1886,104 +1512,6 @@ class GammaPoisson_Shared : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static GammaPoisson_Shared* default_instance_;
-};
-// -------------------------------------------------------------------
-
-class GammaPoisson_GridPrior : public ::google::protobuf::Message {
- public:
-  GammaPoisson_GridPrior();
-  virtual ~GammaPoisson_GridPrior();
-  
-  GammaPoisson_GridPrior(const GammaPoisson_GridPrior& from);
-  
-  inline GammaPoisson_GridPrior& operator=(const GammaPoisson_GridPrior& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-  
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-  
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const GammaPoisson_GridPrior& default_instance();
-  
-  void Swap(GammaPoisson_GridPrior* other);
-  
-  // implements Message ----------------------------------------------
-  
-  GammaPoisson_GridPrior* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const GammaPoisson_GridPrior& from);
-  void MergeFrom(const GammaPoisson_GridPrior& from);
-  void Clear();
-  bool IsInitialized() const;
-  
-  int ByteSize() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
-  int GetCachedSize() const { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  public:
-  
-  ::google::protobuf::Metadata GetMetadata() const;
-  
-  // nested types ----------------------------------------------------
-  
-  // accessors -------------------------------------------------------
-  
-  // repeated float alpha = 1;
-  inline int alpha_size() const;
-  inline void clear_alpha();
-  static const int kAlphaFieldNumber = 1;
-  inline float alpha(int index) const;
-  inline void set_alpha(int index, float value);
-  inline void add_alpha(float value);
-  inline const ::google::protobuf::RepeatedField< float >&
-      alpha() const;
-  inline ::google::protobuf::RepeatedField< float >*
-      mutable_alpha();
-  
-  // repeated float inv_beta = 2;
-  inline int inv_beta_size() const;
-  inline void clear_inv_beta();
-  static const int kInvBetaFieldNumber = 2;
-  inline float inv_beta(int index) const;
-  inline void set_inv_beta(int index, float value);
-  inline void add_inv_beta(float value);
-  inline const ::google::protobuf::RepeatedField< float >&
-      inv_beta() const;
-  inline ::google::protobuf::RepeatedField< float >*
-      mutable_inv_beta();
-  
-  // @@protoc_insertion_point(class_scope:protobuf.distributions.GammaPoisson.GridPrior)
- private:
-  
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-  
-  ::google::protobuf::RepeatedField< float > alpha_;
-  ::google::protobuf::RepeatedField< float > inv_beta_;
-  
-  mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(2 + 31) / 32];
-  
-  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
-  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
-  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
-  
-  void InitAsDefaultInstance();
-  static GammaPoisson_GridPrior* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -2142,7 +1670,6 @@ class GammaPoisson : public ::google::protobuf::Message {
   // nested types ----------------------------------------------------
   
   typedef GammaPoisson_Shared Shared;
-  typedef GammaPoisson_GridPrior GridPrior;
   typedef GammaPoisson_Group Group;
   
   // accessors -------------------------------------------------------
@@ -2264,117 +1791,6 @@ class BetaNegativeBinomial_Shared : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static BetaNegativeBinomial_Shared* default_instance_;
-};
-// -------------------------------------------------------------------
-
-class BetaNegativeBinomial_GridPrior : public ::google::protobuf::Message {
- public:
-  BetaNegativeBinomial_GridPrior();
-  virtual ~BetaNegativeBinomial_GridPrior();
-  
-  BetaNegativeBinomial_GridPrior(const BetaNegativeBinomial_GridPrior& from);
-  
-  inline BetaNegativeBinomial_GridPrior& operator=(const BetaNegativeBinomial_GridPrior& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-  
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-  
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const BetaNegativeBinomial_GridPrior& default_instance();
-  
-  void Swap(BetaNegativeBinomial_GridPrior* other);
-  
-  // implements Message ----------------------------------------------
-  
-  BetaNegativeBinomial_GridPrior* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const BetaNegativeBinomial_GridPrior& from);
-  void MergeFrom(const BetaNegativeBinomial_GridPrior& from);
-  void Clear();
-  bool IsInitialized() const;
-  
-  int ByteSize() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
-  int GetCachedSize() const { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  public:
-  
-  ::google::protobuf::Metadata GetMetadata() const;
-  
-  // nested types ----------------------------------------------------
-  
-  // accessors -------------------------------------------------------
-  
-  // repeated float alpha = 1;
-  inline int alpha_size() const;
-  inline void clear_alpha();
-  static const int kAlphaFieldNumber = 1;
-  inline float alpha(int index) const;
-  inline void set_alpha(int index, float value);
-  inline void add_alpha(float value);
-  inline const ::google::protobuf::RepeatedField< float >&
-      alpha() const;
-  inline ::google::protobuf::RepeatedField< float >*
-      mutable_alpha();
-  
-  // repeated float beta = 2;
-  inline int beta_size() const;
-  inline void clear_beta();
-  static const int kBetaFieldNumber = 2;
-  inline float beta(int index) const;
-  inline void set_beta(int index, float value);
-  inline void add_beta(float value);
-  inline const ::google::protobuf::RepeatedField< float >&
-      beta() const;
-  inline ::google::protobuf::RepeatedField< float >*
-      mutable_beta();
-  
-  // repeated uint64 r = 3;
-  inline int r_size() const;
-  inline void clear_r();
-  static const int kRFieldNumber = 3;
-  inline ::google::protobuf::uint64 r(int index) const;
-  inline void set_r(int index, ::google::protobuf::uint64 value);
-  inline void add_r(::google::protobuf::uint64 value);
-  inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >&
-      r() const;
-  inline ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >*
-      mutable_r();
-  
-  // @@protoc_insertion_point(class_scope:protobuf.distributions.BetaNegativeBinomial.GridPrior)
- private:
-  
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-  
-  ::google::protobuf::RepeatedField< float > alpha_;
-  ::google::protobuf::RepeatedField< float > beta_;
-  ::google::protobuf::RepeatedField< ::google::protobuf::uint64 > r_;
-  
-  mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
-  
-  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
-  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
-  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
-  
-  void InitAsDefaultInstance();
-  static BetaNegativeBinomial_GridPrior* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -2523,7 +1939,6 @@ class BetaNegativeBinomial : public ::google::protobuf::Message {
   // nested types ----------------------------------------------------
   
   typedef BetaNegativeBinomial_Shared Shared;
-  typedef BetaNegativeBinomial_GridPrior GridPrior;
   typedef BetaNegativeBinomial_Group Group;
   
   // accessors -------------------------------------------------------
@@ -2655,130 +2070,6 @@ class NormalInverseChiSq_Shared : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static NormalInverseChiSq_Shared* default_instance_;
-};
-// -------------------------------------------------------------------
-
-class NormalInverseChiSq_GridPrior : public ::google::protobuf::Message {
- public:
-  NormalInverseChiSq_GridPrior();
-  virtual ~NormalInverseChiSq_GridPrior();
-  
-  NormalInverseChiSq_GridPrior(const NormalInverseChiSq_GridPrior& from);
-  
-  inline NormalInverseChiSq_GridPrior& operator=(const NormalInverseChiSq_GridPrior& from) {
-    CopyFrom(from);
-    return *this;
-  }
-  
-  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
-    return _unknown_fields_;
-  }
-  
-  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
-    return &_unknown_fields_;
-  }
-  
-  static const ::google::protobuf::Descriptor* descriptor();
-  static const NormalInverseChiSq_GridPrior& default_instance();
-  
-  void Swap(NormalInverseChiSq_GridPrior* other);
-  
-  // implements Message ----------------------------------------------
-  
-  NormalInverseChiSq_GridPrior* New() const;
-  void CopyFrom(const ::google::protobuf::Message& from);
-  void MergeFrom(const ::google::protobuf::Message& from);
-  void CopyFrom(const NormalInverseChiSq_GridPrior& from);
-  void MergeFrom(const NormalInverseChiSq_GridPrior& from);
-  void Clear();
-  bool IsInitialized() const;
-  
-  int ByteSize() const;
-  bool MergePartialFromCodedStream(
-      ::google::protobuf::io::CodedInputStream* input);
-  void SerializeWithCachedSizes(
-      ::google::protobuf::io::CodedOutputStream* output) const;
-  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
-  int GetCachedSize() const { return _cached_size_; }
-  private:
-  void SharedCtor();
-  void SharedDtor();
-  void SetCachedSize(int size) const;
-  public:
-  
-  ::google::protobuf::Metadata GetMetadata() const;
-  
-  // nested types ----------------------------------------------------
-  
-  // accessors -------------------------------------------------------
-  
-  // repeated float mu = 1;
-  inline int mu_size() const;
-  inline void clear_mu();
-  static const int kMuFieldNumber = 1;
-  inline float mu(int index) const;
-  inline void set_mu(int index, float value);
-  inline void add_mu(float value);
-  inline const ::google::protobuf::RepeatedField< float >&
-      mu() const;
-  inline ::google::protobuf::RepeatedField< float >*
-      mutable_mu();
-  
-  // repeated float kappa = 2;
-  inline int kappa_size() const;
-  inline void clear_kappa();
-  static const int kKappaFieldNumber = 2;
-  inline float kappa(int index) const;
-  inline void set_kappa(int index, float value);
-  inline void add_kappa(float value);
-  inline const ::google::protobuf::RepeatedField< float >&
-      kappa() const;
-  inline ::google::protobuf::RepeatedField< float >*
-      mutable_kappa();
-  
-  // repeated float sigmasq = 3;
-  inline int sigmasq_size() const;
-  inline void clear_sigmasq();
-  static const int kSigmasqFieldNumber = 3;
-  inline float sigmasq(int index) const;
-  inline void set_sigmasq(int index, float value);
-  inline void add_sigmasq(float value);
-  inline const ::google::protobuf::RepeatedField< float >&
-      sigmasq() const;
-  inline ::google::protobuf::RepeatedField< float >*
-      mutable_sigmasq();
-  
-  // repeated float nu = 4;
-  inline int nu_size() const;
-  inline void clear_nu();
-  static const int kNuFieldNumber = 4;
-  inline float nu(int index) const;
-  inline void set_nu(int index, float value);
-  inline void add_nu(float value);
-  inline const ::google::protobuf::RepeatedField< float >&
-      nu() const;
-  inline ::google::protobuf::RepeatedField< float >*
-      mutable_nu();
-  
-  // @@protoc_insertion_point(class_scope:protobuf.distributions.NormalInverseChiSq.GridPrior)
- private:
-  
-  ::google::protobuf::UnknownFieldSet _unknown_fields_;
-  
-  ::google::protobuf::RepeatedField< float > mu_;
-  ::google::protobuf::RepeatedField< float > kappa_;
-  ::google::protobuf::RepeatedField< float > sigmasq_;
-  ::google::protobuf::RepeatedField< float > nu_;
-  
-  mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
-  
-  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
-  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
-  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
-  
-  void InitAsDefaultInstance();
-  static NormalInverseChiSq_GridPrior* default_instance_;
 };
 // -------------------------------------------------------------------
 
@@ -2937,7 +2228,6 @@ class NormalInverseChiSq : public ::google::protobuf::Message {
   // nested types ----------------------------------------------------
   
   typedef NormalInverseChiSq_Shared Shared;
-  typedef NormalInverseChiSq_GridPrior GridPrior;
   typedef NormalInverseChiSq_Group Group;
   
   // accessors -------------------------------------------------------
@@ -2957,6 +2247,307 @@ class NormalInverseChiSq : public ::google::protobuf::Message {
   
   void InitAsDefaultInstance();
   static NormalInverseChiSq* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class NormalInverseWishart_Shared : public ::google::protobuf::Message {
+ public:
+  NormalInverseWishart_Shared();
+  virtual ~NormalInverseWishart_Shared();
+  
+  NormalInverseWishart_Shared(const NormalInverseWishart_Shared& from);
+  
+  inline NormalInverseWishart_Shared& operator=(const NormalInverseWishart_Shared& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const NormalInverseWishart_Shared& default_instance();
+  
+  void Swap(NormalInverseWishart_Shared* other);
+  
+  // implements Message ----------------------------------------------
+  
+  NormalInverseWishart_Shared* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const NormalInverseWishart_Shared& from);
+  void MergeFrom(const NormalInverseWishart_Shared& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // repeated float mu = 1;
+  inline int mu_size() const;
+  inline void clear_mu();
+  static const int kMuFieldNumber = 1;
+  inline float mu(int index) const;
+  inline void set_mu(int index, float value);
+  inline void add_mu(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      mu() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_mu();
+  
+  // required float kappa = 2;
+  inline bool has_kappa() const;
+  inline void clear_kappa();
+  static const int kKappaFieldNumber = 2;
+  inline float kappa() const;
+  inline void set_kappa(float value);
+  
+  // repeated float psi = 3;
+  inline int psi_size() const;
+  inline void clear_psi();
+  static const int kPsiFieldNumber = 3;
+  inline float psi(int index) const;
+  inline void set_psi(int index, float value);
+  inline void add_psi(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      psi() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_psi();
+  
+  // required float nu = 4;
+  inline bool has_nu() const;
+  inline void clear_nu();
+  static const int kNuFieldNumber = 4;
+  inline float nu() const;
+  inline void set_nu(float value);
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.NormalInverseWishart.Shared)
+ private:
+  inline void set_has_kappa();
+  inline void clear_has_kappa();
+  inline void set_has_nu();
+  inline void clear_has_nu();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::RepeatedField< float > mu_;
+  ::google::protobuf::RepeatedField< float > psi_;
+  float kappa_;
+  float nu_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static NormalInverseWishart_Shared* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class NormalInverseWishart_Group : public ::google::protobuf::Message {
+ public:
+  NormalInverseWishart_Group();
+  virtual ~NormalInverseWishart_Group();
+  
+  NormalInverseWishart_Group(const NormalInverseWishart_Group& from);
+  
+  inline NormalInverseWishart_Group& operator=(const NormalInverseWishart_Group& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const NormalInverseWishart_Group& default_instance();
+  
+  void Swap(NormalInverseWishart_Group* other);
+  
+  // implements Message ----------------------------------------------
+  
+  NormalInverseWishart_Group* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const NormalInverseWishart_Group& from);
+  void MergeFrom(const NormalInverseWishart_Group& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  // accessors -------------------------------------------------------
+  
+  // required int32 count = 1;
+  inline bool has_count() const;
+  inline void clear_count();
+  static const int kCountFieldNumber = 1;
+  inline ::google::protobuf::int32 count() const;
+  inline void set_count(::google::protobuf::int32 value);
+  
+  // repeated float sum_x = 2;
+  inline int sum_x_size() const;
+  inline void clear_sum_x();
+  static const int kSumXFieldNumber = 2;
+  inline float sum_x(int index) const;
+  inline void set_sum_x(int index, float value);
+  inline void add_sum_x(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      sum_x() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_sum_x();
+  
+  // repeated float sum_xxT = 3;
+  inline int sum_xxt_size() const;
+  inline void clear_sum_xxt();
+  static const int kSumXxTFieldNumber = 3;
+  inline float sum_xxt(int index) const;
+  inline void set_sum_xxt(int index, float value);
+  inline void add_sum_xxt(float value);
+  inline const ::google::protobuf::RepeatedField< float >&
+      sum_xxt() const;
+  inline ::google::protobuf::RepeatedField< float >*
+      mutable_sum_xxt();
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.NormalInverseWishart.Group)
+ private:
+  inline void set_has_count();
+  inline void clear_has_count();
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  ::google::protobuf::RepeatedField< float > sum_x_;
+  ::google::protobuf::RepeatedField< float > sum_xxt_;
+  ::google::protobuf::int32 count_;
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static NormalInverseWishart_Group* default_instance_;
+};
+// -------------------------------------------------------------------
+
+class NormalInverseWishart : public ::google::protobuf::Message {
+ public:
+  NormalInverseWishart();
+  virtual ~NormalInverseWishart();
+  
+  NormalInverseWishart(const NormalInverseWishart& from);
+  
+  inline NormalInverseWishart& operator=(const NormalInverseWishart& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  
+  inline const ::google::protobuf::UnknownFieldSet& unknown_fields() const {
+    return _unknown_fields_;
+  }
+  
+  inline ::google::protobuf::UnknownFieldSet* mutable_unknown_fields() {
+    return &_unknown_fields_;
+  }
+  
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const NormalInverseWishart& default_instance();
+  
+  void Swap(NormalInverseWishart* other);
+  
+  // implements Message ----------------------------------------------
+  
+  NormalInverseWishart* New() const;
+  void CopyFrom(const ::google::protobuf::Message& from);
+  void MergeFrom(const ::google::protobuf::Message& from);
+  void CopyFrom(const NormalInverseWishart& from);
+  void MergeFrom(const NormalInverseWishart& from);
+  void Clear();
+  bool IsInitialized() const;
+  
+  int ByteSize() const;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input);
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const;
+  ::google::protobuf::uint8* SerializeWithCachedSizesToArray(::google::protobuf::uint8* output) const;
+  int GetCachedSize() const { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const;
+  public:
+  
+  ::google::protobuf::Metadata GetMetadata() const;
+  
+  // nested types ----------------------------------------------------
+  
+  typedef NormalInverseWishart_Shared Shared;
+  typedef NormalInverseWishart_Group Group;
+  
+  // accessors -------------------------------------------------------
+  
+  // @@protoc_insertion_point(class_scope:protobuf.distributions.NormalInverseWishart)
+ private:
+  
+  ::google::protobuf::UnknownFieldSet _unknown_fields_;
+  
+  
+  mutable int _cached_size_;
+  ::google::protobuf::uint32 _has_bits_[1];
+  
+  friend void  protobuf_AddDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto();
+  friend void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto();
+  
+  void InitAsDefaultInstance();
+  static NormalInverseWishart* default_instance_;
 };
 // ===================================================================
 
@@ -3147,60 +2738,6 @@ inline void BetaBernoulli_Shared::set_beta(float value) {
 
 // -------------------------------------------------------------------
 
-// BetaBernoulli_GridPrior
-
-// repeated float alpha = 1;
-inline int BetaBernoulli_GridPrior::alpha_size() const {
-  return alpha_.size();
-}
-inline void BetaBernoulli_GridPrior::clear_alpha() {
-  alpha_.Clear();
-}
-inline float BetaBernoulli_GridPrior::alpha(int index) const {
-  return alpha_.Get(index);
-}
-inline void BetaBernoulli_GridPrior::set_alpha(int index, float value) {
-  alpha_.Set(index, value);
-}
-inline void BetaBernoulli_GridPrior::add_alpha(float value) {
-  alpha_.Add(value);
-}
-inline const ::google::protobuf::RepeatedField< float >&
-BetaBernoulli_GridPrior::alpha() const {
-  return alpha_;
-}
-inline ::google::protobuf::RepeatedField< float >*
-BetaBernoulli_GridPrior::mutable_alpha() {
-  return &alpha_;
-}
-
-// repeated float beta = 2;
-inline int BetaBernoulli_GridPrior::beta_size() const {
-  return beta_.size();
-}
-inline void BetaBernoulli_GridPrior::clear_beta() {
-  beta_.Clear();
-}
-inline float BetaBernoulli_GridPrior::beta(int index) const {
-  return beta_.Get(index);
-}
-inline void BetaBernoulli_GridPrior::set_beta(int index, float value) {
-  beta_.Set(index, value);
-}
-inline void BetaBernoulli_GridPrior::add_beta(float value) {
-  beta_.Add(value);
-}
-inline const ::google::protobuf::RepeatedField< float >&
-BetaBernoulli_GridPrior::beta() const {
-  return beta_;
-}
-inline ::google::protobuf::RepeatedField< float >*
-BetaBernoulli_GridPrior::mutable_beta() {
-  return &beta_;
-}
-
-// -------------------------------------------------------------------
-
 // BetaBernoulli_Group
 
 // required uint64 heads = 1;
@@ -3278,35 +2815,6 @@ DirichletDiscrete_Shared::alphas() const {
 inline ::google::protobuf::RepeatedField< float >*
 DirichletDiscrete_Shared::mutable_alphas() {
   return &alphas_;
-}
-
-// -------------------------------------------------------------------
-
-// DirichletDiscrete_GridPrior
-
-// repeated float alpha = 1;
-inline int DirichletDiscrete_GridPrior::alpha_size() const {
-  return alpha_.size();
-}
-inline void DirichletDiscrete_GridPrior::clear_alpha() {
-  alpha_.Clear();
-}
-inline float DirichletDiscrete_GridPrior::alpha(int index) const {
-  return alpha_.Get(index);
-}
-inline void DirichletDiscrete_GridPrior::set_alpha(int index, float value) {
-  alpha_.Set(index, value);
-}
-inline void DirichletDiscrete_GridPrior::add_alpha(float value) {
-  alpha_.Add(value);
-}
-inline const ::google::protobuf::RepeatedField< float >&
-DirichletDiscrete_GridPrior::alpha() const {
-  return alpha_;
-}
-inline ::google::protobuf::RepeatedField< float >*
-DirichletDiscrete_GridPrior::mutable_alpha() {
-  return &alpha_;
 }
 
 // -------------------------------------------------------------------
@@ -3467,60 +2975,6 @@ DirichletProcessDiscrete_Shared::mutable_counts() {
 
 // -------------------------------------------------------------------
 
-// DirichletProcessDiscrete_GridPrior
-
-// repeated float gamma = 1;
-inline int DirichletProcessDiscrete_GridPrior::gamma_size() const {
-  return gamma_.size();
-}
-inline void DirichletProcessDiscrete_GridPrior::clear_gamma() {
-  gamma_.Clear();
-}
-inline float DirichletProcessDiscrete_GridPrior::gamma(int index) const {
-  return gamma_.Get(index);
-}
-inline void DirichletProcessDiscrete_GridPrior::set_gamma(int index, float value) {
-  gamma_.Set(index, value);
-}
-inline void DirichletProcessDiscrete_GridPrior::add_gamma(float value) {
-  gamma_.Add(value);
-}
-inline const ::google::protobuf::RepeatedField< float >&
-DirichletProcessDiscrete_GridPrior::gamma() const {
-  return gamma_;
-}
-inline ::google::protobuf::RepeatedField< float >*
-DirichletProcessDiscrete_GridPrior::mutable_gamma() {
-  return &gamma_;
-}
-
-// repeated float alpha = 2;
-inline int DirichletProcessDiscrete_GridPrior::alpha_size() const {
-  return alpha_.size();
-}
-inline void DirichletProcessDiscrete_GridPrior::clear_alpha() {
-  alpha_.Clear();
-}
-inline float DirichletProcessDiscrete_GridPrior::alpha(int index) const {
-  return alpha_.Get(index);
-}
-inline void DirichletProcessDiscrete_GridPrior::set_alpha(int index, float value) {
-  alpha_.Set(index, value);
-}
-inline void DirichletProcessDiscrete_GridPrior::add_alpha(float value) {
-  alpha_.Add(value);
-}
-inline const ::google::protobuf::RepeatedField< float >&
-DirichletProcessDiscrete_GridPrior::alpha() const {
-  return alpha_;
-}
-inline ::google::protobuf::RepeatedField< float >*
-DirichletProcessDiscrete_GridPrior::mutable_alpha() {
-  return &alpha_;
-}
-
-// -------------------------------------------------------------------
-
 // DirichletProcessDiscrete_Group
 
 // repeated uint32 keys = 1;
@@ -3655,35 +3109,6 @@ PitmanYorProcessDiscrete_Shared::mutable_counts() {
 
 // -------------------------------------------------------------------
 
-// PitmanYorProcessDiscrete_GridPrior
-
-// repeated .protobuf.distributions.Clustering.PitmanYor alpha_d = 1;
-inline int PitmanYorProcessDiscrete_GridPrior::alpha_d_size() const {
-  return alpha_d_.size();
-}
-inline void PitmanYorProcessDiscrete_GridPrior::clear_alpha_d() {
-  alpha_d_.Clear();
-}
-inline const ::protobuf::distributions::Clustering_PitmanYor& PitmanYorProcessDiscrete_GridPrior::alpha_d(int index) const {
-  return alpha_d_.Get(index);
-}
-inline ::protobuf::distributions::Clustering_PitmanYor* PitmanYorProcessDiscrete_GridPrior::mutable_alpha_d(int index) {
-  return alpha_d_.Mutable(index);
-}
-inline ::protobuf::distributions::Clustering_PitmanYor* PitmanYorProcessDiscrete_GridPrior::add_alpha_d() {
-  return alpha_d_.Add();
-}
-inline const ::google::protobuf::RepeatedPtrField< ::protobuf::distributions::Clustering_PitmanYor >&
-PitmanYorProcessDiscrete_GridPrior::alpha_d() const {
-  return alpha_d_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::protobuf::distributions::Clustering_PitmanYor >*
-PitmanYorProcessDiscrete_GridPrior::mutable_alpha_d() {
-  return &alpha_d_;
-}
-
-// -------------------------------------------------------------------
-
 // PitmanYorProcessDiscrete_Group
 
 // repeated uint32 keys = 1;
@@ -3786,60 +3211,6 @@ inline float GammaPoisson_Shared::inv_beta() const {
 inline void GammaPoisson_Shared::set_inv_beta(float value) {
   set_has_inv_beta();
   inv_beta_ = value;
-}
-
-// -------------------------------------------------------------------
-
-// GammaPoisson_GridPrior
-
-// repeated float alpha = 1;
-inline int GammaPoisson_GridPrior::alpha_size() const {
-  return alpha_.size();
-}
-inline void GammaPoisson_GridPrior::clear_alpha() {
-  alpha_.Clear();
-}
-inline float GammaPoisson_GridPrior::alpha(int index) const {
-  return alpha_.Get(index);
-}
-inline void GammaPoisson_GridPrior::set_alpha(int index, float value) {
-  alpha_.Set(index, value);
-}
-inline void GammaPoisson_GridPrior::add_alpha(float value) {
-  alpha_.Add(value);
-}
-inline const ::google::protobuf::RepeatedField< float >&
-GammaPoisson_GridPrior::alpha() const {
-  return alpha_;
-}
-inline ::google::protobuf::RepeatedField< float >*
-GammaPoisson_GridPrior::mutable_alpha() {
-  return &alpha_;
-}
-
-// repeated float inv_beta = 2;
-inline int GammaPoisson_GridPrior::inv_beta_size() const {
-  return inv_beta_.size();
-}
-inline void GammaPoisson_GridPrior::clear_inv_beta() {
-  inv_beta_.Clear();
-}
-inline float GammaPoisson_GridPrior::inv_beta(int index) const {
-  return inv_beta_.Get(index);
-}
-inline void GammaPoisson_GridPrior::set_inv_beta(int index, float value) {
-  inv_beta_.Set(index, value);
-}
-inline void GammaPoisson_GridPrior::add_inv_beta(float value) {
-  inv_beta_.Add(value);
-}
-inline const ::google::protobuf::RepeatedField< float >&
-GammaPoisson_GridPrior::inv_beta() const {
-  return inv_beta_;
-}
-inline ::google::protobuf::RepeatedField< float >*
-GammaPoisson_GridPrior::mutable_inv_beta() {
-  return &inv_beta_;
 }
 
 // -------------------------------------------------------------------
@@ -3988,85 +3359,6 @@ inline void BetaNegativeBinomial_Shared::set_r(::google::protobuf::uint64 value)
 
 // -------------------------------------------------------------------
 
-// BetaNegativeBinomial_GridPrior
-
-// repeated float alpha = 1;
-inline int BetaNegativeBinomial_GridPrior::alpha_size() const {
-  return alpha_.size();
-}
-inline void BetaNegativeBinomial_GridPrior::clear_alpha() {
-  alpha_.Clear();
-}
-inline float BetaNegativeBinomial_GridPrior::alpha(int index) const {
-  return alpha_.Get(index);
-}
-inline void BetaNegativeBinomial_GridPrior::set_alpha(int index, float value) {
-  alpha_.Set(index, value);
-}
-inline void BetaNegativeBinomial_GridPrior::add_alpha(float value) {
-  alpha_.Add(value);
-}
-inline const ::google::protobuf::RepeatedField< float >&
-BetaNegativeBinomial_GridPrior::alpha() const {
-  return alpha_;
-}
-inline ::google::protobuf::RepeatedField< float >*
-BetaNegativeBinomial_GridPrior::mutable_alpha() {
-  return &alpha_;
-}
-
-// repeated float beta = 2;
-inline int BetaNegativeBinomial_GridPrior::beta_size() const {
-  return beta_.size();
-}
-inline void BetaNegativeBinomial_GridPrior::clear_beta() {
-  beta_.Clear();
-}
-inline float BetaNegativeBinomial_GridPrior::beta(int index) const {
-  return beta_.Get(index);
-}
-inline void BetaNegativeBinomial_GridPrior::set_beta(int index, float value) {
-  beta_.Set(index, value);
-}
-inline void BetaNegativeBinomial_GridPrior::add_beta(float value) {
-  beta_.Add(value);
-}
-inline const ::google::protobuf::RepeatedField< float >&
-BetaNegativeBinomial_GridPrior::beta() const {
-  return beta_;
-}
-inline ::google::protobuf::RepeatedField< float >*
-BetaNegativeBinomial_GridPrior::mutable_beta() {
-  return &beta_;
-}
-
-// repeated uint64 r = 3;
-inline int BetaNegativeBinomial_GridPrior::r_size() const {
-  return r_.size();
-}
-inline void BetaNegativeBinomial_GridPrior::clear_r() {
-  r_.Clear();
-}
-inline ::google::protobuf::uint64 BetaNegativeBinomial_GridPrior::r(int index) const {
-  return r_.Get(index);
-}
-inline void BetaNegativeBinomial_GridPrior::set_r(int index, ::google::protobuf::uint64 value) {
-  r_.Set(index, value);
-}
-inline void BetaNegativeBinomial_GridPrior::add_r(::google::protobuf::uint64 value) {
-  r_.Add(value);
-}
-inline const ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >&
-BetaNegativeBinomial_GridPrior::r() const {
-  return r_;
-}
-inline ::google::protobuf::RepeatedField< ::google::protobuf::uint64 >*
-BetaNegativeBinomial_GridPrior::mutable_r() {
-  return &r_;
-}
-
-// -------------------------------------------------------------------
-
 // BetaNegativeBinomial_Group
 
 // required uint64 count = 1;
@@ -4211,110 +3503,6 @@ inline void NormalInverseChiSq_Shared::set_nu(float value) {
 
 // -------------------------------------------------------------------
 
-// NormalInverseChiSq_GridPrior
-
-// repeated float mu = 1;
-inline int NormalInverseChiSq_GridPrior::mu_size() const {
-  return mu_.size();
-}
-inline void NormalInverseChiSq_GridPrior::clear_mu() {
-  mu_.Clear();
-}
-inline float NormalInverseChiSq_GridPrior::mu(int index) const {
-  return mu_.Get(index);
-}
-inline void NormalInverseChiSq_GridPrior::set_mu(int index, float value) {
-  mu_.Set(index, value);
-}
-inline void NormalInverseChiSq_GridPrior::add_mu(float value) {
-  mu_.Add(value);
-}
-inline const ::google::protobuf::RepeatedField< float >&
-NormalInverseChiSq_GridPrior::mu() const {
-  return mu_;
-}
-inline ::google::protobuf::RepeatedField< float >*
-NormalInverseChiSq_GridPrior::mutable_mu() {
-  return &mu_;
-}
-
-// repeated float kappa = 2;
-inline int NormalInverseChiSq_GridPrior::kappa_size() const {
-  return kappa_.size();
-}
-inline void NormalInverseChiSq_GridPrior::clear_kappa() {
-  kappa_.Clear();
-}
-inline float NormalInverseChiSq_GridPrior::kappa(int index) const {
-  return kappa_.Get(index);
-}
-inline void NormalInverseChiSq_GridPrior::set_kappa(int index, float value) {
-  kappa_.Set(index, value);
-}
-inline void NormalInverseChiSq_GridPrior::add_kappa(float value) {
-  kappa_.Add(value);
-}
-inline const ::google::protobuf::RepeatedField< float >&
-NormalInverseChiSq_GridPrior::kappa() const {
-  return kappa_;
-}
-inline ::google::protobuf::RepeatedField< float >*
-NormalInverseChiSq_GridPrior::mutable_kappa() {
-  return &kappa_;
-}
-
-// repeated float sigmasq = 3;
-inline int NormalInverseChiSq_GridPrior::sigmasq_size() const {
-  return sigmasq_.size();
-}
-inline void NormalInverseChiSq_GridPrior::clear_sigmasq() {
-  sigmasq_.Clear();
-}
-inline float NormalInverseChiSq_GridPrior::sigmasq(int index) const {
-  return sigmasq_.Get(index);
-}
-inline void NormalInverseChiSq_GridPrior::set_sigmasq(int index, float value) {
-  sigmasq_.Set(index, value);
-}
-inline void NormalInverseChiSq_GridPrior::add_sigmasq(float value) {
-  sigmasq_.Add(value);
-}
-inline const ::google::protobuf::RepeatedField< float >&
-NormalInverseChiSq_GridPrior::sigmasq() const {
-  return sigmasq_;
-}
-inline ::google::protobuf::RepeatedField< float >*
-NormalInverseChiSq_GridPrior::mutable_sigmasq() {
-  return &sigmasq_;
-}
-
-// repeated float nu = 4;
-inline int NormalInverseChiSq_GridPrior::nu_size() const {
-  return nu_.size();
-}
-inline void NormalInverseChiSq_GridPrior::clear_nu() {
-  nu_.Clear();
-}
-inline float NormalInverseChiSq_GridPrior::nu(int index) const {
-  return nu_.Get(index);
-}
-inline void NormalInverseChiSq_GridPrior::set_nu(int index, float value) {
-  nu_.Set(index, value);
-}
-inline void NormalInverseChiSq_GridPrior::add_nu(float value) {
-  nu_.Add(value);
-}
-inline const ::google::protobuf::RepeatedField< float >&
-NormalInverseChiSq_GridPrior::nu() const {
-  return nu_;
-}
-inline ::google::protobuf::RepeatedField< float >*
-NormalInverseChiSq_GridPrior::mutable_nu() {
-  return &nu_;
-}
-
-// -------------------------------------------------------------------
-
 // NormalInverseChiSq_Group
 
 // required uint64 count = 1;
@@ -4386,6 +3574,184 @@ inline void NormalInverseChiSq_Group::set_count_times_variance(float value) {
 // -------------------------------------------------------------------
 
 // NormalInverseChiSq
+
+// -------------------------------------------------------------------
+
+// NormalInverseWishart_Shared
+
+// repeated float mu = 1;
+inline int NormalInverseWishart_Shared::mu_size() const {
+  return mu_.size();
+}
+inline void NormalInverseWishart_Shared::clear_mu() {
+  mu_.Clear();
+}
+inline float NormalInverseWishart_Shared::mu(int index) const {
+  return mu_.Get(index);
+}
+inline void NormalInverseWishart_Shared::set_mu(int index, float value) {
+  mu_.Set(index, value);
+}
+inline void NormalInverseWishart_Shared::add_mu(float value) {
+  mu_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+NormalInverseWishart_Shared::mu() const {
+  return mu_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+NormalInverseWishart_Shared::mutable_mu() {
+  return &mu_;
+}
+
+// required float kappa = 2;
+inline bool NormalInverseWishart_Shared::has_kappa() const {
+  return (_has_bits_[0] & 0x00000002u) != 0;
+}
+inline void NormalInverseWishart_Shared::set_has_kappa() {
+  _has_bits_[0] |= 0x00000002u;
+}
+inline void NormalInverseWishart_Shared::clear_has_kappa() {
+  _has_bits_[0] &= ~0x00000002u;
+}
+inline void NormalInverseWishart_Shared::clear_kappa() {
+  kappa_ = 0;
+  clear_has_kappa();
+}
+inline float NormalInverseWishart_Shared::kappa() const {
+  return kappa_;
+}
+inline void NormalInverseWishart_Shared::set_kappa(float value) {
+  set_has_kappa();
+  kappa_ = value;
+}
+
+// repeated float psi = 3;
+inline int NormalInverseWishart_Shared::psi_size() const {
+  return psi_.size();
+}
+inline void NormalInverseWishart_Shared::clear_psi() {
+  psi_.Clear();
+}
+inline float NormalInverseWishart_Shared::psi(int index) const {
+  return psi_.Get(index);
+}
+inline void NormalInverseWishart_Shared::set_psi(int index, float value) {
+  psi_.Set(index, value);
+}
+inline void NormalInverseWishart_Shared::add_psi(float value) {
+  psi_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+NormalInverseWishart_Shared::psi() const {
+  return psi_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+NormalInverseWishart_Shared::mutable_psi() {
+  return &psi_;
+}
+
+// required float nu = 4;
+inline bool NormalInverseWishart_Shared::has_nu() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void NormalInverseWishart_Shared::set_has_nu() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void NormalInverseWishart_Shared::clear_has_nu() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void NormalInverseWishart_Shared::clear_nu() {
+  nu_ = 0;
+  clear_has_nu();
+}
+inline float NormalInverseWishart_Shared::nu() const {
+  return nu_;
+}
+inline void NormalInverseWishart_Shared::set_nu(float value) {
+  set_has_nu();
+  nu_ = value;
+}
+
+// -------------------------------------------------------------------
+
+// NormalInverseWishart_Group
+
+// required int32 count = 1;
+inline bool NormalInverseWishart_Group::has_count() const {
+  return (_has_bits_[0] & 0x00000001u) != 0;
+}
+inline void NormalInverseWishart_Group::set_has_count() {
+  _has_bits_[0] |= 0x00000001u;
+}
+inline void NormalInverseWishart_Group::clear_has_count() {
+  _has_bits_[0] &= ~0x00000001u;
+}
+inline void NormalInverseWishart_Group::clear_count() {
+  count_ = 0;
+  clear_has_count();
+}
+inline ::google::protobuf::int32 NormalInverseWishart_Group::count() const {
+  return count_;
+}
+inline void NormalInverseWishart_Group::set_count(::google::protobuf::int32 value) {
+  set_has_count();
+  count_ = value;
+}
+
+// repeated float sum_x = 2;
+inline int NormalInverseWishart_Group::sum_x_size() const {
+  return sum_x_.size();
+}
+inline void NormalInverseWishart_Group::clear_sum_x() {
+  sum_x_.Clear();
+}
+inline float NormalInverseWishart_Group::sum_x(int index) const {
+  return sum_x_.Get(index);
+}
+inline void NormalInverseWishart_Group::set_sum_x(int index, float value) {
+  sum_x_.Set(index, value);
+}
+inline void NormalInverseWishart_Group::add_sum_x(float value) {
+  sum_x_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+NormalInverseWishart_Group::sum_x() const {
+  return sum_x_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+NormalInverseWishart_Group::mutable_sum_x() {
+  return &sum_x_;
+}
+
+// repeated float sum_xxT = 3;
+inline int NormalInverseWishart_Group::sum_xxt_size() const {
+  return sum_xxt_.size();
+}
+inline void NormalInverseWishart_Group::clear_sum_xxt() {
+  sum_xxt_.Clear();
+}
+inline float NormalInverseWishart_Group::sum_xxt(int index) const {
+  return sum_xxt_.Get(index);
+}
+inline void NormalInverseWishart_Group::set_sum_xxt(int index, float value) {
+  sum_xxt_.Set(index, value);
+}
+inline void NormalInverseWishart_Group::add_sum_xxt(float value) {
+  sum_xxt_.Add(value);
+}
+inline const ::google::protobuf::RepeatedField< float >&
+NormalInverseWishart_Group::sum_xxt() const {
+  return sum_xxt_;
+}
+inline ::google::protobuf::RepeatedField< float >*
+NormalInverseWishart_Group::mutable_sum_xxt() {
+  return &sum_xxt_;
+}
+
+// -------------------------------------------------------------------
+
+// NormalInverseWishart
 
 
 // @@protoc_insertion_point(namespace_scope)

@@ -31,6 +31,9 @@ if(DEFINED EXTRA_LIBRARY_PATH)
   link_directories(${EXTRA_LIBRARY_PATH})
 endif()
 
+find_package(Eigen3 REQUIRED)
+include_directories(${EIGEN3_INCLUDE_DIRS})
+
 find_package(Yeppp)
 if(YEPPP_FOUND)
   message(STATUS "Using YEPPP")

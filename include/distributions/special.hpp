@@ -272,6 +272,19 @@ inline float fast_lgamma_nu(float nu) {
     return detail::poly_eval_3(detail::lgamma_nu_func_approx_coeff3 + pos, nu);
 }
 
+/**
+ * http://en.wikipedia.org/wiki/Multivariate_gamma_function
+ */
+inline float lmultigamma(unsigned d, float a) {
+    DIST_ASSERT1(d > 0, "zero dim lmultigamma");
+    const float log_pi = 1.1447298858494002;
+    const float term1 = 0.25 * static_cast<float>(d * (d - 1)) * log_pi;
+    float term2 = 0.;
+    for (int j = 1; j <= static_cast<int>(d); j++)
+        term2 += fast_lgamma(a + 0.5 * static_cast<float>(1 - j));
+    return term1 + term2;
+}
+
 
 // --------------------------------------------------------------------------
 // misc

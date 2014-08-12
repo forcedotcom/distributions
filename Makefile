@@ -84,7 +84,7 @@ PY_SOURCES=setup.py update_license.py distributions derivations examples/mixture
 
 test_cy: dev_cy FORCE
 	pyflakes $(PY_SOURCES)
-	pep8 --repeat --ignore=E265 --exclude=*_pb2.py $(PY_SOURCES)
+	pep8 --repeat --ignore=E265 --exclude=*_pb2.py,distributions/vendor/*.py $(PY_SOURCES)
 	$(nose_env) nosetests -v distributions derivations examples
 	@echo '----------------'
 	@echo 'PASSED CY TESTS'

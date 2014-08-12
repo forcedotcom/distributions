@@ -84,6 +84,12 @@
 #define DIST_ASSERT_LT(x, y) \
     DIST_ASSERT((x) < (y), \
         "expected " #x " < " #y "; actual " << (x) << " vs " << (y))
+#define DIST_ASSERT_GE(x, y) \
+    DIST_ASSERT((x) >= (y), \
+        "expected " #x " >= " #y "; actual " << (x) << " vs " << (y))
+#define DIST_ASSERT_GT(x, y) \
+    DIST_ASSERT((x) > (y), \
+        "expected " #x " > " #y "; actual " << (x) << " vs " << (y))
 #define DIST_ASSERT_NE(x, y) \
     DIST_ASSERT((x) != (y), \
         "expected " #x " != " #y "; actual " << (x) << " vs " << (y))
@@ -98,6 +104,15 @@
 #define DIST_ASSERT1(cond, message) DIST_ASSERT_(1, cond, message)
 #define DIST_ASSERT2(cond, message) DIST_ASSERT_(2, cond, message)
 #define DIST_ASSERT3(cond, message) DIST_ASSERT_(3, cond, message)
+
+#ifdef __GNUG__
+#  define DIST_ALWAYS_INLINE __attribute__((always_inline))
+#  define DIST_NEVER_INLINE __attribute__((never_inline))
+#else  // __GNUG__
+#  warning "ignoring DIST_ALWAYS_INLINE(-), DIST_NEVER_INLINE(-)"
+#  define DIST_ALWAYS_INLINE
+#  define DIST_NEVER_INLINE
+#endif  // __GNUG__
 
 namespace distributions {
 
