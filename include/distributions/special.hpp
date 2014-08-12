@@ -37,31 +37,25 @@
 
 #define M_PIf (3.14159265358979f)
 
-namespace distributions
-{
+namespace distributions {
 
-template<class T> T sqr (const T & t)
-{
+template<class T> T sqr(const T & t) {
     return t * t;
 }
 
 
-//----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 // fast_log, fast_exp, fast_log_sum_exp, log_sum_exp
 
-namespace detail
-{
+namespace detail {
 
 /// Implements the ICSI fast log algorithm, v2.
-class FastLog
-{
-public:
+class FastLog {
+  public:
+    explicit FastLog(int N);
 
-    FastLog (int N);
-
-    inline float log (float x)
-    {
-        //int intx = * reinterpret_cast<int *>(& x);
+    inline float log(float x) {
+        // int intx = * reinterpret_cast<int *>(& x);
         int intx;
         memcpy(&intx, &x, 4);
 
@@ -69,63 +63,55 @@ public:
         register const int man = (intx & 0x7FFFFF) >> (23 - N_);
 
         // exponent plus lookup refinement
-        return ((float)(exp) + table_[man]) * 0.69314718055994529f;
+        return (static_cast<float>(exp) + table_[man]) * 0.69314718055994529f;
     }
 
-private:
-
+  private:
     const int N_;
     std::vector<float> table_;
 };
 
 static FastLog GLOBAL_FAST_LOG_14(14);
 
-} // namespace detail
+}  // namespace detail
 
-inline float eric_log (float x)
-{
+inline float eric_log(float x) {
     return detail::GLOBAL_FAST_LOG_14.log(x);
 }
 
-inline float fast_log (float x)
-{
+inline float fast_log(float x) {
     return eric_log(x);
-    //return fmath::log(x);
+    // return fmath::log(x);
 }
 
-inline float fast_exp (float x)
-{
+inline float fast_exp(float x) {
     return fmath::exp(x);
 }
 
-inline float fast_log_sum_exp (float x, float y)
-{
+inline float fast_log_sum_exp(float x, float y) {
     float min = x < y ? x : y;
     float max = x < y ? y : x;
 
     return max + fast_log(1.0f + fast_exp(min - max));
 }
 
-inline float log_sum_exp (float x, float y)
-{
+inline float log_sum_exp(float x, float y) {
     float min = x < y ? x : y;
     float max = x < y ? y : x;
     return max + logf(1.0f + expf(min - max));
 }
 
-//----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 // fast_lgamma, fast_log_beta, log_beta, log_binom, fast_log_binom
 
-namespace detail
-{
+namespace detail {
 
 extern const char LogTable256[256];
 extern const float lgamma_approx_coeff5[];
 
-} // namespace detail
+}  // namespace detail
 
-inline float fast_lgamma (float y)
-{
+inline float fast_lgamma(float y) {
     // A piecewise fifth-order approximation of loggamma,
     // which bottoms out in libc gammaln for vals < 1.0
     // and throws an exception outside of the domain 2**32
@@ -146,8 +132,8 @@ inline float fast_lgamma (float y)
 
     if (c) {
         c -= 127;
-    } else { // subnormal, so recompute using mantissa: c = intlog2(x) - 149;
-        register unsigned int t; // temporary
+    } else {  // subnormal, so recompute using mantissa: c = intlog2(x) - 149;
+        register unsigned int t;  // temporary
         if ((t = x >> 16)) {
             c = detail::LogTable256[t] - 133;
         } else {
@@ -184,8 +170,7 @@ inline float fast_lgamma (float y)
     return sum;
 }
 
-inline float log_beta (float alpha, float beta)
-{
+inline float log_beta(float alpha, float beta) {
     if (DIST_UNLIKELY(alpha <= 0.f or beta <= 0.f)) {
         return - std::numeric_limits<float>::infinity();
     } else {
@@ -193,8 +178,7 @@ inline float log_beta (float alpha, float beta)
     }
 }
 
-inline float fast_log_beta (float alpha, float beta)
-{
+inline float fast_log_beta(float alpha, float beta) {
     if (DIST_UNLIKELY(alpha <= 0.f or beta <= 0.f)) {
         return - std::numeric_limits<float>::infinity();
     } else {
@@ -204,28 +188,24 @@ inline float fast_log_beta (float alpha, float beta)
     }
 }
 
-inline float log_binom (float N, float k)
-{
+inline float log_binom(float N, float k) {
     return lgamma(N + 1) - (lgamma(k + 1) + lgamma(N - k + 1));
 }
 
-inline float fast_log_binom (float N, float k)
-{
+inline float fast_log_binom(float N, float k) {
     return fast_lgamma(N + 1) - (fast_lgamma(k + 1) + fast_lgamma(N - k + 1));
 }
 
-//----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 // fast_log_factorial
 
-namespace detail
-{
+namespace detail {
 
 extern const float log_factorial_table[64];
 
-} // namespace detail
+}  // namespace detail
 
-inline float fast_log_factorial(const uint32_t & n)
-{
+inline float fast_log_factorial(const uint32_t & n) {
     if (n < 64) {
         return detail::log_factorial_table[n];
     } else {
@@ -234,18 +214,16 @@ inline float fast_log_factorial(const uint32_t & n)
 }
 
 
-//----------------------------------------------------------------------------
+// ---------------------------------------------------------------------------
 // fast_lgamma_nu
 
-namespace detail
-{
+namespace detail {
 
 extern const float lgamma_nu_func_approx_coeff3[];
 
-inline float poly_eval_3 (
+inline float poly_eval_3(
         const float * __restrict__ coeff,
-        float x)
-{
+        float x) {
     // evaluate the polynomial with the indicated
     // coefficients
     float a0 = coeff[3];
@@ -256,10 +234,9 @@ inline float poly_eval_3 (
     return a0 + x*a1 + x*x*a2 + x*x*x*a3;
 }
 
-} // namespace detail
+}  // namespace detail
 
-inline float fast_lgamma_nu (float nu)
-{
+inline float fast_lgamma_nu(float nu) {
     // Approximation of the sensitive, time-consuming
     // lgamma(nu / 2.0 + 0.5) - lgamma(nu/2.0)
     // function inside log student t
@@ -280,8 +257,8 @@ inline float fast_lgamma_nu (float nu)
 
     if (c) {
         c -= 127;
-    } else { // subnormal, so recompute using mantissa: c = intlog2(x) - 149;
-        register unsigned int t; // temporary
+    } else {  // subnormal, so recompute using mantissa: c = intlog2(x) - 149;
+        register unsigned int t;  // temporary
         if ((t = x >> 16)) {
             c = detail::LogTable256[t] - 133;
         } else {
@@ -291,7 +268,7 @@ inline float fast_lgamma_nu (float nu)
         }
     }
 
-    int pos = ((c + 4) / 2) * 4 ; // remember the POT range is 2
+    int pos = ((c + 4) / 2) * 4;  // remember the POT range is 2
     return detail::poly_eval_3(detail::lgamma_nu_func_approx_coeff3 + pos, nu);
 }
 
@@ -310,20 +287,19 @@ inline float lmultigamma(unsigned d, float a)
 }
 
 
-//----------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // misc
 
 // Compute stirling numbers of first kind S(n,k), one row at a time
 // return [log(S(n,0), ..., log(S(n,n))]
 // http://en.wikipedia.org/wiki/Stirling_numbers_of_the_first_kind
 template<class Alloc>
-void get_log_stirling1_row (size_t n, std::vector<float, Alloc> & result);
+void get_log_stirling1_row(size_t n, std::vector<float, Alloc> & result);
 
-inline std::vector<float> log_stirling1_row (size_t n)
-{
+inline std::vector<float> log_stirling1_row(size_t n) {
     std::vector<float> result;
     get_log_stirling1_row(n, result);
     return result;
 }
 
-} // namespace distributions
+}  // namespace distributions

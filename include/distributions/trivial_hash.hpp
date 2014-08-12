@@ -27,19 +27,16 @@
 
 #pragma once
 
-namespace distributions
-{
+namespace distributions {
 
 template<class Key>
-struct TrivialHash
-{
+struct TrivialHash {
     typedef Key argument_type;
     typedef size_t result_type;
-    size_t operator() (const Key & key) const
-    {
+    size_t operator() (const Key & key) const {
         static_assert(sizeof(Key) <= sizeof(size_t), "invalid type");
         return key;
     }
 };
 
-} // namespace distributions
+}  // namespace distributions

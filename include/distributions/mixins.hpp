@@ -30,29 +30,26 @@
 #include <distributions/random_fwd.hpp>
 #include <distributions/mixture.hpp>
 
-namespace distributions
-{
+namespace distributions {
 
 template<class Model_>
-struct SharedMixin
-{
+struct SharedMixin {
     typedef Model_ Model;
     typedef typename Model::Value Value;
     typedef typename Model::Group Group;
 
-    void add_value (const Value &, rng_t &) {}
-    void remove_value (const Value &, rng_t &) {}
-    void realize (rng_t &) {}
+    void add_value(const Value &, rng_t &) {}
+    void remove_value(const Value &, rng_t &) {}
+    void realize(rng_t &) {}
 };
 
 template<class Model_>
-struct GroupMixin
-{
+struct GroupMixin {
     typedef Model_ Model;
     typedef typename Model::Value Value;
     typedef typename Model::Shared Shared;
 
-    void validate (const Shared &) const {}
+    void validate(const Shared &) const {}
 };
 
-} // namespace distributions
+}   // namespace distributions

@@ -28,17 +28,15 @@
 #include <distributions/random.hpp>
 #include <distributions/aligned_allocator.hpp>
 
-namespace distributions
-{
+namespace distributions {
 
 rng_t global_rng;
 
-void sample_dirichlet (
+void sample_dirichlet(
         rng_t & rng,
         size_t dim,
         const float * alphas,
-        float * probs)
-{
+        float * probs) {
     float total = 0.f;
     for (size_t i = 0; i < dim; ++i) {
         if (alphas[i] > 0) {
@@ -53,13 +51,12 @@ void sample_dirichlet (
     }
 }
 
-void sample_dirichlet_safe (
+void sample_dirichlet_safe(
         rng_t & rng,
         size_t dim,
         const float * alphas,
         float * probs,
-        float min_value)
-{
+        float min_value) {
     DIST_ASSERT(min_value >= 0, "bad bound: " << min_value);
     float total = 0.f;
     for (size_t i = 0; i < dim; ++i) {
@@ -74,12 +71,11 @@ void sample_dirichlet_safe (
     }
 }
 
-//----------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // Discrete distribution
 
 template<class Alloc>
-float log_sum_exp (const std::vector<float, Alloc> & scores)
-{
+float log_sum_exp(const std::vector<float, Alloc> & scores) {
     const size_t size = scores.size();
     if (DIST_UNLIKELY(size == 0)) {
         return 0.f;
@@ -96,8 +92,7 @@ float log_sum_exp (const std::vector<float, Alloc> & scores)
 }
 
 template<class Alloc>
-float scores_to_likelihoods (std::vector<float, Alloc> & scores)
-{
+float scores_to_likelihoods(std::vector<float, Alloc> & scores) {
     const size_t size = scores.size();
     float * __restrict__ scores_data = scores.data();
     float max_score = vector_max(size, scores_data);
@@ -111,11 +106,10 @@ float scores_to_likelihoods (std::vector<float, Alloc> & scores)
 }
 
 template<class Alloc>
-float score_from_scores_overwrite (
+float score_from_scores_overwrite(
         rng_t & rng,
         size_t sample,
-        std::vector<float, Alloc> & scores)
-{
+        std::vector<float, Alloc> & scores) {
     const size_t size = scores.size();
     float * __restrict__ scores_data = scores.data();
     float max_score = vector_max(size, scores_data);
@@ -133,15 +127,15 @@ float score_from_scores_overwrite (
     return score;
 }
 
-//----------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // Explicit template instantiations
 
 #define INSTANTIATE_TEMPLATES(Alloc)                \
-    template float log_sum_exp (                    \
+    template float log_sum_exp(                     \
             const std::vector<float, Alloc> &);     \
-    template float scores_to_likelihoods (          \
+    template float scores_to_likelihoods(           \
             std::vector<float, Alloc> &);           \
-    template float score_from_scores_overwrite (    \
+    template float score_from_scores_overwrite(     \
             rng_t &,                                \
             size_t,                                 \
             std::vector<float, Alloc> &);
@@ -151,4 +145,4 @@ INSTANTIATE_TEMPLATES(aligned_allocator<float>)
 
 #undef INSTANTIATE_TEMPLATES
 
-} // namespace distributions
+}   // namespace distributions
