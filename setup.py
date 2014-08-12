@@ -216,6 +216,7 @@ config = {
         'distributions.lp.models',
         'distributions.io',
         'distributions.tests',
+        'distributions.vendor',
     ],
     'ext_modules': ext_modules,
 }
