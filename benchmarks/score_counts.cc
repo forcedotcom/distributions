@@ -32,10 +32,9 @@
 #include <distributions/clustering.hpp>
 #include <distributions/timers.hpp>
 
-using namespace distributions;
+using namespace distributions;  // NOLINT(*)
 
-inline int max (const std::vector<int> & counts)
-{
+inline int max(const std::vector<int> & counts) {
     const size_t size = counts.size();
     const int * __restrict__ data = counts.data();
 
@@ -47,8 +46,7 @@ inline int max (const std::vector<int> & counts)
     return result;
 }
 
-size_t speedtest (size_t size, size_t iters, float alpha, float d)
-{
+size_t speedtest(size_t size, size_t iters, float alpha, float d) {
     Clustering<int>::PitmanYor model;
     model.alpha = alpha;
     model.d = d;
@@ -81,8 +79,7 @@ size_t speedtest (size_t size, size_t iters, float alpha, float d)
     return bogus;
 }
 
-int main (int argc, char ** argv)
-{
+int main(int argc, char ** argv) {
     float alpha = (argc > 1) ? atof(argv[1]) : 1.0f;
     float d = (argc > 2) ? atof(argv[2]) : 0.2f;
 

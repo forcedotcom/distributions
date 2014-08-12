@@ -70,7 +70,12 @@ test_cc_examples: install_cc_examples FORCE
 	@echo '----------------'
 	@echo 'PASSED CC EXAMPLES'
 
-test_cc: install_cc FORCE
+CPP_SOURCES:=$(shell find include src examples benchmarks | grep -v 'vendor\|\.pb\.'  | grep -v 'src/test_' | grep '\.\(cc\|hpp\)$$')
+
+lint_cc: FORCE
+	cpplint --filter=-build/include_order,-readability/streams,-readability/function,-runtime/arrays $(CPP_SOURCES)
+
+test_cc: install_cc lint_cc FORCE
 	cd build && ctest
 	@echo '----------------'
 	@echo 'PASSED CC TESTS'
@@ -79,7 +84,7 @@ PY_SOURCES=setup.py update_license.py distributions derivations examples/mixture
 
 test_cy: dev_cy FORCE
 	pyflakes $(PY_SOURCES)
-	pep8 --repeat --ignore=E265 --exclude=*_pb2.py $(PY_SOURCES)
+	pep8 --repeat --ignore=E265 --exclude=*_pb2.py,distributions/vendor/*.py $(PY_SOURCES)
 	$(nose_env) nosetests -v distributions derivations examples
 	@echo '----------------'
 	@echo 'PASSED CY TESTS'

@@ -25,14 +25,11 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__version__ = '2.0.21'
+from distributions._eigen_h cimport VectorXf, MatrixXf
+cimport numpy as np
+cimport distributions._eigen_h as _h
 
-import os
-
-try:
-    import distributions.has_cython
-    has_cython = distributions.has_cython.has_cython()
-except ImportError:
-    has_cython = False
-
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+cdef VectorXf to_eigen_vecf(np.ndarray x)
+cdef MatrixXf to_eigen_matf(np.ndarray x)
+cdef np.ndarray to_np_1darray(const VectorXf &)
+cdef np.ndarray to_np_2darray(const MatrixXf &x)

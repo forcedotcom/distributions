@@ -10,7 +10,7 @@ from google.protobuf import reflection
 DESCRIPTOR = descriptor.FileDescriptor(
   name='distributions/io/schema.proto',
   package='protobuf.distributions',
-  serialized_pb='\n\x1d\x64istributions/io/schema.proto\x12\x16protobuf.distributions\"\xdd\x01\n\nClustering\x12@\n\npitman_yor\x18\x01 \x01(\x0b\x32,.protobuf.distributions.Clustering.PitmanYor\x12\x42\n\x0blow_entropy\x18\x02 \x01(\x0b\x32-.protobuf.distributions.Clustering.LowEntropy\x1a%\n\tPitmanYor\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\t\n\x01\x64\x18\x02 \x02(\x02\x1a\"\n\nLowEntropy\x12\x14\n\x0c\x64\x61taset_size\x18\x01 \x02(\x04\"\x87\x01\n\rBetaBernoulli\x1a%\n\x06Shared\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\x1a(\n\tGridPrior\x12\r\n\x05\x61lpha\x18\x01 \x03(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x03(\x02\x1a%\n\x05Group\x12\r\n\x05heads\x18\x01 \x02(\x04\x12\r\n\x05tails\x18\x02 \x02(\x04\"b\n\x11\x44irichletDiscrete\x1a\x18\n\x06Shared\x12\x0e\n\x06\x61lphas\x18\x01 \x03(\x02\x1a\x1a\n\tGridPrior\x12\r\n\x05\x61lpha\x18\x01 \x03(\x02\x1a\x17\n\x05Group\x12\x0e\n\x06\x63ounts\x18\x01 \x03(\x04\"\xc3\x01\n\x18\x44irichletProcessDiscrete\x1aU\n\x06Shared\x12\r\n\x05gamma\x18\x01 \x02(\x02\x12\r\n\x05\x61lpha\x18\x02 \x02(\x02\x12\x0e\n\x06values\x18\x03 \x03(\r\x12\r\n\x05\x62\x65tas\x18\x04 \x03(\x02\x12\x0e\n\x06\x63ounts\x18\x05 \x03(\x04\x1a)\n\tGridPrior\x12\r\n\x05gamma\x18\x01 \x03(\x02\x12\r\n\x05\x61lpha\x18\x02 \x03(\x02\x1a%\n\x05Group\x12\x0c\n\x04keys\x18\x01 \x03(\r\x12\x0e\n\x06values\x18\x02 \x03(\x04\"\xc1\x01\n\x18PitmanYorProcessDiscrete\x1a\x32\n\x06Shared\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\t\n\x01\x64\x18\x02 \x03(\x02\x12\x0e\n\x06\x63ounts\x18\x03 \x03(\x04\x1aJ\n\tGridPrior\x12=\n\x07\x61lpha_d\x18\x01 \x03(\x0b\x32,.protobuf.distributions.Clustering.PitmanYor\x1a%\n\x05Group\x12\x0c\n\x04keys\x18\x01 \x03(\r\x12\x0e\n\x06values\x18\x02 \x03(\x04\"\x9e\x01\n\x0cGammaPoisson\x1a)\n\x06Shared\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x10\n\x08inv_beta\x18\x02 \x02(\x02\x1a,\n\tGridPrior\x12\r\n\x05\x61lpha\x18\x01 \x03(\x02\x12\x10\n\x08inv_beta\x18\x02 \x03(\x02\x1a\x35\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0b\n\x03sum\x18\x02 \x02(\x04\x12\x10\n\x08log_prod\x18\x03 \x02(\x02\"\xa2\x01\n\x14\x42\x65taNegativeBinomial\x1a\x30\n\x06Shared\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\x12\t\n\x01r\x18\x03 \x02(\x04\x1a\x33\n\tGridPrior\x12\r\n\x05\x61lpha\x18\x01 \x03(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x03(\x02\x12\t\n\x01r\x18\x03 \x03(\x04\x1a#\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0b\n\x03sum\x18\x02 \x02(\x04\"\xdf\x01\n\x12NormalInverseChiSq\x1a@\n\x06Shared\x12\n\n\x02mu\x18\x01 \x02(\x02\x12\r\n\x05kappa\x18\x02 \x02(\x02\x12\x0f\n\x07sigmasq\x18\x03 \x02(\x02\x12\n\n\x02nu\x18\x04 \x02(\x02\x1a\x43\n\tGridPrior\x12\n\n\x02mu\x18\x01 \x03(\x02\x12\r\n\x05kappa\x18\x02 \x03(\x02\x12\x0f\n\x07sigmasq\x18\x03 \x03(\x02\x12\n\n\x02nu\x18\x04 \x03(\x02\x1a\x42\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0c\n\x04mean\x18\x02 \x02(\x02\x12\x1c\n\x14\x63ount_times_variance\x18\x03 \x02(\x02')
+  serialized_pb='\n\x1d\x64istributions/io/schema.proto\x12\x16protobuf.distributions\"\xdd\x01\n\nClustering\x12@\n\npitman_yor\x18\x01 \x01(\x0b\x32,.protobuf.distributions.Clustering.PitmanYor\x12\x42\n\x0blow_entropy\x18\x02 \x01(\x0b\x32-.protobuf.distributions.Clustering.LowEntropy\x1a%\n\tPitmanYor\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\t\n\x01\x64\x18\x02 \x02(\x02\x1a\"\n\nLowEntropy\x12\x14\n\x0c\x64\x61taset_size\x18\x01 \x02(\x04\"]\n\rBetaBernoulli\x1a%\n\x06Shared\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\x1a%\n\x05Group\x12\r\n\x05heads\x18\x01 \x02(\x04\x12\r\n\x05tails\x18\x02 \x02(\x04\"F\n\x11\x44irichletDiscrete\x1a\x18\n\x06Shared\x12\x0e\n\x06\x61lphas\x18\x01 \x03(\x02\x1a\x17\n\x05Group\x12\x0e\n\x06\x63ounts\x18\x01 \x03(\x04\"\x98\x01\n\x18\x44irichletProcessDiscrete\x1aU\n\x06Shared\x12\r\n\x05gamma\x18\x01 \x02(\x02\x12\r\n\x05\x61lpha\x18\x02 \x02(\x02\x12\x0e\n\x06values\x18\x03 \x03(\r\x12\r\n\x05\x62\x65tas\x18\x04 \x03(\x02\x12\x0e\n\x06\x63ounts\x18\x05 \x03(\x04\x1a%\n\x05Group\x12\x0c\n\x04keys\x18\x01 \x03(\r\x12\x0e\n\x06values\x18\x02 \x03(\x04\"u\n\x18PitmanYorProcessDiscrete\x1a\x32\n\x06Shared\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\t\n\x01\x64\x18\x02 \x03(\x02\x12\x0e\n\x06\x63ounts\x18\x03 \x03(\x04\x1a%\n\x05Group\x12\x0c\n\x04keys\x18\x01 \x03(\r\x12\x0e\n\x06values\x18\x02 \x03(\x04\"p\n\x0cGammaPoisson\x1a)\n\x06Shared\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x10\n\x08inv_beta\x18\x02 \x02(\x02\x1a\x35\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0b\n\x03sum\x18\x02 \x02(\x04\x12\x10\n\x08log_prod\x18\x03 \x02(\x02\"m\n\x14\x42\x65taNegativeBinomial\x1a\x30\n\x06Shared\x12\r\n\x05\x61lpha\x18\x01 \x02(\x02\x12\x0c\n\x04\x62\x65ta\x18\x02 \x02(\x02\x12\t\n\x01r\x18\x03 \x02(\x04\x1a#\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0b\n\x03sum\x18\x02 \x02(\x04\"\x9a\x01\n\x12NormalInverseChiSq\x1a@\n\x06Shared\x12\n\n\x02mu\x18\x01 \x02(\x02\x12\r\n\x05kappa\x18\x02 \x02(\x02\x12\x0f\n\x07sigmasq\x18\x03 \x02(\x02\x12\n\n\x02nu\x18\x04 \x02(\x02\x1a\x42\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x04\x12\x0c\n\x04mean\x18\x02 \x02(\x02\x12\x1c\n\x14\x63ount_times_variance\x18\x03 \x02(\x02\"\x8c\x01\n\x14NormalInverseWishart\x1a<\n\x06Shared\x12\n\n\x02mu\x18\x01 \x03(\x02\x12\r\n\x05kappa\x18\x02 \x02(\x02\x12\x0b\n\x03psi\x18\x03 \x03(\x02\x12\n\n\x02nu\x18\x04 \x02(\x02\x1a\x36\n\x05Group\x12\r\n\x05\x63ount\x18\x01 \x02(\x05\x12\r\n\x05sum_x\x18\x02 \x03(\x02\x12\x0f\n\x07sum_xxT\x18\x03 \x03(\x02')
 
 
 
@@ -141,42 +141,8 @@ _BETABERNOULLI_SHARED = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=299,
-  serialized_end=336,
-)
-
-_BETABERNOULLI_GRIDPRIOR = descriptor.Descriptor(
-  name='GridPrior',
-  full_name='protobuf.distributions.BetaBernoulli.GridPrior',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    descriptor.FieldDescriptor(
-      name='alpha', full_name='protobuf.distributions.BetaBernoulli.GridPrior.alpha', index=0,
-      number=1, type=2, cpp_type=6, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='beta', full_name='protobuf.distributions.BetaBernoulli.GridPrior.beta', index=1,
-      number=2, type=2, cpp_type=6, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=338,
-  serialized_end=378,
+  serialized_start=298,
+  serialized_end=335,
 )
 
 _BETABERNOULLI_GROUP = descriptor.Descriptor(
@@ -209,8 +175,8 @@ _BETABERNOULLI_GROUP = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=380,
-  serialized_end=417,
+  serialized_start=337,
+  serialized_end=374,
 )
 
 _BETABERNOULLI = descriptor.Descriptor(
@@ -223,14 +189,14 @@ _BETABERNOULLI = descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[_BETABERNOULLI_SHARED, _BETABERNOULLI_GRIDPRIOR, _BETABERNOULLI_GROUP, ],
+  nested_types=[_BETABERNOULLI_SHARED, _BETABERNOULLI_GROUP, ],
   enum_types=[
   ],
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=282,
-  serialized_end=417,
+  serialized_start=281,
+  serialized_end=374,
 )
 
 
@@ -257,35 +223,8 @@ _DIRICHLETDISCRETE_SHARED = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=440,
-  serialized_end=464,
-)
-
-_DIRICHLETDISCRETE_GRIDPRIOR = descriptor.Descriptor(
-  name='GridPrior',
-  full_name='protobuf.distributions.DirichletDiscrete.GridPrior',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    descriptor.FieldDescriptor(
-      name='alpha', full_name='protobuf.distributions.DirichletDiscrete.GridPrior.alpha', index=0,
-      number=1, type=2, cpp_type=6, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=338,
-  serialized_end=364,
+  serialized_start=397,
+  serialized_end=421,
 )
 
 _DIRICHLETDISCRETE_GROUP = descriptor.Descriptor(
@@ -311,8 +250,8 @@ _DIRICHLETDISCRETE_GROUP = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=494,
-  serialized_end=517,
+  serialized_start=423,
+  serialized_end=446,
 )
 
 _DIRICHLETDISCRETE = descriptor.Descriptor(
@@ -325,14 +264,14 @@ _DIRICHLETDISCRETE = descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[_DIRICHLETDISCRETE_SHARED, _DIRICHLETDISCRETE_GRIDPRIOR, _DIRICHLETDISCRETE_GROUP, ],
+  nested_types=[_DIRICHLETDISCRETE_SHARED, _DIRICHLETDISCRETE_GROUP, ],
   enum_types=[
   ],
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=419,
-  serialized_end=517,
+  serialized_start=376,
+  serialized_end=446,
 )
 
 
@@ -387,42 +326,8 @@ _DIRICHLETPROCESSDISCRETE_SHARED = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=548,
-  serialized_end=633,
-)
-
-_DIRICHLETPROCESSDISCRETE_GRIDPRIOR = descriptor.Descriptor(
-  name='GridPrior',
-  full_name='protobuf.distributions.DirichletProcessDiscrete.GridPrior',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    descriptor.FieldDescriptor(
-      name='gamma', full_name='protobuf.distributions.DirichletProcessDiscrete.GridPrior.gamma', index=0,
-      number=1, type=2, cpp_type=6, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='alpha', full_name='protobuf.distributions.DirichletProcessDiscrete.GridPrior.alpha', index=1,
-      number=2, type=2, cpp_type=6, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=635,
-  serialized_end=676,
+  serialized_start=477,
+  serialized_end=562,
 )
 
 _DIRICHLETPROCESSDISCRETE_GROUP = descriptor.Descriptor(
@@ -455,8 +360,8 @@ _DIRICHLETPROCESSDISCRETE_GROUP = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=678,
-  serialized_end=715,
+  serialized_start=564,
+  serialized_end=601,
 )
 
 _DIRICHLETPROCESSDISCRETE = descriptor.Descriptor(
@@ -469,14 +374,14 @@ _DIRICHLETPROCESSDISCRETE = descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[_DIRICHLETPROCESSDISCRETE_SHARED, _DIRICHLETPROCESSDISCRETE_GRIDPRIOR, _DIRICHLETPROCESSDISCRETE_GROUP, ],
+  nested_types=[_DIRICHLETPROCESSDISCRETE_SHARED, _DIRICHLETPROCESSDISCRETE_GROUP, ],
   enum_types=[
   ],
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=520,
-  serialized_end=715,
+  serialized_start=449,
+  serialized_end=601,
 )
 
 
@@ -517,35 +422,8 @@ _PITMANYORPROCESSDISCRETE_SHARED = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=746,
-  serialized_end=796,
-)
-
-_PITMANYORPROCESSDISCRETE_GRIDPRIOR = descriptor.Descriptor(
-  name='GridPrior',
-  full_name='protobuf.distributions.PitmanYorProcessDiscrete.GridPrior',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    descriptor.FieldDescriptor(
-      name='alpha_d', full_name='protobuf.distributions.PitmanYorProcessDiscrete.GridPrior.alpha_d', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=798,
-  serialized_end=872,
+  serialized_start=631,
+  serialized_end=681,
 )
 
 _PITMANYORPROCESSDISCRETE_GROUP = descriptor.Descriptor(
@@ -578,8 +456,8 @@ _PITMANYORPROCESSDISCRETE_GROUP = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=678,
-  serialized_end=715,
+  serialized_start=564,
+  serialized_end=601,
 )
 
 _PITMANYORPROCESSDISCRETE = descriptor.Descriptor(
@@ -592,14 +470,14 @@ _PITMANYORPROCESSDISCRETE = descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[_PITMANYORPROCESSDISCRETE_SHARED, _PITMANYORPROCESSDISCRETE_GRIDPRIOR, _PITMANYORPROCESSDISCRETE_GROUP, ],
+  nested_types=[_PITMANYORPROCESSDISCRETE_SHARED, _PITMANYORPROCESSDISCRETE_GROUP, ],
   enum_types=[
   ],
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=718,
-  serialized_end=911,
+  serialized_start=603,
+  serialized_end=720,
 )
 
 
@@ -633,42 +511,8 @@ _GAMMAPOISSON_SHARED = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=930,
-  serialized_end=971,
-)
-
-_GAMMAPOISSON_GRIDPRIOR = descriptor.Descriptor(
-  name='GridPrior',
-  full_name='protobuf.distributions.GammaPoisson.GridPrior',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    descriptor.FieldDescriptor(
-      name='alpha', full_name='protobuf.distributions.GammaPoisson.GridPrior.alpha', index=0,
-      number=1, type=2, cpp_type=6, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='inv_beta', full_name='protobuf.distributions.GammaPoisson.GridPrior.inv_beta', index=1,
-      number=2, type=2, cpp_type=6, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=973,
-  serialized_end=1017,
+  serialized_start=738,
+  serialized_end=779,
 )
 
 _GAMMAPOISSON_GROUP = descriptor.Descriptor(
@@ -708,8 +552,8 @@ _GAMMAPOISSON_GROUP = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1019,
-  serialized_end=1072,
+  serialized_start=781,
+  serialized_end=834,
 )
 
 _GAMMAPOISSON = descriptor.Descriptor(
@@ -722,14 +566,14 @@ _GAMMAPOISSON = descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[_GAMMAPOISSON_SHARED, _GAMMAPOISSON_GRIDPRIOR, _GAMMAPOISSON_GROUP, ],
+  nested_types=[_GAMMAPOISSON_SHARED, _GAMMAPOISSON_GROUP, ],
   enum_types=[
   ],
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=914,
-  serialized_end=1072,
+  serialized_start=722,
+  serialized_end=834,
 )
 
 
@@ -770,49 +614,8 @@ _BETANEGATIVEBINOMIAL_SHARED = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1099,
-  serialized_end=1147,
-)
-
-_BETANEGATIVEBINOMIAL_GRIDPRIOR = descriptor.Descriptor(
-  name='GridPrior',
-  full_name='protobuf.distributions.BetaNegativeBinomial.GridPrior',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    descriptor.FieldDescriptor(
-      name='alpha', full_name='protobuf.distributions.BetaNegativeBinomial.GridPrior.alpha', index=0,
-      number=1, type=2, cpp_type=6, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='beta', full_name='protobuf.distributions.BetaNegativeBinomial.GridPrior.beta', index=1,
-      number=2, type=2, cpp_type=6, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='r', full_name='protobuf.distributions.BetaNegativeBinomial.GridPrior.r', index=2,
-      number=3, type=4, cpp_type=4, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=1149,
-  serialized_end=1200,
+  serialized_start=860,
+  serialized_end=908,
 )
 
 _BETANEGATIVEBINOMIAL_GROUP = descriptor.Descriptor(
@@ -845,8 +648,8 @@ _BETANEGATIVEBINOMIAL_GROUP = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1019,
-  serialized_end=1054,
+  serialized_start=781,
+  serialized_end=816,
 )
 
 _BETANEGATIVEBINOMIAL = descriptor.Descriptor(
@@ -859,14 +662,14 @@ _BETANEGATIVEBINOMIAL = descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[_BETANEGATIVEBINOMIAL_SHARED, _BETANEGATIVEBINOMIAL_GRIDPRIOR, _BETANEGATIVEBINOMIAL_GROUP, ],
+  nested_types=[_BETANEGATIVEBINOMIAL_SHARED, _BETANEGATIVEBINOMIAL_GROUP, ],
   enum_types=[
   ],
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1075,
-  serialized_end=1237,
+  serialized_start=836,
+  serialized_end=945,
 )
 
 
@@ -914,56 +717,8 @@ _NORMALINVERSECHISQ_SHARED = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1262,
-  serialized_end=1326,
-)
-
-_NORMALINVERSECHISQ_GRIDPRIOR = descriptor.Descriptor(
-  name='GridPrior',
-  full_name='protobuf.distributions.NormalInverseChiSq.GridPrior',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    descriptor.FieldDescriptor(
-      name='mu', full_name='protobuf.distributions.NormalInverseChiSq.GridPrior.mu', index=0,
-      number=1, type=2, cpp_type=6, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='kappa', full_name='protobuf.distributions.NormalInverseChiSq.GridPrior.kappa', index=1,
-      number=2, type=2, cpp_type=6, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='sigmasq', full_name='protobuf.distributions.NormalInverseChiSq.GridPrior.sigmasq', index=2,
-      number=3, type=2, cpp_type=6, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    descriptor.FieldDescriptor(
-      name='nu', full_name='protobuf.distributions.NormalInverseChiSq.GridPrior.nu', index=3,
-      number=4, type=2, cpp_type=6, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  extension_ranges=[],
-  serialized_start=1328,
-  serialized_end=1395,
+  serialized_start=970,
+  serialized_end=1034,
 )
 
 _NORMALINVERSECHISQ_GROUP = descriptor.Descriptor(
@@ -1003,8 +758,8 @@ _NORMALINVERSECHISQ_GROUP = descriptor.Descriptor(
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1397,
-  serialized_end=1463,
+  serialized_start=1036,
+  serialized_end=1102,
 )
 
 _NORMALINVERSECHISQ = descriptor.Descriptor(
@@ -1017,14 +772,124 @@ _NORMALINVERSECHISQ = descriptor.Descriptor(
   ],
   extensions=[
   ],
-  nested_types=[_NORMALINVERSECHISQ_SHARED, _NORMALINVERSECHISQ_GRIDPRIOR, _NORMALINVERSECHISQ_GROUP, ],
+  nested_types=[_NORMALINVERSECHISQ_SHARED, _NORMALINVERSECHISQ_GROUP, ],
   enum_types=[
   ],
   options=None,
   is_extendable=False,
   extension_ranges=[],
-  serialized_start=1240,
-  serialized_end=1463,
+  serialized_start=948,
+  serialized_end=1102,
+)
+
+
+_NORMALINVERSEWISHART_SHARED = descriptor.Descriptor(
+  name='Shared',
+  full_name='protobuf.distributions.NormalInverseWishart.Shared',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='mu', full_name='protobuf.distributions.NormalInverseWishart.Shared.mu', index=0,
+      number=1, type=2, cpp_type=6, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='kappa', full_name='protobuf.distributions.NormalInverseWishart.Shared.kappa', index=1,
+      number=2, type=2, cpp_type=6, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='psi', full_name='protobuf.distributions.NormalInverseWishart.Shared.psi', index=2,
+      number=3, type=2, cpp_type=6, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='nu', full_name='protobuf.distributions.NormalInverseWishart.Shared.nu', index=3,
+      number=4, type=2, cpp_type=6, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=1129,
+  serialized_end=1189,
+)
+
+_NORMALINVERSEWISHART_GROUP = descriptor.Descriptor(
+  name='Group',
+  full_name='protobuf.distributions.NormalInverseWishart.Group',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+    descriptor.FieldDescriptor(
+      name='count', full_name='protobuf.distributions.NormalInverseWishart.Group.count', index=0,
+      number=1, type=5, cpp_type=1, label=2,
+      has_default_value=False, default_value=0,
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='sum_x', full_name='protobuf.distributions.NormalInverseWishart.Group.sum_x', index=1,
+      number=2, type=2, cpp_type=6, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+    descriptor.FieldDescriptor(
+      name='sum_xxT', full_name='protobuf.distributions.NormalInverseWishart.Group.sum_xxT', index=2,
+      number=3, type=2, cpp_type=6, label=3,
+      has_default_value=False, default_value=[],
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      options=None),
+  ],
+  extensions=[
+  ],
+  nested_types=[],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=1191,
+  serialized_end=1245,
+)
+
+_NORMALINVERSEWISHART = descriptor.Descriptor(
+  name='NormalInverseWishart',
+  full_name='protobuf.distributions.NormalInverseWishart',
+  filename=None,
+  file=DESCRIPTOR,
+  containing_type=None,
+  fields=[
+  ],
+  extensions=[
+  ],
+  nested_types=[_NORMALINVERSEWISHART_SHARED, _NORMALINVERSEWISHART_GROUP, ],
+  enum_types=[
+  ],
+  options=None,
+  is_extendable=False,
+  extension_ranges=[],
+  serialized_start=1105,
+  serialized_end=1245,
 )
 
 _CLUSTERING_PITMANYOR.containing_type = _CLUSTERING;
@@ -1032,27 +897,21 @@ _CLUSTERING_LOWENTROPY.containing_type = _CLUSTERING;
 _CLUSTERING.fields_by_name['pitman_yor'].message_type = _CLUSTERING_PITMANYOR
 _CLUSTERING.fields_by_name['low_entropy'].message_type = _CLUSTERING_LOWENTROPY
 _BETABERNOULLI_SHARED.containing_type = _BETABERNOULLI;
-_BETABERNOULLI_GRIDPRIOR.containing_type = _BETABERNOULLI;
 _BETABERNOULLI_GROUP.containing_type = _BETABERNOULLI;
 _DIRICHLETDISCRETE_SHARED.containing_type = _DIRICHLETDISCRETE;
-_DIRICHLETDISCRETE_GRIDPRIOR.containing_type = _DIRICHLETDISCRETE;
 _DIRICHLETDISCRETE_GROUP.containing_type = _DIRICHLETDISCRETE;
 _DIRICHLETPROCESSDISCRETE_SHARED.containing_type = _DIRICHLETPROCESSDISCRETE;
-_DIRICHLETPROCESSDISCRETE_GRIDPRIOR.containing_type = _DIRICHLETPROCESSDISCRETE;
 _DIRICHLETPROCESSDISCRETE_GROUP.containing_type = _DIRICHLETPROCESSDISCRETE;
 _PITMANYORPROCESSDISCRETE_SHARED.containing_type = _PITMANYORPROCESSDISCRETE;
-_PITMANYORPROCESSDISCRETE_GRIDPRIOR.fields_by_name['alpha_d'].message_type = _CLUSTERING_PITMANYOR
-_PITMANYORPROCESSDISCRETE_GRIDPRIOR.containing_type = _PITMANYORPROCESSDISCRETE;
 _PITMANYORPROCESSDISCRETE_GROUP.containing_type = _PITMANYORPROCESSDISCRETE;
 _GAMMAPOISSON_SHARED.containing_type = _GAMMAPOISSON;
-_GAMMAPOISSON_GRIDPRIOR.containing_type = _GAMMAPOISSON;
 _GAMMAPOISSON_GROUP.containing_type = _GAMMAPOISSON;
 _BETANEGATIVEBINOMIAL_SHARED.containing_type = _BETANEGATIVEBINOMIAL;
-_BETANEGATIVEBINOMIAL_GRIDPRIOR.containing_type = _BETANEGATIVEBINOMIAL;
 _BETANEGATIVEBINOMIAL_GROUP.containing_type = _BETANEGATIVEBINOMIAL;
 _NORMALINVERSECHISQ_SHARED.containing_type = _NORMALINVERSECHISQ;
-_NORMALINVERSECHISQ_GRIDPRIOR.containing_type = _NORMALINVERSECHISQ;
 _NORMALINVERSECHISQ_GROUP.containing_type = _NORMALINVERSECHISQ;
+_NORMALINVERSEWISHART_SHARED.containing_type = _NORMALINVERSEWISHART;
+_NORMALINVERSEWISHART_GROUP.containing_type = _NORMALINVERSEWISHART;
 DESCRIPTOR.message_types_by_name['Clustering'] = _CLUSTERING
 DESCRIPTOR.message_types_by_name['BetaBernoulli'] = _BETABERNOULLI
 DESCRIPTOR.message_types_by_name['DirichletDiscrete'] = _DIRICHLETDISCRETE
@@ -1061,6 +920,7 @@ DESCRIPTOR.message_types_by_name['PitmanYorProcessDiscrete'] = _PITMANYORPROCESS
 DESCRIPTOR.message_types_by_name['GammaPoisson'] = _GAMMAPOISSON
 DESCRIPTOR.message_types_by_name['BetaNegativeBinomial'] = _BETANEGATIVEBINOMIAL
 DESCRIPTOR.message_types_by_name['NormalInverseChiSq'] = _NORMALINVERSECHISQ
+DESCRIPTOR.message_types_by_name['NormalInverseWishart'] = _NORMALINVERSEWISHART
 
 class Clustering(message.Message):
   __metaclass__ = reflection.GeneratedProtocolMessageType
@@ -1089,12 +949,6 @@ class BetaBernoulli(message.Message):
     
     # @@protoc_insertion_point(class_scope:protobuf.distributions.BetaBernoulli.Shared)
   
-  class GridPrior(message.Message):
-    __metaclass__ = reflection.GeneratedProtocolMessageType
-    DESCRIPTOR = _BETABERNOULLI_GRIDPRIOR
-    
-    # @@protoc_insertion_point(class_scope:protobuf.distributions.BetaBernoulli.GridPrior)
-  
   class Group(message.Message):
     __metaclass__ = reflection.GeneratedProtocolMessageType
     DESCRIPTOR = _BETABERNOULLI_GROUP
@@ -1112,12 +966,6 @@ class DirichletDiscrete(message.Message):
     DESCRIPTOR = _DIRICHLETDISCRETE_SHARED
     
     # @@protoc_insertion_point(class_scope:protobuf.distributions.DirichletDiscrete.Shared)
-  
-  class GridPrior(message.Message):
-    __metaclass__ = reflection.GeneratedProtocolMessageType
-    DESCRIPTOR = _DIRICHLETDISCRETE_GRIDPRIOR
-    
-    # @@protoc_insertion_point(class_scope:protobuf.distributions.DirichletDiscrete.GridPrior)
   
   class Group(message.Message):
     __metaclass__ = reflection.GeneratedProtocolMessageType
@@ -1137,12 +985,6 @@ class DirichletProcessDiscrete(message.Message):
     
     # @@protoc_insertion_point(class_scope:protobuf.distributions.DirichletProcessDiscrete.Shared)
   
-  class GridPrior(message.Message):
-    __metaclass__ = reflection.GeneratedProtocolMessageType
-    DESCRIPTOR = _DIRICHLETPROCESSDISCRETE_GRIDPRIOR
-    
-    # @@protoc_insertion_point(class_scope:protobuf.distributions.DirichletProcessDiscrete.GridPrior)
-  
   class Group(message.Message):
     __metaclass__ = reflection.GeneratedProtocolMessageType
     DESCRIPTOR = _DIRICHLETPROCESSDISCRETE_GROUP
@@ -1160,12 +1002,6 @@ class PitmanYorProcessDiscrete(message.Message):
     DESCRIPTOR = _PITMANYORPROCESSDISCRETE_SHARED
     
     # @@protoc_insertion_point(class_scope:protobuf.distributions.PitmanYorProcessDiscrete.Shared)
-  
-  class GridPrior(message.Message):
-    __metaclass__ = reflection.GeneratedProtocolMessageType
-    DESCRIPTOR = _PITMANYORPROCESSDISCRETE_GRIDPRIOR
-    
-    # @@protoc_insertion_point(class_scope:protobuf.distributions.PitmanYorProcessDiscrete.GridPrior)
   
   class Group(message.Message):
     __metaclass__ = reflection.GeneratedProtocolMessageType
@@ -1185,12 +1021,6 @@ class GammaPoisson(message.Message):
     
     # @@protoc_insertion_point(class_scope:protobuf.distributions.GammaPoisson.Shared)
   
-  class GridPrior(message.Message):
-    __metaclass__ = reflection.GeneratedProtocolMessageType
-    DESCRIPTOR = _GAMMAPOISSON_GRIDPRIOR
-    
-    # @@protoc_insertion_point(class_scope:protobuf.distributions.GammaPoisson.GridPrior)
-  
   class Group(message.Message):
     __metaclass__ = reflection.GeneratedProtocolMessageType
     DESCRIPTOR = _GAMMAPOISSON_GROUP
@@ -1208,12 +1038,6 @@ class BetaNegativeBinomial(message.Message):
     DESCRIPTOR = _BETANEGATIVEBINOMIAL_SHARED
     
     # @@protoc_insertion_point(class_scope:protobuf.distributions.BetaNegativeBinomial.Shared)
-  
-  class GridPrior(message.Message):
-    __metaclass__ = reflection.GeneratedProtocolMessageType
-    DESCRIPTOR = _BETANEGATIVEBINOMIAL_GRIDPRIOR
-    
-    # @@protoc_insertion_point(class_scope:protobuf.distributions.BetaNegativeBinomial.GridPrior)
   
   class Group(message.Message):
     __metaclass__ = reflection.GeneratedProtocolMessageType
@@ -1233,12 +1057,6 @@ class NormalInverseChiSq(message.Message):
     
     # @@protoc_insertion_point(class_scope:protobuf.distributions.NormalInverseChiSq.Shared)
   
-  class GridPrior(message.Message):
-    __metaclass__ = reflection.GeneratedProtocolMessageType
-    DESCRIPTOR = _NORMALINVERSECHISQ_GRIDPRIOR
-    
-    # @@protoc_insertion_point(class_scope:protobuf.distributions.NormalInverseChiSq.GridPrior)
-  
   class Group(message.Message):
     __metaclass__ = reflection.GeneratedProtocolMessageType
     DESCRIPTOR = _NORMALINVERSECHISQ_GROUP
@@ -1247,5 +1065,23 @@ class NormalInverseChiSq(message.Message):
   DESCRIPTOR = _NORMALINVERSECHISQ
   
   # @@protoc_insertion_point(class_scope:protobuf.distributions.NormalInverseChiSq)
+
+class NormalInverseWishart(message.Message):
+  __metaclass__ = reflection.GeneratedProtocolMessageType
+  
+  class Shared(message.Message):
+    __metaclass__ = reflection.GeneratedProtocolMessageType
+    DESCRIPTOR = _NORMALINVERSEWISHART_SHARED
+    
+    # @@protoc_insertion_point(class_scope:protobuf.distributions.NormalInverseWishart.Shared)
+  
+  class Group(message.Message):
+    __metaclass__ = reflection.GeneratedProtocolMessageType
+    DESCRIPTOR = _NORMALINVERSEWISHART_GROUP
+    
+    # @@protoc_insertion_point(class_scope:protobuf.distributions.NormalInverseWishart.Group)
+  DESCRIPTOR = _NORMALINVERSEWISHART
+  
+  # @@protoc_insertion_point(class_scope:protobuf.distributions.NormalInverseWishart)
 
 # @@protoc_insertion_point(module_scope)

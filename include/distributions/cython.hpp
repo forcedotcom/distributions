@@ -27,12 +27,27 @@
 
 #pragma once
 
-#include <random>
+#include <distributions/common.hpp>
 
 namespace distributions {
+// helpers for cython-- declaring operator()(unsigned, unsigned) doesn't quite
+// work well in Cython yet
 
-typedef std::default_random_engine rng_t;
-// typedef std::mt19937 rng_t;
-// typedef std::ranlux48 rng_t;
+template <typename T>
+inline DIST_ALWAYS_INLINE float float_op_get2(
+    const T & t,
+    unsigned arg0,
+    unsigned arg1) {
+    return t(arg0, arg1);
+}
+
+template <typename T>
+inline DIST_ALWAYS_INLINE void float_op_set2(
+    T & t,
+    unsigned arg0,
+    unsigned arg1,
+    float v) {
+    t(arg0, arg1) = v;
+}
 
 }  // namespace distributions

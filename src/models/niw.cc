@@ -25,14 +25,12 @@
 // TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 // USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#pragma once
-
-#include <random>
+#include <distributions/models/niw.hpp>
 
 namespace distributions {
 
-typedef std::default_random_engine rng_t;
-// typedef std::mt19937 rng_t;
-// typedef std::ranlux48 rng_t;
+template struct NormalInverseWishart<-1>;
+template struct NormalInverseWishart<2>;
+template struct NormalInverseWishart<3>;
 
 }  // namespace distributions

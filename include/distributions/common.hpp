@@ -27,25 +27,25 @@
 
 #pragma once
 
+#include <string>
 #include <iostream>
 #include <sstream>
 
 #ifdef __GNUG__
 #  include <cxxabi.h>
 #  include <memory>
-#endif // __GNUG__
+#endif  // __GNUG__
 
 #ifdef __GNUG__
-#  define DIST_LIKELY(x) __builtin_expect(bool(x), true)
-#  define DIST_UNLIKELY(x) __builtin_expect(bool(x), false)
-#else // __GNUG__
+#  define DIST_LIKELY(x) __builtin_expect(!!(x), true)
+#  define DIST_UNLIKELY(x) __builtin_expect(!!(x), false)
+#else  // __GNUG__
 #  warning "ignoring DIST_LIKELY(-), DIST_UNLIKELY(-)"
 #  define DIST_LIKELY(x) (x)
 #  define DIST_UNLIKELY(x) (x)
-#endif // __GNUG__
+#endif  // __GNUG__
 
 #ifdef DIST_THROW_ON_ERROR
-#  include <sstream>
 #  include <stdexcept>
 #  define DIST_ERROR(message) {                         \
     std::ostringstream PRIVATE_message;                 \
@@ -54,7 +54,7 @@
         << __FILE__ << " : " << __LINE__ << "\n\t"      \
         << __PRETTY_FUNCTION__ << '\n';                 \
     throw std::runtime_error(PRIVATE_message.str()); }
-#else // DIST_THROW_ON_ERROR
+#else  // DIST_THROW_ON_ERROR
 #  define DIST_ERROR(message) {                         \
     std::ostringstream PRIVATE_message;                 \
     PRIVATE_message                                     \
@@ -63,14 +63,14 @@
         << __PRETTY_FUNCTION__ << '\n';                 \
     std::cerr << PRIVATE_message.str() << std::flush;   \
     abort(); }
-#endif // DIST_THROW_ON_ERROR
+#endif  // DIST_THROW_ON_ERROR
 
 #ifdef DIST_DISALLOW_SLOW_FALLBACKS
 #  define DIST_THIS_SLOW_FALLBACK_SHOULD_BE_OVERRIDDEN \
     DIST_ERROR("slow fallback has not been overridden");
-#else // DIST_DISALLOW_SLOW_FALLBACKS
+#else  // DIST_DISALLOW_SLOW_FALLBACKS
 #  define DIST_THIS_SLOW_FALLBACK_SHOULD_BE_OVERRIDDEN
-#endif // DIST_DISALLOW_SLOW_FALLBACKS
+#endif  // DIST_DISALLOW_SLOW_FALLBACKS
 
 #define DIST_ASSERT(cond, message) \
     { if (DIST_UNLIKELY(not (cond))) DIST_ERROR(message) }
@@ -84,13 +84,19 @@
 #define DIST_ASSERT_LT(x, y) \
     DIST_ASSERT((x) < (y), \
         "expected " #x " < " #y "; actual " << (x) << " vs " << (y))
+#define DIST_ASSERT_GE(x, y) \
+    DIST_ASSERT((x) >= (y), \
+        "expected " #x " >= " #y "; actual " << (x) << " vs " << (y))
+#define DIST_ASSERT_GT(x, y) \
+    DIST_ASSERT((x) > (y), \
+        "expected " #x " > " #y "; actual " << (x) << " vs " << (y))
 #define DIST_ASSERT_NE(x, y) \
     DIST_ASSERT((x) != (y), \
         "expected " #x " != " #y "; actual " << (x) << " vs " << (y))
 
 #ifndef DIST_DEBUG_LEVEL
 #  define DIST_DEBUG_LEVEL 0
-#endif // DIST_DEBUG_LEVEL
+#endif  // DIST_DEBUG_LEVEL
 
 #define DIST_ASSERT_(level, cond, message) \
     { if (DIST_DEBUG_LEVEL >= (level)) DIST_ASSERT(cond, message) }
@@ -99,13 +105,20 @@
 #define DIST_ASSERT2(cond, message) DIST_ASSERT_(2, cond, message)
 #define DIST_ASSERT3(cond, message) DIST_ASSERT_(3, cond, message)
 
-namespace distributions
-{
+#ifdef __GNUG__
+#  define DIST_ALWAYS_INLINE __attribute__((always_inline))
+#  define DIST_NEVER_INLINE __attribute__((never_inline))
+#else  // __GNUG__
+#  warning "ignoring DIST_ALWAYS_INLINE(-), DIST_NEVER_INLINE(-)"
+#  define DIST_ALWAYS_INLINE
+#  define DIST_NEVER_INLINE
+#endif  // __GNUG__
+
+namespace distributions {
 
 // adapted from http://stackoverflow.com/questions/281818
 #ifdef __GNUG__
-inline std::string demangle (const char * name)
-{
+inline std::string demangle(const char * name) {
     int status = 0;
     std::unique_ptr<char, void(*)(void*)> result {
         abi::__cxa_demangle(name, NULL, NULL, &status),
@@ -113,15 +126,14 @@ inline std::string demangle (const char * name)
     };
     return (status == 0) ? result.get() : name;
 }
-#else // __GNUG__
-inline std::string demangle (const char * name)
-{
+#else  // __GNUG__
+inline std::string demangle(const char * name) {
     return name;
 }
-#endif // __GNUG__
+#endif  // __GNUG__
 
 enum { SYNCHRONIZE_ENTROPY_FOR_UNIT_TESTING = 1 };
 
-int foo ();
+int foo();
 
-} // namespace distributions
+}   // namespace distributions

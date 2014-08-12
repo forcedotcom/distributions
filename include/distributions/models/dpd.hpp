@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <vector>
+#include <algorithm>
 #include <distributions/common.hpp>
 #include <distributions/special.hpp>
 #include <distributions/random.hpp>
@@ -36,11 +38,8 @@
 #include <distributions/mixins.hpp>
 #include <distributions/mixture.hpp>
 
-namespace distributions
-{
-struct DirichletProcessDiscrete
-{
-
+namespace distributions {
+struct DirichletProcessDiscrete {
 typedef DirichletProcessDiscrete Model;
 typedef int count_t;
 typedef uint32_t Value;
@@ -53,20 +52,18 @@ typedef MixtureSlave<Model, MixtureDataScorer> SmallMixture;
 typedef MixtureSlave<Model, MixtureDataScorer, MixtureValueScorer> FastMixture;
 typedef FastMixture Mixture;
 
-static constexpr Value OTHER () { return 0xFFFFFFFFU; }
-static constexpr float MIN_BETA () { return 1e-6f; }
+static constexpr Value OTHER() { return 0xFFFFFFFFU; }
+static constexpr float MIN_BETA() { return 1e-6f; }
 
 
-struct Shared : SharedMixin<Model>
-{
+struct Shared : SharedMixin<Model> {
     float gamma;
     float alpha;
     float beta0;
     Sparse_<Value, float> betas;
     SparseCounter<Value, count_t> counts;
 
-    void add_value (const Value & value, rng_t & rng)
-    {
+    void add_value(const Value & value, rng_t & rng) {
         DIST_ASSERT1(value != OTHER(), "cannot add OTHER");
         if (DIST_UNLIKELY(counts.add(value) == 1)) {
             DIST_ASSERT(beta0 > 0, "cannot add any more values");
@@ -76,21 +73,19 @@ struct Shared : SharedMixin<Model>
         }
     }
 
-    void remove_value (const Value & value, rng_t &)
-    {
+    void remove_value(const Value & value, rng_t &) {
         DIST_ASSERT1(value != OTHER(), "cannot remove OTHER");
         if (DIST_UNLIKELY(counts.remove(value) == 0)) {
             beta0 = std::min(1.f, beta0 + betas.pop(value));
         }
     }
 
-    void realize (rng_t & rng)
-    {
+    void realize(rng_t & rng) {
         const size_t max_size = 10000;
         const float min_beta0 = 1e-4f;
 
         Value new_value = 0;
-        for (const auto & i : betas) {
+        for (auto const & i : betas) {
             new_value = std::max(new_value, 1 + i.first);
         }
 
@@ -106,8 +101,7 @@ struct Shared : SharedMixin<Model>
     }
 
     template<class Message>
-    void protobuf_load (const Message & message)
-    {
+    void protobuf_load(const Message & message) {
         const size_t value_count = message.values_size();
         DIST_ASSERT_EQ(message.betas_size(), value_count);
         DIST_ASSERT_EQ(message.counts_size(), value_count);
@@ -129,8 +123,7 @@ struct Shared : SharedMixin<Model>
     }
 
     template<class Message>
-    void protobuf_dump (Message & message) const
-    {
+    void protobuf_dump(Message & message) const {
         message.Clear();
         message.set_gamma(gamma);
         message.set_alpha(alpha);
@@ -143,8 +136,7 @@ struct Shared : SharedMixin<Model>
         }
     }
 
-    static Shared EXAMPLE ()
-    {
+    static Shared EXAMPLE() {
         Shared shared;
         size_t dim = 100;
         shared.gamma = 1.0 / dim;
@@ -160,13 +152,11 @@ struct Shared : SharedMixin<Model>
 
 // Group supports data debt, i.e., negative counts.
 // Other scoring classes below do not support data debt.
-struct Group : GroupMixin<Model>
-{
+struct Group : GroupMixin<Model> {
     SparseCounter<Value, count_t> counts;
 
     template<class Message>
-    void protobuf_load (const Message & message)
-    {
+    void protobuf_load(const Message & message) {
         if (DIST_DEBUG_LEVEL >= 1) {
             DIST_ASSERT_EQ(message.keys_size(), message.values_size());
         }
@@ -177,68 +167,61 @@ struct Group : GroupMixin<Model>
     }
 
     template<class Message>
-    void protobuf_dump (Message & message) const
-    {
+    void protobuf_dump(Message & message) const {
         message.Clear();
         auto & keys = * message.mutable_keys();
         auto & values = * message.mutable_values();
-        for (const auto & pair : counts) {
+        for (auto const & pair : counts) {
             keys.Add(pair.first);
             values.Add(pair.second);
         }
     }
 
-    void init (
+    void init(
             const Shared &,
-            rng_t &)
-    {
+            rng_t &) {
         counts.clear();
     }
 
-    void add_value (
+    void add_value(
             const Shared & shared,
             const Value & value,
-            rng_t &)
-    {
+            rng_t &) {
         DIST_ASSERT1(value != OTHER(), "cannot add OTHER");
         DIST_ASSERT1(shared.betas.contains(value), "unknown value: " << value);
         counts.add(value);
     }
 
-    void add_repeated_value (
+    void add_repeated_value(
             const Shared & shared,
             const Value & value,
             const int & count,
-            rng_t &)
-    {
+            rng_t &) {
         DIST_ASSERT1(value != OTHER(), "cannot add OTHER");
         DIST_ASSERT1(shared.betas.contains(value), "unknown value: " << value);
         counts.add(value, count);
     }
 
-    void remove_value (
+    void remove_value(
             const Shared & shared,
             const Value & value,
-            rng_t &)
-    {
+            rng_t &) {
         DIST_ASSERT1(value != OTHER(), "cannot remove OTHER");
         DIST_ASSERT1(shared.betas.contains(value), "unknown value: " << value);
         counts.remove(value);
     }
 
-    void merge (
+    void merge(
             const Shared &,
             const Group & source,
-            rng_t &)
-    {
+            rng_t &) {
         counts.merge(source.counts);
     }
 
-    float score_value (
+    float score_value(
             const Shared & shared,
             const Value & value,
-            rng_t &) const
-    {
+            rng_t &) const {
         float alpha = shared.alpha;
         float numer = (value == OTHER())
                     ? alpha * shared.beta0
@@ -247,10 +230,9 @@ struct Group : GroupMixin<Model>
         return fast_log(numer / denom);
     }
 
-    float score_data (
+    float score_data(
             const Shared & shared,
-            rng_t &) const
-    {
+            rng_t &) const {
         const size_t total = counts.get_total();
         const float alpha = shared.alpha;
 
@@ -267,18 +249,16 @@ struct Group : GroupMixin<Model>
         return score;
     }
 
-    Value sample_value (
+    Value sample_value(
             const Shared & shared,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         Sampler sampler;
         sampler.init(shared, *this, rng);
         return sampler.eval(shared, rng);
     }
 
-    void validate (const Shared & shared) const
-    {
-        for (const auto & i : counts) {
+    void validate(const Shared & shared) const {
+        for (auto const & i : counts) {
             if (auto group_count = i.second) {
                 auto shared_count = shared.counts.get_count(i.first);
                 DIST_ASSERT(
@@ -289,16 +269,14 @@ struct Group : GroupMixin<Model>
     }
 };
 
-struct Sampler
-{
+struct Sampler {
     std::vector<float> probs;
     std::vector<Value> values;
 
-    void init (
+    void init(
             const Shared & shared,
             const Group & group,
-            rng_t & rng)
-    {
+            rng_t & rng) {
         probs.clear();
         probs.reserve(shared.betas.size() + 1);
         values.clear();
@@ -318,24 +296,21 @@ struct Sampler
         sample_dirichlet(rng, probs.size(), probs.data(), probs.data());
     }
 
-    Value eval (
+    Value eval(
             const Shared &,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         size_t index = sample_discrete(rng, probs.size(), probs.data());
         return values[index];
     }
 };
 
-struct Scorer
-{
+struct Scorer {
     Sparse_<Value, float> scores;
 
-    void init (
+    void init(
             const Shared & shared,
             const Group & group,
-            rng_t &)
-    {
+            rng_t &) {
         scores.clear();
 
         const size_t total = group.counts.get_total();
@@ -356,22 +331,20 @@ struct Scorer
         }
     }
 
-    float eval (
+    float eval(
             const Shared &,
             const Value & value,
-            rng_t &) const
-    {
+            rng_t &) const {
         return scores.get(value);
     }
 };
 
-struct MixtureDataScorer : MixtureSlaveDataScorerMixin<Model, MixtureDataScorer>
-{
-    float score_data (
+struct MixtureDataScorer
+    : MixtureSlaveDataScorerMixin<Model, MixtureDataScorer> {
+    float score_data(
             const Shared & shared,
             const std::vector<Group> & groups,
-            rng_t &) const
-    {
+            rng_t &) const {
         const float alpha = shared.alpha;
 
         Sparse_<Value, float> shared_part;
@@ -381,7 +354,7 @@ struct MixtureDataScorer : MixtureSlaveDataScorerMixin<Model, MixtureDataScorer>
         const float shared_total = fast_lgamma(alpha);
 
         float score = 0;
-        for (const auto & group : groups) {
+        for (auto const & group : groups) {
             if (group.counts.get_total()) {
                 for (auto & i : group.counts) {
                     Value value = i.first;
@@ -398,12 +371,10 @@ struct MixtureDataScorer : MixtureSlaveDataScorerMixin<Model, MixtureDataScorer>
     }
 };
 
-struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
-{
-    void resize (const Shared & shared, size_t size)
-    {
+struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model> {
+    void resize(const Shared & shared, size_t size) {
         scores_shift_.resize(size);
-        for (const auto & i : shared.betas) {
+        for (auto const & i : shared.betas) {
             Value value = i.first;
             auto & entry = scores_.get_or_add(value);
             entry.ref_count = 1;
@@ -422,8 +393,7 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         _validate(shared, size);
     }
 
-    void add_group (const Shared & shared, rng_t &)
-    {
+    void add_group(const Shared & shared, rng_t &) {
         const float alpha = shared.alpha;
         for (auto & i : scores_) {
             i.second.scores.packed_add(
@@ -432,20 +402,18 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         scores_shift_.packed_add(fast_log(alpha));
     }
 
-    void remove_group (const Shared &, size_t groupid)
-    {
+    void remove_group(const Shared &, size_t groupid) {
         for (auto & i : scores_) {
             i.second.scores.packed_remove(groupid);
         }
         scores_shift_.packed_remove(groupid);
     }
 
-    void update_group (
+    void update_group(
             const Shared & shared,
             size_t groupid,
             const Group & group,
-            rng_t &)
-    {
+            rng_t &) {
         const float alpha = shared.alpha;
         for (auto & i : scores_) {
             Value value = i.first;
@@ -457,13 +425,12 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         scores_shift_[groupid] = fast_log(alpha + group.counts.get_total());
     }
 
-    void add_value (
+    void add_value(
             const Shared & shared,
             size_t groupid,
             const Group & group,
             const Value & value,
-            rng_t &)
-    {
+            rng_t &) {
         DIST_ASSERT1(value != OTHER(), "cannot add OTHER");
         auto & entry = scores_.get_or_add(value);
         ++entry.ref_count;
@@ -479,13 +446,12 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
             shared.alpha + group.counts.get_total());
     }
 
-    void remove_value (
+    void remove_value(
             const Shared & shared,
             size_t groupid,
             const Group & group,
             const Value & value,
-            rng_t &)
-    {
+            rng_t &) {
         DIST_ASSERT1(value != OTHER(), "cannot remove OTHER");
         auto & entry = scores_.get(value);
         --entry.ref_count;
@@ -500,11 +466,10 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
             shared.alpha + group.counts.get_total());
     }
 
-    void update_all (
+    void update_all(
             const Shared & shared,
             const std::vector<Group> & groups,
-            rng_t &)
-    {
+            rng_t &) {
         _validate(shared, groups.size());
         const size_t group_count = groups.size();
         const float alpha = shared.alpha;
@@ -529,13 +494,12 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         vector_log(group_count, scores_shift_.data());
     }
 
-    float score_value_group (
+    float score_value_group(
             const Shared & shared,
             const std::vector<Group> & groups,
             size_t groupid,
             const Value & value,
-            rng_t &) const
-    {
+            rng_t &) const {
         _validate(shared, groups.size());
 
         if (DIST_LIKELY(scores_.contains(value))) {
@@ -548,17 +512,15 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         }
     }
 
-    void score_value (
+    void score_value(
             const Shared & shared,
             const std::vector<Group> & groups,
             const Value & value,
             AlignedFloats scores_accum,
-            rng_t &) const
-    {
+            rng_t &) const {
         _validate(shared, groups.size());
 
         if (DIST_LIKELY(scores_.contains(value))) {
-
             vector_add_subtract(
                 scores_accum.size(),
                 scores_accum.data(),
@@ -566,7 +528,6 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
                 scores_shift_.data());
 
         } else {
-
             float beta = (value == OTHER())
                        ? shared.beta0
                        : shared.betas.get(value);
@@ -579,13 +540,12 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         }
     }
 
-    void validate (const Shared & shared, size_t group_count) const
-    {
+    void validate(const Shared & shared, size_t group_count) const {
         DIST_ASSERT_LE(scores_.size(), shared.betas.size());
         DIST_ASSERT_EQ(scores_shift_.size(), group_count);
-        for (const auto & i : scores_) {
+        for (auto const & i : scores_) {
             const Value & value = i.first;
-            const auto & entry = i.second;
+            auto const & entry = i.second;
             DIST_ASSERT(
                 shared.betas.contains(value),
                 "missing value: " << value);
@@ -593,31 +553,26 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         }
     }
 
-    void validate (
+    void validate(
             const Shared & shared,
-            const std::vector<Group> & groups) const
-    {
+            const std::vector<Group> & groups) const {
         validate(shared, groups.size());
     }
 
-private:
-
-    void _validate (const Shared & shared, size_t group_count) const
-    {
+  private:
+    void _validate(const Shared & shared, size_t group_count) const {
         if (DIST_DEBUG_LEVEL >= 3) {
             validate(shared, group_count);
         }
     }
 
-    struct CountAndScores
-    {
+    struct CountAndScores {
         uint32_t ref_count;
         VectorFloat scores;
-        CountAndScores () : ref_count(0), scores() {}
+        CountAndScores() : ref_count(0), scores() {}
     };
     Sparse_<Value, CountAndScores> scores_;
     VectorFloat scores_shift_;
 };
-
-}; // struct DirichletProcessDiscrete
-} // namespace distributions
+};  // struct DirichletProcessDiscrete
+}   // namespace distributions

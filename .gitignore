@@ -8,5 +8,6 @@ temp.*
 *.cpp
 *.so
 *.profile
+*.swp
 doc/_build
 MANIFEST

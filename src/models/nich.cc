@@ -28,16 +28,14 @@
 #include <distributions/models/nich.hpp>
 #include <distributions/vector_math.hpp>
 
-namespace distributions
-{
+namespace distributions {
 
-void NormalInverseChiSq::MixtureValueScorer::score_value (
+void NormalInverseChiSq::MixtureValueScorer::score_value(
         const Shared &,
         const std::vector<Group> &,
         const Value & value,
         AlignedFloats scores_accum,
-        rng_t &) const
-{
+        rng_t &) const {
     const size_t size = scores_accum.size();
     const float value_noalias = value;
     float * __restrict__ scores_accum_noalias = VectorFloat_data(scores_accum);
@@ -59,34 +57,40 @@ void NormalInverseChiSq::MixtureValueScorer::score_value (
         scores_accum_noalias[i] += score[i] + log_coeff[i] * temp[i];
     }
 
+#if 0
     // Version 2
-    //for (size_t i = 0; i < size; ++i) {
-    //    temp[i] = 1.f + precision[i] * sqr(value_noalias - mean[i]);
-    //}
-    //for (size_t i = 0; i < size; ++i) {
-    //    temp[i] = fast_log(temp[i]);
-    //}
-    //for (size_t i = 0; i < size; ++i) {
-    //    scores_accum_noalias[i] += score[i] + log_coeff[i] * temp[i];
-    //}
+    for (size_t i = 0; i < size; ++i) {
+        temp[i] = 1.f + precision[i] * sqr(value_noalias - mean[i]);
+    }
+    for (size_t i = 0; i < size; ++i) {
+        temp[i] = fast_log(temp[i]);
+    }
+    for (size_t i = 0; i < size; ++i) {
+        scores_accum_noalias[i] += score[i] + log_coeff[i] * temp[i];
+    }
+#endif
 
+#if 0
     // Verion 3
-    //for (size_t i = 0; i < size; ++i) {
-    //    scores_accum_noalias[i] += score[i] + log_coeff[i] * fast_log(
-    //        1.f + precision[i] * sqr(value_noalias - mean[i]));
-    //}
+    for (size_t i = 0; i < size; ++i) {
+        scores_accum_noalias[i] += score[i] + log_coeff[i] * fast_log(
+            1.f + precision[i] * sqr(value_noalias - mean[i]));
+    }
+#endif
 
+#if 0
     // Version 4
-    //float work[8] __attribute__((aligned (32)));
-    //for (size_t i = 0; i < size; i += 8) {
-    //    for (size_t j = 0; j < 8; ++j) {
-    //        work[j] = 1.f + precision[i+j] * sqr(value_noalias - mean[i+j]);
-    //    }
-    //    vector_log(8, work);
-    //    for (size_t j = 0; j < 8; ++j) {
-    //        scores_accum_noalias[i+j] += score[i+j] + log_coeff[i+j] * work[j];
-    //    }
-    //}
+    float work[8] __attribute__((aligned(32)));
+    for (size_t i = 0; i < size; i += 8) {
+        for (size_t j = 0; j < 8; ++j) {
+            work[j] = 1.f + precision[i+j] * sqr(value_noalias - mean[i+j]);
+        }
+        vector_log(8, work);
+        for (size_t j = 0; j < 8; ++j) {
+            scores_accum_noalias[i+j] += score[i+j] + log_coeff[i+j] * work[j];
+        }
+    }
+#endif
 }
 
-} // namespace distributions
+}   // namespace distributions

@@ -33,9 +33,6 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* BetaBernoulli_Shared_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   BetaBernoulli_Shared_reflection_ = NULL;
-const ::google::protobuf::Descriptor* BetaBernoulli_GridPrior_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  BetaBernoulli_GridPrior_reflection_ = NULL;
 const ::google::protobuf::Descriptor* BetaBernoulli_Group_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   BetaBernoulli_Group_reflection_ = NULL;
@@ -45,9 +42,6 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* DirichletDiscrete_Shared_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   DirichletDiscrete_Shared_reflection_ = NULL;
-const ::google::protobuf::Descriptor* DirichletDiscrete_GridPrior_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  DirichletDiscrete_GridPrior_reflection_ = NULL;
 const ::google::protobuf::Descriptor* DirichletDiscrete_Group_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   DirichletDiscrete_Group_reflection_ = NULL;
@@ -57,9 +51,6 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* DirichletProcessDiscrete_Shared_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   DirichletProcessDiscrete_Shared_reflection_ = NULL;
-const ::google::protobuf::Descriptor* DirichletProcessDiscrete_GridPrior_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  DirichletProcessDiscrete_GridPrior_reflection_ = NULL;
 const ::google::protobuf::Descriptor* DirichletProcessDiscrete_Group_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   DirichletProcessDiscrete_Group_reflection_ = NULL;
@@ -69,9 +60,6 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* PitmanYorProcessDiscrete_Shared_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   PitmanYorProcessDiscrete_Shared_reflection_ = NULL;
-const ::google::protobuf::Descriptor* PitmanYorProcessDiscrete_GridPrior_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  PitmanYorProcessDiscrete_GridPrior_reflection_ = NULL;
 const ::google::protobuf::Descriptor* PitmanYorProcessDiscrete_Group_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   PitmanYorProcessDiscrete_Group_reflection_ = NULL;
@@ -81,9 +69,6 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* GammaPoisson_Shared_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   GammaPoisson_Shared_reflection_ = NULL;
-const ::google::protobuf::Descriptor* GammaPoisson_GridPrior_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  GammaPoisson_GridPrior_reflection_ = NULL;
 const ::google::protobuf::Descriptor* GammaPoisson_Group_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   GammaPoisson_Group_reflection_ = NULL;
@@ -93,9 +78,6 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* BetaNegativeBinomial_Shared_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   BetaNegativeBinomial_Shared_reflection_ = NULL;
-const ::google::protobuf::Descriptor* BetaNegativeBinomial_GridPrior_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  BetaNegativeBinomial_GridPrior_reflection_ = NULL;
 const ::google::protobuf::Descriptor* BetaNegativeBinomial_Group_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   BetaNegativeBinomial_Group_reflection_ = NULL;
@@ -105,12 +87,18 @@ const ::google::protobuf::internal::GeneratedMessageReflection*
 const ::google::protobuf::Descriptor* NormalInverseChiSq_Shared_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   NormalInverseChiSq_Shared_reflection_ = NULL;
-const ::google::protobuf::Descriptor* NormalInverseChiSq_GridPrior_descriptor_ = NULL;
-const ::google::protobuf::internal::GeneratedMessageReflection*
-  NormalInverseChiSq_GridPrior_reflection_ = NULL;
 const ::google::protobuf::Descriptor* NormalInverseChiSq_Group_descriptor_ = NULL;
 const ::google::protobuf::internal::GeneratedMessageReflection*
   NormalInverseChiSq_Group_reflection_ = NULL;
+const ::google::protobuf::Descriptor* NormalInverseWishart_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  NormalInverseWishart_reflection_ = NULL;
+const ::google::protobuf::Descriptor* NormalInverseWishart_Shared_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  NormalInverseWishart_Shared_reflection_ = NULL;
+const ::google::protobuf::Descriptor* NormalInverseWishart_Group_descriptor_ = NULL;
+const ::google::protobuf::internal::GeneratedMessageReflection*
+  NormalInverseWishart_Group_reflection_ = NULL;
 
 }  // namespace
 
@@ -198,23 +186,7 @@ void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(BetaBernoulli_Shared));
-  BetaBernoulli_GridPrior_descriptor_ = BetaBernoulli_descriptor_->nested_type(1);
-  static const int BetaBernoulli_GridPrior_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaBernoulli_GridPrior, alpha_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaBernoulli_GridPrior, beta_),
-  };
-  BetaBernoulli_GridPrior_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      BetaBernoulli_GridPrior_descriptor_,
-      BetaBernoulli_GridPrior::default_instance_,
-      BetaBernoulli_GridPrior_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaBernoulli_GridPrior, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaBernoulli_GridPrior, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(BetaBernoulli_GridPrior));
-  BetaBernoulli_Group_descriptor_ = BetaBernoulli_descriptor_->nested_type(2);
+  BetaBernoulli_Group_descriptor_ = BetaBernoulli_descriptor_->nested_type(1);
   static const int BetaBernoulli_Group_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaBernoulli_Group, heads_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaBernoulli_Group, tails_),
@@ -259,22 +231,7 @@ void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(DirichletDiscrete_Shared));
-  DirichletDiscrete_GridPrior_descriptor_ = DirichletDiscrete_descriptor_->nested_type(1);
-  static const int DirichletDiscrete_GridPrior_offsets_[1] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletDiscrete_GridPrior, alpha_),
-  };
-  DirichletDiscrete_GridPrior_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      DirichletDiscrete_GridPrior_descriptor_,
-      DirichletDiscrete_GridPrior::default_instance_,
-      DirichletDiscrete_GridPrior_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletDiscrete_GridPrior, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletDiscrete_GridPrior, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(DirichletDiscrete_GridPrior));
-  DirichletDiscrete_Group_descriptor_ = DirichletDiscrete_descriptor_->nested_type(2);
+  DirichletDiscrete_Group_descriptor_ = DirichletDiscrete_descriptor_->nested_type(1);
   static const int DirichletDiscrete_Group_offsets_[1] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletDiscrete_Group, counts_),
   };
@@ -322,23 +279,7 @@ void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(DirichletProcessDiscrete_Shared));
-  DirichletProcessDiscrete_GridPrior_descriptor_ = DirichletProcessDiscrete_descriptor_->nested_type(1);
-  static const int DirichletProcessDiscrete_GridPrior_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletProcessDiscrete_GridPrior, gamma_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletProcessDiscrete_GridPrior, alpha_),
-  };
-  DirichletProcessDiscrete_GridPrior_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      DirichletProcessDiscrete_GridPrior_descriptor_,
-      DirichletProcessDiscrete_GridPrior::default_instance_,
-      DirichletProcessDiscrete_GridPrior_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletProcessDiscrete_GridPrior, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletProcessDiscrete_GridPrior, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(DirichletProcessDiscrete_GridPrior));
-  DirichletProcessDiscrete_Group_descriptor_ = DirichletProcessDiscrete_descriptor_->nested_type(2);
+  DirichletProcessDiscrete_Group_descriptor_ = DirichletProcessDiscrete_descriptor_->nested_type(1);
   static const int DirichletProcessDiscrete_Group_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletProcessDiscrete_Group, keys_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(DirichletProcessDiscrete_Group, values_),
@@ -385,22 +326,7 @@ void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(PitmanYorProcessDiscrete_Shared));
-  PitmanYorProcessDiscrete_GridPrior_descriptor_ = PitmanYorProcessDiscrete_descriptor_->nested_type(1);
-  static const int PitmanYorProcessDiscrete_GridPrior_offsets_[1] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete_GridPrior, alpha_d_),
-  };
-  PitmanYorProcessDiscrete_GridPrior_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      PitmanYorProcessDiscrete_GridPrior_descriptor_,
-      PitmanYorProcessDiscrete_GridPrior::default_instance_,
-      PitmanYorProcessDiscrete_GridPrior_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete_GridPrior, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete_GridPrior, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(PitmanYorProcessDiscrete_GridPrior));
-  PitmanYorProcessDiscrete_Group_descriptor_ = PitmanYorProcessDiscrete_descriptor_->nested_type(2);
+  PitmanYorProcessDiscrete_Group_descriptor_ = PitmanYorProcessDiscrete_descriptor_->nested_type(1);
   static const int PitmanYorProcessDiscrete_Group_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete_Group, keys_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(PitmanYorProcessDiscrete_Group, values_),
@@ -446,23 +372,7 @@ void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(GammaPoisson_Shared));
-  GammaPoisson_GridPrior_descriptor_ = GammaPoisson_descriptor_->nested_type(1);
-  static const int GammaPoisson_GridPrior_offsets_[2] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GammaPoisson_GridPrior, alpha_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GammaPoisson_GridPrior, inv_beta_),
-  };
-  GammaPoisson_GridPrior_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      GammaPoisson_GridPrior_descriptor_,
-      GammaPoisson_GridPrior::default_instance_,
-      GammaPoisson_GridPrior_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GammaPoisson_GridPrior, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GammaPoisson_GridPrior, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(GammaPoisson_GridPrior));
-  GammaPoisson_Group_descriptor_ = GammaPoisson_descriptor_->nested_type(2);
+  GammaPoisson_Group_descriptor_ = GammaPoisson_descriptor_->nested_type(1);
   static const int GammaPoisson_Group_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GammaPoisson_Group, count_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(GammaPoisson_Group, sum_),
@@ -510,24 +420,7 @@ void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(BetaNegativeBinomial_Shared));
-  BetaNegativeBinomial_GridPrior_descriptor_ = BetaNegativeBinomial_descriptor_->nested_type(1);
-  static const int BetaNegativeBinomial_GridPrior_offsets_[3] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_GridPrior, alpha_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_GridPrior, beta_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_GridPrior, r_),
-  };
-  BetaNegativeBinomial_GridPrior_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      BetaNegativeBinomial_GridPrior_descriptor_,
-      BetaNegativeBinomial_GridPrior::default_instance_,
-      BetaNegativeBinomial_GridPrior_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_GridPrior, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_GridPrior, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(BetaNegativeBinomial_GridPrior));
-  BetaNegativeBinomial_Group_descriptor_ = BetaNegativeBinomial_descriptor_->nested_type(2);
+  BetaNegativeBinomial_Group_descriptor_ = BetaNegativeBinomial_descriptor_->nested_type(1);
   static const int BetaNegativeBinomial_Group_offsets_[2] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_Group, count_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(BetaNegativeBinomial_Group, sum_),
@@ -575,25 +468,7 @@ void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(NormalInverseChiSq_Shared));
-  NormalInverseChiSq_GridPrior_descriptor_ = NormalInverseChiSq_descriptor_->nested_type(1);
-  static const int NormalInverseChiSq_GridPrior_offsets_[4] = {
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseChiSq_GridPrior, mu_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseChiSq_GridPrior, kappa_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseChiSq_GridPrior, sigmasq_),
-    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseChiSq_GridPrior, nu_),
-  };
-  NormalInverseChiSq_GridPrior_reflection_ =
-    new ::google::protobuf::internal::GeneratedMessageReflection(
-      NormalInverseChiSq_GridPrior_descriptor_,
-      NormalInverseChiSq_GridPrior::default_instance_,
-      NormalInverseChiSq_GridPrior_offsets_,
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseChiSq_GridPrior, _has_bits_[0]),
-      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseChiSq_GridPrior, _unknown_fields_),
-      -1,
-      ::google::protobuf::DescriptorPool::generated_pool(),
-      ::google::protobuf::MessageFactory::generated_factory(),
-      sizeof(NormalInverseChiSq_GridPrior));
-  NormalInverseChiSq_Group_descriptor_ = NormalInverseChiSq_descriptor_->nested_type(2);
+  NormalInverseChiSq_Group_descriptor_ = NormalInverseChiSq_descriptor_->nested_type(1);
   static const int NormalInverseChiSq_Group_offsets_[3] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseChiSq_Group, count_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseChiSq_Group, mean_),
@@ -610,6 +485,55 @@ void protobuf_AssignDesc_distributions_2fio_2fschema_2eproto() {
       ::google::protobuf::DescriptorPool::generated_pool(),
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(NormalInverseChiSq_Group));
+  NormalInverseWishart_descriptor_ = file->message_type(8);
+  static const int NormalInverseWishart_offsets_[1] = {
+  };
+  NormalInverseWishart_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      NormalInverseWishart_descriptor_,
+      NormalInverseWishart::default_instance_,
+      NormalInverseWishart_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(NormalInverseWishart));
+  NormalInverseWishart_Shared_descriptor_ = NormalInverseWishart_descriptor_->nested_type(0);
+  static const int NormalInverseWishart_Shared_offsets_[4] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart_Shared, mu_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart_Shared, kappa_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart_Shared, psi_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart_Shared, nu_),
+  };
+  NormalInverseWishart_Shared_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      NormalInverseWishart_Shared_descriptor_,
+      NormalInverseWishart_Shared::default_instance_,
+      NormalInverseWishart_Shared_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart_Shared, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart_Shared, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(NormalInverseWishart_Shared));
+  NormalInverseWishart_Group_descriptor_ = NormalInverseWishart_descriptor_->nested_type(1);
+  static const int NormalInverseWishart_Group_offsets_[3] = {
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart_Group, count_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart_Group, sum_x_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart_Group, sum_xxt_),
+  };
+  NormalInverseWishart_Group_reflection_ =
+    new ::google::protobuf::internal::GeneratedMessageReflection(
+      NormalInverseWishart_Group_descriptor_,
+      NormalInverseWishart_Group::default_instance_,
+      NormalInverseWishart_Group_offsets_,
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart_Group, _has_bits_[0]),
+      GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(NormalInverseWishart_Group, _unknown_fields_),
+      -1,
+      ::google::protobuf::DescriptorPool::generated_pool(),
+      ::google::protobuf::MessageFactory::generated_factory(),
+      sizeof(NormalInverseWishart_Group));
 }
 
 namespace {
@@ -633,15 +557,11 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     BetaBernoulli_Shared_descriptor_, &BetaBernoulli_Shared::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    BetaBernoulli_GridPrior_descriptor_, &BetaBernoulli_GridPrior::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     BetaBernoulli_Group_descriptor_, &BetaBernoulli_Group::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     DirichletDiscrete_descriptor_, &DirichletDiscrete::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     DirichletDiscrete_Shared_descriptor_, &DirichletDiscrete_Shared::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    DirichletDiscrete_GridPrior_descriptor_, &DirichletDiscrete_GridPrior::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     DirichletDiscrete_Group_descriptor_, &DirichletDiscrete_Group::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
@@ -649,15 +569,11 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     DirichletProcessDiscrete_Shared_descriptor_, &DirichletProcessDiscrete_Shared::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    DirichletProcessDiscrete_GridPrior_descriptor_, &DirichletProcessDiscrete_GridPrior::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     DirichletProcessDiscrete_Group_descriptor_, &DirichletProcessDiscrete_Group::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     PitmanYorProcessDiscrete_descriptor_, &PitmanYorProcessDiscrete::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     PitmanYorProcessDiscrete_Shared_descriptor_, &PitmanYorProcessDiscrete_Shared::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    PitmanYorProcessDiscrete_GridPrior_descriptor_, &PitmanYorProcessDiscrete_GridPrior::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     PitmanYorProcessDiscrete_Group_descriptor_, &PitmanYorProcessDiscrete_Group::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
@@ -665,15 +581,11 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     GammaPoisson_Shared_descriptor_, &GammaPoisson_Shared::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    GammaPoisson_GridPrior_descriptor_, &GammaPoisson_GridPrior::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     GammaPoisson_Group_descriptor_, &GammaPoisson_Group::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     BetaNegativeBinomial_descriptor_, &BetaNegativeBinomial::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     BetaNegativeBinomial_Shared_descriptor_, &BetaNegativeBinomial_Shared::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    BetaNegativeBinomial_GridPrior_descriptor_, &BetaNegativeBinomial_GridPrior::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     BetaNegativeBinomial_Group_descriptor_, &BetaNegativeBinomial_Group::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
@@ -681,9 +593,13 @@ void protobuf_RegisterTypes(const ::std::string&) {
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     NormalInverseChiSq_Shared_descriptor_, &NormalInverseChiSq_Shared::default_instance());
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
-    NormalInverseChiSq_GridPrior_descriptor_, &NormalInverseChiSq_GridPrior::default_instance());
-  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     NormalInverseChiSq_Group_descriptor_, &NormalInverseChiSq_Group::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    NormalInverseWishart_descriptor_, &NormalInverseWishart::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    NormalInverseWishart_Shared_descriptor_, &NormalInverseWishart_Shared::default_instance());
+  ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
+    NormalInverseWishart_Group_descriptor_, &NormalInverseWishart_Group::default_instance());
 }
 
 }  // namespace
@@ -699,58 +615,50 @@ void protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto() {
   delete BetaBernoulli_reflection_;
   delete BetaBernoulli_Shared::default_instance_;
   delete BetaBernoulli_Shared_reflection_;
-  delete BetaBernoulli_GridPrior::default_instance_;
-  delete BetaBernoulli_GridPrior_reflection_;
   delete BetaBernoulli_Group::default_instance_;
   delete BetaBernoulli_Group_reflection_;
   delete DirichletDiscrete::default_instance_;
   delete DirichletDiscrete_reflection_;
   delete DirichletDiscrete_Shared::default_instance_;
   delete DirichletDiscrete_Shared_reflection_;
-  delete DirichletDiscrete_GridPrior::default_instance_;
-  delete DirichletDiscrete_GridPrior_reflection_;
   delete DirichletDiscrete_Group::default_instance_;
   delete DirichletDiscrete_Group_reflection_;
   delete DirichletProcessDiscrete::default_instance_;
   delete DirichletProcessDiscrete_reflection_;
   delete DirichletProcessDiscrete_Shared::default_instance_;
   delete DirichletProcessDiscrete_Shared_reflection_;
-  delete DirichletProcessDiscrete_GridPrior::default_instance_;
-  delete DirichletProcessDiscrete_GridPrior_reflection_;
   delete DirichletProcessDiscrete_Group::default_instance_;
   delete DirichletProcessDiscrete_Group_reflection_;
   delete PitmanYorProcessDiscrete::default_instance_;
   delete PitmanYorProcessDiscrete_reflection_;
   delete PitmanYorProcessDiscrete_Shared::default_instance_;
   delete PitmanYorProcessDiscrete_Shared_reflection_;
-  delete PitmanYorProcessDiscrete_GridPrior::default_instance_;
-  delete PitmanYorProcessDiscrete_GridPrior_reflection_;
   delete PitmanYorProcessDiscrete_Group::default_instance_;
   delete PitmanYorProcessDiscrete_Group_reflection_;
   delete GammaPoisson::default_instance_;
   delete GammaPoisson_reflection_;
   delete GammaPoisson_Shared::default_instance_;
   delete GammaPoisson_Shared_reflection_;
-  delete GammaPoisson_GridPrior::default_instance_;
-  delete GammaPoisson_GridPrior_reflection_;
   delete GammaPoisson_Group::default_instance_;
   delete GammaPoisson_Group_reflection_;
   delete BetaNegativeBinomial::default_instance_;
   delete BetaNegativeBinomial_reflection_;
   delete BetaNegativeBinomial_Shared::default_instance_;
   delete BetaNegativeBinomial_Shared_reflection_;
-  delete BetaNegativeBinomial_GridPrior::default_instance_;
-  delete BetaNegativeBinomial_GridPrior_reflection_;
   delete BetaNegativeBinomial_Group::default_instance_;
   delete BetaNegativeBinomial_Group_reflection_;
   delete NormalInverseChiSq::default_instance_;
   delete NormalInverseChiSq_reflection_;
   delete NormalInverseChiSq_Shared::default_instance_;
   delete NormalInverseChiSq_Shared_reflection_;
-  delete NormalInverseChiSq_GridPrior::default_instance_;
-  delete NormalInverseChiSq_GridPrior_reflection_;
   delete NormalInverseChiSq_Group::default_instance_;
   delete NormalInverseChiSq_Group_reflection_;
+  delete NormalInverseWishart::default_instance_;
+  delete NormalInverseWishart_reflection_;
+  delete NormalInverseWishart_Shared::default_instance_;
+  delete NormalInverseWishart_Shared_reflection_;
+  delete NormalInverseWishart_Group::default_instance_;
+  delete NormalInverseWishart_Group_reflection_;
 }
 
 void protobuf_AddDesc_distributions_2fio_2fschema_2eproto() {
@@ -767,36 +675,31 @@ void protobuf_AddDesc_distributions_2fio_2fschema_2eproto() {
     "protobuf.distributions.Clustering.LowEnt"
     "ropy\032%\n\tPitmanYor\022\r\n\005alpha\030\001 \002(\002\022\t\n\001d\030\002 "
     "\002(\002\032\"\n\nLowEntropy\022\024\n\014dataset_size\030\001 \002(\004\""
-    "\207\001\n\rBetaBernoulli\032%\n\006Shared\022\r\n\005alpha\030\001 \002"
-    "(\002\022\014\n\004beta\030\002 \002(\002\032(\n\tGridPrior\022\r\n\005alpha\030\001"
-    " \003(\002\022\014\n\004beta\030\002 \003(\002\032%\n\005Group\022\r\n\005heads\030\001 \002"
-    "(\004\022\r\n\005tails\030\002 \002(\004\"b\n\021DirichletDiscrete\032\030"
-    "\n\006Shared\022\016\n\006alphas\030\001 \003(\002\032\032\n\tGridPrior\022\r\n"
-    "\005alpha\030\001 \003(\002\032\027\n\005Group\022\016\n\006counts\030\001 \003(\004\"\303\001"
-    "\n\030DirichletProcessDiscrete\032U\n\006Shared\022\r\n\005"
-    "gamma\030\001 \002(\002\022\r\n\005alpha\030\002 \002(\002\022\016\n\006values\030\003 \003"
-    "(\r\022\r\n\005betas\030\004 \003(\002\022\016\n\006counts\030\005 \003(\004\032)\n\tGri"
-    "dPrior\022\r\n\005gamma\030\001 \003(\002\022\r\n\005alpha\030\002 \003(\002\032%\n\005"
-    "Group\022\014\n\004keys\030\001 \003(\r\022\016\n\006values\030\002 \003(\004\"\301\001\n\030"
-    "PitmanYorProcessDiscrete\0322\n\006Shared\022\r\n\005al"
-    "pha\030\001 \002(\002\022\t\n\001d\030\002 \003(\002\022\016\n\006counts\030\003 \003(\004\032J\n\t"
-    "GridPrior\022=\n\007alpha_d\030\001 \003(\0132,.protobuf.di"
-    "stributions.Clustering.PitmanYor\032%\n\005Grou"
-    "p\022\014\n\004keys\030\001 \003(\r\022\016\n\006values\030\002 \003(\004\"\236\001\n\014Gamm"
-    "aPoisson\032)\n\006Shared\022\r\n\005alpha\030\001 \002(\002\022\020\n\010inv"
-    "_beta\030\002 \002(\002\032,\n\tGridPrior\022\r\n\005alpha\030\001 \003(\002\022"
-    "\020\n\010inv_beta\030\002 \003(\002\0325\n\005Group\022\r\n\005count\030\001 \002("
-    "\004\022\013\n\003sum\030\002 \002(\004\022\020\n\010log_prod\030\003 \002(\002\"\242\001\n\024Bet"
-    "aNegativeBinomial\0320\n\006Shared\022\r\n\005alpha\030\001 \002"
-    "(\002\022\014\n\004beta\030\002 \002(\002\022\t\n\001r\030\003 \002(\004\0323\n\tGridPrior"
-    "\022\r\n\005alpha\030\001 \003(\002\022\014\n\004beta\030\002 \003(\002\022\t\n\001r\030\003 \003(\004"
-    "\032#\n\005Group\022\r\n\005count\030\001 \002(\004\022\013\n\003sum\030\002 \002(\004\"\337\001"
-    "\n\022NormalInverseChiSq\032@\n\006Shared\022\n\n\002mu\030\001 \002"
-    "(\002\022\r\n\005kappa\030\002 \002(\002\022\017\n\007sigmasq\030\003 \002(\002\022\n\n\002nu"
-    "\030\004 \002(\002\032C\n\tGridPrior\022\n\n\002mu\030\001 \003(\002\022\r\n\005kappa"
-    "\030\002 \003(\002\022\017\n\007sigmasq\030\003 \003(\002\022\n\n\002nu\030\004 \003(\002\032B\n\005G"
-    "roup\022\r\n\005count\030\001 \002(\004\022\014\n\004mean\030\002 \002(\002\022\034\n\024cou"
-    "nt_times_variance\030\003 \002(\002", 1463);
+    "]\n\rBetaBernoulli\032%\n\006Shared\022\r\n\005alpha\030\001 \002("
+    "\002\022\014\n\004beta\030\002 \002(\002\032%\n\005Group\022\r\n\005heads\030\001 \002(\004\022"
+    "\r\n\005tails\030\002 \002(\004\"F\n\021DirichletDiscrete\032\030\n\006S"
+    "hared\022\016\n\006alphas\030\001 \003(\002\032\027\n\005Group\022\016\n\006counts"
+    "\030\001 \003(\004\"\230\001\n\030DirichletProcessDiscrete\032U\n\006S"
+    "hared\022\r\n\005gamma\030\001 \002(\002\022\r\n\005alpha\030\002 \002(\002\022\016\n\006v"
+    "alues\030\003 \003(\r\022\r\n\005betas\030\004 \003(\002\022\016\n\006counts\030\005 \003"
+    "(\004\032%\n\005Group\022\014\n\004keys\030\001 \003(\r\022\016\n\006values\030\002 \003("
+    "\004\"u\n\030PitmanYorProcessDiscrete\0322\n\006Shared\022"
+    "\r\n\005alpha\030\001 \002(\002\022\t\n\001d\030\002 \003(\002\022\016\n\006counts\030\003 \003("
+    "\004\032%\n\005Group\022\014\n\004keys\030\001 \003(\r\022\016\n\006values\030\002 \003(\004"
+    "\"p\n\014GammaPoisson\032)\n\006Shared\022\r\n\005alpha\030\001 \002("
+    "\002\022\020\n\010inv_beta\030\002 \002(\002\0325\n\005Group\022\r\n\005count\030\001 "
+    "\002(\004\022\013\n\003sum\030\002 \002(\004\022\020\n\010log_prod\030\003 \002(\002\"m\n\024Be"
+    "taNegativeBinomial\0320\n\006Shared\022\r\n\005alpha\030\001 "
+    "\002(\002\022\014\n\004beta\030\002 \002(\002\022\t\n\001r\030\003 \002(\004\032#\n\005Group\022\r\n"
+    "\005count\030\001 \002(\004\022\013\n\003sum\030\002 \002(\004\"\232\001\n\022NormalInve"
+    "rseChiSq\032@\n\006Shared\022\n\n\002mu\030\001 \002(\002\022\r\n\005kappa\030"
+    "\002 \002(\002\022\017\n\007sigmasq\030\003 \002(\002\022\n\n\002nu\030\004 \002(\002\032B\n\005Gr"
+    "oup\022\r\n\005count\030\001 \002(\004\022\014\n\004mean\030\002 \002(\002\022\034\n\024coun"
+    "t_times_variance\030\003 \002(\002\"\214\001\n\024NormalInverse"
+    "Wishart\032<\n\006Shared\022\n\n\002mu\030\001 \003(\002\022\r\n\005kappa\030\002"
+    " \002(\002\022\013\n\003psi\030\003 \003(\002\022\n\n\002nu\030\004 \002(\002\0326\n\005Group\022\r"
+    "\n\005count\030\001 \002(\005\022\r\n\005sum_x\030\002 \003(\002\022\017\n\007sum_xxT\030"
+    "\003 \003(\002", 1245);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "distributions/io/schema.proto", &protobuf_RegisterTypes);
   Clustering::default_instance_ = new Clustering();
@@ -804,63 +707,55 @@ void protobuf_AddDesc_distributions_2fio_2fschema_2eproto() {
   Clustering_LowEntropy::default_instance_ = new Clustering_LowEntropy();
   BetaBernoulli::default_instance_ = new BetaBernoulli();
   BetaBernoulli_Shared::default_instance_ = new BetaBernoulli_Shared();
-  BetaBernoulli_GridPrior::default_instance_ = new BetaBernoulli_GridPrior();
   BetaBernoulli_Group::default_instance_ = new BetaBernoulli_Group();
   DirichletDiscrete::default_instance_ = new DirichletDiscrete();
   DirichletDiscrete_Shared::default_instance_ = new DirichletDiscrete_Shared();
-  DirichletDiscrete_GridPrior::default_instance_ = new DirichletDiscrete_GridPrior();
   DirichletDiscrete_Group::default_instance_ = new DirichletDiscrete_Group();
   DirichletProcessDiscrete::default_instance_ = new DirichletProcessDiscrete();
   DirichletProcessDiscrete_Shared::default_instance_ = new DirichletProcessDiscrete_Shared();
-  DirichletProcessDiscrete_GridPrior::default_instance_ = new DirichletProcessDiscrete_GridPrior();
   DirichletProcessDiscrete_Group::default_instance_ = new DirichletProcessDiscrete_Group();
   PitmanYorProcessDiscrete::default_instance_ = new PitmanYorProcessDiscrete();
   PitmanYorProcessDiscrete_Shared::default_instance_ = new PitmanYorProcessDiscrete_Shared();
-  PitmanYorProcessDiscrete_GridPrior::default_instance_ = new PitmanYorProcessDiscrete_GridPrior();
   PitmanYorProcessDiscrete_Group::default_instance_ = new PitmanYorProcessDiscrete_Group();
   GammaPoisson::default_instance_ = new GammaPoisson();
   GammaPoisson_Shared::default_instance_ = new GammaPoisson_Shared();
-  GammaPoisson_GridPrior::default_instance_ = new GammaPoisson_GridPrior();
   GammaPoisson_Group::default_instance_ = new GammaPoisson_Group();
   BetaNegativeBinomial::default_instance_ = new BetaNegativeBinomial();
   BetaNegativeBinomial_Shared::default_instance_ = new BetaNegativeBinomial_Shared();
-  BetaNegativeBinomial_GridPrior::default_instance_ = new BetaNegativeBinomial_GridPrior();
   BetaNegativeBinomial_Group::default_instance_ = new BetaNegativeBinomial_Group();
   NormalInverseChiSq::default_instance_ = new NormalInverseChiSq();
   NormalInverseChiSq_Shared::default_instance_ = new NormalInverseChiSq_Shared();
-  NormalInverseChiSq_GridPrior::default_instance_ = new NormalInverseChiSq_GridPrior();
   NormalInverseChiSq_Group::default_instance_ = new NormalInverseChiSq_Group();
+  NormalInverseWishart::default_instance_ = new NormalInverseWishart();
+  NormalInverseWishart_Shared::default_instance_ = new NormalInverseWishart_Shared();
+  NormalInverseWishart_Group::default_instance_ = new NormalInverseWishart_Group();
   Clustering::default_instance_->InitAsDefaultInstance();
   Clustering_PitmanYor::default_instance_->InitAsDefaultInstance();
   Clustering_LowEntropy::default_instance_->InitAsDefaultInstance();
   BetaBernoulli::default_instance_->InitAsDefaultInstance();
   BetaBernoulli_Shared::default_instance_->InitAsDefaultInstance();
-  BetaBernoulli_GridPrior::default_instance_->InitAsDefaultInstance();
   BetaBernoulli_Group::default_instance_->InitAsDefaultInstance();
   DirichletDiscrete::default_instance_->InitAsDefaultInstance();
   DirichletDiscrete_Shared::default_instance_->InitAsDefaultInstance();
-  DirichletDiscrete_GridPrior::default_instance_->InitAsDefaultInstance();
   DirichletDiscrete_Group::default_instance_->InitAsDefaultInstance();
   DirichletProcessDiscrete::default_instance_->InitAsDefaultInstance();
   DirichletProcessDiscrete_Shared::default_instance_->InitAsDefaultInstance();
-  DirichletProcessDiscrete_GridPrior::default_instance_->InitAsDefaultInstance();
   DirichletProcessDiscrete_Group::default_instance_->InitAsDefaultInstance();
   PitmanYorProcessDiscrete::default_instance_->InitAsDefaultInstance();
   PitmanYorProcessDiscrete_Shared::default_instance_->InitAsDefaultInstance();
-  PitmanYorProcessDiscrete_GridPrior::default_instance_->InitAsDefaultInstance();
   PitmanYorProcessDiscrete_Group::default_instance_->InitAsDefaultInstance();
   GammaPoisson::default_instance_->InitAsDefaultInstance();
   GammaPoisson_Shared::default_instance_->InitAsDefaultInstance();
-  GammaPoisson_GridPrior::default_instance_->InitAsDefaultInstance();
   GammaPoisson_Group::default_instance_->InitAsDefaultInstance();
   BetaNegativeBinomial::default_instance_->InitAsDefaultInstance();
   BetaNegativeBinomial_Shared::default_instance_->InitAsDefaultInstance();
-  BetaNegativeBinomial_GridPrior::default_instance_->InitAsDefaultInstance();
   BetaNegativeBinomial_Group::default_instance_->InitAsDefaultInstance();
   NormalInverseChiSq::default_instance_->InitAsDefaultInstance();
   NormalInverseChiSq_Shared::default_instance_->InitAsDefaultInstance();
-  NormalInverseChiSq_GridPrior::default_instance_->InitAsDefaultInstance();
   NormalInverseChiSq_Group::default_instance_->InitAsDefaultInstance();
+  NormalInverseWishart::default_instance_->InitAsDefaultInstance();
+  NormalInverseWishart_Shared::default_instance_->InitAsDefaultInstance();
+  NormalInverseWishart_Group::default_instance_->InitAsDefaultInstance();
   ::google::protobuf::internal::OnShutdown(&protobuf_ShutdownFile_distributions_2fio_2fschema_2eproto);
 }
 
@@ -1834,258 +1729,6 @@ void BetaBernoulli_Shared::Swap(BetaBernoulli_Shared* other) {
 // -------------------------------------------------------------------
 
 #ifndef _MSC_VER
-const int BetaBernoulli_GridPrior::kAlphaFieldNumber;
-const int BetaBernoulli_GridPrior::kBetaFieldNumber;
-#endif  // !_MSC_VER
-
-BetaBernoulli_GridPrior::BetaBernoulli_GridPrior()
-  : ::google::protobuf::Message() {
-  SharedCtor();
-}
-
-void BetaBernoulli_GridPrior::InitAsDefaultInstance() {
-}
-
-BetaBernoulli_GridPrior::BetaBernoulli_GridPrior(const BetaBernoulli_GridPrior& from)
-  : ::google::protobuf::Message() {
-  SharedCtor();
-  MergeFrom(from);
-}
-
-void BetaBernoulli_GridPrior::SharedCtor() {
-  _cached_size_ = 0;
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-}
-
-BetaBernoulli_GridPrior::~BetaBernoulli_GridPrior() {
-  SharedDtor();
-}
-
-void BetaBernoulli_GridPrior::SharedDtor() {
-  if (this != default_instance_) {
-  }
-}
-
-void BetaBernoulli_GridPrior::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-}
-const ::google::protobuf::Descriptor* BetaBernoulli_GridPrior::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return BetaBernoulli_GridPrior_descriptor_;
-}
-
-const BetaBernoulli_GridPrior& BetaBernoulli_GridPrior::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fio_2fschema_2eproto();  return *default_instance_;
-}
-
-BetaBernoulli_GridPrior* BetaBernoulli_GridPrior::default_instance_ = NULL;
-
-BetaBernoulli_GridPrior* BetaBernoulli_GridPrior::New() const {
-  return new BetaBernoulli_GridPrior;
-}
-
-void BetaBernoulli_GridPrior::Clear() {
-  alpha_.Clear();
-  beta_.Clear();
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
-}
-
-bool BetaBernoulli_GridPrior::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
-  ::google::protobuf::uint32 tag;
-  while ((tag = input->ReadTag()) != 0) {
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated float alpha = 1;
-      case 1: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_alpha:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 1, 13, input, this->mutable_alpha())));
-        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
-                   == ::google::protobuf::internal::WireFormatLite::
-                      WIRETYPE_LENGTH_DELIMITED) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, this->mutable_alpha())));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(13)) goto parse_alpha;
-        if (input->ExpectTag(21)) goto parse_beta;
-        break;
-      }
-      
-      // repeated float beta = 2;
-      case 2: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_beta:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 1, 21, input, this->mutable_beta())));
-        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
-                   == ::google::protobuf::internal::WireFormatLite::
-                      WIRETYPE_LENGTH_DELIMITED) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, this->mutable_beta())));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(21)) goto parse_beta;
-        if (input->ExpectAtEnd()) return true;
-        break;
-      }
-      
-      default: {
-      handle_uninterpreted:
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          return true;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
-        break;
-      }
-    }
-  }
-  return true;
-#undef DO_
-}
-
-void BetaBernoulli_GridPrior::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated float alpha = 1;
-  for (int i = 0; i < this->alpha_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(
-      1, this->alpha(i), output);
-  }
-  
-  // repeated float beta = 2;
-  for (int i = 0; i < this->beta_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(
-      2, this->beta(i), output);
-  }
-  
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-}
-
-::google::protobuf::uint8* BetaBernoulli_GridPrior::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // repeated float alpha = 1;
-  for (int i = 0; i < this->alpha_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteFloatToArray(1, this->alpha(i), target);
-  }
-  
-  // repeated float beta = 2;
-  for (int i = 0; i < this->beta_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteFloatToArray(2, this->beta(i), target);
-  }
-  
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  return target;
-}
-
-int BetaBernoulli_GridPrior::ByteSize() const {
-  int total_size = 0;
-  
-  // repeated float alpha = 1;
-  {
-    int data_size = 0;
-    data_size = 4 * this->alpha_size();
-    total_size += 1 * this->alpha_size() + data_size;
-  }
-  
-  // repeated float beta = 2;
-  {
-    int data_size = 0;
-    data_size = 4 * this->beta_size();
-    total_size += 1 * this->beta_size() + data_size;
-  }
-  
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-  return total_size;
-}
-
-void BetaBernoulli_GridPrior::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const BetaBernoulli_GridPrior* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const BetaBernoulli_GridPrior*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
-}
-
-void BetaBernoulli_GridPrior::MergeFrom(const BetaBernoulli_GridPrior& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  alpha_.MergeFrom(from.alpha_);
-  beta_.MergeFrom(from.beta_);
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void BetaBernoulli_GridPrior::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-void BetaBernoulli_GridPrior::CopyFrom(const BetaBernoulli_GridPrior& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool BetaBernoulli_GridPrior::IsInitialized() const {
-  
-  return true;
-}
-
-void BetaBernoulli_GridPrior::Swap(BetaBernoulli_GridPrior* other) {
-  if (other != this) {
-    alpha_.Swap(&other->alpha_);
-    beta_.Swap(&other->beta_);
-    std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
-    std::swap(_cached_size_, other->_cached_size_);
-  }
-}
-
-::google::protobuf::Metadata BetaBernoulli_GridPrior::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = BetaBernoulli_GridPrior_descriptor_;
-  metadata.reflection = BetaBernoulli_GridPrior_reflection_;
-  return metadata;
-}
-
-
-// -------------------------------------------------------------------
-
-#ifndef _MSC_VER
 const int BetaBernoulli_Group::kHeadsFieldNumber;
 const int BetaBernoulli_Group::kTailsFieldNumber;
 #endif  // !_MSC_VER
@@ -2689,213 +2332,6 @@ void DirichletDiscrete_Shared::Swap(DirichletDiscrete_Shared* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = DirichletDiscrete_Shared_descriptor_;
   metadata.reflection = DirichletDiscrete_Shared_reflection_;
-  return metadata;
-}
-
-
-// -------------------------------------------------------------------
-
-#ifndef _MSC_VER
-const int DirichletDiscrete_GridPrior::kAlphaFieldNumber;
-#endif  // !_MSC_VER
-
-DirichletDiscrete_GridPrior::DirichletDiscrete_GridPrior()
-  : ::google::protobuf::Message() {
-  SharedCtor();
-}
-
-void DirichletDiscrete_GridPrior::InitAsDefaultInstance() {
-}
-
-DirichletDiscrete_GridPrior::DirichletDiscrete_GridPrior(const DirichletDiscrete_GridPrior& from)
-  : ::google::protobuf::Message() {
-  SharedCtor();
-  MergeFrom(from);
-}
-
-void DirichletDiscrete_GridPrior::SharedCtor() {
-  _cached_size_ = 0;
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-}
-
-DirichletDiscrete_GridPrior::~DirichletDiscrete_GridPrior() {
-  SharedDtor();
-}
-
-void DirichletDiscrete_GridPrior::SharedDtor() {
-  if (this != default_instance_) {
-  }
-}
-
-void DirichletDiscrete_GridPrior::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-}
-const ::google::protobuf::Descriptor* DirichletDiscrete_GridPrior::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return DirichletDiscrete_GridPrior_descriptor_;
-}
-
-const DirichletDiscrete_GridPrior& DirichletDiscrete_GridPrior::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fio_2fschema_2eproto();  return *default_instance_;
-}
-
-DirichletDiscrete_GridPrior* DirichletDiscrete_GridPrior::default_instance_ = NULL;
-
-DirichletDiscrete_GridPrior* DirichletDiscrete_GridPrior::New() const {
-  return new DirichletDiscrete_GridPrior;
-}
-
-void DirichletDiscrete_GridPrior::Clear() {
-  alpha_.Clear();
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
-}
-
-bool DirichletDiscrete_GridPrior::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
-  ::google::protobuf::uint32 tag;
-  while ((tag = input->ReadTag()) != 0) {
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated float alpha = 1;
-      case 1: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_alpha:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 1, 13, input, this->mutable_alpha())));
-        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
-                   == ::google::protobuf::internal::WireFormatLite::
-                      WIRETYPE_LENGTH_DELIMITED) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, this->mutable_alpha())));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(13)) goto parse_alpha;
-        if (input->ExpectAtEnd()) return true;
-        break;
-      }
-      
-      default: {
-      handle_uninterpreted:
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          return true;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
-        break;
-      }
-    }
-  }
-  return true;
-#undef DO_
-}
-
-void DirichletDiscrete_GridPrior::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated float alpha = 1;
-  for (int i = 0; i < this->alpha_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(
-      1, this->alpha(i), output);
-  }
-  
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-}
-
-::google::protobuf::uint8* DirichletDiscrete_GridPrior::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // repeated float alpha = 1;
-  for (int i = 0; i < this->alpha_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteFloatToArray(1, this->alpha(i), target);
-  }
-  
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  return target;
-}
-
-int DirichletDiscrete_GridPrior::ByteSize() const {
-  int total_size = 0;
-  
-  // repeated float alpha = 1;
-  {
-    int data_size = 0;
-    data_size = 4 * this->alpha_size();
-    total_size += 1 * this->alpha_size() + data_size;
-  }
-  
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-  return total_size;
-}
-
-void DirichletDiscrete_GridPrior::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const DirichletDiscrete_GridPrior* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const DirichletDiscrete_GridPrior*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
-}
-
-void DirichletDiscrete_GridPrior::MergeFrom(const DirichletDiscrete_GridPrior& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  alpha_.MergeFrom(from.alpha_);
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void DirichletDiscrete_GridPrior::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-void DirichletDiscrete_GridPrior::CopyFrom(const DirichletDiscrete_GridPrior& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool DirichletDiscrete_GridPrior::IsInitialized() const {
-  
-  return true;
-}
-
-void DirichletDiscrete_GridPrior::Swap(DirichletDiscrete_GridPrior* other) {
-  if (other != this) {
-    alpha_.Swap(&other->alpha_);
-    std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
-    std::swap(_cached_size_, other->_cached_size_);
-  }
-}
-
-::google::protobuf::Metadata DirichletDiscrete_GridPrior::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = DirichletDiscrete_GridPrior_descriptor_;
-  metadata.reflection = DirichletDiscrete_GridPrior_reflection_;
   return metadata;
 }
 
@@ -3653,258 +3089,6 @@ void DirichletProcessDiscrete_Shared::Swap(DirichletProcessDiscrete_Shared* othe
 // -------------------------------------------------------------------
 
 #ifndef _MSC_VER
-const int DirichletProcessDiscrete_GridPrior::kGammaFieldNumber;
-const int DirichletProcessDiscrete_GridPrior::kAlphaFieldNumber;
-#endif  // !_MSC_VER
-
-DirichletProcessDiscrete_GridPrior::DirichletProcessDiscrete_GridPrior()
-  : ::google::protobuf::Message() {
-  SharedCtor();
-}
-
-void DirichletProcessDiscrete_GridPrior::InitAsDefaultInstance() {
-}
-
-DirichletProcessDiscrete_GridPrior::DirichletProcessDiscrete_GridPrior(const DirichletProcessDiscrete_GridPrior& from)
-  : ::google::protobuf::Message() {
-  SharedCtor();
-  MergeFrom(from);
-}
-
-void DirichletProcessDiscrete_GridPrior::SharedCtor() {
-  _cached_size_ = 0;
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-}
-
-DirichletProcessDiscrete_GridPrior::~DirichletProcessDiscrete_GridPrior() {
-  SharedDtor();
-}
-
-void DirichletProcessDiscrete_GridPrior::SharedDtor() {
-  if (this != default_instance_) {
-  }
-}
-
-void DirichletProcessDiscrete_GridPrior::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-}
-const ::google::protobuf::Descriptor* DirichletProcessDiscrete_GridPrior::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return DirichletProcessDiscrete_GridPrior_descriptor_;
-}
-
-const DirichletProcessDiscrete_GridPrior& DirichletProcessDiscrete_GridPrior::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fio_2fschema_2eproto();  return *default_instance_;
-}
-
-DirichletProcessDiscrete_GridPrior* DirichletProcessDiscrete_GridPrior::default_instance_ = NULL;
-
-DirichletProcessDiscrete_GridPrior* DirichletProcessDiscrete_GridPrior::New() const {
-  return new DirichletProcessDiscrete_GridPrior;
-}
-
-void DirichletProcessDiscrete_GridPrior::Clear() {
-  gamma_.Clear();
-  alpha_.Clear();
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
-}
-
-bool DirichletProcessDiscrete_GridPrior::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
-  ::google::protobuf::uint32 tag;
-  while ((tag = input->ReadTag()) != 0) {
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated float gamma = 1;
-      case 1: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_gamma:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 1, 13, input, this->mutable_gamma())));
-        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
-                   == ::google::protobuf::internal::WireFormatLite::
-                      WIRETYPE_LENGTH_DELIMITED) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, this->mutable_gamma())));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(13)) goto parse_gamma;
-        if (input->ExpectTag(21)) goto parse_alpha;
-        break;
-      }
-      
-      // repeated float alpha = 2;
-      case 2: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_alpha:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 1, 21, input, this->mutable_alpha())));
-        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
-                   == ::google::protobuf::internal::WireFormatLite::
-                      WIRETYPE_LENGTH_DELIMITED) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, this->mutable_alpha())));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(21)) goto parse_alpha;
-        if (input->ExpectAtEnd()) return true;
-        break;
-      }
-      
-      default: {
-      handle_uninterpreted:
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          return true;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
-        break;
-      }
-    }
-  }
-  return true;
-#undef DO_
-}
-
-void DirichletProcessDiscrete_GridPrior::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated float gamma = 1;
-  for (int i = 0; i < this->gamma_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(
-      1, this->gamma(i), output);
-  }
-  
-  // repeated float alpha = 2;
-  for (int i = 0; i < this->alpha_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(
-      2, this->alpha(i), output);
-  }
-  
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-}
-
-::google::protobuf::uint8* DirichletProcessDiscrete_GridPrior::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // repeated float gamma = 1;
-  for (int i = 0; i < this->gamma_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteFloatToArray(1, this->gamma(i), target);
-  }
-  
-  // repeated float alpha = 2;
-  for (int i = 0; i < this->alpha_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteFloatToArray(2, this->alpha(i), target);
-  }
-  
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  return target;
-}
-
-int DirichletProcessDiscrete_GridPrior::ByteSize() const {
-  int total_size = 0;
-  
-  // repeated float gamma = 1;
-  {
-    int data_size = 0;
-    data_size = 4 * this->gamma_size();
-    total_size += 1 * this->gamma_size() + data_size;
-  }
-  
-  // repeated float alpha = 2;
-  {
-    int data_size = 0;
-    data_size = 4 * this->alpha_size();
-    total_size += 1 * this->alpha_size() + data_size;
-  }
-  
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-  return total_size;
-}
-
-void DirichletProcessDiscrete_GridPrior::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const DirichletProcessDiscrete_GridPrior* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const DirichletProcessDiscrete_GridPrior*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
-}
-
-void DirichletProcessDiscrete_GridPrior::MergeFrom(const DirichletProcessDiscrete_GridPrior& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  gamma_.MergeFrom(from.gamma_);
-  alpha_.MergeFrom(from.alpha_);
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void DirichletProcessDiscrete_GridPrior::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-void DirichletProcessDiscrete_GridPrior::CopyFrom(const DirichletProcessDiscrete_GridPrior& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool DirichletProcessDiscrete_GridPrior::IsInitialized() const {
-  
-  return true;
-}
-
-void DirichletProcessDiscrete_GridPrior::Swap(DirichletProcessDiscrete_GridPrior* other) {
-  if (other != this) {
-    gamma_.Swap(&other->gamma_);
-    alpha_.Swap(&other->alpha_);
-    std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
-    std::swap(_cached_size_, other->_cached_size_);
-  }
-}
-
-::google::protobuf::Metadata DirichletProcessDiscrete_GridPrior::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = DirichletProcessDiscrete_GridPrior_descriptor_;
-  metadata.reflection = DirichletProcessDiscrete_GridPrior_reflection_;
-  return metadata;
-}
-
-
-// -------------------------------------------------------------------
-
-#ifndef _MSC_VER
 const int DirichletProcessDiscrete_Group::kKeysFieldNumber;
 const int DirichletProcessDiscrete_Group::kValuesFieldNumber;
 #endif  // !_MSC_VER
@@ -4617,211 +3801,6 @@ void PitmanYorProcessDiscrete_Shared::Swap(PitmanYorProcessDiscrete_Shared* othe
 // -------------------------------------------------------------------
 
 #ifndef _MSC_VER
-const int PitmanYorProcessDiscrete_GridPrior::kAlphaDFieldNumber;
-#endif  // !_MSC_VER
-
-PitmanYorProcessDiscrete_GridPrior::PitmanYorProcessDiscrete_GridPrior()
-  : ::google::protobuf::Message() {
-  SharedCtor();
-}
-
-void PitmanYorProcessDiscrete_GridPrior::InitAsDefaultInstance() {
-}
-
-PitmanYorProcessDiscrete_GridPrior::PitmanYorProcessDiscrete_GridPrior(const PitmanYorProcessDiscrete_GridPrior& from)
-  : ::google::protobuf::Message() {
-  SharedCtor();
-  MergeFrom(from);
-}
-
-void PitmanYorProcessDiscrete_GridPrior::SharedCtor() {
-  _cached_size_ = 0;
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-}
-
-PitmanYorProcessDiscrete_GridPrior::~PitmanYorProcessDiscrete_GridPrior() {
-  SharedDtor();
-}
-
-void PitmanYorProcessDiscrete_GridPrior::SharedDtor() {
-  if (this != default_instance_) {
-  }
-}
-
-void PitmanYorProcessDiscrete_GridPrior::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-}
-const ::google::protobuf::Descriptor* PitmanYorProcessDiscrete_GridPrior::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return PitmanYorProcessDiscrete_GridPrior_descriptor_;
-}
-
-const PitmanYorProcessDiscrete_GridPrior& PitmanYorProcessDiscrete_GridPrior::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fio_2fschema_2eproto();  return *default_instance_;
-}
-
-PitmanYorProcessDiscrete_GridPrior* PitmanYorProcessDiscrete_GridPrior::default_instance_ = NULL;
-
-PitmanYorProcessDiscrete_GridPrior* PitmanYorProcessDiscrete_GridPrior::New() const {
-  return new PitmanYorProcessDiscrete_GridPrior;
-}
-
-void PitmanYorProcessDiscrete_GridPrior::Clear() {
-  alpha_d_.Clear();
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
-}
-
-bool PitmanYorProcessDiscrete_GridPrior::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
-  ::google::protobuf::uint32 tag;
-  while ((tag = input->ReadTag()) != 0) {
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated .protobuf.distributions.Clustering.PitmanYor alpha_d = 1;
-      case 1: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_LENGTH_DELIMITED) {
-         parse_alpha_d:
-          DO_(::google::protobuf::internal::WireFormatLite::ReadMessageNoVirtual(
-                input, add_alpha_d()));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(10)) goto parse_alpha_d;
-        if (input->ExpectAtEnd()) return true;
-        break;
-      }
-      
-      default: {
-      handle_uninterpreted:
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          return true;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
-        break;
-      }
-    }
-  }
-  return true;
-#undef DO_
-}
-
-void PitmanYorProcessDiscrete_GridPrior::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated .protobuf.distributions.Clustering.PitmanYor alpha_d = 1;
-  for (int i = 0; i < this->alpha_d_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
-      1, this->alpha_d(i), output);
-  }
-  
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-}
-
-::google::protobuf::uint8* PitmanYorProcessDiscrete_GridPrior::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // repeated .protobuf.distributions.Clustering.PitmanYor alpha_d = 1;
-  for (int i = 0; i < this->alpha_d_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteMessageNoVirtualToArray(
-        1, this->alpha_d(i), target);
-  }
-  
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  return target;
-}
-
-int PitmanYorProcessDiscrete_GridPrior::ByteSize() const {
-  int total_size = 0;
-  
-  // repeated .protobuf.distributions.Clustering.PitmanYor alpha_d = 1;
-  total_size += 1 * this->alpha_d_size();
-  for (int i = 0; i < this->alpha_d_size(); i++) {
-    total_size +=
-      ::google::protobuf::internal::WireFormatLite::MessageSizeNoVirtual(
-        this->alpha_d(i));
-  }
-  
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-  return total_size;
-}
-
-void PitmanYorProcessDiscrete_GridPrior::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const PitmanYorProcessDiscrete_GridPrior* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const PitmanYorProcessDiscrete_GridPrior*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
-}
-
-void PitmanYorProcessDiscrete_GridPrior::MergeFrom(const PitmanYorProcessDiscrete_GridPrior& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  alpha_d_.MergeFrom(from.alpha_d_);
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void PitmanYorProcessDiscrete_GridPrior::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-void PitmanYorProcessDiscrete_GridPrior::CopyFrom(const PitmanYorProcessDiscrete_GridPrior& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool PitmanYorProcessDiscrete_GridPrior::IsInitialized() const {
-  
-  for (int i = 0; i < alpha_d_size(); i++) {
-    if (!this->alpha_d(i).IsInitialized()) return false;
-  }
-  return true;
-}
-
-void PitmanYorProcessDiscrete_GridPrior::Swap(PitmanYorProcessDiscrete_GridPrior* other) {
-  if (other != this) {
-    alpha_d_.Swap(&other->alpha_d_);
-    std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
-    std::swap(_cached_size_, other->_cached_size_);
-  }
-}
-
-::google::protobuf::Metadata PitmanYorProcessDiscrete_GridPrior::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = PitmanYorProcessDiscrete_GridPrior_descriptor_;
-  metadata.reflection = PitmanYorProcessDiscrete_GridPrior_reflection_;
-  return metadata;
-}
-
-
-// -------------------------------------------------------------------
-
-#ifndef _MSC_VER
 const int PitmanYorProcessDiscrete_Group::kKeysFieldNumber;
 const int PitmanYorProcessDiscrete_Group::kValuesFieldNumber;
 #endif  // !_MSC_VER
@@ -5472,258 +4451,6 @@ void GammaPoisson_Shared::Swap(GammaPoisson_Shared* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = GammaPoisson_Shared_descriptor_;
   metadata.reflection = GammaPoisson_Shared_reflection_;
-  return metadata;
-}
-
-
-// -------------------------------------------------------------------
-
-#ifndef _MSC_VER
-const int GammaPoisson_GridPrior::kAlphaFieldNumber;
-const int GammaPoisson_GridPrior::kInvBetaFieldNumber;
-#endif  // !_MSC_VER
-
-GammaPoisson_GridPrior::GammaPoisson_GridPrior()
-  : ::google::protobuf::Message() {
-  SharedCtor();
-}
-
-void GammaPoisson_GridPrior::InitAsDefaultInstance() {
-}
-
-GammaPoisson_GridPrior::GammaPoisson_GridPrior(const GammaPoisson_GridPrior& from)
-  : ::google::protobuf::Message() {
-  SharedCtor();
-  MergeFrom(from);
-}
-
-void GammaPoisson_GridPrior::SharedCtor() {
-  _cached_size_ = 0;
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-}
-
-GammaPoisson_GridPrior::~GammaPoisson_GridPrior() {
-  SharedDtor();
-}
-
-void GammaPoisson_GridPrior::SharedDtor() {
-  if (this != default_instance_) {
-  }
-}
-
-void GammaPoisson_GridPrior::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-}
-const ::google::protobuf::Descriptor* GammaPoisson_GridPrior::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return GammaPoisson_GridPrior_descriptor_;
-}
-
-const GammaPoisson_GridPrior& GammaPoisson_GridPrior::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fio_2fschema_2eproto();  return *default_instance_;
-}
-
-GammaPoisson_GridPrior* GammaPoisson_GridPrior::default_instance_ = NULL;
-
-GammaPoisson_GridPrior* GammaPoisson_GridPrior::New() const {
-  return new GammaPoisson_GridPrior;
-}
-
-void GammaPoisson_GridPrior::Clear() {
-  alpha_.Clear();
-  inv_beta_.Clear();
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
-}
-
-bool GammaPoisson_GridPrior::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
-  ::google::protobuf::uint32 tag;
-  while ((tag = input->ReadTag()) != 0) {
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated float alpha = 1;
-      case 1: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_alpha:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 1, 13, input, this->mutable_alpha())));
-        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
-                   == ::google::protobuf::internal::WireFormatLite::
-                      WIRETYPE_LENGTH_DELIMITED) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, this->mutable_alpha())));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(13)) goto parse_alpha;
-        if (input->ExpectTag(21)) goto parse_inv_beta;
-        break;
-      }
-      
-      // repeated float inv_beta = 2;
-      case 2: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_inv_beta:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 1, 21, input, this->mutable_inv_beta())));
-        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
-                   == ::google::protobuf::internal::WireFormatLite::
-                      WIRETYPE_LENGTH_DELIMITED) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, this->mutable_inv_beta())));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(21)) goto parse_inv_beta;
-        if (input->ExpectAtEnd()) return true;
-        break;
-      }
-      
-      default: {
-      handle_uninterpreted:
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          return true;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
-        break;
-      }
-    }
-  }
-  return true;
-#undef DO_
-}
-
-void GammaPoisson_GridPrior::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated float alpha = 1;
-  for (int i = 0; i < this->alpha_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(
-      1, this->alpha(i), output);
-  }
-  
-  // repeated float inv_beta = 2;
-  for (int i = 0; i < this->inv_beta_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(
-      2, this->inv_beta(i), output);
-  }
-  
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-}
-
-::google::protobuf::uint8* GammaPoisson_GridPrior::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // repeated float alpha = 1;
-  for (int i = 0; i < this->alpha_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteFloatToArray(1, this->alpha(i), target);
-  }
-  
-  // repeated float inv_beta = 2;
-  for (int i = 0; i < this->inv_beta_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteFloatToArray(2, this->inv_beta(i), target);
-  }
-  
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  return target;
-}
-
-int GammaPoisson_GridPrior::ByteSize() const {
-  int total_size = 0;
-  
-  // repeated float alpha = 1;
-  {
-    int data_size = 0;
-    data_size = 4 * this->alpha_size();
-    total_size += 1 * this->alpha_size() + data_size;
-  }
-  
-  // repeated float inv_beta = 2;
-  {
-    int data_size = 0;
-    data_size = 4 * this->inv_beta_size();
-    total_size += 1 * this->inv_beta_size() + data_size;
-  }
-  
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-  return total_size;
-}
-
-void GammaPoisson_GridPrior::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const GammaPoisson_GridPrior* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const GammaPoisson_GridPrior*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
-}
-
-void GammaPoisson_GridPrior::MergeFrom(const GammaPoisson_GridPrior& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  alpha_.MergeFrom(from.alpha_);
-  inv_beta_.MergeFrom(from.inv_beta_);
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void GammaPoisson_GridPrior::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-void GammaPoisson_GridPrior::CopyFrom(const GammaPoisson_GridPrior& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool GammaPoisson_GridPrior::IsInitialized() const {
-  
-  return true;
-}
-
-void GammaPoisson_GridPrior::Swap(GammaPoisson_GridPrior* other) {
-  if (other != this) {
-    alpha_.Swap(&other->alpha_);
-    inv_beta_.Swap(&other->inv_beta_);
-    std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
-    std::swap(_cached_size_, other->_cached_size_);
-  }
-}
-
-::google::protobuf::Metadata GammaPoisson_GridPrior::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = GammaPoisson_GridPrior_descriptor_;
-  metadata.reflection = GammaPoisson_GridPrior_reflection_;
   return metadata;
 }
 
@@ -6456,306 +5183,6 @@ void BetaNegativeBinomial_Shared::Swap(BetaNegativeBinomial_Shared* other) {
 // -------------------------------------------------------------------
 
 #ifndef _MSC_VER
-const int BetaNegativeBinomial_GridPrior::kAlphaFieldNumber;
-const int BetaNegativeBinomial_GridPrior::kBetaFieldNumber;
-const int BetaNegativeBinomial_GridPrior::kRFieldNumber;
-#endif  // !_MSC_VER
-
-BetaNegativeBinomial_GridPrior::BetaNegativeBinomial_GridPrior()
-  : ::google::protobuf::Message() {
-  SharedCtor();
-}
-
-void BetaNegativeBinomial_GridPrior::InitAsDefaultInstance() {
-}
-
-BetaNegativeBinomial_GridPrior::BetaNegativeBinomial_GridPrior(const BetaNegativeBinomial_GridPrior& from)
-  : ::google::protobuf::Message() {
-  SharedCtor();
-  MergeFrom(from);
-}
-
-void BetaNegativeBinomial_GridPrior::SharedCtor() {
-  _cached_size_ = 0;
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-}
-
-BetaNegativeBinomial_GridPrior::~BetaNegativeBinomial_GridPrior() {
-  SharedDtor();
-}
-
-void BetaNegativeBinomial_GridPrior::SharedDtor() {
-  if (this != default_instance_) {
-  }
-}
-
-void BetaNegativeBinomial_GridPrior::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-}
-const ::google::protobuf::Descriptor* BetaNegativeBinomial_GridPrior::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return BetaNegativeBinomial_GridPrior_descriptor_;
-}
-
-const BetaNegativeBinomial_GridPrior& BetaNegativeBinomial_GridPrior::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fio_2fschema_2eproto();  return *default_instance_;
-}
-
-BetaNegativeBinomial_GridPrior* BetaNegativeBinomial_GridPrior::default_instance_ = NULL;
-
-BetaNegativeBinomial_GridPrior* BetaNegativeBinomial_GridPrior::New() const {
-  return new BetaNegativeBinomial_GridPrior;
-}
-
-void BetaNegativeBinomial_GridPrior::Clear() {
-  alpha_.Clear();
-  beta_.Clear();
-  r_.Clear();
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
-}
-
-bool BetaNegativeBinomial_GridPrior::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
-  ::google::protobuf::uint32 tag;
-  while ((tag = input->ReadTag()) != 0) {
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated float alpha = 1;
-      case 1: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_alpha:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 1, 13, input, this->mutable_alpha())));
-        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
-                   == ::google::protobuf::internal::WireFormatLite::
-                      WIRETYPE_LENGTH_DELIMITED) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, this->mutable_alpha())));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(13)) goto parse_alpha;
-        if (input->ExpectTag(21)) goto parse_beta;
-        break;
-      }
-      
-      // repeated float beta = 2;
-      case 2: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_beta:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 1, 21, input, this->mutable_beta())));
-        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
-                   == ::google::protobuf::internal::WireFormatLite::
-                      WIRETYPE_LENGTH_DELIMITED) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, this->mutable_beta())));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(21)) goto parse_beta;
-        if (input->ExpectTag(24)) goto parse_r;
-        break;
-      }
-      
-      // repeated uint64 r = 3;
-      case 3: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
-         parse_r:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
-                 1, 24, input, this->mutable_r())));
-        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
-                   == ::google::protobuf::internal::WireFormatLite::
-                      WIRETYPE_LENGTH_DELIMITED) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   ::google::protobuf::uint64, ::google::protobuf::internal::WireFormatLite::TYPE_UINT64>(
-                 input, this->mutable_r())));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(24)) goto parse_r;
-        if (input->ExpectAtEnd()) return true;
-        break;
-      }
-      
-      default: {
-      handle_uninterpreted:
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          return true;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
-        break;
-      }
-    }
-  }
-  return true;
-#undef DO_
-}
-
-void BetaNegativeBinomial_GridPrior::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated float alpha = 1;
-  for (int i = 0; i < this->alpha_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(
-      1, this->alpha(i), output);
-  }
-  
-  // repeated float beta = 2;
-  for (int i = 0; i < this->beta_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(
-      2, this->beta(i), output);
-  }
-  
-  // repeated uint64 r = 3;
-  for (int i = 0; i < this->r_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteUInt64(
-      3, this->r(i), output);
-  }
-  
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-}
-
-::google::protobuf::uint8* BetaNegativeBinomial_GridPrior::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // repeated float alpha = 1;
-  for (int i = 0; i < this->alpha_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteFloatToArray(1, this->alpha(i), target);
-  }
-  
-  // repeated float beta = 2;
-  for (int i = 0; i < this->beta_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteFloatToArray(2, this->beta(i), target);
-  }
-  
-  // repeated uint64 r = 3;
-  for (int i = 0; i < this->r_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteUInt64ToArray(3, this->r(i), target);
-  }
-  
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  return target;
-}
-
-int BetaNegativeBinomial_GridPrior::ByteSize() const {
-  int total_size = 0;
-  
-  // repeated float alpha = 1;
-  {
-    int data_size = 0;
-    data_size = 4 * this->alpha_size();
-    total_size += 1 * this->alpha_size() + data_size;
-  }
-  
-  // repeated float beta = 2;
-  {
-    int data_size = 0;
-    data_size = 4 * this->beta_size();
-    total_size += 1 * this->beta_size() + data_size;
-  }
-  
-  // repeated uint64 r = 3;
-  {
-    int data_size = 0;
-    for (int i = 0; i < this->r_size(); i++) {
-      data_size += ::google::protobuf::internal::WireFormatLite::
-        UInt64Size(this->r(i));
-    }
-    total_size += 1 * this->r_size() + data_size;
-  }
-  
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-  return total_size;
-}
-
-void BetaNegativeBinomial_GridPrior::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const BetaNegativeBinomial_GridPrior* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const BetaNegativeBinomial_GridPrior*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
-}
-
-void BetaNegativeBinomial_GridPrior::MergeFrom(const BetaNegativeBinomial_GridPrior& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  alpha_.MergeFrom(from.alpha_);
-  beta_.MergeFrom(from.beta_);
-  r_.MergeFrom(from.r_);
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void BetaNegativeBinomial_GridPrior::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-void BetaNegativeBinomial_GridPrior::CopyFrom(const BetaNegativeBinomial_GridPrior& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool BetaNegativeBinomial_GridPrior::IsInitialized() const {
-  
-  return true;
-}
-
-void BetaNegativeBinomial_GridPrior::Swap(BetaNegativeBinomial_GridPrior* other) {
-  if (other != this) {
-    alpha_.Swap(&other->alpha_);
-    beta_.Swap(&other->beta_);
-    r_.Swap(&other->r_);
-    std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
-    std::swap(_cached_size_, other->_cached_size_);
-  }
-}
-
-::google::protobuf::Metadata BetaNegativeBinomial_GridPrior::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = BetaNegativeBinomial_GridPrior_descriptor_;
-  metadata.reflection = BetaNegativeBinomial_GridPrior_reflection_;
-  return metadata;
-}
-
-
-// -------------------------------------------------------------------
-
-#ifndef _MSC_VER
 const int BetaNegativeBinomial_Group::kCountFieldNumber;
 const int BetaNegativeBinomial_Group::kSumFieldNumber;
 #endif  // !_MSC_VER
@@ -7479,348 +5906,6 @@ void NormalInverseChiSq_Shared::Swap(NormalInverseChiSq_Shared* other) {
 // -------------------------------------------------------------------
 
 #ifndef _MSC_VER
-const int NormalInverseChiSq_GridPrior::kMuFieldNumber;
-const int NormalInverseChiSq_GridPrior::kKappaFieldNumber;
-const int NormalInverseChiSq_GridPrior::kSigmasqFieldNumber;
-const int NormalInverseChiSq_GridPrior::kNuFieldNumber;
-#endif  // !_MSC_VER
-
-NormalInverseChiSq_GridPrior::NormalInverseChiSq_GridPrior()
-  : ::google::protobuf::Message() {
-  SharedCtor();
-}
-
-void NormalInverseChiSq_GridPrior::InitAsDefaultInstance() {
-}
-
-NormalInverseChiSq_GridPrior::NormalInverseChiSq_GridPrior(const NormalInverseChiSq_GridPrior& from)
-  : ::google::protobuf::Message() {
-  SharedCtor();
-  MergeFrom(from);
-}
-
-void NormalInverseChiSq_GridPrior::SharedCtor() {
-  _cached_size_ = 0;
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-}
-
-NormalInverseChiSq_GridPrior::~NormalInverseChiSq_GridPrior() {
-  SharedDtor();
-}
-
-void NormalInverseChiSq_GridPrior::SharedDtor() {
-  if (this != default_instance_) {
-  }
-}
-
-void NormalInverseChiSq_GridPrior::SetCachedSize(int size) const {
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-}
-const ::google::protobuf::Descriptor* NormalInverseChiSq_GridPrior::descriptor() {
-  protobuf_AssignDescriptorsOnce();
-  return NormalInverseChiSq_GridPrior_descriptor_;
-}
-
-const NormalInverseChiSq_GridPrior& NormalInverseChiSq_GridPrior::default_instance() {
-  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fio_2fschema_2eproto();  return *default_instance_;
-}
-
-NormalInverseChiSq_GridPrior* NormalInverseChiSq_GridPrior::default_instance_ = NULL;
-
-NormalInverseChiSq_GridPrior* NormalInverseChiSq_GridPrior::New() const {
-  return new NormalInverseChiSq_GridPrior;
-}
-
-void NormalInverseChiSq_GridPrior::Clear() {
-  mu_.Clear();
-  kappa_.Clear();
-  sigmasq_.Clear();
-  nu_.Clear();
-  ::memset(_has_bits_, 0, sizeof(_has_bits_));
-  mutable_unknown_fields()->Clear();
-}
-
-bool NormalInverseChiSq_GridPrior::MergePartialFromCodedStream(
-    ::google::protobuf::io::CodedInputStream* input) {
-#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
-  ::google::protobuf::uint32 tag;
-  while ((tag = input->ReadTag()) != 0) {
-    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
-      // repeated float mu = 1;
-      case 1: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_mu:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 1, 13, input, this->mutable_mu())));
-        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
-                   == ::google::protobuf::internal::WireFormatLite::
-                      WIRETYPE_LENGTH_DELIMITED) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, this->mutable_mu())));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(13)) goto parse_mu;
-        if (input->ExpectTag(21)) goto parse_kappa;
-        break;
-      }
-      
-      // repeated float kappa = 2;
-      case 2: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_kappa:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 1, 21, input, this->mutable_kappa())));
-        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
-                   == ::google::protobuf::internal::WireFormatLite::
-                      WIRETYPE_LENGTH_DELIMITED) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, this->mutable_kappa())));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(21)) goto parse_kappa;
-        if (input->ExpectTag(29)) goto parse_sigmasq;
-        break;
-      }
-      
-      // repeated float sigmasq = 3;
-      case 3: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_sigmasq:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 1, 29, input, this->mutable_sigmasq())));
-        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
-                   == ::google::protobuf::internal::WireFormatLite::
-                      WIRETYPE_LENGTH_DELIMITED) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, this->mutable_sigmasq())));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(29)) goto parse_sigmasq;
-        if (input->ExpectTag(37)) goto parse_nu;
-        break;
-      }
-      
-      // repeated float nu = 4;
-      case 4: {
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
-         parse_nu:
-          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 1, 37, input, this->mutable_nu())));
-        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
-                   == ::google::protobuf::internal::WireFormatLite::
-                      WIRETYPE_LENGTH_DELIMITED) {
-          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
-                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
-                 input, this->mutable_nu())));
-        } else {
-          goto handle_uninterpreted;
-        }
-        if (input->ExpectTag(37)) goto parse_nu;
-        if (input->ExpectAtEnd()) return true;
-        break;
-      }
-      
-      default: {
-      handle_uninterpreted:
-        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
-            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
-          return true;
-        }
-        DO_(::google::protobuf::internal::WireFormat::SkipField(
-              input, tag, mutable_unknown_fields()));
-        break;
-      }
-    }
-  }
-  return true;
-#undef DO_
-}
-
-void NormalInverseChiSq_GridPrior::SerializeWithCachedSizes(
-    ::google::protobuf::io::CodedOutputStream* output) const {
-  // repeated float mu = 1;
-  for (int i = 0; i < this->mu_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(
-      1, this->mu(i), output);
-  }
-  
-  // repeated float kappa = 2;
-  for (int i = 0; i < this->kappa_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(
-      2, this->kappa(i), output);
-  }
-  
-  // repeated float sigmasq = 3;
-  for (int i = 0; i < this->sigmasq_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(
-      3, this->sigmasq(i), output);
-  }
-  
-  // repeated float nu = 4;
-  for (int i = 0; i < this->nu_size(); i++) {
-    ::google::protobuf::internal::WireFormatLite::WriteFloat(
-      4, this->nu(i), output);
-  }
-  
-  if (!unknown_fields().empty()) {
-    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
-        unknown_fields(), output);
-  }
-}
-
-::google::protobuf::uint8* NormalInverseChiSq_GridPrior::SerializeWithCachedSizesToArray(
-    ::google::protobuf::uint8* target) const {
-  // repeated float mu = 1;
-  for (int i = 0; i < this->mu_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteFloatToArray(1, this->mu(i), target);
-  }
-  
-  // repeated float kappa = 2;
-  for (int i = 0; i < this->kappa_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteFloatToArray(2, this->kappa(i), target);
-  }
-  
-  // repeated float sigmasq = 3;
-  for (int i = 0; i < this->sigmasq_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteFloatToArray(3, this->sigmasq(i), target);
-  }
-  
-  // repeated float nu = 4;
-  for (int i = 0; i < this->nu_size(); i++) {
-    target = ::google::protobuf::internal::WireFormatLite::
-      WriteFloatToArray(4, this->nu(i), target);
-  }
-  
-  if (!unknown_fields().empty()) {
-    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
-        unknown_fields(), target);
-  }
-  return target;
-}
-
-int NormalInverseChiSq_GridPrior::ByteSize() const {
-  int total_size = 0;
-  
-  // repeated float mu = 1;
-  {
-    int data_size = 0;
-    data_size = 4 * this->mu_size();
-    total_size += 1 * this->mu_size() + data_size;
-  }
-  
-  // repeated float kappa = 2;
-  {
-    int data_size = 0;
-    data_size = 4 * this->kappa_size();
-    total_size += 1 * this->kappa_size() + data_size;
-  }
-  
-  // repeated float sigmasq = 3;
-  {
-    int data_size = 0;
-    data_size = 4 * this->sigmasq_size();
-    total_size += 1 * this->sigmasq_size() + data_size;
-  }
-  
-  // repeated float nu = 4;
-  {
-    int data_size = 0;
-    data_size = 4 * this->nu_size();
-    total_size += 1 * this->nu_size() + data_size;
-  }
-  
-  if (!unknown_fields().empty()) {
-    total_size +=
-      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
-        unknown_fields());
-  }
-  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
-  _cached_size_ = total_size;
-  GOOGLE_SAFE_CONCURRENT_WRITES_END();
-  return total_size;
-}
-
-void NormalInverseChiSq_GridPrior::MergeFrom(const ::google::protobuf::Message& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  const NormalInverseChiSq_GridPrior* source =
-    ::google::protobuf::internal::dynamic_cast_if_available<const NormalInverseChiSq_GridPrior*>(
-      &from);
-  if (source == NULL) {
-    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
-  } else {
-    MergeFrom(*source);
-  }
-}
-
-void NormalInverseChiSq_GridPrior::MergeFrom(const NormalInverseChiSq_GridPrior& from) {
-  GOOGLE_CHECK_NE(&from, this);
-  mu_.MergeFrom(from.mu_);
-  kappa_.MergeFrom(from.kappa_);
-  sigmasq_.MergeFrom(from.sigmasq_);
-  nu_.MergeFrom(from.nu_);
-  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
-}
-
-void NormalInverseChiSq_GridPrior::CopyFrom(const ::google::protobuf::Message& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-void NormalInverseChiSq_GridPrior::CopyFrom(const NormalInverseChiSq_GridPrior& from) {
-  if (&from == this) return;
-  Clear();
-  MergeFrom(from);
-}
-
-bool NormalInverseChiSq_GridPrior::IsInitialized() const {
-  
-  return true;
-}
-
-void NormalInverseChiSq_GridPrior::Swap(NormalInverseChiSq_GridPrior* other) {
-  if (other != this) {
-    mu_.Swap(&other->mu_);
-    kappa_.Swap(&other->kappa_);
-    sigmasq_.Swap(&other->sigmasq_);
-    nu_.Swap(&other->nu_);
-    std::swap(_has_bits_[0], other->_has_bits_[0]);
-    _unknown_fields_.Swap(&other->_unknown_fields_);
-    std::swap(_cached_size_, other->_cached_size_);
-  }
-}
-
-::google::protobuf::Metadata NormalInverseChiSq_GridPrior::GetMetadata() const {
-  protobuf_AssignDescriptorsOnce();
-  ::google::protobuf::Metadata metadata;
-  metadata.descriptor = NormalInverseChiSq_GridPrior_descriptor_;
-  metadata.reflection = NormalInverseChiSq_GridPrior_reflection_;
-  return metadata;
-}
-
-
-// -------------------------------------------------------------------
-
-#ifndef _MSC_VER
 const int NormalInverseChiSq_Group::kCountFieldNumber;
 const int NormalInverseChiSq_Group::kMeanFieldNumber;
 const int NormalInverseChiSq_Group::kCountTimesVarianceFieldNumber;
@@ -8253,6 +6338,794 @@ void NormalInverseChiSq::Swap(NormalInverseChiSq* other) {
   ::google::protobuf::Metadata metadata;
   metadata.descriptor = NormalInverseChiSq_descriptor_;
   metadata.reflection = NormalInverseChiSq_reflection_;
+  return metadata;
+}
+
+
+// ===================================================================
+
+#ifndef _MSC_VER
+const int NormalInverseWishart_Shared::kMuFieldNumber;
+const int NormalInverseWishart_Shared::kKappaFieldNumber;
+const int NormalInverseWishart_Shared::kPsiFieldNumber;
+const int NormalInverseWishart_Shared::kNuFieldNumber;
+#endif  // !_MSC_VER
+
+NormalInverseWishart_Shared::NormalInverseWishart_Shared()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void NormalInverseWishart_Shared::InitAsDefaultInstance() {
+}
+
+NormalInverseWishart_Shared::NormalInverseWishart_Shared(const NormalInverseWishart_Shared& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void NormalInverseWishart_Shared::SharedCtor() {
+  _cached_size_ = 0;
+  kappa_ = 0;
+  nu_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+NormalInverseWishart_Shared::~NormalInverseWishart_Shared() {
+  SharedDtor();
+}
+
+void NormalInverseWishart_Shared::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void NormalInverseWishart_Shared::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* NormalInverseWishart_Shared::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return NormalInverseWishart_Shared_descriptor_;
+}
+
+const NormalInverseWishart_Shared& NormalInverseWishart_Shared::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fio_2fschema_2eproto();  return *default_instance_;
+}
+
+NormalInverseWishart_Shared* NormalInverseWishart_Shared::default_instance_ = NULL;
+
+NormalInverseWishart_Shared* NormalInverseWishart_Shared::New() const {
+  return new NormalInverseWishart_Shared;
+}
+
+void NormalInverseWishart_Shared::Clear() {
+  if (_has_bits_[1 / 32] & (0xffu << (1 % 32))) {
+    kappa_ = 0;
+    nu_ = 0;
+  }
+  mu_.Clear();
+  psi_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool NormalInverseWishart_Shared::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // repeated float mu = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_mu:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 1, 13, input, this->mutable_mu())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, this->mutable_mu())));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(13)) goto parse_mu;
+        if (input->ExpectTag(21)) goto parse_kappa;
+        break;
+      }
+      
+      // required float kappa = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_kappa:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &kappa_)));
+          set_has_kappa();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(29)) goto parse_psi;
+        break;
+      }
+      
+      // repeated float psi = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_psi:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 1, 29, input, this->mutable_psi())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, this->mutable_psi())));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(29)) goto parse_psi;
+        if (input->ExpectTag(37)) goto parse_nu;
+        break;
+      }
+      
+      // required float nu = 4;
+      case 4: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_nu:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &nu_)));
+          set_has_nu();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void NormalInverseWishart_Shared::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // repeated float mu = 1;
+  for (int i = 0; i < this->mu_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(
+      1, this->mu(i), output);
+  }
+  
+  // required float kappa = 2;
+  if (has_kappa()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(2, this->kappa(), output);
+  }
+  
+  // repeated float psi = 3;
+  for (int i = 0; i < this->psi_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(
+      3, this->psi(i), output);
+  }
+  
+  // required float nu = 4;
+  if (has_nu()) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(4, this->nu(), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* NormalInverseWishart_Shared::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // repeated float mu = 1;
+  for (int i = 0; i < this->mu_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteFloatToArray(1, this->mu(i), target);
+  }
+  
+  // required float kappa = 2;
+  if (has_kappa()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(2, this->kappa(), target);
+  }
+  
+  // repeated float psi = 3;
+  for (int i = 0; i < this->psi_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteFloatToArray(3, this->psi(i), target);
+  }
+  
+  // required float nu = 4;
+  if (has_nu()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(4, this->nu(), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int NormalInverseWishart_Shared::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[1 / 32] & (0xffu << (1 % 32))) {
+    // required float kappa = 2;
+    if (has_kappa()) {
+      total_size += 1 + 4;
+    }
+    
+    // required float nu = 4;
+    if (has_nu()) {
+      total_size += 1 + 4;
+    }
+    
+  }
+  // repeated float mu = 1;
+  {
+    int data_size = 0;
+    data_size = 4 * this->mu_size();
+    total_size += 1 * this->mu_size() + data_size;
+  }
+  
+  // repeated float psi = 3;
+  {
+    int data_size = 0;
+    data_size = 4 * this->psi_size();
+    total_size += 1 * this->psi_size() + data_size;
+  }
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void NormalInverseWishart_Shared::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const NormalInverseWishart_Shared* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const NormalInverseWishart_Shared*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void NormalInverseWishart_Shared::MergeFrom(const NormalInverseWishart_Shared& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  mu_.MergeFrom(from.mu_);
+  psi_.MergeFrom(from.psi_);
+  if (from._has_bits_[1 / 32] & (0xffu << (1 % 32))) {
+    if (from.has_kappa()) {
+      set_kappa(from.kappa());
+    }
+    if (from.has_nu()) {
+      set_nu(from.nu());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void NormalInverseWishart_Shared::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void NormalInverseWishart_Shared::CopyFrom(const NormalInverseWishart_Shared& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool NormalInverseWishart_Shared::IsInitialized() const {
+  if ((_has_bits_[0] & 0x0000000a) != 0x0000000a) return false;
+  
+  return true;
+}
+
+void NormalInverseWishart_Shared::Swap(NormalInverseWishart_Shared* other) {
+  if (other != this) {
+    mu_.Swap(&other->mu_);
+    std::swap(kappa_, other->kappa_);
+    psi_.Swap(&other->psi_);
+    std::swap(nu_, other->nu_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata NormalInverseWishart_Shared::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = NormalInverseWishart_Shared_descriptor_;
+  metadata.reflection = NormalInverseWishart_Shared_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#ifndef _MSC_VER
+const int NormalInverseWishart_Group::kCountFieldNumber;
+const int NormalInverseWishart_Group::kSumXFieldNumber;
+const int NormalInverseWishart_Group::kSumXxTFieldNumber;
+#endif  // !_MSC_VER
+
+NormalInverseWishart_Group::NormalInverseWishart_Group()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void NormalInverseWishart_Group::InitAsDefaultInstance() {
+}
+
+NormalInverseWishart_Group::NormalInverseWishart_Group(const NormalInverseWishart_Group& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void NormalInverseWishart_Group::SharedCtor() {
+  _cached_size_ = 0;
+  count_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+NormalInverseWishart_Group::~NormalInverseWishart_Group() {
+  SharedDtor();
+}
+
+void NormalInverseWishart_Group::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void NormalInverseWishart_Group::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* NormalInverseWishart_Group::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return NormalInverseWishart_Group_descriptor_;
+}
+
+const NormalInverseWishart_Group& NormalInverseWishart_Group::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fio_2fschema_2eproto();  return *default_instance_;
+}
+
+NormalInverseWishart_Group* NormalInverseWishart_Group::default_instance_ = NULL;
+
+NormalInverseWishart_Group* NormalInverseWishart_Group::New() const {
+  return new NormalInverseWishart_Group;
+}
+
+void NormalInverseWishart_Group::Clear() {
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    count_ = 0;
+  }
+  sum_x_.Clear();
+  sum_xxt_.Clear();
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool NormalInverseWishart_Group::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    switch (::google::protobuf::internal::WireFormatLite::GetTagFieldNumber(tag)) {
+      // required int32 count = 1;
+      case 1: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   ::google::protobuf::int32, ::google::protobuf::internal::WireFormatLite::TYPE_INT32>(
+                 input, &count_)));
+          set_has_count();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(21)) goto parse_sum_x;
+        break;
+      }
+      
+      // repeated float sum_x = 2;
+      case 2: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_sum_x:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 1, 21, input, this->mutable_sum_x())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, this->mutable_sum_x())));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(21)) goto parse_sum_x;
+        if (input->ExpectTag(29)) goto parse_sum_xxT;
+        break;
+      }
+      
+      // repeated float sum_xxT = 3;
+      case 3: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED32) {
+         parse_sum_xxT:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadRepeatedPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 1, 29, input, this->mutable_sum_xxt())));
+        } else if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag)
+                   == ::google::protobuf::internal::WireFormatLite::
+                      WIRETYPE_LENGTH_DELIMITED) {
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPackedPrimitiveNoInline<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, this->mutable_sum_xxt())));
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(29)) goto parse_sum_xxT;
+        if (input->ExpectAtEnd()) return true;
+        break;
+      }
+      
+      default: {
+      handle_uninterpreted:
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+          return true;
+        }
+        DO_(::google::protobuf::internal::WireFormat::SkipField(
+              input, tag, mutable_unknown_fields()));
+        break;
+      }
+    }
+  }
+  return true;
+#undef DO_
+}
+
+void NormalInverseWishart_Group::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  // required int32 count = 1;
+  if (has_count()) {
+    ::google::protobuf::internal::WireFormatLite::WriteInt32(1, this->count(), output);
+  }
+  
+  // repeated float sum_x = 2;
+  for (int i = 0; i < this->sum_x_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(
+      2, this->sum_x(i), output);
+  }
+  
+  // repeated float sum_xxT = 3;
+  for (int i = 0; i < this->sum_xxt_size(); i++) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(
+      3, this->sum_xxt(i), output);
+  }
+  
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* NormalInverseWishart_Group::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  // required int32 count = 1;
+  if (has_count()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteInt32ToArray(1, this->count(), target);
+  }
+  
+  // repeated float sum_x = 2;
+  for (int i = 0; i < this->sum_x_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteFloatToArray(2, this->sum_x(i), target);
+  }
+  
+  // repeated float sum_xxT = 3;
+  for (int i = 0; i < this->sum_xxt_size(); i++) {
+    target = ::google::protobuf::internal::WireFormatLite::
+      WriteFloatToArray(3, this->sum_xxt(i), target);
+  }
+  
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int NormalInverseWishart_Group::ByteSize() const {
+  int total_size = 0;
+  
+  if (_has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    // required int32 count = 1;
+    if (has_count()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::Int32Size(
+          this->count());
+    }
+    
+  }
+  // repeated float sum_x = 2;
+  {
+    int data_size = 0;
+    data_size = 4 * this->sum_x_size();
+    total_size += 1 * this->sum_x_size() + data_size;
+  }
+  
+  // repeated float sum_xxT = 3;
+  {
+    int data_size = 0;
+    data_size = 4 * this->sum_xxt_size();
+    total_size += 1 * this->sum_xxt_size() + data_size;
+  }
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void NormalInverseWishart_Group::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const NormalInverseWishart_Group* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const NormalInverseWishart_Group*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void NormalInverseWishart_Group::MergeFrom(const NormalInverseWishart_Group& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  sum_x_.MergeFrom(from.sum_x_);
+  sum_xxt_.MergeFrom(from.sum_xxt_);
+  if (from._has_bits_[0 / 32] & (0xffu << (0 % 32))) {
+    if (from.has_count()) {
+      set_count(from.count());
+    }
+  }
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void NormalInverseWishart_Group::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void NormalInverseWishart_Group::CopyFrom(const NormalInverseWishart_Group& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool NormalInverseWishart_Group::IsInitialized() const {
+  if ((_has_bits_[0] & 0x00000001) != 0x00000001) return false;
+  
+  return true;
+}
+
+void NormalInverseWishart_Group::Swap(NormalInverseWishart_Group* other) {
+  if (other != this) {
+    std::swap(count_, other->count_);
+    sum_x_.Swap(&other->sum_x_);
+    sum_xxt_.Swap(&other->sum_xxt_);
+    std::swap(_has_bits_[0], other->_has_bits_[0]);
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata NormalInverseWishart_Group::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = NormalInverseWishart_Group_descriptor_;
+  metadata.reflection = NormalInverseWishart_Group_reflection_;
+  return metadata;
+}
+
+
+// -------------------------------------------------------------------
+
+#ifndef _MSC_VER
+#endif  // !_MSC_VER
+
+NormalInverseWishart::NormalInverseWishart()
+  : ::google::protobuf::Message() {
+  SharedCtor();
+}
+
+void NormalInverseWishart::InitAsDefaultInstance() {
+}
+
+NormalInverseWishart::NormalInverseWishart(const NormalInverseWishart& from)
+  : ::google::protobuf::Message() {
+  SharedCtor();
+  MergeFrom(from);
+}
+
+void NormalInverseWishart::SharedCtor() {
+  _cached_size_ = 0;
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+}
+
+NormalInverseWishart::~NormalInverseWishart() {
+  SharedDtor();
+}
+
+void NormalInverseWishart::SharedDtor() {
+  if (this != default_instance_) {
+  }
+}
+
+void NormalInverseWishart::SetCachedSize(int size) const {
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+}
+const ::google::protobuf::Descriptor* NormalInverseWishart::descriptor() {
+  protobuf_AssignDescriptorsOnce();
+  return NormalInverseWishart_descriptor_;
+}
+
+const NormalInverseWishart& NormalInverseWishart::default_instance() {
+  if (default_instance_ == NULL) protobuf_AddDesc_distributions_2fio_2fschema_2eproto();  return *default_instance_;
+}
+
+NormalInverseWishart* NormalInverseWishart::default_instance_ = NULL;
+
+NormalInverseWishart* NormalInverseWishart::New() const {
+  return new NormalInverseWishart;
+}
+
+void NormalInverseWishart::Clear() {
+  ::memset(_has_bits_, 0, sizeof(_has_bits_));
+  mutable_unknown_fields()->Clear();
+}
+
+bool NormalInverseWishart::MergePartialFromCodedStream(
+    ::google::protobuf::io::CodedInputStream* input) {
+#define DO_(EXPRESSION) if (!(EXPRESSION)) return false
+  ::google::protobuf::uint32 tag;
+  while ((tag = input->ReadTag()) != 0) {
+    if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+        ::google::protobuf::internal::WireFormatLite::WIRETYPE_END_GROUP) {
+      return true;
+    }
+    DO_(::google::protobuf::internal::WireFormat::SkipField(
+          input, tag, mutable_unknown_fields()));
+  }
+  return true;
+#undef DO_
+}
+
+void NormalInverseWishart::SerializeWithCachedSizes(
+    ::google::protobuf::io::CodedOutputStream* output) const {
+  if (!unknown_fields().empty()) {
+    ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
+        unknown_fields(), output);
+  }
+}
+
+::google::protobuf::uint8* NormalInverseWishart::SerializeWithCachedSizesToArray(
+    ::google::protobuf::uint8* target) const {
+  if (!unknown_fields().empty()) {
+    target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
+        unknown_fields(), target);
+  }
+  return target;
+}
+
+int NormalInverseWishart::ByteSize() const {
+  int total_size = 0;
+  
+  if (!unknown_fields().empty()) {
+    total_size +=
+      ::google::protobuf::internal::WireFormat::ComputeUnknownFieldsSize(
+        unknown_fields());
+  }
+  GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN();
+  _cached_size_ = total_size;
+  GOOGLE_SAFE_CONCURRENT_WRITES_END();
+  return total_size;
+}
+
+void NormalInverseWishart::MergeFrom(const ::google::protobuf::Message& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  const NormalInverseWishart* source =
+    ::google::protobuf::internal::dynamic_cast_if_available<const NormalInverseWishart*>(
+      &from);
+  if (source == NULL) {
+    ::google::protobuf::internal::ReflectionOps::Merge(from, this);
+  } else {
+    MergeFrom(*source);
+  }
+}
+
+void NormalInverseWishart::MergeFrom(const NormalInverseWishart& from) {
+  GOOGLE_CHECK_NE(&from, this);
+  mutable_unknown_fields()->MergeFrom(from.unknown_fields());
+}
+
+void NormalInverseWishart::CopyFrom(const ::google::protobuf::Message& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+void NormalInverseWishart::CopyFrom(const NormalInverseWishart& from) {
+  if (&from == this) return;
+  Clear();
+  MergeFrom(from);
+}
+
+bool NormalInverseWishart::IsInitialized() const {
+  
+  return true;
+}
+
+void NormalInverseWishart::Swap(NormalInverseWishart* other) {
+  if (other != this) {
+    _unknown_fields_.Swap(&other->_unknown_fields_);
+    std::swap(_cached_size_, other->_cached_size_);
+  }
+}
+
+::google::protobuf::Metadata NormalInverseWishart::GetMetadata() const {
+  protobuf_AssignDescriptorsOnce();
+  ::google::protobuf::Metadata metadata;
+  metadata.descriptor = NormalInverseWishart_descriptor_;
+  metadata.reflection = NormalInverseWishart_reflection_;
   return metadata;
 }
 

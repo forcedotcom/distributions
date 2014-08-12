@@ -75,6 +75,8 @@ def list_models():
         except ImportError:
             module_name = 'distributions.{flavor}.models.{name}'.format(**spec)
             print 'failed to import {}'.format(module_name)
+            import traceback
+            print traceback.format_exc()
 
 
 def import_model(spec):

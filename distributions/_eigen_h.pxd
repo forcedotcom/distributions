@@ -25,14 +25,19 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__version__ = '2.0.21'
+cdef extern from "eigen3/Eigen/Dense" namespace "Eigen":
+    cdef cppclass VectorXf:
+        VectorXf()
+        VectorXf(int) except +
+        int size()
+        float & operator[](int) except +
 
-import os
+    cdef cppclass MatrixXf:
+        MatrixXf()
+        MatrixXf(int, int) except +
+        int rows()
+        int cols()
 
-try:
-    import distributions.has_cython
-    has_cython = distributions.has_cython.has_cython()
-except ImportError:
-    has_cython = False
-
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+cdef extern from "distributions/cython.hpp" namespace "distributions":
+    float float_op_get2(const MatrixXf &, unsigned, unsigned)
+    void float_op_set2(MatrixXf &, unsigned, unsigned, float)

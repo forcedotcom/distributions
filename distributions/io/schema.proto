@@ -142,3 +142,17 @@ message NormalInverseChiSq {
   }
 }
 
+message NormalInverseWishart {
+  message Shared {
+    repeated float mu = 1;
+    required float kappa = 2;
+    repeated float psi = 3;
+    required float nu = 4;
+  }
+
+  message Group {
+    required int32 count = 1;
+    repeated float sum_x = 2;
+    repeated float sum_xxT = 3;
+  }
+}

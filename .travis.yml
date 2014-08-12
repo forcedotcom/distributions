@@ -8,7 +8,8 @@ before_install:
   - sudo add-apt-repository -y ppa:cython-dev/master-ppa
   - sudo apt-get update -qq
   - sudo apt-get install -qq cython python-numpy python-scipy
-  - sudo apt-get install libprotobuf-dev
+  - sudo apt-get install libprotobuf-dev libeigen3-dev
+  - pip install cpplint
 env:
   - FLAVOR=_cc
   - FLAVOR=_cc DISTRIBUTIONS_USE_PROTOBUF=1

@@ -25,14 +25,34 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__version__ = '2.0.21'
+from libcpp.vector cimport vector
 
-import os
+from distributions.rng_cc cimport rng_t
+from distributions._eigen_h cimport VectorXf, MatrixXf
 
-try:
-    import distributions.has_cython
-    has_cython = distributions.has_cython.has_cython()
-except ImportError:
-    has_cython = False
+ctypedef VectorXf Value
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+cdef extern from "distributions/models/niw.hpp" namespace "distributions::NormalInverseWishart<-1>":
+    cppclass Shared:
+        VectorXf mu
+        float kappa
+        MatrixXf psi
+        float nu
+
+    cppclass Group:
+        int count
+        VectorXf sum_x
+        MatrixXf sum_xxT
+
+        void init (Shared &, rng_t &) nogil except +
+        void add_value (Shared &, Value &, rng_t &) nogil except +
+        void add_repeated_value (Shared &, Value &, int &, rng_t &) nogil except +
+        void remove_value (Shared &, Value &, rng_t &) nogil except +
+        void merge (Shared &, Group &, rng_t &) nogil except +
+        float score_value (Shared &, Value &, rng_t &) nogil except +
+        float score_data (Shared &, rng_t &) nogil except +
+        Value sample_value (Shared &, rng_t &) nogil except +
+
+    cppclass Sampler:
+        void init (Shared &, Group &, rng_t &) nogil except +
+        Value eval (Shared &, rng_t &) nogil except +

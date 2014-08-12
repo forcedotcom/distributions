@@ -25,14 +25,33 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__version__ = '2.0.21'
+cimport numpy as np
+import numpy as np
 
-import os
+### Helpers to convert Eigen <-> numpy
 
-try:
-    import distributions.has_cython
-    has_cython = distributions.has_cython.has_cython()
-except ImportError:
-    has_cython = False
+cdef VectorXf to_eigen_vecf(np.ndarray x):
+    cdef VectorXf v = VectorXf(x.shape[0])
+    for i, e in enumerate(x):
+        v[i] = float(e)
+    return v
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+cdef MatrixXf to_eigen_matf(np.ndarray x):
+    cdef MatrixXf m = MatrixXf(x.shape[0], x.shape[1])
+    for i, a in enumerate(x):
+        for j, b in enumerate(a):
+            _h.float_op_set2(m, i, j, b)
+    return m
+
+cdef np.ndarray to_np_1darray(const VectorXf &x):
+    cdef np.ndarray v = np.zeros(x.size())
+    for i in xrange(x.size()):
+        v[i] = x[i]
+    return v
+
+cdef np.ndarray to_np_2darray(const MatrixXf &x):
+    cdef np.ndarray m = np.zeros((x.rows(), x.cols()))
+    for i in xrange(x.rows()):
+        for j in xrange(x.cols()):
+            m[i, j] = _h.float_op_get2(x, i, j)
+    return m

@@ -25,14 +25,21 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__version__ = '2.0.21'
+from distributions._eigen_h cimport VectorXf, MatrixXf
+from distributions._eigen cimport to_np_1darray, to_eigen_vecf
+cimport _niw_h as _h
 
-import os
+from libc.stdint cimport uint32_t
+from libcpp.vector cimport vector
+cimport numpy as np
+from distributions.rng_cc cimport rng_t
+from distributions.global_rng cimport get_rng
 
-try:
-    import distributions.has_cython
-    has_cython = distributions.has_cython.has_cython()
-except ImportError:
-    has_cython = False
+cdef class Shared:
+    cdef _h.Shared * ptr
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+cdef class Group:
+    cdef _h.Group * ptr
+
+cdef class Sampler:
+    cdef _h.Sampler * ptr

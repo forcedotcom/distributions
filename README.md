@@ -1,4 +1,4 @@
-# Distributions [![Build Status](https://travis-ci.org/forcedotcom/distributions.svg?branch=master)](https://travis-ci.org/forcedotcom/distributions) [![Latest Version](https://pypip.in/version/distributions/badge.svg)](https://pypi.python.org/pypi/distributions)
+# Distributions [![Build Status](https://travis-ci.org/forcedotcom/distributions.svg?branch=master)](https://travis-ci.org/forcedotcom/distributions) [![Code Quality](http://img.shields.io/scrutinizer/g/forcedotcom/distributions.svg)](https://scrutinizer-ci.com/g/forcedotcom/distributions) [![Latest Version](https://badge.fury.io/py/distributions.svg)](https://pypi.python.org/pypi/distributions)
 
 Distributions provides low-level primitives for Bayesian MCMC
 inference in Python and C++ including:
@@ -39,7 +39,7 @@ Branch-specific documentation lives at
 * Eric Jonas <https://twitter.com/stochastician>
 * Fritz Obermeyer <https://github.com/fritzo>
 * Cap Petschulat <https://github.com/cap>
-
+* Stephen Tu <https://github.com/stephentu>
 
 ## License
 

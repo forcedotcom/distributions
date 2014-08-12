@@ -36,10 +36,9 @@
 #include <distributions/trivial_hash.hpp>
 #include <distributions/random_fwd.hpp>
 
-namespace distributions
-{
+namespace distributions {
 
-//----------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // Mixture Driver
 //
 // This interface maintains contiguous groupids for vectorized scoring
@@ -47,19 +46,17 @@ namespace distributions
 // Specific models may use this class, or maintain custom cached scores.
 
 template<class Model_, class count_t>
-struct MixtureDriver
-{
+struct MixtureDriver {
     typedef Model_ Model;
     typedef std::unordered_set<size_t, TrivialHash<size_t>> IdSet;
 
-    std::vector<count_t> & counts () { return counts_; }
-    const std::vector<count_t> & counts () const { return counts_; }
-    count_t counts (size_t groupid) const { return counts_[groupid]; }
-    const IdSet & empty_groupids () const { return empty_groupids_; }
-    size_t sample_size () const { return sample_size_; }
+    std::vector<count_t> & counts() { return counts_; }
+    const std::vector<count_t> & counts() const { return counts_; }
+    count_t counts(size_t groupid) const { return counts_[groupid]; }
+    const IdSet & empty_groupids() const { return empty_groupids_; }
+    size_t sample_size() const { return sample_size_; }
 
-    void init (const Model &)
-    {
+    void init(const Model &) {
         empty_groupids_.clear();
         sample_size_ = 0;
 
@@ -73,11 +70,10 @@ struct MixtureDriver
         _validate();
     }
 
-    bool add_value (
+    bool add_value(
             const Model &,
             size_t groupid,
-            count_t count = 1)
-    {
+            count_t count = 1) {
         DIST_ASSERT1(count, "cannot add zero values");
         DIST_ASSERT2(groupid < counts_.size(), "bad groupid: " << groupid);
 
@@ -95,11 +91,10 @@ struct MixtureDriver
         return add_group;
     }
 
-    bool remove_value (
+    bool remove_value(
             const Model &,
             size_t groupid,
-            count_t count = 1)
-    {
+            count_t count = 1) {
         DIST_ASSERT1(count, "cannot remove zero values");
         DIST_ASSERT2(groupid < counts_.size(), "bad groupid: " << groupid);
         DIST_ASSERT2(counts_[groupid], "cannot remove value from empty group");
@@ -126,8 +121,7 @@ struct MixtureDriver
         return remove_group;
     }
 
-    void score_value (const Model & model, AlignedFloats scores) const
-    {
+    void score_value(const Model & model, AlignedFloats scores) const {
         DIST_THIS_SLOW_FALLBACK_SHOULD_BE_OVERRIDDEN
 
         if (DIST_DEBUG_LEVEL >= 1) {
@@ -146,19 +140,16 @@ struct MixtureDriver
         }
     }
 
-    float score_data (const Model & model) const
-    {
+    float score_data(const Model & model) const {
         return model.score_counts(counts_);
     }
 
-private:
-
+  private:
     std::vector<count_t> counts_;
     IdSet empty_groupids_;
     count_t sample_size_;
 
-    void _validate () const
-    {
+    void _validate() const {
         DIST_ASSERT1(empty_groupids_.size(), "missing empty groups");
         if (DIST_DEBUG_LEVEL >= 2) {
             for (size_t i = 0; i < counts_.size(); ++i) {
@@ -172,81 +163,70 @@ private:
 };
 
 
-//----------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // Mixture Slave
 
 template<class Model>
-struct MixtureSlaveGroups
-{
+struct MixtureSlaveGroups {
     typedef typename Model::Shared Shared;
     typedef typename Model::Group Group;
     typedef typename Model::Value Value;
 
-    std::vector<Group> & groups () { return groups_; }
-    Group & groups (size_t groupid)
-    {
+    std::vector<Group> & groups() { return groups_; }
+    Group & groups(size_t groupid) {
         DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
         return groups_[groupid];
     }
 
-    const std::vector<Group> & groups () const { return groups_; }
-    const Group & groups (size_t groupid) const
-    {
+    const std::vector<Group> & groups() const { return groups_; }
+    const Group & groups(size_t groupid) const {
         DIST_ASSERT1(groupid < groups_.size(), "bad groupid: " << groupid);
         return groups_[groupid];
     }
 
     // add_group is called whenever driver.add_value returns true
-    void add_group (
+    void add_group(
             const Shared & shared,
-            rng_t & rng)
-    {
+            rng_t & rng) {
         groups_.packed_add().init(shared, rng);
     }
 
     // remove_group is called whenever driver.remove_value returns true
-    void remove_group (
+    void remove_group(
             const Shared &,
-            size_t groupid)
-    {
+            size_t groupid) {
         groups_.packed_remove(groupid);
     }
 
-    void add_value (
+    void add_value(
             const Shared & shared,
             size_t groupid,
             const Value & value,
-            rng_t & rng)
-    {
+            rng_t & rng) {
         groups(groupid).add_value(shared, value, rng);
     }
 
-    void remove_value (
+    void remove_value(
             const Shared & shared,
             size_t groupid,
             const Value & value,
-            rng_t & rng)
-    {
+            rng_t & rng) {
         groups(groupid).remove_value(shared, value, rng);
     }
 
-    void validate (const Shared & shared) const
-    {
-        for (const auto & group : groups_) {
+    void validate(const Shared & shared) const {
+        for (auto const & group : groups_) {
             group.validate(shared);
         }
     }
 
-private:
-
+  private:
     Packed_<Group> groups_;
 };
 
 template<class Model_, class Derived>
-struct MixtureSlaveDataScorerMixin
-{
-    const Derived & self () const
-    {
+struct MixtureSlaveDataScorerMixin {
+    const Derived & self() const {
         return static_cast<const Derived &>(*this);
     }
 
@@ -255,33 +235,30 @@ struct MixtureSlaveDataScorerMixin
     typedef typename Model::Shared Shared;
     typedef typename Model::Group Group;
 
-    void score_data_grid (
+    void score_data_grid(
             const std::vector<Shared> & shareds,
             const std::vector<Group> & groups,
             AlignedFloats scores_out,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         DIST_ASSERT_EQ(shareds.size(), scores_out.size());
         for (size_t i = 0, size = scores_out.size(); i < size; ++i) {
             scores_out[i] = self().score_data(shareds[i], groups, rng);
         }
     }
 
-    void validate (const Shared &, const std::vector<Group> &) const {}
+    void validate(const Shared &, const std::vector<Group> &) const {}
 };
 
 template<class Model>
-struct SmallMixtureSlaveDataScorer :
-    MixtureSlaveDataScorerMixin<Model, SmallMixtureSlaveDataScorer<Model>>
-{
+struct SmallMixtureSlaveDataScorer :  // NOLINT(*)
+    MixtureSlaveDataScorerMixin<Model, SmallMixtureSlaveDataScorer<Model>> {
     typedef typename Model::Shared Shared;
     typedef typename Model::Group Group;
 
-    float score_data (
+    float score_data(
             const Shared & shared,
             const std::vector<Group> & groups,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         float score = 0;
         for (const Group & group : groups) {
             score += group.score_data(shared, rng);
@@ -291,52 +268,47 @@ struct SmallMixtureSlaveDataScorer :
 };
 
 template<class Model_>
-struct MixtureSlaveValueScorerMixin
-{
+struct MixtureSlaveValueScorerMixin {
     typedef Model_ Model;
     typedef typename Model::Value Value;
     typedef typename Model::Shared Shared;
     typedef typename Model::Group Group;
 
-    void resize (const Shared &, size_t) {}
-    void add_group (const Shared &, rng_t &) {}
-    void remove_group (const Shared &, size_t) {}
-    void update_group (const Shared &, size_t, const Group &, rng_t &) {}
-    void update_all (const Shared &, const std::vector<Group> &, rng_t &) {}
+    void resize(const Shared &, size_t) {}
+    void add_group(const Shared &, rng_t &) {}
+    void remove_group(const Shared &, size_t) {}
+    void update_group(const Shared &, size_t, const Group &, rng_t &) {}
+    void update_all(const Shared &, const std::vector<Group> &, rng_t &) {}
 
-    void add_value (
+    void add_value(
             const Shared &,
             size_t,
             const Group &,
             const Value &,
-            rng_t &)
-    {}
+            rng_t &) {}
 
-    void remove_value (
+    void remove_value(
             const Shared &,
             size_t,
             const Group &,
             const Value &,
-            rng_t &)
-    {}
+            rng_t &) {}
 
-    void validate (const Shared &, const std::vector<Group> &) const {}
+    void validate(const Shared &, const std::vector<Group> &) const {}
 };
 
 template<class Model>
-struct SmallMixtureSlaveValueScorer : MixtureSlaveValueScorerMixin<Model>
-{
+struct SmallMixtureSlaveValueScorer : MixtureSlaveValueScorerMixin<Model> {
     typedef typename Model::Value Value;
     typedef typename Model::Shared Shared;
     typedef typename Model::Group Group;
 
-    float score_value_group (
+    float score_value_group(
             const Shared & shared,
             const std::vector<Group> & groups,
             size_t groupid,
             const Value & value,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         DIST_THIS_SLOW_FALLBACK_SHOULD_BE_OVERRIDDEN
 
         if (DIST_DEBUG_LEVEL >= 2) {
@@ -346,13 +318,12 @@ struct SmallMixtureSlaveValueScorer : MixtureSlaveValueScorerMixin<Model>
         return groups[groupid].score_value(shared, value, rng);
     }
 
-    void score_value (
+    void score_value(
             const Shared & shared,
             const std::vector<Group> & groups,
             const Value & value,
             AlignedFloats scores_accum,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         DIST_THIS_SLOW_FALLBACK_SHOULD_BE_OVERRIDDEN
 
         if (DIST_DEBUG_LEVEL >= 2) {
@@ -367,62 +338,56 @@ struct SmallMixtureSlaveValueScorer : MixtureSlaveValueScorerMixin<Model>
 };
 
 template<
-    class Model,
+    class Model,  // NOLINT(*)
     class DataScorer = SmallMixtureSlaveDataScorer<Model>,
     class ValueScorer = SmallMixtureSlaveValueScorer<Model>>
-struct MixtureSlave
-{
+struct MixtureSlave {
     typedef typename Model::Value Value;
     typedef typename Model::Shared Shared;
     typedef typename Model::Group Group;
 
-    std::vector<Group> & groups () { return groups_.groups(); }
-    Group & groups (size_t i) { return groups_.groups(i); }
-    const std::vector<Group> & groups () const { return groups_.groups(); }
-    const Group & groups (size_t i) const { return groups_.groups(i); }
+    std::vector<Group> & groups() { return groups_.groups(); }
+    Group & groups(size_t i) { return groups_.groups(i); }
+    const std::vector<Group> & groups() const { return groups_.groups(); }
+    const Group & groups(size_t i) const { return groups_.groups(i); }
 
-    void init (
+    void init(
             const Shared & shared,
-            rng_t & rng)
-    {
+            rng_t & rng) {
         value_scorer_.resize(shared, groups().size());
         value_scorer_.update_all(shared, groups(), rng);
     }
 
-    void add_group (
+    void add_group(
             const Shared & shared,
-            rng_t & rng)
-    {
+            rng_t & rng) {
         const size_t groupid = groups().size();
         groups_.add_group(shared, rng);
         value_scorer_.add_group(shared, rng);
         value_scorer_.update_group(shared, groupid, groups(groupid), rng);
     }
 
-    void remove_group (
+    void remove_group(
             const Shared & shared,
-            size_t groupid)
-    {
+            size_t groupid) {
         groups_.remove_group(shared, groupid);
         value_scorer_.remove_group(shared, groupid);
     }
 
-    void add_value (
+    void add_value(
             const Shared & shared,
             size_t groupid,
             const Value & value,
-            rng_t & rng)
-    {
+            rng_t & rng) {
         groups_.add_value(shared, groupid, value, rng);
         value_scorer_.add_value(shared, groupid, groups(groupid), value, rng);
     }
 
-    void remove_value (
+    void remove_value(
             const Shared & shared,
             size_t groupid,
             const Value & value,
-            rng_t & rng)
-    {
+            rng_t & rng) {
         groups_.remove_value(shared, groupid, value, rng);
         value_scorer_.remove_value(
             shared,
@@ -432,12 +397,11 @@ struct MixtureSlave
             rng);
     }
 
-    float score_value_group (
+    float score_value_group(
             const Shared & shared,
             size_t groupid,
             const Value & value,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         if (DIST_DEBUG_LEVEL >= 2) {
             DIST_ASSERT_LT(groupid, groups().size());
         }
@@ -449,61 +413,54 @@ struct MixtureSlave
             rng);
     }
 
-    void score_value (
+    void score_value(
             const Shared & shared,
             const Value & value,
             AlignedFloats scores_accum,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         if (DIST_DEBUG_LEVEL >= 2) {
             DIST_ASSERT_EQ(scores_accum.size(), groups().size());
         }
         value_scorer_.score_value(shared, groups(), value, scores_accum, rng);
     }
 
-    float score_data (
+    float score_data(
             const Shared & shared,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         return data_scorer_.score_data(shared, groups(), rng);
     }
 
-    void score_data_grid (
+    void score_data_grid(
             const std::vector<Shared> & shareds,
             AlignedFloats scores_out,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         data_scorer_.score_data_grid(shareds, groups(), scores_out, rng);
     }
 
-    void validate (const Shared & shared) const
-    {
+    void validate(const Shared & shared) const {
         groups_.validate(shared);
         value_scorer_.validate(shared, groups());
         data_scorer_.validate(shared, groups());
     }
 
-private:
-
+  private:
     MixtureSlaveGroups<Shared> groups_;
     ValueScorer value_scorer_;
     DataScorer data_scorer_;
 };
 
 
-//----------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // Mixture Id Tracker
 //
 // This interface tracks a mapping between contiguous "packed" group ids
 // and fixed unique "global" ids.  Packed ids can change when groups are
 // added or removed, but global ids never change.
 
-struct MixtureIdTracker
-{
+struct MixtureIdTracker {
     typedef uint32_t Id;
 
-    void init (size_t group_count = 0)
-    {
+    void init(size_t group_count = 0) {
         packed_to_global_.clear();
         global_to_packed_.clear();
         global_size_ = 0;
@@ -512,16 +469,14 @@ struct MixtureIdTracker
         }
     }
 
-    void add_group ()
-    {
+    void add_group() {
         const Id packed = packed_to_global_.size();
         const Id global = global_size_++;
         packed_to_global_.packed_add(global);
         global_to_packed_.insert(std::make_pair(global, packed));
     }
 
-    void remove_group (Id packed)
-    {
+    void remove_group(Id packed) {
         DIST_ASSERT1(packed < packed_size(), "bad packed id: " << packed);
         const Id global = packed_to_global_[packed];
         DIST_ASSERT1(global < global_size(), "bad global id: " << global);
@@ -538,16 +493,14 @@ struct MixtureIdTracker
         }
     }
 
-    Id packed_to_global (Id packed) const
-    {
+    Id packed_to_global(Id packed) const {
         DIST_ASSERT1(packed < packed_size(), "bad packed id: " << packed);
         Id global = packed_to_global_[packed];
         DIST_ASSERT1(global < global_size(), "bad global id: " << global);
         return global;
     }
 
-    Id global_to_packed (Id global) const
-    {
+    Id global_to_packed(Id global) const {
         DIST_ASSERT1(global < global_size(), "bad global id: " << global);
         auto i = global_to_packed_.find(global);
         DIST_ASSERT1(
@@ -558,14 +511,13 @@ struct MixtureIdTracker
         return packed;
     }
 
-    size_t packed_size () const { return packed_to_global_.size(); }
-    size_t global_size () const { return global_size_; }
+    size_t packed_size() const { return packed_to_global_.size(); }
+    size_t global_size() const { return global_size_; }
 
-private:
-
+  private:
     Packed_<Id> packed_to_global_;
     std::unordered_map<Id, Id, TrivialHash<Id>> global_to_packed_;
     size_t global_size_;
 };
 
-} // namespace distributions
+}   // namespace distributions
