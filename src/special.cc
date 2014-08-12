@@ -29,23 +29,21 @@
 #include <distributions/vector.hpp>
 #include <mutex>
 
-namespace distributions
-{
-namespace detail
-{
+namespace distributions {
+namespace detail {
 
-FastLog::FastLog (int N) :
-    N_(N),
-    table_(1 << N)
-{
+FastLog::FastLog(int N)
+    : N_(N),
+      table_(1 << N) {
     for (int i = 0; i < (1 << N_); i++) {
-        float v = 1.0 + float(float(i) * (1 << (23 - N_))) / (1 << 23);
+        float v = 1.0
+                + static_cast<float>(
+                    static_cast<float>(i) * (1 << (23 - N_))) / (1 << 23);
         table_[i] = log2(v);
     }
 }
 
-const char LogTable256[256] =
-{
+const char LogTable256[256] = {
 #define LT(n) n, n, n, n, n, n, n, n, n, n, n, n, n, n, n, n
     -1, 0, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3,
     LT(4), LT(5), LT(5), LT(6), LT(6), LT(6), LT(6),
@@ -57,8 +55,7 @@ const char LogTable256[256] =
 static std::mutex log_stirling1_mutex;
 static std::vector<VectorFloat> log_stirling1_cache;
 
-inline void log_stirling1_cache_add ()
-{
+inline void log_stirling1_cache_add() {
     size_t n = log_stirling1_cache.size();
     log_stirling1_cache.push_back(VectorFloat());
     VectorFloat & row = log_stirling1_cache.back();
@@ -74,8 +71,7 @@ inline void log_stirling1_cache_add ()
     }
 }
 
-inline void get_log_stirling1_row_exact (const size_t n, float * row)
-{
+inline void get_log_stirling1_row_exact(const size_t n, float * row) {
     // this could really be a readers-writer shared_mutex
     std::unique_lock<std::mutex> lock(log_stirling1_mutex);
 
@@ -83,12 +79,11 @@ inline void get_log_stirling1_row_exact (const size_t n, float * row)
         log_stirling1_cache_add();
     }
 
-    const auto & cached = log_stirling1_cache[n];
-    memcpy(row, cached.data(), cached.size() * sizeof(float));
+    auto const & cached = log_stirling1_cache[n];
+    memcpy(row, cached.data(), cached.size() * sizeof(row[0]));
 }
 
-inline void get_log_stirling1_row_approx (const size_t n, float * row)
-{
+inline void get_log_stirling1_row_approx(const size_t n, float * row) {
     // Approximation #1 is taken from Eqn 26.8.40 of [1],
     // whose unsigned version is
     //
@@ -119,7 +114,7 @@ inline void get_log_stirling1_row_approx (const size_t n, float * row)
     const float log_n_squared_over_two = logf(n * n / 2.0f);
     const float euler_gamma = 0.57721566490153286060f;
     const float log_stuff = logf(euler_gamma + logf(n - 1));
-    const float softness = n / 3.0; // ad hoc
+    const float softness = n / 3.0;  // ad hoc
 
     // endpoints
     row[0] = -INFINITY;
@@ -138,8 +133,7 @@ inline void get_log_stirling1_row_approx (const size_t n, float * row)
     }
 }
 
-void get_log_stirling1_row (size_t n, float * result)
-{
+void get_log_stirling1_row(size_t n, float * result) {
     if (n < 32) {
         get_log_stirling1_row_exact(n, result);
     } else {
@@ -147,8 +141,7 @@ void get_log_stirling1_row (size_t n, float * result)
     }
 }
 
-const float lgamma_approx_coeff5[] =
-{
+const float lgamma_approx_coeff5[] = {
 -3.29075828194618e-02, 3.11402469873428e-01, -1.26565241813660e+00,
 3.06901979446411e+00, -3.99838900566101e+00, 1.91650712490082e+00,
 -1.27542507834733e-03, 2.45208702981472e-02, -2.05080837011337e-01,
@@ -217,8 +210,7 @@ const float lgamma_approx_coeff5[] =
 3.22763094029455e-10, 2.04583301544189e+01, -1.22548096000000e+09
 };
 
-const float log_factorial_table[64] =
-{
+const float log_factorial_table[64] = {
 0.0, 0.0, 0.6931471805599453, 1.791759469228055,
 3.1780538303479458, 4.787491742782046, 6.579251212010101, 8.525161361065415,
 10.60460290274525, 12.801827480081469, 15.104412573075516, 17.502307845873887,
@@ -237,8 +229,7 @@ const float log_factorial_table[64] =
 188.6281734236716, 192.73904728784487, 196.86618167288998, 201.00931639928152
 };
 
-const float lgamma_nu_func_approx_coeff3[] =
-{
+const float lgamma_nu_func_approx_coeff3[] = {
 1.15215471170606e+02, -7.81833294806814e+01,
 2.17521294416039e+01, -4.00207969046817e+00,
 1.73651454936872e+00, -4.64103368554928e+00,
@@ -280,17 +271,16 @@ const float lgamma_nu_func_approx_coeff3[] =
 }   // namespace detail
 
 template<class Alloc>
-void get_log_stirling1_row (size_t n, std::vector<float, Alloc> & result)
-{
+void get_log_stirling1_row(size_t n, std::vector<float, Alloc> & result) {
     result.resize(n + 1);
     detail::get_log_stirling1_row(n, result.data());
 }
 
-//----------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // Explicit template instantiations
 
 #define INSTANTIATE_TEMPLATES(Alloc)                \
-    template void get_log_stirling1_row (           \
+    template void get_log_stirling1_row(            \
             size_t n,                               \
             std::vector<float, Alloc> & result);
 

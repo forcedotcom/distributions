@@ -27,70 +27,61 @@
 
 #pragma once
 
-#include <distributions/aligned_allocator.hpp>
+#include <memory>
 #include <vector>
+#include <distributions/aligned_allocator.hpp>
 
 // DEPRECATED, use DIST_ASSUME_ALIGNED directly
 #define VectorFloat_data(vf) (DIST_ASSUME_ALIGNED(vf.data()))
 
-namespace distributions
-{
+namespace distributions {
 
 template<class Value, class Alloc = std::allocator<Value>>
-struct Packed_ : std::vector<Value, Alloc>
-{
+struct Packed_ : std::vector<Value, Alloc> {
     typedef std::vector<Value, Alloc> Base;
 
-    Packed_ () {}
-    Packed_ (size_t size) : Base(size) {}
-    Packed_ (size_t size, const Value & value) : Base(size, value) {}
+    Packed_() {}
+    explicit Packed_(size_t size) : Base(size) {}
+    Packed_(size_t size, const Value & value) : Base(size, value) {}
 
-    void packed_remove (size_t pos)
-    {
+    void packed_remove(size_t pos) {
         DIST_ASSERT1(pos < Base::size(), "bad pos: " << pos);
         Base::operator[](pos) = std::move(Base::back());
         Base::pop_back();
     }
 
-    void packed_add (const Value & value)
-    {
+    void packed_add(const Value & value) {
         Base::push_back(value);
     }
 
-    Value & packed_add ()
-    {
+    Value & packed_add() {
         Base::push_back(Value());
         return Base::back();
     }
 };
 
 template<class Value>
-class Aligned_
-{
-public:
-
-    Aligned_ (Value * data, size_t size) :
+class Aligned_ {
+  public:
+    Aligned_(Value * data, size_t size) :
         data_(data),
-        size_(size)
-    {
+        size_(size) {
         DIST_ASSERT_ALIGNED(data_);
     }
 
-    Aligned_ (Packed_<Value, aligned_allocator<Value>> & source) :
+    Aligned_(Packed_<Value, aligned_allocator<Value>> & source) :
         data_(source.data()),
-        size_(source.size())
-    {
+        size_(source.size()) {
         if (DIST_DEBUG_LEVEL >= 3) {
             DIST_ASSERT_ALIGNED(data_);
         }
     }
 
-    Value * data () { return data_; }
-    size_t size () const { return size_; }
+    Value * data() { return data_; }
+    size_t size() const { return size_; }
     Value & operator[] (size_t i) { return data_[i]; }
 
-private:
-
+  private:
     Value * const data_;
     const size_t size_;
 };
@@ -98,4 +89,4 @@ private:
 typedef Packed_<float, aligned_allocator<float>> VectorFloat;
 typedef Aligned_<float> AlignedFloats;
 
-}   // namespace distributions
+}  // namespace distributions

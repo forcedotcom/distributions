@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <vector>
 #include <unordered_map>
 #include <unordered_set>
 #include <distributions/common.hpp>
@@ -35,60 +36,53 @@
 #include <distributions/trivial_hash.hpp>
 #include <distributions/mixture.hpp>
 
-namespace distributions
-{
+namespace distributions {
 
 // This is explicitly instantiated for:
 // - int32_t
 // To add datatypes, edit the bottom of src/clustering.cc
 template<class count_t>
-struct Clustering
-{
-
-//----------------------------------------------------------------------------
+struct Clustering {
+// --------------------------------------------------------------------------
 // Assignments
 
 typedef std::unordered_map<count_t, count_t, TrivialHash<count_t>> Assignments;
 
-static std::vector<count_t> count_assignments (
+static std::vector<count_t> count_assignments(
         const Assignments & assignments);
 
 
-//----------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // Pitman-Yor Model
 
-struct PitmanYor
-{
+struct PitmanYor {
     float alpha;
     float d;
 
     template<class Message>
-    void protobuf_load (const Message & message)
-    {
+    void protobuf_load(const Message & message) {
         alpha = message.alpha();
         d = message.d();
     }
 
     template<class Message>
-    void protobuf_dump (Message & message) const
-    {
+    void protobuf_dump(Message & message) const {
         message.set_alpha(alpha);
         message.set_d(d);
     }
 
-    std::vector<count_t> sample_assignments (
+    std::vector<count_t> sample_assignments(
             count_t size,
             rng_t & rng) const;
 
-    float score_counts (
+    float score_counts(
             const std::vector<count_t> & counts) const;
 
-    float score_add_value (
+    float score_add_value(
             count_t group_size,
             count_t nonempty_group_count,
             count_t sample_size,
-            count_t empty_group_count = 1) const
-    {
+            count_t empty_group_count = 1) const {
         // What is the probability (score) of adding a customer
         // to a table which currently has:
         //
@@ -113,12 +107,11 @@ struct PitmanYor
             count_t group_size,
             count_t nonempty_group_count,
             count_t sample_size,
-            count_t empty_group_count = 1) const
-    {
+            count_t empty_group_count = 1) const {
         group_size -= 1;
         if (group_size == 0) {
             nonempty_group_count -= 1;
-            //empty_group_count += 1;    // FIXME is this right?
+            // empty_group_count += 1;    // FIXME is this right?
         }
         sample_size -= 1;
 
@@ -130,40 +123,32 @@ struct PitmanYor
     }
 
     // HACK gcc doesn't want Mixture defined outside of PitmanYor
-    class CachedMixture
-    {
-    public:
-
+    class CachedMixture {
+      public:
         typedef PitmanYor Model;
         typedef typename MixtureDriver<PitmanYor, count_t>::IdSet IdSet;
 
-        std::vector<count_t> & counts ()
-        {
+        std::vector<count_t> & counts() {
             return driver_.counts();
         }
 
-        const std::vector<count_t> & counts () const
-        {
+        const std::vector<count_t> & counts() const {
             return driver_.counts();
         }
 
-        count_t counts (size_t groupid) const
-        {
+        count_t counts(size_t groupid) const {
             return driver_.counts(groupid);
         }
 
-        const IdSet & empty_groupids () const
-        {
+        const IdSet & empty_groupids() const {
             return driver_.empty_groupids();
         }
 
-        size_t sample_size () const
-        {
+        size_t sample_size() const {
             return driver_.sample_size();
         }
 
-        void init (const Model & model)
-        {
+        void init(const Model & model) {
             driver_.init(model);
             const size_t group_count = driver_.counts().size();
             shifted_scores_.resize(group_count);
@@ -175,11 +160,10 @@ struct PitmanYor
             _update_empty_groups(model);
         }
 
-        bool add_value (
+        bool add_value(
                 const Model & model,
                 size_t groupid,
-                count_t count = 1)
-        {
+                count_t count = 1) {
             const bool add_group = driver_.add_value(model, groupid, count);
 
             if (DIST_UNLIKELY(add_group)) {
@@ -191,11 +175,10 @@ struct PitmanYor
             return add_group;
         }
 
-        bool remove_value (
+        bool remove_value(
                 const Model & model,
                 size_t groupid,
-                count_t count = 1)
-        {
+                count_t count = 1) {
             const bool remove_group =
                 driver_.remove_value(model, groupid, count);
 
@@ -209,8 +192,7 @@ struct PitmanYor
             return remove_group;
         }
 
-        void score_value (const Model & model, AlignedFloats scores) const
-        {
+        void score_value(const Model & model, AlignedFloats scores) const {
             if (DIST_DEBUG_LEVEL >= 1) {
                 DIST_ASSERT_EQ(scores.size(), counts().size());
             }
@@ -225,22 +207,18 @@ struct PitmanYor
             }
         }
 
-        float score_data (const Model & model) const
-        {
+        float score_data(const Model & model) const {
             return driver_.score_data(model);
         }
 
-    private:
-
-        void _update_nonempty_group (const Model & model, size_t groupid)
-        {
-            const auto group_size = counts(groupid);
+      private:
+        void _update_nonempty_group(const Model & model, size_t groupid) {
+            auto const group_size = counts(groupid);
             DIST_ASSERT2(group_size, "expected nonempty group");
             shifted_scores_[groupid] = fast_log(group_size - model.d);
         }
 
-        void _update_empty_groups (const Model & model)
-        {
+        void _update_empty_groups(const Model & model) {
             size_t empty_group_count = empty_groupids().size();
             size_t nonempty_group_count = counts().size() - empty_group_count;
             float numer = model.alpha + model.d * nonempty_group_count;
@@ -256,42 +234,38 @@ struct PitmanYor
     };
 
     // The uncached version is useful for debugging
-    //typedef MixtureDriver<PitmanYor, count_t> Mixture;
+    // typedef MixtureDriver<PitmanYor, count_t> Mixture;
     typedef CachedMixture Mixture;
 };
 
 
-//----------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // Low-Entropy Model
 
-struct LowEntropy
-{
+struct LowEntropy {
     count_t dataset_size;
 
     template<class Message>
-    void protobuf_load (const Message & message)
-    {
+    void protobuf_load(const Message & message) {
         dataset_size = message.dataset_size();
     }
 
     template<class Message>
-    void protobuf_dump (Message & message) const
-    {
+    void protobuf_dump(Message & message) const {
         message.set_dataset_size(dataset_size);
     }
 
-    std::vector<count_t> sample_assignments (
+    std::vector<count_t> sample_assignments(
             count_t sample_size,
             rng_t & rng) const;
 
-    float score_counts (const std::vector<count_t> & counts) const;
+    float score_counts(const std::vector<count_t> & counts) const;
 
-    float score_add_value (
+    float score_add_value(
             count_t group_size,
             count_t nonempty_group_count,
             count_t sample_size,
-            count_t empty_group_count = 1) const
-    {
+            count_t empty_group_count = 1) const {
         if (DIST_DEBUG_LEVEL >= 1) {
             DIST_ASSERT_LT(sample_size, dataset_size);
             DIST_ASSERT_LT(0, empty_group_count);
@@ -317,12 +291,11 @@ struct LowEntropy
         }
     }
 
-    float score_remove_value (
+    float score_remove_value(
             count_t group_size,
             count_t nonempty_group_count,
             count_t sample_size,
-            count_t empty_group_count = 1) const
-    {
+            count_t empty_group_count = 1) const {
         if (DIST_DEBUG_LEVEL >= 1) {
             DIST_ASSERT_LT(0, sample_size);
         }
@@ -335,17 +308,15 @@ struct LowEntropy
             empty_group_count);
     }
 
-    float log_partition_function (count_t sample_size) const;
+    float log_partition_function(count_t sample_size) const;
 
     typedef MixtureDriver<LowEntropy, count_t> Mixture;
 
-private:
-
+  private:
     // ad hoc approximation,
     // see `python derivations/clustering.py postpred`
     // see `python derivations/clustering.py approximations`
-    float _approximate_postpred_correction (float sample_size) const
-    {
+    float _approximate_postpred_correction(float sample_size) const {
         if (DIST_DEBUG_LEVEL >= 2) {
             DIST_ASSERT_LT(0, sample_size);
             DIST_ASSERT_LT(sample_size, dataset_size);
@@ -358,6 +329,5 @@ private:
 
     float _approximate_dataprob_correction(count_t sample_size) const;
 };
-
-}; // struct Clustering<count_t>
+};  // struct Clustering<count_t>
 }   // namespace distributions

@@ -157,7 +157,7 @@ void speedtests ()
         "Scorers" << '\t' <<
         "Mixture (cells/us)" << '\n';
 
-    const auto shared = Model::Shared::EXAMPLE();
+    auto const shared = Model::Shared::EXAMPLE();
     for (int group_count = 1; group_count <= 1000; group_count *= 10) {
         int iters = 500000 / group_count;
         speedtest<Model>(shared, group_count, iters);

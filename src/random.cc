@@ -74,7 +74,7 @@ void sample_dirichlet_safe (
     }
 }
 
-//----------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // Discrete distribution
 
 template<class Alloc>
@@ -133,7 +133,7 @@ float score_from_scores_overwrite (
     return score;
 }
 
-//----------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // Explicit template instantiations
 
 #define INSTANTIATE_TEMPLATES(Alloc)                \

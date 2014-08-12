@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <vector>
 #include <distributions/common.hpp>
 #include <distributions/special.hpp>
 #include <distributions/random.hpp>
@@ -35,12 +36,9 @@
 #include <distributions/mixins.hpp>
 #include <distributions/mixture.hpp>
 
-namespace distributions
-{
+namespace distributions {
 template<int max_dim_>
-struct DirichletDiscrete
-{
-
+struct DirichletDiscrete {
 enum { max_dim = max_dim_ };
 
 typedef DirichletDiscrete<max_dim> Model;
@@ -56,14 +54,12 @@ typedef MixtureSlave<Model, MixtureDataScorer, MixtureValueScorer> FastMixture;
 typedef FastMixture Mixture;
 
 
-struct Shared : SharedMixin<Model>
-{
+struct Shared : SharedMixin<Model> {
     int dim;  // fixed parameter
     float alphas[max_dim];  // hyperparamter
 
     template<class Message>
-    void protobuf_load (const Message & message)
-    {
+    void protobuf_load(const Message & message) {
         dim = message.alphas_size();
         DIST_ASSERT_LE(dim, max_dim);
         for (int i = 0; i < dim; ++i) {
@@ -72,16 +68,14 @@ struct Shared : SharedMixin<Model>
     }
 
     template<class Message>
-    void protobuf_dump (Message & message) const
-    {
+    void protobuf_dump(Message & message) const {
         message.Clear();
         for (int i = 0; i < dim; ++i) {
             message.add_alphas(alphas[i]);
         }
     }
 
-    static Shared EXAMPLE ()
-    {
+    static Shared EXAMPLE() {
         Shared shared;
         shared.dim = max_dim;
         for (int i = 0; i < max_dim; ++i) {
@@ -92,15 +86,13 @@ struct Shared : SharedMixin<Model>
 };
 
 
-struct Group : GroupMixin<Model>
-{
+struct Group : GroupMixin<Model> {
     int dim;
     count_t count_sum;
     count_t counts[max_dim];
 
     template<class Message>
-    void protobuf_load (const Message & message)
-    {
+    void protobuf_load(const Message & message) {
         dim = message.counts_size();
         DIST_ASSERT_LE(dim, max_dim);
         count_sum = 0;
@@ -110,8 +102,7 @@ struct Group : GroupMixin<Model>
     }
 
     template<class Message>
-    void protobuf_dump (Message & message) const
-    {
+    void protobuf_dump(Message & message) const {
         message.Clear();
         auto & message_counts = * message.mutable_counts();
         for (int i = 0; i < dim; ++i) {
@@ -119,10 +110,9 @@ struct Group : GroupMixin<Model>
         }
     }
 
-    void init (
+    void init(
             const Shared & shared,
-            rng_t &)
-    {
+            rng_t &) {
         dim = shared.dim;
         count_sum = 0;
         for (Value value = 0; value < dim; ++value) {
@@ -130,11 +120,10 @@ struct Group : GroupMixin<Model>
         }
     }
 
-    void add_value (
+    void add_value(
             const Shared &,
             const Value & value,
-            rng_t &)
-    {
+            rng_t &) {
         DIST_ASSERT1(value < dim, "value out of bounds: " << value);
         count_sum += 1;
         counts[value] += 1;
@@ -144,47 +133,42 @@ struct Group : GroupMixin<Model>
             const Shared &,
             const Value & value,
             const int & count,
-            rng_t &)
-    {
+            rng_t &) {
         DIST_ASSERT1(value < dim, "value out of bounds: " << value);
         count_sum += count;
         counts[value] += count;
     }
 
-    void remove_value (
+    void remove_value(
             const Shared &,
             const Value & value,
-            rng_t &)
-    {
+            rng_t &) {
         DIST_ASSERT1(value < dim, "value out of bounds: " << value);
         count_sum -= 1;
         counts[value] -= 1;
     }
 
-    void merge (
+    void merge(
             const Shared &,
             const Group & source,
-            rng_t &)
-    {
+            rng_t &) {
         for (Value value = 0; value < dim; ++value) {
             counts[value] += source.counts[value];
         }
     }
 
-    float score_value (
+    float score_value(
             const Shared & shared,
             const Value & value,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         Scorer scorer;
         scorer.init(shared, * this, rng);
         return scorer.eval(shared, value, rng);
     }
 
-    float score_data (
+    float score_data(
             const Shared & shared,
-            rng_t &) const
-    {
+            rng_t &) const {
         float score = 0;
         float alpha_sum = 0;
 
@@ -201,30 +185,26 @@ struct Group : GroupMixin<Model>
         return score;
     }
 
-    Value sample_value (
+    Value sample_value(
             const Shared & shared,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         Sampler sampler;
         sampler.init(shared, *this, rng);
         return sampler.eval(shared, rng);
     }
 
-    void validate (const Shared & shared) const
-    {
+    void validate(const Shared & shared) const {
         DIST_ASSERT_EQ(dim, shared.dim);
     }
 };
 
-struct Sampler
-{
+struct Sampler {
     float ps[max_dim];
 
-    void init (
+    void init(
             const Shared & shared,
             const Group & group,
-            rng_t & rng)
-    {
+            rng_t & rng) {
         for (Value value = 0; value < shared.dim; ++value) {
             ps[value] = shared.alphas[value] + group.counts[value];
         }
@@ -232,24 +212,21 @@ struct Sampler
         sample_dirichlet(rng, shared.dim, ps, ps);
     }
 
-    Value eval (
+    Value eval(
             const Shared & shared,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         return sample_discrete(rng, shared.dim, ps);
     }
 };
 
-struct Scorer
-{
+struct Scorer {
     float alpha_sum;
     float alphas[max_dim];
 
-    void init (
+    void init(
             const Shared & shared,
             const Group & group,
-            rng_t &)
-    {
+            rng_t &) {
         alpha_sum = 0;
         for (Value value = 0; value < shared.dim; ++value) {
             float alpha = shared.alphas[value] + group.counts[value];
@@ -258,35 +235,32 @@ struct Scorer
         }
     }
 
-    float eval (
+    float eval(
             const Shared & shared,
             const Value & value,
-            rng_t &) const
-    {
+            rng_t &) const {
         DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         return fast_log(alphas[value] / alpha_sum);
     }
 };
 
-struct MixtureDataScorer : MixtureSlaveDataScorerMixin<Model, MixtureDataScorer>
-{
+struct MixtureDataScorer
+    : MixtureSlaveDataScorerMixin<Model, MixtureDataScorer> {
     // not thread safe
-    float score_data (
+    float score_data(
             const Shared & shared,
             const std::vector<Group> & groups,
-            rng_t &) const
-    {
+            rng_t &) const {
         _init(shared, groups);
         return _eval();
     }
 
     // not thread safe
-    void score_data_grid (
+    void score_data_grid(
             const std::vector<Shared> & shareds,
             const std::vector<Group> & groups,
             AlignedFloats scores_out,
-            rng_t &) const
-    {
+            rng_t &) const {
         DIST_ASSERT_EQ(shareds.size(), scores_out.size());
         if (const size_t size = shareds.size()) {
             const int dim = shareds[0].dim;
@@ -309,12 +283,10 @@ struct MixtureDataScorer : MixtureSlaveDataScorerMixin<Model, MixtureDataScorer>
         }
     }
 
-private:
-
-    void _init (
+  private:
+    void _init(
             const Shared & shared,
-            const std::vector<Group> & groups) const
-    {
+            const std::vector<Group> & groups) const {
         const size_t dim = shared.dim;
         shared_part_.resize(dim + 1);
         float alpha_sum = 0;
@@ -328,7 +300,7 @@ private:
 
         scores_.resize(0);
         scores_.resize(dim + 1, 0);
-        for (const auto & group : groups) {
+        for (auto const & group : groups) {
             if (group.count_sum) {
                 for (size_t i = 0; i < dim; ++i) {
                     float alpha = shared.alphas[i];
@@ -341,25 +313,24 @@ private:
         }
     }
 
-    float _eval () const
-    {
+    float _eval() const {
         return vector_sum(scores_.size(), scores_.data());
     }
 
-    void _update (
+    void _update(
             Value value,
             float old_alpha,
             float new_alpha,
-            const std::vector<Group> & groups) const
-    {
+            const std::vector<Group> & groups) const {
         shared_part_[value] = fast_lgamma(new_alpha);
-        alpha_sum_ += double(new_alpha) - double(old_alpha);
+        alpha_sum_ += static_cast<double>(new_alpha)
+                    - static_cast<double>(old_alpha);
         const float alpha_sum = alpha_sum_;
         shared_part_.back() = fast_lgamma(alpha_sum);
 
         scores_[value] = 0;
         scores_.back() = 0;
-        for (const auto & group : groups) {
+        for (auto const & group : groups) {
             scores_[value] += fast_lgamma(new_alpha + group.counts[value])
                            - shared_part_[value];
             scores_.back() += shared_part_.back()
@@ -372,10 +343,8 @@ private:
     mutable VectorFloat scores_;
 };
 
-struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
-{
-    void resize (const Shared & shared, size_t size)
-    {
+struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model> {
+    void resize(const Shared & shared, size_t size) {
         scores_shift_.resize(size);
         scores_.resize(shared.dim);
         for (Value value = 0; value < shared.dim; ++value) {
@@ -383,28 +352,25 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         }
     }
 
-    void add_group (const Shared & shared, rng_t &)
-    {
+    void add_group(const Shared & shared, rng_t &) {
         scores_shift_.packed_add(0);
         for (Value value = 0; value < shared.dim; ++value) {
             scores_[value].packed_add(0);
         }
     }
 
-    void remove_group (const Shared & shared, size_t groupid)
-    {
+    void remove_group(const Shared & shared, size_t groupid) {
         scores_shift_.packed_remove(groupid);
         for (Value value = 0; value < shared.dim; ++value) {
             scores_[value].packed_remove(groupid);
         }
     }
 
-    void update_group (
+    void update_group(
             const Shared & shared,
             size_t groupid,
             const Group & group,
-            rng_t &)
-    {
+            rng_t &) {
         scores_shift_[groupid] = fast_log(alpha_sum_ + group.count_sum);
         for (Value value = 0; value < shared.dim; ++value) {
             scores_[value][groupid] =
@@ -412,31 +378,28 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         }
     }
 
-    void add_value (
+    void add_value(
             const Shared & shared,
             size_t groupid,
             const Group & group,
             const Value & value,
-            rng_t &)
-    {
+            rng_t &) {
         _update_group_value(shared, groupid, group, value);
     }
 
-    void remove_value (
+    void remove_value(
             const Shared & shared,
             size_t groupid,
             const Group & group,
             const Value & value,
-            rng_t &)
-    {
+            rng_t &) {
         _update_group_value(shared, groupid, group, value);
     }
 
-    void update_all (
+    void update_all(
             const Shared & shared,
             const std::vector<Group> & groups,
-            rng_t &)
-    {
+            rng_t &) {
         const size_t group_count = groups.size();
 
         alpha_sum_ = 0;
@@ -462,8 +425,7 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
             const std::vector<Group> &,
             size_t groupid,
             const Value & value,
-            rng_t &) const
-    {
+            rng_t &) const {
         DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         return scores_[value][groupid] - scores_shift_[groupid];
     }
@@ -473,8 +435,7 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
             const std::vector<Group> &,
             const Value & value,
             AlignedFloats scores_accum,
-            rng_t &) const
-    {
+            rng_t &) const {
         DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         vector_add_subtract(
             scores_accum.size(),
@@ -483,10 +444,9 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
             scores_shift_.data());
     }
 
-    void validate (
+    void validate(
             const Shared & shared,
-            const std::vector<Group> & groups) const
-    {
+            const std::vector<Group> & groups) const {
         DIST_ASSERT_EQ(scores_.size(), (size_t)shared.dim);
         for (Value value = 0; value < shared.dim; ++value) {
             DIST_ASSERT_EQ(scores_[value].size(), groups.size());
@@ -494,14 +454,12 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model>
         DIST_ASSERT_EQ(scores_shift_.size(), groups.size());
     }
 
-private:
-
-    void _update_group_value (
+  private:
+    void _update_group_value(
             const Shared & shared,
             size_t groupid,
             const Group & group,
-            const Value & value)
-    {
+            const Value & value) {
         DIST_ASSERT1(value < shared.dim, "value out of bounds: " << value);
         scores_[value][groupid] =
             fast_log(shared.alphas[value] + group.counts[value]);
@@ -512,6 +470,5 @@ private:
     std::vector<VectorFloat> scores_;
     VectorFloat scores_shift_;
 };
-
-}; // struct DirichletDiscrete
+};  // struct DirichletDiscrete
 }   // namespace distributions

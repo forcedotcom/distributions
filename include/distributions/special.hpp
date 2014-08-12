@@ -273,7 +273,7 @@ inline float fast_lgamma_nu(float nu) {
 }
 
 
-//----------------------------------------------------------------------------
+// --------------------------------------------------------------------------
 // misc
 
 // Compute stirling numbers of first kind S(n,k), one row at a time

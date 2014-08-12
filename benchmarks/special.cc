@@ -34,28 +34,26 @@
 
 #ifdef USE_YEPPP
 #include <yepBuiltin.h>
-#endif // USE_YEPPP
+#endif  // USE_YEPPP
 
 #ifdef USE_AMD_LIBM
 #include <amdlibm.h>
-#endif // USE_AMD_LIBM
+#endif  // USE_AMD_LIBM
 
 #ifdef USE_INTEL_MKL
 #include <mkl_vml.h>
-#endif // USE_INTEL_MKL
+#endif  // USE_INTEL_MKL
 
 using namespace distributions;
 
 typedef std::vector<float, aligned_allocator<float>> Vector;
 
 
-struct glibc_exp
-{
-    static const char * name () { return "glibc"; }
-    static const char * fun () { return "exp"; }
+struct glibc_exp {
+    static const char * name() { return "glibc"; }
+    static const char * fun() { return "exp"; }
 
-    static void inplace (Vector & values)
-    {
+    static void inplace(Vector & values) {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         for (size_t i = 0; i < size; ++i) {
@@ -64,13 +62,11 @@ struct glibc_exp
     }
 };
 
-struct fmath_exp
-{
-    static const char * name () { return "fmath"; }
-    static const char * fun () { return "exp"; }
+struct fmath_exp {
+    static const char * name() { return "fmath"; }
+    static const char * fun() { return "exp"; }
 
-    static void inplace (Vector & values)
-    {
+    static void inplace(Vector & values) {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         for (size_t i = 0; i < size; ++i) {
@@ -80,13 +76,11 @@ struct fmath_exp
 };
 
 #ifdef USE_YEPPP
-struct yeppp_exp
-{
-    static const char * name () { return "yeppp"; }
-    static const char * fun () { return "exp"; }
+struct yeppp_exp {
+    static const char * name() { return "yeppp"; }
+    static const char * fun() { return "exp"; }
 
-    static void inplace (Vector & values)
-    {
+    static void inplace(Vector & values) {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         for (size_t i = 0; i < size; ++i) {
@@ -94,46 +88,40 @@ struct yeppp_exp
         }
     }
 };
-#endif // USE_YEPPP
+#endif  // USE_YEPPP
 
 #ifdef USE_AMD_LIBM
-struct libm_exp
-{
-    static const char * name () { return "libm"; }
-    static const char * fun () { return "exp"; }
+struct libm_exp {
+    static const char * name() { return "libm"; }
+    static const char * fun() { return "exp"; }
 
-    static void inplace (Vector & values)
-    {
+    static void inplace(Vector & values) {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         amd_vrsa_expf(size, data, data);
     }
 };
-#endif // USE_AMD_LIBM
+#endif  // USE_AMD_LIBM
 
 #ifdef USE_INTEL_MKL
-struct mkl_exp
-{
-    static const char * name () { return "mkl"; }
-    static const char * fun () { return "exp"; }
+struct mkl_exp {
+    static const char * name() { return "mkl"; }
+    static const char * fun() { return "exp"; }
 
-    static void inplace (Vector & values)
-    {
+    static void inplace(Vector & values) {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         vsExp(size, data, data);
     }
 };
-#endif // USE_INTEL_MKL
+#endif  // USE_INTEL_MKL
 
 
-struct glibc_log
-{
-    static const char * name () { return "glibc"; }
-    static const char * fun () { return "log"; }
+struct glibc_log {
+    static const char * name() { return "glibc"; }
+    static const char * fun() { return "log"; }
 
-    static void inplace (Vector & values)
-    {
+    static void inplace(Vector & values) {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         for (size_t i = 0; i < size; ++i) {
@@ -142,13 +130,11 @@ struct glibc_log
     }
 };
 
-struct fmath_log
-{
-    static const char * name () { return "fmath"; }
-    static const char * fun () { return "log"; }
+struct fmath_log {
+    static const char * name() { return "fmath"; }
+    static const char * fun() { return "log"; }
 
-    static void inplace (Vector & values)
-    {
+    static void inplace(Vector & values) {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         for (size_t i = 0; i < size; ++i) {
@@ -157,13 +143,11 @@ struct fmath_log
     }
 };
 
-struct _eric_log
-{
-    static const char * name () { return "eric"; }
-    static const char * fun () { return "log"; }
+struct _eric_log {
+    static const char * name() { return "eric"; }
+    static const char * fun() { return "log"; }
 
-    static void inplace (Vector & values)
-    {
+    static void inplace(Vector & values) {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         for (size_t i = 0; i < size; ++i) {
@@ -173,13 +157,11 @@ struct _eric_log
 };
 
 #ifdef USE_YEPPP
-struct yeppp_log
-{
-    static const char * name () { return "yeppp"; }
-    static const char * fun () { return "log"; }
+struct yeppp_log {
+    static const char * name() { return "yeppp"; }
+    static const char * fun() { return "log"; }
 
-    static void inplace (Vector & values)
-    {
+    static void inplace(Vector & values) {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         for (size_t i = 0; i < size; ++i) {
@@ -187,46 +169,40 @@ struct yeppp_log
         }
     }
 };
-#endif // USE_YEPPP
+#endif  // USE_YEPPP
 
 #ifdef USE_AMD_LIBM
-struct libm_log
-{
-    static const char * name () { return "libm"; }
-    static const char * fun () { return "log"; }
+struct libm_log {
+    static const char * name() { return "libm"; }
+    static const char * fun() { return "log"; }
 
-    static void inplace (Vector & values)
-    {
+    static void inplace(Vector & values) {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         amd_vrsa_logf(size, data, data);
     }
 };
-#endif // USE_AMD_LIBM
+#endif  // USE_AMD_LIBM
 
 #ifdef USE_INTEL_MKL
-struct mkl_log
-{
-    static const char * name () { return "mkl"; }
-    static const char * fun () { return "log"; }
+struct mkl_log {
+    static const char * name() { return "mkl"; }
+    static const char * fun() { return "log"; }
 
-    static void inplace (Vector & values)
-    {
+    static void inplace(Vector & values) {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         vsLn(size, data, data);
     }
 };
-#endif // USE_INTEL_MKL
+#endif  // USE_INTEL_MKL
 
 
-struct glibc_lgamma
-{
-    static const char * name () { return "glibc"; }
-    static const char * fun () { return "lgamma"; }
+struct glibc_lgamma {
+    static const char * name() { return "glibc"; }
+    static const char * fun() { return "lgamma"; }
 
-    static void inplace (Vector & values)
-    {
+    static void inplace(Vector & values) {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         for (size_t i = 0; i < size; ++i) {
@@ -235,13 +211,11 @@ struct glibc_lgamma
     }
 };
 
-struct eric_lgamma
-{
-    static const char * name () { return "eric"; }
-    static const char * fun () { return "lgamma"; }
+struct eric_lgamma {
+    static const char * name() { return "eric"; }
+    static const char * fun() { return "lgamma"; }
 
-    static void inplace (Vector & values)
-    {
+    static void inplace(Vector & values) {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         for (size_t i = 0; i < size; ++i) {
@@ -251,28 +225,24 @@ struct eric_lgamma
 };
 
 #ifdef USE_INTEL_MKL
-struct mkl_lgamma
-{
-    static const char * name () { return "mkl"; }
-    static const char * fun () { return "lgamma"; }
+struct mkl_lgamma {
+    static const char * name() { return "mkl"; }
+    static const char * fun() { return "lgamma"; }
 
-    static void inplace (Vector & values)
-    {
+    static void inplace(Vector & values) {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         vsLGamma(size, data, data);
     }
 };
-#endif // USE_INTEL_MKL
+#endif  // USE_INTEL_MKL
 
 
-struct glibc_lgamma_nu
-{
-    static const char * name () { return "glibc"; }
-    static const char * fun () { return "lgamma_nu"; }
+struct glibc_lgamma_nu {
+    static const char * name() { return "glibc"; }
+    static const char * fun() { return "lgamma_nu"; }
 
-    static void inplace (Vector & values)
-    {
+    static void inplace(Vector & values) {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         for (size_t i = 0; i < size; ++i) {
@@ -282,13 +252,11 @@ struct glibc_lgamma_nu
     }
 };
 
-struct eric_lgamma_nu
-{
-    static const char * name () { return "eric"; }
-    static const char * fun () { return "lgamma_nu"; }
+struct eric_lgamma_nu {
+    static const char * name() { return "eric"; }
+    static const char * fun() { return "lgamma_nu"; }
 
-    static void inplace (Vector & values)
-    {
+    static void inplace(Vector & values) {
         const size_t size = values.size();
         float * __restrict__ data = & values[0];
         for (size_t i = 0; i < size; ++i) {
@@ -298,13 +266,11 @@ struct eric_lgamma_nu
 };
 
 #ifdef USE_INTEL_MKL
-struct mkl_lgamma_nu
-{
-    static const char * name () { return "mkl"; }
-    static const char * fun () { return "lgamma_nu"; }
+struct mkl_lgamma_nu {
+    static const char * name() { return "mkl"; }
+    static const char * fun() { return "lgamma_nu"; }
 
-    static void inplace (Vector & values)
-    {
+    static void inplace(Vector & values) {
         const size_t size = values.size();
 
         static Vector temp_;
@@ -325,12 +291,11 @@ struct mkl_lgamma_nu
         }
     }
 };
-#endif // USE_INTEL_MKL
+#endif  // USE_INTEL_MKL
 
 
 template<class impl>
-void speedtest (size_t size, size_t iters)
-{
+void speedtest(size_t size, size_t iters) {
     rng_t rng;
     Vector scores(size);
     for (size_t i = 0; i < size; ++i){
@@ -364,11 +329,10 @@ void speedtest (size_t size, size_t iters)
         << std::endl;
 }
 
-int main ()
-{
+int main() {
 #ifdef USE_INTEL_MKL
     vmlSetMode(VML_EP | VML_FTZDAZ_ON | VML_ERRMODE_IGNORE);
-#endif // USE_INTEL_MKL
+#endif  // USE_INTEL_MKL
 
     const size_t size = 1 << 10;
     const size_t iters = 1 << 13;
@@ -383,13 +347,13 @@ int main ()
     speedtest<fmath_exp>(size, iters);
 #ifdef USE_YEPPP
     speedtest<yeppp_exp>(size, iters);
-#endif // USE_YEPPP
+#endif  // USE_YEPPP
 #ifdef USE_AMD_LIBM
     speedtest<libm_exp>(size, iters);
-#endif // USE_AMD_LIBM
+#endif  // USE_AMD_LIBM
 #ifdef USE_INTEL_MKL
     speedtest<mkl_exp>(size, iters);
-#endif // USE_INTEL_MKL
+#endif  // USE_INTEL_MKL
 
     std::cout << std::endl;
 
@@ -397,13 +361,13 @@ int main ()
     speedtest<fmath_log>(size, iters);
 #ifdef USE_YEPPP
     speedtest<yeppp_log>(size, iters);
-#endif // USE_YEPPP
+#endif  // USE_YEPPP
 #ifdef USE_AMD_LIBM
     speedtest<libm_log>(size, iters);
-#endif // USE_AMD_LIBM
+#endif  // USE_AMD_LIBM
 #ifdef USE_INTEL_MKL
     speedtest<mkl_log>(size, iters);
-#endif // USE_INTEL_MKL
+#endif  // USE_INTEL_MKL
     speedtest<_eric_log>(size, iters);
 
     std::cout << std::endl;
@@ -411,7 +375,7 @@ int main ()
     speedtest<glibc_lgamma>(size, iters);
 #ifdef USE_INTEL_MKL
     speedtest<mkl_lgamma>(size, iters);
-#endif // USE_INTEL_MKL
+#endif  // USE_INTEL_MKL
     speedtest<eric_lgamma>(size, iters);
 
     std::cout << std::endl;
@@ -419,7 +383,7 @@ int main ()
     speedtest<glibc_lgamma_nu>(size, iters);
 #ifdef USE_INTEL_MKL
     speedtest<mkl_lgamma_nu>(size, iters);
-#endif // USE_INTEL_MKL
+#endif  // USE_INTEL_MKL
     speedtest<eric_lgamma_nu>(size, iters);
 
     return 0;
