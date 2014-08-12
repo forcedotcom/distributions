@@ -33,4 +33,4 @@ template struct NormalInverseWishart<-1>;
 template struct NormalInverseWishart<2>;
 template struct NormalInverseWishart<3>;
 
-} // namespace distributions
+}  // namespace distributions

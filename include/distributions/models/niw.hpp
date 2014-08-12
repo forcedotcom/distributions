@@ -38,13 +38,11 @@
 #include <eigen3/Eigen/Dense>
 #include <eigen3/Eigen/Cholesky>
 
-namespace distributions
-{
+namespace distributions {
 
 template <typename Matrix>
 static inline bool
-is_symmetric(const Matrix &m)
-{
+is_symmetric(const Matrix &m) {
     if (!m.isApprox(m.transpose())) {
         return false;
     }
@@ -53,8 +51,7 @@ is_symmetric(const Matrix &m)
 
 template <typename Matrix>
 static inline bool
-is_symmetric_positive_definite(const Matrix &m)
-{
+is_symmetric_positive_definite(const Matrix &m) {
     if (!is_symmetric(m)) {
         return false;
     }
@@ -64,9 +61,7 @@ is_symmetric_positive_definite(const Matrix &m)
 }
 
 template<int dim_ = -1>
-struct NormalInverseWishart
-{
-
+struct NormalInverseWishart {
 static_assert(dim_ == -1 || dim_ > 0, "invalid dimension");
 
 typedef Eigen::Matrix<float, dim_, dim_> Matrix;
@@ -78,15 +73,13 @@ struct Group;
 struct Scorer;
 struct Sampler;
 
-struct Shared : SharedMixin<Model>
-{
+struct Shared : SharedMixin<Model> {
     Vector mu;
     float kappa;
     Matrix psi;
     float nu;
 
-    Shared plus_group (const Group & group) const
-    {
+    Shared plus_group(const Group & group) const {
         Shared post;
         DIST_ASSERT3(dim() > 0, "uninitialized");
         const float n = group.count;
@@ -110,8 +103,7 @@ struct Shared : SharedMixin<Model>
     }
 
     template<class Message>
-    void protobuf_load (const Message & message)
-    {
+    void protobuf_load(const Message & message) {
         // mu
         check_row_or_col_size(message.mu_size());
         mu.resize(message.mu_size(), Eigen::NoChange);
@@ -139,13 +131,12 @@ struct Shared : SharedMixin<Model>
         DIST_ASSERT_EQ(mu.rows(), psi.rows());
 
         // nu
-        DIST_ASSERT_GT(message.nu(), float(mu.rows()) - 1.);
+        DIST_ASSERT_GT(message.nu(), static_cast<float>(mu.rows()) - 1.);
         nu = message.nu();
     }
 
     template<class Message>
-    void protobuf_dump (Message & message) const
-    {
+    void protobuf_dump(Message & message) const {
         message.Clear();
 
         const size_t mu_size = mu.size();
@@ -168,8 +159,7 @@ struct Shared : SharedMixin<Model>
 
     inline unsigned dim() const { return mu.rows(); }
 
-    static Shared EXAMPLE ()
-    {
+    static Shared EXAMPLE() {
         const size_t actual_dim = (dim_ == -1) ? 3 : size_t(dim_);
         Shared shared;
         shared.mu.resize(actual_dim, Eigen::NoChange);
@@ -177,13 +167,12 @@ struct Shared : SharedMixin<Model>
         shared.kappa = 1.0;
         shared.psi.resize(actual_dim, actual_dim);
         shared.psi.setIdentity();
-        shared.nu = float(actual_dim) + 1;
+        shared.nu = static_cast<float>(actual_dim) + 1;
         return shared;
     }
 
     static inline DIST_ALWAYS_INLINE void
-    check_row_or_col_size(size_t size)
-    {
+    check_row_or_col_size(size_t size) {
         if (dim_ == -1) {
             return;
         }
@@ -191,8 +180,7 @@ struct Shared : SharedMixin<Model>
     }
 
     static inline DIST_ALWAYS_INLINE void
-    check_rowcol_size(size_t size)
-    {
+    check_rowcol_size(size_t size) {
         if (dim_ == -1) {
             return;
         }
@@ -200,15 +188,13 @@ struct Shared : SharedMixin<Model>
     }
 };
 
-struct Group : GroupMixin<Model>
-{
+struct Group : GroupMixin<Model> {
     int count;
     Vector sum_x;
     Matrix sum_xxT;
 
     template<class Message>
-    void protobuf_load (const Message & message)
-    {
+    void protobuf_load(const Message & message) {
         // count
         count = message.count();
 
@@ -236,8 +222,7 @@ struct Group : GroupMixin<Model>
     }
 
     template<class Message>
-    void protobuf_dump (Message & message) const
-    {
+    void protobuf_dump(Message & message) const {
         message.Clear();
         message.set_count(count);
         const size_t sum_x_size = sum_x.size();
@@ -254,10 +239,9 @@ struct Group : GroupMixin<Model>
         }
     }
 
-    void init (
+    void init(
             const Shared & shared,
-            rng_t &)
-    {
+            rng_t &) {
         DIST_ASSERT3(shared.dim() > 0, "invalid shared");
         count = 0;
         sum_x.resize(shared.dim(), Eigen::NoChange);
@@ -266,11 +250,10 @@ struct Group : GroupMixin<Model>
         sum_xxT.setZero();
     }
 
-    void add_value (
+    void add_value(
             const Shared & shared,
             const Value & value,
-            rng_t &)
-    {
+            rng_t &) {
         DIST_ASSERT3(shared.dim() == (size_t)value.size(), "dim mismatch");
         count++;
         sum_x += value;
@@ -281,126 +264,111 @@ struct Group : GroupMixin<Model>
             const Shared & shared,
             const Value & value,
             const int & count,
-            rng_t &)
-    {
+            rng_t &) {
         DIST_ASSERT3(shared.dim() == (size_t)value.size(), "dim mismatch");
         this->count += count;
         sum_x += count * value;
         sum_xxT += count * (value * value.transpose());
     }
 
-    void remove_value (
+    void remove_value(
             const Shared & shared,
             const Value & value,
-            rng_t &)
-    {
+            rng_t &) {
         DIST_ASSERT3(shared.dim() == (size_t)value.size(), "dim mismatch");
         count--;
         sum_x -= value;
         sum_xxT -= value * value.transpose();
     }
 
-    void merge (
+    void merge(
             const Shared &,
             const Group & source,
-            rng_t &)
-    {
+            rng_t &) {
         count += source.count;
         sum_x += source.sum_x;
         sum_xxT += source.sum_xxT;
     }
 
-    float score_value (
+    float score_value(
             const Shared & shared,
             const Value & value,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         Scorer scorer;
         scorer.init(shared, *this, rng);
         return scorer.eval(shared, value, rng);
     }
 
-    float score_data (
+    float score_data(
             const Shared & shared,
-            rng_t &) const
-    {
+            rng_t &) const {
         Shared post = shared.plus_group(*this);
         const float log_pi = 1.1447298858494002;
         return lmultigamma(shared.dim(), post.nu * 0.5)
             + shared.nu * 0.5 * fast_log(shared.psi.determinant())
-            - float(count * shared.dim()) * 0.5 * log_pi
+            - static_cast<float>(count * shared.dim()) * 0.5 * log_pi
             - lmultigamma(shared.dim(), shared.nu * 0.5)
             - post.nu * 0.5 * fast_log(post.psi.determinant())
-            + float(shared.dim()) * 0.5 * fast_log(shared.kappa / post.kappa);
+            + static_cast<float>(shared.dim())
+              * 0.5 * fast_log(shared.kappa / post.kappa);
     }
 
-    Value sample_value (
+    Value sample_value(
             const Shared & shared,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         Sampler sampler;
         sampler.init(shared, *this, rng);
         return sampler.eval(shared, rng);
     }
 
-    void validate (const Shared & shared) const
-    {
-
-    }
+    void validate(const Shared & shared) const { }
 };
 
-struct Sampler
-{
+struct Sampler {
     Vector mu;
     Matrix cov;
 
-    void init (
+    void init(
             const Shared & shared,
             const Group & group,
-            rng_t & rng)
-    {
+            rng_t & rng) {
         Shared post = shared.plus_group(group);
-        const auto p = sample_normal_inverse_wishart(
+        auto p = sample_normal_inverse_wishart(
                 post.mu, post.kappa, post.psi, post.nu, rng);
         mu.swap(p.first);
         cov.swap(p.second);
     }
 
-    Value eval (
+    Value eval(
             const Shared &,
-            rng_t & rng) const
-    {
+            rng_t & rng) const {
         return sample_multivariate_normal(mu, cov, rng);
     }
 };
 
-struct Scorer
-{
+struct Scorer {
     Shared post;
 
-    void init (
+    void init(
             const Shared & shared,
             const Group & group,
-            rng_t &)
-    {
+            rng_t &) {
         post = shared.plus_group(group);
     }
 
-    float eval (
+    float eval(
             const Shared & shared,
             const Value & value,
-            rng_t &) const
-    {
-        const float dof = post.nu - float(shared.dim()) + 1.;
+            rng_t &) const {
+        const float dof = post.nu - static_cast<float>(shared.dim()) + 1.;
         const Matrix sigma = post.psi * (post.kappa + 1.) / (post.kappa * dof);
         return score_mv_student_t(value, dof, post.mu, sigma);
     }
 };
-
-}; // struct NormalInverseWishart
+};  // struct NormalInverseWishart
 
 extern template struct NormalInverseWishart<-1>;
 extern template struct NormalInverseWishart<2>;
 extern template struct NormalInverseWishart<3>;
 
-} // namespace distributions
+}  // namespace distributions

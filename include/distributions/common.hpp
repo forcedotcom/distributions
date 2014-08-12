@@ -108,11 +108,11 @@
 #ifdef __GNUG__
 #  define DIST_ALWAYS_INLINE __attribute__((always_inline))
 #  define DIST_NEVER_INLINE __attribute__((never_inline))
-#else // __GNUG__
+#else  // __GNUG__
 #  warning "ignoring DIST_ALWAYS_INLINE(-), DIST_NEVER_INLINE(-)"
 #  define DIST_ALWAYS_INLINE
 #  define DIST_NEVER_INLINE
-#endif // __GNUG__
+#endif  // __GNUG__
 
 namespace distributions {
 
