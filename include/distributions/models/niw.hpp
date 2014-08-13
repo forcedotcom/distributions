@@ -105,10 +105,10 @@ struct Shared : SharedMixin<Model> {
     template<class Message>
     void protobuf_load(const Message & message) {
         // mu
-        check_row_or_col_size(message.mu_size());
-        mu.resize(message.mu_size(), Eigen::NoChange);
-        const size_t mu_size = mu.size();
-        for (size_t i = 0; i < mu_size; i++) {
+        const size_t dim = message.mu_size();
+        check_row_or_col_size(dim);
+        mu.resize(dim, Eigen::NoChange);
+        for (size_t i = 0; i < dim; i++) {
             mu(i) = message.mu(i);
         }
 
@@ -117,13 +117,11 @@ struct Shared : SharedMixin<Model> {
         kappa = message.kappa();
 
         // psi
-        check_rowcol_size(message.psi_size());
-        psi.resize(message.psi_size() / 2, message.psi_size() / 2);
-        const size_t psi_rows = psi.rows();
-        const size_t psi_cols = psi.cols();
-        for (size_t i = 0; i < psi_rows; i++) {
-            for (size_t j = 0; j < psi_cols; j++) {
-                psi(i, j) = message.psi(i * psi_cols + j);
+        check_rowcol_size(dim, message.psi_size());
+        psi.resize(dim, dim);
+        for (size_t i = 0; i < dim; i++) {
+            for (size_t j = 0; j < dim; j++) {
+                psi(i, j) = message.psi(i * dim + j);
             }
         }
         DIST_ASSERT3(is_symmetric_positive_definite(psi),
@@ -131,7 +129,7 @@ struct Shared : SharedMixin<Model> {
         DIST_ASSERT_EQ(mu.rows(), psi.rows());
 
         // nu
-        DIST_ASSERT_GT(message.nu(), static_cast<float>(mu.rows()) - 1.);
+        DIST_ASSERT_GT(message.nu(), static_cast<float>(dim) - 1.);
         nu = message.nu();
     }
 
@@ -174,17 +172,15 @@ struct Shared : SharedMixin<Model> {
     static inline DIST_ALWAYS_INLINE void
     check_row_or_col_size(size_t size) {
         if (dim_ == -1) {
+            DIST_ASSERT_GT(size, 0);
             return;
         }
         DIST_ASSERT_EQ(size_t(dim_), size);
     }
 
     static inline DIST_ALWAYS_INLINE void
-    check_rowcol_size(size_t size) {
-        if (dim_ == -1) {
-            return;
-        }
-        DIST_ASSERT_EQ(size_t(dim_*dim_), size);
+    check_rowcol_size(size_t dim, size_t size) {
+        DIST_ASSERT_EQ(dim * dim, size);
     }
 };
 
@@ -199,21 +195,19 @@ struct Group : GroupMixin<Model> {
         count = message.count();
 
         // sum_x
-        Shared::check_row_or_col_size(message.sum_x_size());
-        sum_x.resize(message.sum_x_size(), Eigen::NoChange);
-        const size_t sum_x_size = sum_x.size();
-        for (size_t i = 0; i < sum_x_size; i++) {
+        const size_t dim = message.sum_x_size();
+        Shared::check_row_or_col_size(dim);
+        sum_x.resize(dim, Eigen::NoChange);
+        for (size_t i = 0; i < dim; i++) {
             sum_x(i) = message.sum_x(i);
         }
 
         // sum_xxT
-        Shared::check_rowcol_size(message.sum_xxt_size());
-        sum_xxT.resize(message.sum_xxt_size() / 2, message.sum_xxt_size() / 2);
-        const size_t sum_xxT_rows = sum_xxT.rows();
-        const size_t sum_xxT_cols = sum_xxT.cols();
-        for (size_t i = 0; i < sum_xxT_rows; i++) {
-            for (size_t j = 0; j < sum_xxT_cols; j++) {
-                sum_xxT(i, j) = message.sum_xxt(i * sum_xxT_cols + j);
+        Shared::check_rowcol_size(dim, message.sum_xxt_size());
+        sum_xxT.resize(dim, dim);
+        for (size_t i = 0; i < dim; i++) {
+            for (size_t j = 0; j < dim; j++) {
+                sum_xxT(i, j) = message.sum_xxt(i * dim + j);
             }
         }
         // XXX(stephentu): should also assert positive semi-definite
