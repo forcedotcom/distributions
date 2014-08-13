@@ -103,8 +103,10 @@ struct Shared : SharedMixin<Model> {
     template<class Message>
     void protobuf_load(const Message & message) {
         const size_t value_count = message.values_size();
-        DIST_ASSERT_EQ(message.betas_size(), value_count);
-        DIST_ASSERT_EQ(message.counts_size(), value_count);
+        const size_t beta_count = message.betas_size();
+        const size_t count_count = message.counts_size();
+        DIST_ASSERT_EQ(beta_count, value_count);
+        DIST_ASSERT_EQ(count_count, value_count);
         gamma = message.gamma();
         alpha = message.alpha();
         betas.clear();
