@@ -19,7 +19,7 @@ You may build distributions in several ways:
 Python Standalone
 -----------------
 
-COMING SOON: Install numpy and scipy. Then::
+Install numpy and scipy. Then::
 
     pip install distributions
 
@@ -27,7 +27,11 @@ COMING SOON: Install numpy and scipy. Then::
 C++ Standalone
 --------------
 
-Install cmake. Then::
+Install requirements::
+
+    sudo apt-get install cmake libeigen3-dev
+
+Then::
 
     mkdir build; cd build
     cmake -DCMAKE_INSTALL_PREFIX=/my/prefix ..
