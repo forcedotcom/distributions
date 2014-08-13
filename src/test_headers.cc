@@ -1,4 +1,5 @@
 #include <distributions/aligned_allocator.hpp>
+#include <distributions/assert_close.hpp>
 #include <distributions/clustering.hpp>
 #include <distributions/common.hpp>
 #include <distributions/cython.hpp>

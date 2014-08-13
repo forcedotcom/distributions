@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include <distributions/common.hpp>
 #include <distributions/io/schema.pb.h>
 #include <distributions/assert_close.hpp>
 #include <iostream>
