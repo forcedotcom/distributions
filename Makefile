@@ -70,7 +70,7 @@ test_cc_examples: install_cc_examples FORCE
 	@echo '----------------'
 	@echo 'PASSED CC EXAMPLES'
 
-CPP_SOURCES:=$(shell find include src examples benchmarks | grep -v 'vendor\|\.pb\.'  | grep -v 'src/test_' | grep '\.\(cc\|hpp\)$$')
+CPP_SOURCES:=$(shell find include src examples benchmarks | grep -v 'vendor\|\.pb\.'  | grep -v 'src/test_headers.cc' | grep '\.\(cc\|hpp\)$$')
 
 lint_cc: FORCE
 	cpplint --filter=-build/include_order,-readability/streams,-readability/function,-runtime/arrays $(CPP_SOURCES)

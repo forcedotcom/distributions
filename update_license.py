@@ -54,7 +54,6 @@ file_blacklist = [
     '*.pb.cc',
     '*_pb2.py',
     'test_headers.cc',
-    'test_protobuf.cc',
 ]
 
 FILES = sorted(
