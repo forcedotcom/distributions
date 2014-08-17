@@ -1,7 +1,7 @@
 # Distributions [![Build Status](https://travis-ci.org/forcedotcom/distributions.svg?branch=master)](https://travis-ci.org/forcedotcom/distributions) [![Code Quality](http://img.shields.io/scrutinizer/g/forcedotcom/distributions.svg)](https://scrutinizer-ci.com/g/forcedotcom/distributions) [![Latest Version](https://badge.fury.io/py/distributions.svg)](https://pypi.python.org/pypi/distributions)
 
-Distributions provides low-level primitives for Bayesian MCMC
-inference in Python and C++ including:
+Distributions provides low-level primitives for
+collapsed Gibbs sampling in Python and C++ including:
 
 * special numerical functions,
 * samplers and density functions from a variety of distributions,
