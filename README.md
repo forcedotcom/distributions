@@ -15,7 +15,7 @@ and now powers machine learning infrastructure at Salesforce.com.
 
 ## Installation
 
-distributions with pip:
+For python-only support (no C++) you can install with pip:
 
     pip install distributions
 

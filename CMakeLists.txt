@@ -13,16 +13,19 @@ if(APPLE)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-register")
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g -std=c++0x")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -std=c++0x")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror -Wno-unused-parameter -Wno-strict-aliasing")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -mfpmath=sse -msse4.1")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ffast-math -funsafe-math-optimizations")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-trapping-math -ffinite-math-only -fvect-cost-model -mrecip")
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mavx") # on sandy bridge and later
+
 if(DEFINED ENV{CXX_FLAGS})
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} $ENV{CXX_FLAGS}") # for testing
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} $ENV{CXX_FLAGS}")
 endif()
 message("CXX_FLAGS =${CMAKE_CXX_FLAGS}")
+
+set(CMAKE_DEBUG_POSTFIX _dbg)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS} -g -DDIST_DEBUG_LEVEL=3 -DDIST_THROW_ON_ERROR")
+set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS} -DNDEBUG=1")
 
 if(DEFINED EXTRA_INCLUDE_PATH)
   include_directories(${EXTRA_INCLUDE_PATH})

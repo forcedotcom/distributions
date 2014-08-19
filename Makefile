@@ -20,14 +20,12 @@ ifdef VIRTUAL_ENV
 	library_path=$(LIBRARY_PATH):$(VIRTUAL_ENV)/lib/
 	nose_env+=$(ld_library_path)=$($(ld_library_path)):$(VIRTUAL_ENV)/lib/
 else
-	cmake_args=-DCMAKE_INSTALL_PREFIX=..
+	cmake_args=-DCMAKE_INSTALL_PREFIX=../..
 	library_path=$(LIBRARY_PATH):`pwd`/lib/
 	nose_env+=$(ld_library_path)=$($(ld_library_path)):`pwd`/lib/
 endif
-
-cy_deps=
-ifdef PYDISTRIBUTIONS_USE_LIB
-	cy_deps=install_cc
+ifdef CMAKE_INSTALL_PREFIX
+	cmake_args=-DCMAKE_INSTALL_PREFIX=$(CMAKE_INSTALL_PREFIX)
 endif
 
 all: test
@@ -40,16 +38,23 @@ src/test_headers.cc: $(headers)
 	echo 'int main () { return 0; }' >> src/test_headers.cc
 
 configure_cc: src/test_headers.cc FORCE
-	mkdir -p build lib
-	cd build && cmake $(cmake_args) ..
+	mkdir -p build/debug build/release lib
+	cd build/debug \
+	  && cmake -DCMAKE_BUILD_TYPE=Debug $(cmake_args) ../..
+	cd build/release \
+	  && cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo $(cmake_args) ../..
 
-build_cc: configure_cc FORCE
-	cd build && $(MAKE)
+debug_cc: configure_cc FORCE
+	cd build/debug && $(MAKE)
 
-install_cc: build_cc FORCE
-	cd build && $(MAKE) install
+release_cc: configure_cc FORCE
+	cd build/release && $(MAKE)
 
-deps_cy: $(cy_deps) FORCE
+install_cc: debug_cc release_cc FORCE
+	cd build/debug && $(MAKE) install
+	cd build/release && $(MAKE) install
+
+deps_cy: install_cc FORCE
 	pip install -r requirements.txt
 
 dev_cy: deps_cy FORCE
@@ -60,7 +65,7 @@ install_cy: deps_cy FORCE
 
 install: install_cc install_cy FORCE
 
-package: build_cc FORCE
+package: debug_cc release_cc FORCE
 	cd build && $(MAKE) package
 
 install_cc_examples: install_cc FORCE
