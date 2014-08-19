@@ -1,0 +1,29 @@
+package:
+  name: distributions
+  version: "2.0.23"
+
+requirements:
+  build:
+    - cmake
+    - python
+    - numpy
+    - cython >=0.20.2
+    - libprotobuf
+    - pyflakes
+    - eigen3
+  run: 
+    - python
+    - numpy
+    - protobuf
+    - libprotobuf
+    - simplejson
+
+test:
+  imports:
+    - distributions
+    - distributions.lp
+    - distributions.lp.models
+    - distributions.lp.models.bb
+
+about:
+  home: https://github.com/forcedotcom/distributions

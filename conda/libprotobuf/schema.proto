@@ -1,0 +1,3 @@
+message HelloWorld {
+  required string message = 1;
+}
