@@ -37,22 +37,31 @@ src/test_headers.cc: $(headers)
 	  > src/test_headers.cc
 	echo 'int main () { return 0; }' >> src/test_headers.cc
 
-configure_cc: src/test_headers.cc FORCE
-	mkdir -p build/debug build/release lib
-	cd build/debug \
-	  && cmake -DCMAKE_BUILD_TYPE=Debug $(cmake_args) ../..
-	cd build/release \
-	  && cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo $(cmake_args) ../..
+prepare_cc: src/test_headers.cc FORCE
+	mkdir -p lib
 
-debug_cc: configure_cc FORCE
+build/python:
+	mkdir -p build/python
+	cd build/python && cmake -DCMAKE_BUILD_TYPE=Python $(cmake_args) ../..
+
+build/debug:
+	mkdir -p build/debug
+	cd build/debug && cmake -DCMAKE_BUILD_TYPE=Debug $(cmake_args) ../..
+
+build/release:
+	mkdir -p build/release
+	cd build/release && cmake -DCMAKE_BUILD_TYPE=Release $(cmake_args) ../..
+
+python_cc: build/python prepare_cc FORCE
+	cd build/python && $(MAKE)
+
+debug_cc: build/debug prepare_cc FORCE
 	cd build/debug && $(MAKE)
 
-release_cc: configure_cc FORCE
+release_cc: build/release prepare_cc FORCE
 	cd build/release && $(MAKE)
 
-install_cc: debug_cc release_cc FORCE
-	cd build/debug && $(MAKE) install
-	cd build/release && $(MAKE) install
+install_cc: python_cc debug_cc release_cc FORCE
 
 deps_cy: install_cc FORCE
 	pip install -r requirements.txt
@@ -65,7 +74,7 @@ install_cy: deps_cy FORCE
 
 install: install_cc install_cy FORCE
 
-package: debug_cc release_cc FORCE
+package: python_cc debug_cc release_cc FORCE
 	cd build && $(MAKE) package
 
 install_cc_examples: install_cc FORCE

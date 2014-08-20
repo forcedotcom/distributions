@@ -110,7 +110,7 @@ def make_extension(name):
     if use_protobuf:
         libraries.append('protobuf')
     if name.startswith('lp'):
-        libraries = ['distributions_shared_dbg'] + libraries
+        libraries = ['distributions_shared'] + libraries
     return Extension(
         module,
         sources=sources,
