@@ -15,4 +15,6 @@ DISTRIBUTIONS_USE_PROTOBUF=1 cmake \
     -DEXTRA_LIBRARY_PATH=${PREFIX}/lib ..
 make VERBOSE=1 && make install
 cd ..
-PYDISTRIBUTIONS_USE_LIB=1 LIBRARY_PATH=${PREFIX}/lib EXTRA_INCLUDE_PATH=${PREFIX}/include $PYTHON setup.py install 
+LIBRARY_PATH=${PREFIX}/lib \
+    EXTRA_INCLUDE_PATH=${PREFIX}/include \
+    $PYTHON setup.py install 
