@@ -83,7 +83,7 @@ package: python_cc debug_cc release_cc FORCE
 install_cc_examples: install_cc FORCE
 
 test_cc_examples: install_cc_examples FORCE
-	./test_cmake.sh
+	$(ld_library_path)=$(library_path) ./test_cmake.sh
 	@echo '----------------'
 	@echo 'PASSED CC EXAMPLES'
 
