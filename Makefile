@@ -20,14 +20,12 @@ ifdef VIRTUAL_ENV
 	library_path=$(LIBRARY_PATH):$(VIRTUAL_ENV)/lib/
 	nose_env+=$(ld_library_path)=$($(ld_library_path)):$(VIRTUAL_ENV)/lib/
 else
-	cmake_args=-DCMAKE_INSTALL_PREFIX=..
+	cmake_args=-DCMAKE_INSTALL_PREFIX=../..
 	library_path=$(LIBRARY_PATH):`pwd`/lib/
 	nose_env+=$(ld_library_path)=$($(ld_library_path)):`pwd`/lib/
 endif
-
-cy_deps=
-ifdef PYDISTRIBUTIONS_USE_LIB
-	cy_deps=install_cc
+ifdef CMAKE_INSTALL_PREFIX
+	cmake_args=-DCMAKE_INSTALL_PREFIX=$(CMAKE_INSTALL_PREFIX)
 endif
 
 all: test
@@ -39,17 +37,36 @@ src/test_headers.cc: $(headers)
 	  > src/test_headers.cc
 	echo 'int main () { return 0; }' >> src/test_headers.cc
 
-configure_cc: src/test_headers.cc FORCE
-	mkdir -p build lib
-	cd build && cmake $(cmake_args) ..
+prepare_cc: src/test_headers.cc FORCE
+	mkdir -p lib
 
-build_cc: configure_cc FORCE
-	cd build && $(MAKE)
+build/python: prepare_cc FORCE
+	mkdir -p build/python
+	cd build/python && cmake -DCMAKE_BUILD_TYPE=Python $(cmake_args) ../..
 
-install_cc: build_cc FORCE
-	cd build && $(MAKE) install
+build/debug: prepare_cc FORCE
+	mkdir -p build/debug
+	cd build/debug && cmake -DCMAKE_BUILD_TYPE=Debug $(cmake_args) ../..
 
-deps_cy: $(cy_deps) FORCE
+build/release: prepare_cc FORCE
+	mkdir -p build/release
+	cd build/release && cmake -DCMAKE_BUILD_TYPE=Release $(cmake_args) ../..
+
+python_cc: build/python FORCE
+	cd build/python && $(MAKE)
+
+debug_cc: build/debug FORCE
+	cd build/debug && $(MAKE)
+
+release_cc: build/release FORCE
+	cd build/release && $(MAKE)
+
+install_cc: python_cc debug_cc release_cc FORCE
+	cd build/python && $(MAKE) install
+	cd build/debug && $(MAKE) install
+	cd build/release && $(MAKE) install
+
+deps_cy: install_cc FORCE
 	pip install -r requirements.txt
 
 dev_cy: deps_cy FORCE
@@ -60,13 +77,13 @@ install_cy: deps_cy FORCE
 
 install: install_cc install_cy FORCE
 
-package: build_cc FORCE
+package: python_cc debug_cc release_cc FORCE
 	cd build && $(MAKE) package
 
 install_cc_examples: install_cc FORCE
 
 test_cc_examples: install_cc_examples FORCE
-	./test_cmake.sh
+	$(ld_library_path)=$(library_path) ./test_cmake.sh
 	@echo '----------------'
 	@echo 'PASSED CC EXAMPLES'
 

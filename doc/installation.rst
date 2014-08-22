@@ -31,11 +31,13 @@ Install requirements::
 
     sudo apt-get install cmake libeigen3-dev
 
-Then::
+To install in ``./lib``::
 
-    mkdir build; cd build
-    cmake -DCMAKE_INSTALL_PREFIX=/my/prefix ..
     make install
+
+Alternatively, set a custom install location::
+
+    CMAKE_INSTALL_PREFIX=/my/prefix make install
 
 
 Python wrapping libdistributions
@@ -43,7 +45,7 @@ Python wrapping libdistributions
 
 Follow instructions for C++ Standalone. Install numpy and scipy. Then::
 
-    PYDISTRIBUTIONS_USE_LIB=1 LIBRARY_PATH=/my/prefix/lib pip install distributions
+    LIBRARY_PATH=/my/prefix/lib pip install distributions
 
 .. warning::
 
@@ -77,12 +79,6 @@ Install cmake. Install numpy, scipy, cython, and nosetests so that
 they're available within a python virtualenv. Activate that
 virtualenv. Then::
 
-    PYDISTRIBUTIONS_USE_LIB=1 make test
+    make test
 
-The top-level ``Makefile`` provides many targets useful for
-development.
-
-To use distributions in CMake targest, and to make the distributions unit
-tests run faster, set the environment variable ``DISTRIBUTIONS_PATH`` to your git cloned location, for example
-
-    echo 'export DISTRIBUTIONS_PATH=/path/to/distributions' >> $VIRTUAL_ENV/bin/postactivate
+The top-level ``Makefile`` provides many targets useful for development.

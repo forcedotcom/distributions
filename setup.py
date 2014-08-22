@@ -98,7 +98,6 @@ else:
     ])
 
 
-use_libdistributions = 'PYDISTRIBUTIONS_USE_LIB' in os.environ
 use_protobuf = 'DISTRIBUTIONS_USE_PROTOBUF' in os.environ
 
 
@@ -111,23 +110,7 @@ def make_extension(name):
     if use_protobuf:
         libraries.append('protobuf')
     if name.startswith('lp'):
-        if use_libdistributions:
-            libraries = ['distributions_shared'] + libraries
-        else:
-            sources += [
-                'src/common.cc',
-                'src/special.cc',
-                'src/random.cc',
-                'src/vector_math.cc',
-            ]
-            if name == 'lp.clustering':
-                sources.append('src/clustering.cc')
-            elif name in ('lp.models.nich', 'lp.models._nich'):
-                sources.append('src/models/nich.cc')
-            elif name in ('lp.models.niw', 'lp.models._niw'):
-                sources.append('src/models/niw.cc')
-            elif name in ('lp.models.gp', 'lp.models._gp'):
-                sources.append('src/models/gp.cc')
+        libraries = ['distributions_shared'] + libraries
     return Extension(
         module,
         sources=sources,

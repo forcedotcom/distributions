@@ -15,7 +15,6 @@ env:
   - FLAVOR=_cc DISTRIBUTIONS_USE_PROTOBUF=1
   - FLAVOR=_cc_examples
   - FLAVOR=_cy
-  - FLAVOR=_cy PYDISTRIBUTIONS_USE_LIB=1
 install:
   - make install$FLAVOR
   - pip freeze
