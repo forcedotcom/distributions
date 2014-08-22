@@ -62,6 +62,9 @@ release_cc: build/release FORCE
 	cd build/release && $(MAKE)
 
 install_cc: python_cc debug_cc release_cc FORCE
+	cd build/python && $(MAKE) install
+	cd build/debug && $(MAKE) install
+	cd build/release && $(MAKE) install
 
 deps_cy: install_cc FORCE
 	pip install -r requirements.txt
