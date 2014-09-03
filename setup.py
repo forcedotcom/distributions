@@ -65,6 +65,7 @@ extra_compile_args = [
     '-DDIST_DEBUG_LEVEL=3',
     '-DDIST_THROW_ON_ERROR=1',
     '-Wno-unused-function',
+    '-Wno-unused-variable',
 ]
 if clang:
     extra_compile_args.extend([
@@ -80,7 +81,6 @@ else:
         '-Wall',
         '-Werror',
         '-Wno-error=cpp',  # avoid #warning "Using deprecated NumPy API,..."
-        '-Wno-unused-function',
         '-Wno-sign-compare',
         '-Wno-strict-aliasing',
         '-O3',
