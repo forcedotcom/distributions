@@ -63,6 +63,21 @@ inline std::ostream & operator<<(
     }
 }
 
+template<class T>
+inline std::ostream & operator<<(
+        std::ostream & os,
+        const RepeatedPtrField<T> & messages) {
+    if (auto size = messages.size()) {
+        os << '[' << messages.Get(0);
+        for (size_t i = 1; i < size; ++i) {
+            os << ',' << messages.Get(i);
+        }
+        return os << ']';
+    } else {
+        return os << "[]";
+    }
+}
+
 inline bool operator==(
         const Message & x,
         const Message & y) {
@@ -77,6 +92,21 @@ template<class T>
 inline bool operator==(
         const RepeatedField<T> & x,
         const RepeatedField<T> & y) {
+    if (DIST_UNLIKELY(x.size() != y.size())) {
+        return false;
+    }
+    for (size_t i = 0, size = x.size(); i < size; ++i) {
+        if (DIST_UNLIKELY(x.Get(i) != y.Get(i))) {
+            return false;
+        }
+    }
+    return true;
+}
+
+template<class T>
+inline bool operator==(
+        const RepeatedPtrField<T> & x,
+        const RepeatedPtrField<T> & y) {
     if (DIST_UNLIKELY(x.size() != y.size())) {
         return false;
     }
