@@ -36,6 +36,14 @@ void GammaPoisson::MixtureValueScorer::score_value(
         AlignedFloats scores_accum,
         rng_t &) const {
     const size_t size = scores_accum.size();
+
+    static thread_local VectorFloat * temp_ = nullptr;
+    if (DIST_UNLIKELY(not temp_)) {
+        temp_ = new VectorFloat(size);  // never freed
+    } else {
+        temp_->resize(size);
+    }
+
     const float value_noalias = value;
     float * __restrict__ scores_accum_noalias =
         VectorFloat_data(scores_accum);
@@ -44,7 +52,7 @@ void GammaPoisson::MixtureValueScorer::score_value(
         VectorFloat_data(post_alpha_);
     const float * __restrict__ score_coeff =
         VectorFloat_data(score_coeff_);
-    float * __restrict__ temp = VectorFloat_data(temp_);
+    float * __restrict__ temp = VectorFloat_data(*temp_);
 
     const float log_factorial_value = fast_log_factorial(value);
     for (size_t i = 0; i < size; ++i) {

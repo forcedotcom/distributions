@@ -245,21 +245,18 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model> {
         score_.resize(size);
         post_alpha_.resize(size);
         score_coeff_.resize(size);
-        temp_.resize(size);
     }
 
     void add_group(const Shared &, rng_t &) {
         score_.packed_add();
         post_alpha_.packed_add();
         score_coeff_.packed_add();
-        temp_.packed_add();
     }
 
     void remove_group(const Shared &, size_t groupid) {
         score_.packed_remove(groupid);
         post_alpha_.packed_remove(groupid);
         score_coeff_.packed_remove(groupid);
-        temp_.packed_remove(groupid);
     }
 
     void update_group(
@@ -315,7 +312,6 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model> {
             + score_coeff_[groupid] * value;
     }
 
-    // not thread safe
     void score_value(
             const Shared & shared,
             const std::vector<Group> &,
@@ -329,14 +325,12 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model> {
         DIST_ASSERT_EQ(score_.size(), groups.size());
         DIST_ASSERT_EQ(post_alpha_.size(), groups.size());
         DIST_ASSERT_EQ(score_coeff_.size(), groups.size());
-        DIST_ASSERT_EQ(temp_.size(), groups.size());
     }
 
   private:
     VectorFloat score_;
     VectorFloat post_alpha_;
     VectorFloat score_coeff_;
-    mutable VectorFloat temp_;
 };
 };  // struct GammaPoisson
 }   // namespace distributions
