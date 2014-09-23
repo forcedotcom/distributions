@@ -37,6 +37,7 @@
 #endif  // __GNUG__
 
 #ifdef __GNUG__
+#  define thread_local __thread
 #  define DIST_LIKELY(x) __builtin_expect(!!(x), true)
 #  define DIST_UNLIKELY(x) __builtin_expect(!!(x), false)
 #else  // __GNUG__
