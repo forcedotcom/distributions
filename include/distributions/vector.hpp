@@ -32,7 +32,7 @@
 #include <distributions/aligned_allocator.hpp>
 
 // DEPRECATED, use DIST_ASSUME_ALIGNED directly
-#define VectorFloat_data(vf) (DIST_ASSUME_ALIGNED(vf.data()))
+#define VectorFloat_data(vf) (DIST_ASSUME_ALIGNED((vf).data()))
 
 namespace distributions {
 

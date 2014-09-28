@@ -293,7 +293,6 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model> {
         log_coeff_.resize(size);
         precision_.resize(size);
         mean_.resize(size);
-        temp_.resize(size);
     }
 
     void add_group(const Shared &, rng_t &) {
@@ -301,7 +300,6 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model> {
         log_coeff_.packed_add();
         precision_.packed_add();
         mean_.packed_add();
-        temp_.packed_add();
     }
 
     void remove_group(const Shared &, size_t groupid) {
@@ -309,7 +307,6 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model> {
         log_coeff_.packed_remove(groupid);
         precision_.packed_remove(groupid);
         mean_.packed_remove(groupid);
-        temp_.packed_remove(groupid);
     }
 
     void update_group(
@@ -364,7 +361,6 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model> {
         return score_[groupid] + log_coeff_[groupid] * fast_log(temp);
     }
 
-    // not thread safe
     void score_value(
             const Shared &,
             const std::vector<Group> &,
@@ -379,7 +375,6 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model> {
         DIST_ASSERT_EQ(log_coeff_.size(), groups.size());
         DIST_ASSERT_EQ(precision_.size(), groups.size());
         DIST_ASSERT_EQ(mean_.size(), groups.size());
-        DIST_ASSERT_EQ(temp_.size(), groups.size());
     }
 
   private:
@@ -387,7 +382,6 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model> {
     VectorFloat log_coeff_;
     VectorFloat precision_;
     VectorFloat mean_;
-    mutable VectorFloat temp_;
 };
 };  // struct NormalInverseChiSq
 }   // namespace distributions

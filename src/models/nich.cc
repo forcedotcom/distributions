@@ -37,6 +37,14 @@ void NormalInverseChiSq::MixtureValueScorer::score_value(
         AlignedFloats scores_accum,
         rng_t &) const {
     const size_t size = scores_accum.size();
+
+    static thread_local VectorFloat * temp_ = nullptr;
+    if (DIST_UNLIKELY(not temp_)) {
+        temp_ = new VectorFloat(size);  // never freed
+    } else {
+        temp_->resize(size);
+    }
+
     const float value_noalias = value;
     float * __restrict__ scores_accum_noalias = VectorFloat_data(scores_accum);
     const float * __restrict__ score =
@@ -46,7 +54,7 @@ void NormalInverseChiSq::MixtureValueScorer::score_value(
     const float * __restrict__ precision =
         VectorFloat_data(precision_);
     const float * __restrict__ mean = VectorFloat_data(mean_);
-    float * __restrict__ temp = VectorFloat_data(temp_);
+    float * __restrict__ temp = VectorFloat_data(*temp_);
 
     // Version 1
     for (size_t i = 0; i < size; ++i) {
