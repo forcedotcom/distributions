@@ -32,11 +32,21 @@ import simplejson
 import struct
 
 
+def mkdir_p(dirname):
+    'like mkdir -p'
+    if not os.path.exists(dirname):
+        try:
+            os.makedirs(dirname)
+        except OSError as e:
+            if not os.path.exists(dirname):
+                raise e
+
+
 def open_compressed(filename, mode='r'):
     if 'w' in mode:
         dirname = os.path.dirname(filename)
-        if dirname and not os.path.exists(dirname):
-            os.makedirs(dirname)
+        if dirname:
+            mkdir_p(dirname)
     if filename.endswith('.bz2'):
         return bz2.BZ2File(filename, mode.replace('b', ''))
     elif filename.endswith('.gz'):
