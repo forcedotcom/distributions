@@ -102,7 +102,8 @@ inline float sample_beta(
         float beta) {
     float x = sample_gamma(rng, alpha);
     float y = sample_gamma(rng, beta);
-    if (x==0 && y==0) return sample_bernoulli(rng, alpha / (alpha + beta)) ? 1.0 : 0.0;
+    if (x==0 && y==0) 
+        return sample_bernoulli(rng, alpha / (alpha + beta)) ? 1.0 : 0.0;
     return x / (x + y);
 }
 
