@@ -32,10 +32,10 @@ all: test
 
 headers:=$(shell find include | grep '\.hpp' | grep -v protobuf | sort -d)
 src/test_headers.cc: $(headers)
-	echo $(headers) \
-	  | sed 's/include\/\(\S*\)\s*/#include <\1>\n/g' \
+	find include | grep '\.hpp' | grep -v protobuf | sort -d \
+	  | sed 's/include\/\(.*\)/#include <\1>/g' \
 	  > src/test_headers.cc
-	echo 'int main () { return 0; }' >> src/test_headers.cc
+	@echo '\nint main () { return 0; }' >> src/test_headers.cc
 
 prepare_cc: src/test_headers.cc FORCE
 	mkdir -p lib
