@@ -144,7 +144,7 @@ struct MixtureDriver {
         return model.score_counts(counts_);
     }
 
-  private:
+ private:
     std::vector<count_t> counts_;
     IdSet empty_groupids_;
     count_t sample_size_;
@@ -220,7 +220,7 @@ struct MixtureSlaveGroups {
         }
     }
 
-  private:
+ private:
     Packed_<Group> groups_;
 };
 
@@ -443,7 +443,7 @@ struct MixtureSlave {
         data_scorer_.validate(shared, groups());
     }
 
-  private:
+ private:
     MixtureSlaveGroups<Shared> groups_;
     ValueScorer value_scorer_;
     DataScorer data_scorer_;
@@ -514,7 +514,7 @@ struct MixtureIdTracker {
     size_t packed_size() const { return packed_to_global_.size(); }
     size_t global_size() const { return global_size_; }
 
-  private:
+ private:
     Packed_<Id> packed_to_global_;
     std::unordered_map<Id, Id, TrivialHash<Id>> global_to_packed_;
     size_t global_size_;

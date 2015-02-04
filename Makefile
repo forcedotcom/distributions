@@ -32,10 +32,10 @@ all: test
 
 headers:=$(shell find include | grep '\.hpp' | grep -v protobuf | sort -d)
 src/test_headers.cc: $(headers)
-	echo $(headers) \
-	  | sed 's/include\/\(\S*\)\s*/#include <\1>\n/g' \
+	find include | grep '\.hpp' | grep -v protobuf | sort -d \
+	  | sed 's/include\/\(.*\)/#include <\1>/g' \
 	  > src/test_headers.cc
-	echo 'int main () { return 0; }' >> src/test_headers.cc
+	@echo '\nint main () { return 0; }' >> src/test_headers.cc
 
 prepare_cc: src/test_headers.cc FORCE
 	mkdir -p lib
@@ -90,7 +90,7 @@ test_cc_examples: install_cc_examples FORCE
 CPP_SOURCES:=$(shell find include src examples benchmarks | grep -v 'vendor\|\.pb\.'  | grep -v 'src/test_headers.cc' | grep '\.\(cc\|hpp\)$$')
 
 lint_cc: FORCE
-	cpplint --filter=-build/include_order,-readability/streams,-readability/function,-runtime/arrays $(CPP_SOURCES)
+	cpplint --filter=-build/include_order,-readability/streams,-readability/function,-runtime/arrays,-runtime/reference,-runtime/explicit,-readability/alt_tokens,-build/c++11 $(CPP_SOURCES)
 
 test_cc: install_cc lint_cc FORCE
 	cd build && ctest
