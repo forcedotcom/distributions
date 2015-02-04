@@ -69,7 +69,7 @@ class Aligned_ {
         DIST_ASSERT_ALIGNED(data_);
     }
 
-    explicit Aligned_(Packed_<Value, aligned_allocator<Value>> & source) :
+    Aligned_(Packed_<Value, aligned_allocator<Value>> & source) :
         data_(source.data()),
         size_(source.size()) {
         if (DIST_DEBUG_LEVEL >= 3) {
