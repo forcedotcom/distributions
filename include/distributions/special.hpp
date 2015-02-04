@@ -51,7 +51,7 @@ namespace detail {
 
 /// Implements the ICSI fast log algorithm, v2.
 class FastLog {
-  public:
+ public:
     explicit FastLog(int N);
 
     inline float log(float x) {
@@ -66,7 +66,7 @@ class FastLog {
         return (static_cast<float>(exp) + table_[man]) * 0.69314718055994529f;
     }
 
-  private:
+ private:
     const int N_;
     std::vector<float> table_;
 };

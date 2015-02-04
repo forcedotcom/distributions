@@ -327,7 +327,7 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model> {
         DIST_ASSERT_EQ(score_coeff_.size(), groups.size());
     }
 
-  private:
+ private:
     VectorFloat score_;
     VectorFloat post_alpha_;
     VectorFloat score_coeff_;

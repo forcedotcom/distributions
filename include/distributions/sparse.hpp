@@ -40,7 +40,7 @@ class Sparse_ {
 
     map_t map_;
 
-  public:
+ public:
     typedef Key key_t;
     typedef Value value_t;
     typedef typename map_t::iterator iterator;
@@ -115,7 +115,7 @@ class SparseCounter {
     map_t map_;
     Value total_;
 
-  public:
+ public:
     typedef Key key_t;
     typedef Value value_t;
     typedef typename map_t::const_iterator iterator;

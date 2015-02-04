@@ -62,14 +62,14 @@ struct Packed_ : std::vector<Value, Alloc> {
 
 template<class Value>
 class Aligned_ {
-  public:
+ public:
     Aligned_(Value * data, size_t size) :
         data_(data),
         size_(size) {
         DIST_ASSERT_ALIGNED(data_);
     }
 
-    Aligned_(Packed_<Value, aligned_allocator<Value>> & source) :
+    explicit Aligned_(Packed_<Value, aligned_allocator<Value>> & source) :
         data_(source.data()),
         size_(source.size()) {
         if (DIST_DEBUG_LEVEL >= 3) {
@@ -81,7 +81,7 @@ class Aligned_ {
     size_t size() const { return size_; }
     Value & operator[] (size_t i) { return data_[i]; }
 
-  private:
+ private:
     Value * const data_;
     const size_t size_;
 };

@@ -561,7 +561,7 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model> {
         validate(shared, groups.size());
     }
 
-  private:
+ private:
     void _validate(const Shared & shared, size_t group_count) const {
         if (DIST_DEBUG_LEVEL >= 3) {
             validate(shared, group_count);

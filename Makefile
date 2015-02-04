@@ -90,7 +90,7 @@ test_cc_examples: install_cc_examples FORCE
 CPP_SOURCES:=$(shell find include src examples benchmarks | grep -v 'vendor\|\.pb\.'  | grep -v 'src/test_headers.cc' | grep '\.\(cc\|hpp\)$$')
 
 lint_cc: FORCE
-	cpplint --filter=-build/include_order,-readability/streams,-readability/function,-runtime/arrays $(CPP_SOURCES)
+	cpplint --filter=-build/include_order,-readability/streams,-readability/function,-runtime/arrays,-runtime/reference,-readability/alt_tokens,-build/c++11 $(CPP_SOURCES)
 
 test_cc: install_cc lint_cc FORCE
 	cd build && ctest
