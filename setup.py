@@ -72,7 +72,6 @@ if clang:
         '-mmacosx-version-min=10.7',  # for anaconda
         '-std=c++0x',
         '-stdlib=libc++',
-        '-Wno-deprecated-register',
         '-Wno-#warnings',  # avoid #warning "Using deprecated NumPy API,..."
     ])
 else:

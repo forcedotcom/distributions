@@ -7,8 +7,6 @@ set(DISTRIBUTIONS_SHARED_LIBS m)
 if(APPLE)
   # for anaconda builds
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mmacosx-version-min=10.7")
-  # clang complains about register
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-register")
 endif()
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang")

@@ -59,8 +59,8 @@ class FastLog {
         int intx;
         memcpy(&intx, &x, 4);
 
-        register const int exp = ((intx >> 23) & 255) - 127;
-        register const int man = (intx & 0x7FFFFF) >> (23 - N_);
+        const int exp = ((intx >> 23) & 255) - 127;
+        const int man = (intx & 0x7FFFFF) >> (23 - N_);
 
         // exponent plus lookup refinement
         return (static_cast<float>(exp) + table_[man]) * 0.69314718055994529f;
@@ -133,7 +133,7 @@ inline float fast_lgamma(float y) {
     if (c) {
         c -= 127;
     } else {  // subnormal, so recompute using mantissa: c = intlog2(x) - 149;
-        register unsigned int t;  // temporary
+        unsigned int t;  // temporary
         if ((t = x >> 16)) {
             c = detail::LogTable256[t] - 133;
         } else {
@@ -258,7 +258,7 @@ inline float fast_lgamma_nu(float nu) {
     if (c) {
         c -= 127;
     } else {  // subnormal, so recompute using mantissa: c = intlog2(x) - 149;
-        register unsigned int t;  // temporary
+        unsigned int t;  // temporary
         if ((t = x >> 16)) {
             c = detail::LogTable256[t] - 133;
         } else {
