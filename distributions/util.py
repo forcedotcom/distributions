@@ -116,7 +116,7 @@ def unif01_goodness_of_fit(samples, plot=False):
     return multinomial_goodness_of_fit(probs, counts, len(samples), plot=plot)
 
 
-def density_goodness_of_fit(samples, probs, plot=False):
+def density_goodness_of_fit(samples, probs, plot=False, normalized=True):
     """
     Transform arbitrary continuous samples to unif01 distribution
     and assess goodness of fit via Pearson's chi^2 test.
@@ -127,6 +127,8 @@ def density_goodness_of_fit(samples, probs, plot=False):
     """
     assert len(samples) == len(probs)
     assert len(samples) > 100, 'WARNING imprecision; use more samples'
+    if not normalized:
+        raise NotImplementedError("Non-normalized densities")
     pairs = zip(samples, probs)
     pairs.sort()
     samples = numpy.array([x for x, p in pairs])
@@ -142,7 +144,11 @@ def volume_of_sphere(dim, radius):
     return radius ** dim * pi ** (0.5 * dim) / gamma(0.5 * dim + 1)
 
 
-def vector_density_goodness_of_fit(samples, probs, plot=False):
+def vector_density_goodness_of_fit(
+        samples,
+        probs,
+        plot=False,
+        normalized=True):
     """
     Transform arbitrary multivariate continuous samples
     to unif01 distribution via nearest neighbor distribution [1]
@@ -160,6 +166,8 @@ def vector_density_goodness_of_fit(samples, probs, plot=False):
     dim = len(samples[0])
     assert dim
     assert len(samples) > 100 * dim, 'WARNING imprecision; use more samples'
+    if not normalized:
+        raise NotImplementedError("Non-normalized densities")
     neighbors = NearestNeighbors(n_neighbors=2).fit(samples)
     distances, indices = neighbors.kneighbors(samples)
     distances = distances[:, 1]
@@ -175,11 +183,15 @@ def discrete_goodness_of_fit(
         samples,
         probs_dict,
         truncate_beyond=8,
-        plot=False):
+        plot=False,
+        normalized=True):
     """
     Transform arbitrary discrete data to multinomial
     and assess goodness of fit via Pearson's chi^2 test.
     """
+    if not normalized:
+        total = sum(probs_dict.itervalues())
+        probs_dict = {i: p / total for i, p in probs_dict.iteritems()}
     counts = defaultdict(lambda: 0)
     for sample in samples:
         assert sample in probs_dict
@@ -198,6 +210,10 @@ def discrete_goodness_of_fit(
         len(samples),
         truncated=truncated,
         plot=plot)
+
+
+def mixed_density_goodness_of_fit(samples, probs, plot=False, normalized=True):
+    raise NotImplementedError("mixed_density_goodness_of_fit")
 
 
 def bin_samples(samples, k=10, support=[]):
