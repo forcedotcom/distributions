@@ -110,7 +110,7 @@ def unif01_goodness_of_fit(samples, plot=False):
     probs = numpy.ones(bin_count, dtype=numpy.float) / bin_count
     counts = numpy.zeros(bin_count, dtype=numpy.int)
     for sample in samples:
-        counts[int(bin_count * sample)] += 1
+        counts[min(bin_count - 1, int(bin_count * sample))] += 1
     return multinomial_goodness_of_fit(probs, counts, len(samples), plot=plot)
 
 
@@ -144,7 +144,6 @@ def discrete_goodness_of_fit(
     Transform arbitrary discrete data to multinomial
     and assess goodness of fit via Pearson's chi^2 test.
     """
-    assert len(samples) > 100, 'WARNING imprecision; use more samples'
     counts = defaultdict(lambda: 0)
     for sample in samples:
         assert sample in probs_dict
@@ -156,6 +155,7 @@ def discrete_goodness_of_fit(
         items = items[:truncate_beyond]
     probs = [prob for prob, count in items]
     counts = [count for prob, count in items]
+    assert sum(counts) > 100, 'WARNING imprecision; use more samples'
     return multinomial_goodness_of_fit(
         probs,
         counts,
