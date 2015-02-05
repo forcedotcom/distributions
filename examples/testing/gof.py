@@ -5,7 +5,7 @@ from scipy.special import gamma
 from matplotlib import pyplot
 from sklearn.neighbors import NearestNeighbors
 import parsable
-from distributions.lp.models import niw
+from distributions.dbg.models import niw
 from nose.tools import assert_almost_equal
 
 
