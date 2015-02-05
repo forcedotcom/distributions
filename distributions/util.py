@@ -26,7 +26,9 @@
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import numpy
+from numpy import pi
 import scipy.stats
+from scipy.special import gamma
 from collections import defaultdict
 
 
@@ -129,9 +131,43 @@ def density_goodness_of_fit(samples, probs, plot=False):
     pairs.sort()
     samples = numpy.array([x for x, p in pairs])
     probs = numpy.array([p for x, p in pairs])
-    density = numpy.sqrt(probs[1:] * probs[:-1])
+    density = len(samples) * numpy.sqrt(probs[1:] * probs[:-1])
     gaps = samples[1:] - samples[:-1]
-    unif01_samples = 1.0 - numpy.exp(-len(samples) * gaps * density)
+    unif01_samples = 1.0 - numpy.exp(-density * gaps)
+    return unif01_goodness_of_fit(unif01_samples, plot=plot)
+
+
+def volume_of_sphere(dim, radius):
+    assert isinstance(dim, (int, long))
+    return radius ** dim * pi ** (0.5 * dim) / gamma(0.5 * dim + 1)
+
+
+def vector_density_goodness_of_fit(samples, probs, plot=False):
+    """
+    Transform arbitrary multivariate continuous samples
+    to unif01 distribution via nearest neighbor distribution [1]
+    and assess goodness of fit via Pearson's chi^2 test.
+
+    [1] http://en.wikipedia.org/wiki/Nearest_neighbour_distribution
+
+    Inputs:
+        samples - a list of real-vector-valued samples from a distribution
+        probs - a list of probability densities evaluated at those samples
+    """
+    from sklearn.neighbors import NearestNeighbors
+    assert samples
+    assert len(samples) == len(probs)
+    dim = len(samples[0])
+    assert dim
+    assert len(samples) > 100 * dim, 'WARNING imprecision; use more samples'
+    neighbors = NearestNeighbors(n_neighbors=2).fit(samples)
+    distances, indices = neighbors.kneighbors(samples)
+    distances = distances[:, 1]
+    indices = indices[:, 1]
+    probs = numpy.array(probs)
+    density = len(samples) * numpy.sqrt(probs * probs[indices])
+    volume = volume_of_sphere(dim, distances)
+    unif01_samples = 1.0 - numpy.exp(-density * volume)
     return unif01_goodness_of_fit(unif01_samples, plot=plot)
 
 

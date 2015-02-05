@@ -32,27 +32,22 @@ import scipy.stats
 import functools
 from collections import defaultdict
 from nose import SkipTest
-from nose.tools import (
-    assert_true,
-    assert_in,
-    assert_is_instance,
-    assert_not_equal,
-    assert_greater,
-)
+from nose.tools import assert_greater
+from nose.tools import assert_in
+from nose.tools import assert_is_instance
+from nose.tools import assert_not_equal
+from nose.tools import assert_true
 from distributions.dbg.random import sample_discrete
-from distributions.util import (
-    scores_to_probs,
-    density_goodness_of_fit,
-    discrete_goodness_of_fit,
-)
-from distributions.tests.util import (
-    assert_hasattr,
-    assert_close,
-    assert_all_close,
-    list_models,
-    import_model,
-    seed_all,
-)
+from distributions.util import density_goodness_of_fit
+from distributions.util import discrete_goodness_of_fit
+from distributions.util import scores_to_probs
+from distributions.util import vector_density_goodness_of_fit
+from distributions.tests.util import assert_all_close
+from distributions.tests.util import assert_close
+from distributions.tests.util import assert_hasattr
+from distributions.tests.util import import_model
+from distributions.tests.util import list_models
+from distributions.tests.util import seed_all
 
 try:
     import distributions.io.schema_pb2
@@ -390,6 +385,12 @@ def test_sample_value(module, EXAMPLE):
                 for value in samples
             ])
             gof = density_goodness_of_fit(samples, probs, plot=True)
+        elif module.Value == numpy.ndarray:
+            probs = numpy.exp([
+                group.score_value(shared, value)
+                for value in samples
+            ])
+            gof = vector_density_goodness_of_fit(samples, probs, plot=True)
         else:
             raise SkipTest('Not implemented for {}'.format(module.Value))
         print '{} gof = {:0.3g}'.format(module.__name__, gof)
