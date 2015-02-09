@@ -119,7 +119,7 @@ def unif01_goodness_of_fit(samples, plot=False):
 def density_goodness_of_fit(samples, probs, plot=False, normalized=True):
     """
     Transform arbitrary continuous samples to unif01 distribution
-    and assess goodness of fit via Pearson's chi^2 test.
+    and assess goodness of fit via binned Pearson's chi^2 test.
 
     Inputs:
         samples - a list of real-valued samples from a distribution
@@ -135,7 +135,7 @@ def density_goodness_of_fit(samples, probs, plot=False, normalized=True):
     probs = numpy.array([p for x, p in pairs])
     density = len(samples) * numpy.sqrt(probs[1:] * probs[:-1])
     gaps = samples[1:] - samples[:-1]
-    unif01_samples = 1.0 - numpy.exp(-density * gaps)
+    unif01_samples = numpy.exp(-density * gaps)
     return unif01_goodness_of_fit(unif01_samples, plot=plot)
 
 
@@ -151,10 +151,12 @@ def vector_density_goodness_of_fit(
         normalized=True):
     """
     Transform arbitrary multivariate continuous samples
-    to unif01 distribution via nearest neighbor distribution [1]
-    and assess goodness of fit via Pearson's chi^2 test.
+    to unif01 distribution via nearest neighbor distribution [1,2,3]
+    and assess goodness of fit via binned Pearson's chi^2 test.
 
-    [1] http://en.wikipedia.org/wiki/Nearest_neighbour_distribution
+    [1] http://projecteuclid.org/download/pdf_1/euclid.aop/1176993668
+    [2] http://arxiv.org/pdf/1006.3019v2.pdf
+    [3] http://en.wikipedia.org/wiki/Nearest_neighbour_distribution
 
     Inputs:
         samples - a list of real-vector-valued samples from a distribution
@@ -172,10 +174,9 @@ def vector_density_goodness_of_fit(
     distances, indices = neighbors.kneighbors(samples)
     distances = distances[:, 1]
     indices = indices[:, 1]
-    probs = numpy.array(probs)
-    density = len(samples) * numpy.sqrt(probs * probs[indices])
+    density = len(samples) * numpy.array(probs)
     volume = volume_of_sphere(dim, distances)
-    unif01_samples = 1.0 - numpy.exp(-density * volume)
+    unif01_samples = numpy.exp(-density * volume)
     return unif01_goodness_of_fit(unif01_samples, plot=plot)
 
 
@@ -212,7 +213,46 @@ def discrete_goodness_of_fit(
         plot=plot)
 
 
-def mixed_density_goodness_of_fit(samples, probs, plot=False, normalized=True):
+def split_discrete_continuous(data):
+    '''
+    Converts arbitrary data to a pair `(discrete, continuous)`
+    where `discrete` is hashable and `continuous` is a list of floats.
+    '''
+    if isinstance(data, (int, long, basestring)):
+        return data, []
+    elif isinstance(data, (tuple, list)):
+        discrete = []
+        continuous = []
+        for part in data:
+            d, c = split_discrete_continuous(part)
+            discrete.append(d)
+            continuous.append(c)
+        return tuple(discrete), continuous
+    elif isinstance(data, numpy.ndarray):
+        assert data.dtype in [numpy.float64, numpy.float32]
+        return [None] * len(data), map(float, data)
+    elif isinstance(data, (float, numpy.float32, numpy.float64)):
+        return None, [data]
+    else:
+        raise TypeError(
+            'split_discrete_continuous does not accept {} of type {}'.format(
+                repr(data), str(type(data))))
+
+
+def mixed_density_goodness_of_fit(
+        samples,
+        get_prob,
+        plot=False,
+        normalized=True):
+    '''
+    Test general datatypes under different projections and restrictions:
+    (1) TODO Marginalize out all discrete variables
+    (2) TODO Restrict to most likely discrete value
+    '''
+    # split_samples = map(split_discrete_continuous, samples)
+    # discrete_counts = Counter(d for (d, c) in split_samples)
+    # discrete_mode = discrete_counts.most_common(1)[0]
+    # ...
     raise NotImplementedError("mixed_density_goodness_of_fit")
 
 

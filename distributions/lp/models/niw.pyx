@@ -44,6 +44,23 @@ NAME = 'NormalInverseWishart'
 EXAMPLES = [
     {
         'shared': {
+            'mu': np.zeros(1),
+            'kappa': 2.,
+            'psi': np.eye(1),
+            'nu': 3.,
+        },
+        'values': [np.array(v) for v in (
+            [1.],
+            [-2.],
+            [-0.2],
+            [-0.1],
+            [0.8],
+            [0.8],
+            [-9.],
+        )],
+    },
+    {
+        'shared': {
             'mu': np.zeros(2),
             'kappa': 2.,
             'psi': np.eye(2),
