@@ -167,15 +167,16 @@ def vector_density_goodness_of_fit(
     assert len(samples) == len(probs)
     dim = len(samples[0])
     assert dim
-    assert len(samples) > 100 * dim, 'WARNING imprecision; use more samples'
-    if not normalized:
-        raise NotImplementedError("Non-normalized densities")
+    assert len(samples) > 1000 * dim, 'WARNING imprecision; use more samples'
+    if not hasattr(samples[0], '__iter__'):
+        samples = numpy.array([samples]).T
     neighbors = NearestNeighbors(n_neighbors=2).fit(samples)
     distances, indices = neighbors.kneighbors(samples)
-    distances = distances[:, 1]
-    indices = indices[:, 1]
+    radii = distances[:, 1]
     density = len(samples) * numpy.array(probs)
-    volume = volume_of_sphere(dim, distances)
+    if not normalized:
+        raise NotImplementedError("Non-normalized densities")
+    volume = volume_of_sphere(dim, radii)
     unif01_samples = numpy.exp(-density * volume)
     return unif01_goodness_of_fit(unif01_samples, plot=plot)
 

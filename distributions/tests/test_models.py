@@ -372,7 +372,10 @@ def test_sample_value(module, EXAMPLE):
     shared.realize()
     for values in [[], EXAMPLE['values']]:
         group = module.Group.from_values(shared, values)
-        samples = [group.sample_value(shared) for _ in xrange(SAMPLE_COUNT)]
+        sample_count = SAMPLE_COUNT
+        if module.Value == numpy.ndarray:
+            sample_count *= 10
+        samples = [group.sample_value(shared) for _ in xrange(sample_count)]
         if module.Value in [bool, int]:
             probs_dict = {
                 value: math.exp(group.score_value(shared, value))

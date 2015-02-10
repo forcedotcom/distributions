@@ -1,7 +1,7 @@
 from itertools import izip
 import numpy
 from scipy.stats import norm
-from scipy.stats import multivariate_normal  # in version 0.14
+from scipy.stats import multivariate_normal  # requires version >=0.14
 from matplotlib import pyplot
 from sklearn.neighbors import NearestNeighbors
 import parsable
@@ -42,7 +42,7 @@ def get_samples(model, EXAMPLE, sample_count):
 
 
 def get_edge_stats(samples, scores):
-    if isinstance(samples[0], float):
+    if not hasattr(samples[0], '__iter__'):
         samples = numpy.array([samples]).T
     neighbors = NearestNeighbors(n_neighbors=2).fit(samples)
     distances, indices = neighbors.kneighbors(samples)
@@ -97,7 +97,7 @@ def cdf_to_pdf(Y, X, bandwidth=0.1):
 
 
 @parsable.command
-def plot_cdf(sample_count=10000, seed=0):
+def plot_cdf(sample_count=1000, seed=0):
     '''
     Plot test statistic cdf based on the Nearest Neighbor distribution [1,2,3].
 
@@ -137,7 +137,6 @@ def plot_cdf(sample_count=10000, seed=0):
 
     ax1.set_title('Nearest Neighbor Distance')
     ax1.legend(loc='best')
-    ax2.legend(loc='best')
     ax1.set_ylabel('CDF')
     ax2.set_ylabel('PDF')
     pyplot.tight_layout()
