@@ -11,20 +11,6 @@ from distributions.util import volume_of_sphere
 from distributions.tests.util import seed_all
 
 
-DEBUG = True
-
-
-def interpolate_score(head, tail, dim):
-    return head
-    # return 0.5 * (head + tail)
-    # return numpy.log(0.5 * (numpy.exp(head) + numpy.exp(tail)))
-    # if tail < head + 1e-4:
-    #     return head
-    # else:
-    #     a = tail - head
-    #     return tail * ((1 - numpy.exp(-a)) / a)
-
-
 def get_dim(value):
     if isinstance(value, float):
         return 1
@@ -56,19 +42,11 @@ def get_samples(model, EXAMPLE, sample_count):
 
 
 def get_edge_stats(samples, scores):
-    dim = get_dim(samples[0])
     if isinstance(samples[0], float):
         samples = numpy.array([samples]).T
     neighbors = NearestNeighbors(n_neighbors=2).fit(samples)
     distances, indices = neighbors.kneighbors(samples)
-    edge_lengths = distances[:, 1]
-    nearest = indices[:, 1]
-    edge_scores = numpy.array([
-        interpolate_score(scores[i], scores[j], dim)
-        for i, j in enumerate(nearest)
-    ])
-
-    return {'lengths': edge_lengths, 'scores': edge_scores}
+    return {'lengths': distances[:, 1], 'scores': scores}
 
 
 @parsable.command
