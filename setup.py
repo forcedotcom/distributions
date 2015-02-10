@@ -86,15 +86,15 @@ else:
         '-O3',
         '-ffast-math',
         '-funsafe-math-optimizations',
-        #'-fno-trapping-math',
-        #'-ffinite-math-only',
-        #'-fvect-cost-model',
+        # '-fno-trapping-math',
+        # '-ffinite-math-only',
+        # '-fvect-cost-model',
         '-mfpmath=sse',
         '-msse4.1',
-        #'-mavx',
-        #'-mrecip',
-        #'-march=native',
-        #'-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION',
+        # '-mavx',
+        # '-mrecip',
+        # '-march=native',
+        # '-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION',
     ])
 
 
