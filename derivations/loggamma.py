@@ -106,7 +106,7 @@ def gammaln_approx_fifth_order(x):
 
 
 def func_test(approx_func, max):
-    #x = np.array([1000.0, 1001, 1002])
+    # x = np.array([1000.0, 1001, 1002])
     x = np.linspace(0.001, max, 10000)
 
     y = gammaln(x)
@@ -169,12 +169,12 @@ def test_beta():
     pyplot.plot(errs)
     # pyplot.imshow(vals)
     # pyplot.figure()
-    ## PN = 5
+    # PN = 5
     # for i in range(PN):
-    ##     pyplot.subplot(1, PN, i+1)
-    ##     pyplot.plot(ys, vals[N/ PN * i, :])
-    ##     pyplot.title(xs[N/PN * i])
-#    pyplot.plot(delta)
+    #     pyplot.subplot(1, PN, i+1)
+    #     pyplot.plot(ys, vals[N/ PN * i, :])
+    #     pyplot.title(xs[N/PN * i])
+    # pyplot.plot(delta)
     pyplot.show()
 
 
@@ -224,10 +224,10 @@ def lstudent():
 
         print z
 
-        ## w = np.poly1d(z)
-        ## yhat = w(x)
-        ## pyplot.plot(x, y)
-        ## pyplot.plot(x, yhat)
+        # w = np.poly1d(z)
+        # yhat = w(x)
+        # pyplot.plot(x, y)
+        # pyplot.plot(x, yhat)
 
         # pyplot.show()
     print "const float lgamma_nu_func_approx_coeff3[] = {",

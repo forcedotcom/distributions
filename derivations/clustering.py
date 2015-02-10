@@ -251,9 +251,11 @@ def priors(N=100):
         prob[0] = log(alpha)
         return prob
 
+    def n_log_n(n):
+        return n * log(n)
+
     def entropy():
         prob = numpy.zeros(len(X))
-        n_log_n = lambda n: n * log(n)
         prob[1:] = n_log_n(X[1:]) - n_log_n(X[1:] - 1)
         return prob
 

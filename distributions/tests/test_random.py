@@ -111,7 +111,7 @@ def test_normal_draw():
     variances = [10.0 ** i for i in range(-3, 4)]
     for mean, variance in itertools.product(means, variances):
         # Assume scipy.stats is correct
-        #yield _test_normal_draw, scipy_normal_draw, mean, variance
+        # yield _test_normal_draw, scipy_normal_draw, mean, variance
         _test_normal_draw(
             distributions.hp.random.sample_normal,
             mean,
@@ -132,7 +132,7 @@ def test_chisq_draw():
     nus = [1.5 ** i for i in range(-10, 11)]
     for nu in nus:
         # Assume scipy.stats is correct
-        #yield _test_chisq_draw, scipy.stats.chi2.rvs, nu
+        # yield _test_chisq_draw, scipy.stats.chi2.rvs, nu
         _test_chisq_draw(distributions.hp.random.sample_chisq, nu)
 
 

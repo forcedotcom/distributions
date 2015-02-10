@@ -183,8 +183,8 @@ def bin_samples(samples, k=10, support=[]):
 
     N = len(samples)
     q, r = divmod(N, k)
-    #we need to distribute the remainder relatively evenly
-    #tests will be inaccurate if we have small bins at the end
+    # We need to distribute the remainder relatively evenly;
+    # tests will be inaccurate if we have small bins at the end.
     indices = [i * q + min(r, i) for i in range(k + 1)]
     bins = [samples[indices[i]: indices[i + 1]] for i in range(k)]
     bin_ranges = []
