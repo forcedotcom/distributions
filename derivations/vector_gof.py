@@ -7,6 +7,8 @@ from sklearn.neighbors import NearestNeighbors
 import parsable
 from distributions.dbg.models import nich
 from distributions.dbg.models import niw
+from distributions.lp.models import nich as lp_nich
+from distributions.lp.models import niw as lp_niw
 from distributions.util import volume_of_sphere
 from distributions.tests.util import seed_all
 
@@ -108,11 +110,13 @@ def plot_cdf(sample_count=1000, seed=0):
     '''
     seed_all(seed)
 
-    fig, (ax1, ax2) = pyplot.subplots(2, 1, sharex=True)
+    fig, (ax1, ax2) = pyplot.subplots(2, 1, sharex=True, figsize=(8, 10))
     ax1.plot([0, 1], [0, 1], 'k--')
     ax2.plot([0, 1], [1, 1], 'k--')
 
-    for model in [nich, niw]:
+    for model in [nich, lp_nich, niw, lp_niw]:
+        name = model.__name__.replace('distributions.', '')
+        name = name.replace('models.', '')
         for EXAMPLE in model.EXAMPLES:
             dim = get_dim(EXAMPLE['shared']['mu'])
             samples, scores = get_samples(model, EXAMPLE, sample_count)
@@ -131,12 +135,18 @@ def plot_cdf(sample_count=1000, seed=0):
             pdf *= sample_count
 
             error = 2 * (sum(cdf) / sample_count) - 1
-            label = '{}({}) error = {:0.3g}'.format(model.NAME, dim, error)
-            ax1.plot(X, cdf, label=label)
-            ax2.plot(Xp, pdf, label=label)
+            if abs(error) < 0.05:
+                status = 'PASS'
+                linestyle = '-'
+            else:
+                status = 'FAIL'
+                linestyle = '--'
+            label = '{} {}({}) error = {:.3g}'.format(status, name, dim, error)
+            ax1.plot(X, cdf, linestyle=linestyle, label=label)
+            ax2.plot(Xp, pdf, linestyle=linestyle, label=label)
 
-    ax1.set_title('Nearest Neighbor Distance')
-    ax1.legend(loc='best')
+    ax1.set_title('GOF of Nearest Neighbor Statistic')
+    ax1.legend(loc='best', prop={'size': 10}, fancybox=True, framealpha=0.5)
     ax1.set_ylabel('CDF')
     ax2.set_ylabel('PDF')
     pyplot.tight_layout()
