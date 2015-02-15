@@ -29,6 +29,7 @@ import numpy
 from numpy import pi
 import scipy.stats
 from scipy.special import gamma
+from itertools import izip
 from collections import defaultdict
 
 
@@ -77,7 +78,7 @@ def multinomial_goodness_of_fit(
     dof = 0
     if plot:
         print_histogram(probs, counts)
-    for p, c in zip(probs, counts):
+    for p, c in izip(probs, counts):
         if p == 1:
             return 1 if c == total_count else 0
         assert p < 1, 'bad probability: %g' % p
@@ -116,7 +117,29 @@ def unif01_goodness_of_fit(samples, plot=False):
     return multinomial_goodness_of_fit(probs, counts, len(samples), plot=plot)
 
 
-def density_goodness_of_fit(samples, probs, plot=False, normalized=True):
+def exp_goodness_of_fit(samples, plot, normalized=True, return_dict=False):
+    """
+    Transform exponentially distribued samples to unif01 distribution
+    and assess goodness of fit via binned Pearson's chi^2 test.
+
+    Inputs:
+        samples - a list of real-valued samples from a candidate distribution
+    """
+    result = {}
+    if not normalized:
+        result['norm'] = numpy.mean(samples)
+        samples /= result['norm']
+    unif01_samples = numpy.exp(-samples)
+    result['gof'] = unif01_goodness_of_fit(unif01_samples, plot=plot)
+    return result if return_dict else result['gof']
+
+
+def density_goodness_of_fit(
+        samples,
+        probs,
+        plot=False,
+        normalized=True,
+        return_dict=False):
     """
     Transform arbitrary continuous samples to unif01 distribution
     and assess goodness of fit via binned Pearson's chi^2 test.
@@ -127,16 +150,14 @@ def density_goodness_of_fit(samples, probs, plot=False, normalized=True):
     """
     assert len(samples) == len(probs)
     assert len(samples) > 100, 'WARNING imprecision; use more samples'
-    if not normalized:
-        raise NotImplementedError("Non-normalized densities")
     pairs = zip(samples, probs)
     pairs.sort()
     samples = numpy.array([x for x, p in pairs])
     probs = numpy.array([p for x, p in pairs])
     density = len(samples) * numpy.sqrt(probs[1:] * probs[:-1])
     gaps = samples[1:] - samples[:-1]
-    unif01_samples = numpy.exp(-density * gaps)
-    return unif01_goodness_of_fit(unif01_samples, plot=plot)
+    exp_samples = density * gaps
+    return exp_goodness_of_fit(exp_samples, plot, normalized, return_dict)
 
 
 def volume_of_sphere(dim, radius):
@@ -148,7 +169,8 @@ def vector_density_goodness_of_fit(
         samples,
         probs,
         plot=False,
-        normalized=True):
+        normalized=True,
+        return_dict=False):
     """
     Transform arbitrary multivariate continuous samples
     to unif01 distribution via nearest neighbor distribution [1,2,3]
@@ -174,11 +196,23 @@ def vector_density_goodness_of_fit(
     distances, indices = neighbors.kneighbors(samples)
     radii = distances[:, 1]
     density = len(samples) * numpy.array(probs)
-    if not normalized:
-        raise NotImplementedError("Non-normalized densities")
     volume = volume_of_sphere(dim, radii)
-    unif01_samples = numpy.exp(-density * volume)
-    return unif01_goodness_of_fit(unif01_samples, plot=plot)
+    exp_samples = density * volume
+    return exp_goodness_of_fit(exp_samples, plot, normalized, return_dict)
+
+
+def auto_density_goodness_of_fit(
+        samples,
+        probs,
+        plot=False,
+        normalized=True,
+        return_dict=False):
+    assert samples
+    if len(samples[0]) == 1:
+        fun = density_goodness_of_fit
+    else:
+        fun = vector_density_goodness_of_fit
+    return fun(samples, probs, plot, normalized, return_dict)
 
 
 def discrete_goodness_of_fit(
@@ -192,8 +226,8 @@ def discrete_goodness_of_fit(
     and assess goodness of fit via Pearson's chi^2 test.
     """
     if not normalized:
-        total = sum(probs_dict.itervalues())
-        probs_dict = {i: p / total for i, p in probs_dict.iteritems()}
+        norm = sum(probs_dict.itervalues())
+        probs_dict = {i: p / norm for i, p in probs_dict.iteritems()}
     counts = defaultdict(lambda: 0)
     for sample in samples:
         assert sample in probs_dict
@@ -215,10 +249,10 @@ def discrete_goodness_of_fit(
 
 
 def split_discrete_continuous(data):
-    '''
-    Converts arbitrary data to a pair `(discrete, continuous)`
+    """
+    Convert arbitrary data to a pair `(discrete, continuous)`
     where `discrete` is hashable and `continuous` is a list of floats.
-    '''
+    """
     if isinstance(data, (int, long, basestring)):
         return data, []
     elif isinstance(data, (tuple, list)):
@@ -242,19 +276,56 @@ def split_discrete_continuous(data):
 
 def mixed_density_goodness_of_fit(
         samples,
-        get_prob,
+        scores,
         plot=False,
         normalized=True):
-    '''
-    Test general datatypes under different projections and restrictions:
-    (1) TODO Marginalize out all discrete variables
-    (2) TODO Restrict to most likely discrete value
-    '''
-    # split_samples = map(split_discrete_continuous, samples)
-    # discrete_counts = Counter(d for (d, c) in split_samples)
-    # discrete_mode = discrete_counts.most_common(1)[0]
-    # ...
-    raise NotImplementedError("mixed_density_goodness_of_fit")
+    """
+    Test general mixed discrete+continuous datatypes by
+    (1) testing the continuous part conditioned on each discrete value, and
+    (2) testing the discrete part marginalizing over the continuous part.
+
+    Inputs:
+        samples - a list of real-vector-valued samples from a distribution
+        probs - a list of probability densities evaluated at those samples
+    Returns:
+        result['gof'] - a goodness of fit statistic in [0,1]
+        result['norm'] - the empirical norm (if normalized=False)
+    """
+    assert samples
+    discrete_samples = []
+    strata = defaultdict(lambda: ([], []))
+    for sample, score in izip(samples, scores):
+        d, c = split_discrete_continuous(sample)
+        discrete_samples.append(d)
+        samples, scores = strata[d]
+        samples.append(c)
+        scores.append(score)
+
+    # Continuous part
+    gofs = []
+    discrete_probs = {}
+    for key, (samples, scores) in strata.iteritems():
+        if len(samples[0]) == 1:
+            discrete_probs[key] = numpy.exp(scores[0])
+        else:
+            result = auto_density_goodness_of_fit(
+                samples,
+                scores,
+                plot=plot,
+                normalized=False,
+                return_dict=True)
+            gofs.append(result['gof'])
+            discrete_probs[key] = result['norm']
+
+    # Discrete part
+    if len(strata) > 1:
+        gofs.append(discrete_goodness_of_fit(
+            discrete_samples,
+            discrete_probs,
+            plot,
+            normalized))
+
+    return min(gofs)
 
 
 def bin_samples(samples, k=10, support=[]):
