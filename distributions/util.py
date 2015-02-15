@@ -248,26 +248,29 @@ def discrete_goodness_of_fit(
         plot=plot)
 
 
+NoneType = type(None)
+
+
 def split_discrete_continuous(data):
     """
     Convert arbitrary data to a pair `(discrete, continuous)`
     where `discrete` is hashable and `continuous` is a list of floats.
     """
-    if isinstance(data, (int, long, basestring)):
+    if isinstance(data, (NoneType, bool, int, long, basestring)):
         return data, []
+    elif isinstance(data, (float, numpy.float32, numpy.float64)):
+        return None, [data]
     elif isinstance(data, (tuple, list)):
         discrete = []
         continuous = []
         for part in data:
             d, c = split_discrete_continuous(part)
             discrete.append(d)
-            continuous.append(c)
+            continuous += c
         return tuple(discrete), continuous
     elif isinstance(data, numpy.ndarray):
         assert data.dtype in [numpy.float64, numpy.float32]
-        return [None] * len(data), map(float, data)
-    elif isinstance(data, (float, numpy.float32, numpy.float64)):
-        return None, [data]
+        return (None,) * len(data), map(float, data)
     else:
         raise TypeError(
             'split_discrete_continuous does not accept {} of type {}'.format(

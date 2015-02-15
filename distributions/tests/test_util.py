@@ -27,14 +27,16 @@
 
 import numpy
 from numpy import pi
+from nose.tools import assert_almost_equal
+from nose.tools import assert_equal
 from nose.tools import assert_greater
 from nose.tools import assert_less
 from nose.tools import assert_less_equal
 from nose.tools import assert_list_equal
-from nose.tools import assert_almost_equal
 from distributions.util import bin_samples
 from distributions.util import multinomial_goodness_of_fit
 from distributions.util import scores_to_probs
+from distributions.util import split_discrete_continuous
 from distributions.util import volume_of_sphere
 from distributions.tests.util import seed_all
 
@@ -82,3 +84,39 @@ def test_bin_samples():
     assert_list_equal(list(counts), [3, 3])
     assert_list_equal(list(bounds[0]), [0, 3])
     assert_list_equal(list(bounds[1]), [3, 5])
+
+
+split_examples = [
+    {'mixed': False, 'discrete': False, 'continuous': []},
+    {'mixed': 0, 'discrete': 0, 'continuous': []},
+    {'mixed': 'abc', 'discrete': 'abc', 'continuous': []},
+    {'mixed': 0.0, 'discrete': None, 'continuous': [0.0]},
+    {'mixed': (), 'discrete': (), 'continuous': []},
+    {'mixed': [], 'discrete': (), 'continuous': []},
+    {'mixed': (0,), 'discrete': (0, ), 'continuous': []},
+    {'mixed': [0, ], 'discrete': (0, ), 'continuous': []},
+    {'mixed': (0.0, ), 'discrete': (None, ), 'continuous': [0.0]},
+    {'mixed': [0.0, ], 'discrete': (None, ), 'continuous': [0.0]},
+    {
+        'mixed': [True, 1, 'xyz', 3.14, [None, (), ([2.71],)]],
+        'discrete': (True, 1, 'xyz', None, (None, (), ((None,),))),
+        'continuous': [3.14, 2.71],
+    },
+    {
+        'mixed': numpy.zeros(3),
+        'discrete': (None, None, None),
+        'continuous': [0.0, 0.0, 0.0],
+    },
+]
+
+
+def split_example(i):
+    example = split_examples[i]
+    discrete, continuous = split_discrete_continuous(example['mixed'])
+    assert_equal(discrete, example['discrete'])
+    assert_almost_equal(continuous, example['continuous'])
+
+
+def test_split_continuous_discrete():
+    for i in xrange(len(split_examples)):
+        yield split_example, i
