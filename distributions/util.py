@@ -284,15 +284,13 @@ def mixed_density_goodness_of_fit(
         normalized=True):
     """
     Test general mixed discrete+continuous datatypes by
-    (1) testing the continuous part conditioned on each discrete value, and
-    (2) testing the discrete part marginalizing over the continuous part.
+    (1) testing the continuous part conditioned on each discrete value
+    (2) testing the discrete part marginalizing over the continuous part
+    (3) testing the estimated total probability (if normalized = True)
 
     Inputs:
         samples - a list of real-vector-valued samples from a distribution
         probs - a list of probability densities evaluated at those samples
-    Returns:
-        result['gof'] - a goodness of fit statistic in [0,1]
-        result['norm'] - the empirical norm (if normalized=False)
     """
     assert samples
     discrete_samples = []
@@ -325,8 +323,17 @@ def mixed_density_goodness_of_fit(
         gofs.append(discrete_goodness_of_fit(
             discrete_samples,
             discrete_probs,
-            plot,
-            normalized))
+            plot=plot,
+            normalized=False))
+
+    # Normalization
+    if normalized:
+        norm = sum(discrete_probs.itervalues())
+        discrete_counts = [len(samples) for samples, _ in strata.itervalues()]
+        norm_variance = sum(1.0 / count for count in discrete_counts)
+        dof = len(discrete_counts)
+        chi_squared = (1 - norm) ** 2 / norm_variance
+        gofs.append(scipy.stats.chi2.sf(chi_squared, dof))
 
     return min(gofs)
 
