@@ -39,7 +39,7 @@ from nose.tools import (
     assert_is_instance,
 )
 from distributions.dbg.random import sample_discrete
-from distributions.util import discrete_goodness_of_fit
+from goftests import discrete_goodness_of_fit
 from distributions.tests.util import (
     require_cython,
     seed_all,

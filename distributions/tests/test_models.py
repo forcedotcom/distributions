@@ -37,11 +37,11 @@ from nose.tools import assert_in
 from nose.tools import assert_is_instance
 from nose.tools import assert_not_equal
 from nose.tools import assert_true
+from goftests import density_goodness_of_fit
+from goftests import discrete_goodness_of_fit
+from goftests import vector_density_goodness_of_fit
 from distributions.dbg.random import sample_discrete
-from distributions.util import density_goodness_of_fit
-from distributions.util import discrete_goodness_of_fit
 from distributions.util import scores_to_probs
-from distributions.util import vector_density_goodness_of_fit
 from distributions.tests.util import assert_all_close
 from distributions.tests.util import assert_close
 from distributions.tests.util import assert_hasattr
