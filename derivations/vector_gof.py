@@ -28,15 +28,25 @@
 from itertools import izip
 import numpy
 from scipy.stats import norm
-from scipy.stats import multivariate_normal  # requires version >=0.14
+
+try:
+    from scipy.stats import multivariate_normal
+except ImportError:
+
+    def multivariate_normal(*args, **kwargs):
+        raise NotImplementedError('multivariate_normal requires scipy>=0.14')
+
+    multivariate_normal.rvs = multivariate_normal
+    multivariate_normal.logprob = multivariate_normal
+
 from matplotlib import pyplot
 from sklearn.neighbors import NearestNeighbors
+from goftests import volume_of_sphere
 import parsable
 from distributions.dbg.models import nich
 from distributions.dbg.models import niw
 from distributions.lp.models import nich as lp_nich
 from distributions.lp.models import niw as lp_niw
-from distributions.util import volume_of_sphere
 from distributions.tests.util import seed_all
 
 
