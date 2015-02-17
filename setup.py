@@ -184,7 +184,7 @@ config = {
     'name': 'distributions',
     'description': 'Primitives for Bayesian MCMC inference',
     'long_description': long_description,
-    'url': 'https://github.com/forcedotcom/distributions',
+    'url': 'https://github.com/posterior/distributions',
     'author': 'Jonathan Glidden, Eric Jonas, Fritz Obermeyer, Cap Petschulat',
     'maintainer': 'Fritz Obermeyer',
     'maintainer_email': 'fritz.obermeyer@gmail.com',
