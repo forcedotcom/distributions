@@ -334,6 +334,10 @@ def mixed_density_goodness_of_fit(
         dof = len(discrete_counts)
         chi_squared = (1 - norm) ** 2 / norm_variance
         gofs.append(scipy.stats.chi2.sf(chi_squared, dof))
+        if plot:
+            print 'norm = {:.4g} +- {:.4g}'.format(norm, norm_variance ** 0.5)
+            print '     = {}'.format(
+                ' + '.join(map('{:.4g}'.format, discrete_probs.values())))
 
     return min(gofs)
 
