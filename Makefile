@@ -73,7 +73,7 @@ dev_cy: deps_cy FORCE
 	LIBRARY_PATH=$(library_path) pip install -e .
 
 install_cy: deps_cy FORCE
-	LIBRARY_PATH=$(library_path) pip install .
+	LIBRARY_PATH=$(library_path) pip install --upgrade .
 
 install: install_cc install_cy FORCE
 
