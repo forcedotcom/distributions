@@ -53,6 +53,10 @@ except ImportError:
 clang = False
 if sys.platform.lower().startswith('darwin'):
     clang = True
+if os.env.get('CC', '').startswith('gcc'):
+    clang = False
+if os.env.get('CXX', '').startswith('g++'):
+    clang = False
 
 
 include_dirs = ['include', 'distributions']
