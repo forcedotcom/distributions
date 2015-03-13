@@ -23,6 +23,7 @@
 # OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
 # ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
+# USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import numpy as np
 import math
@@ -36,6 +37,23 @@ from distributions.mixins import SharedMixin, GroupIoMixin, SharedIoMixin
 
 NAME = 'NormalInverseWishart'
 EXAMPLES = [
+    {
+        'shared': {
+            'mu': np.zeros(1),
+            'kappa': 2.,
+            'psi': np.eye(1),
+            'nu': 3.,
+        },
+        'values': [np.array(v) for v in (
+            [1.],
+            [-2.],
+            [-0.2],
+            [-0.1],
+            [0.8],
+            [0.8],
+            [-9.],
+        )],
+    },
     {
         'shared': {
             'mu': np.zeros(2),

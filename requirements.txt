@@ -2,6 +2,8 @@ setuptools>=2.2
 numpy>=1.6.1
 scipy>=0.9.0
 cython>=0.20.1
+scikit-learn
+goftests
 simplejson
 protobuf
 parsable

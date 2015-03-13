@@ -87,7 +87,7 @@ cdef class _Group:
         self.log_prod += log_factorial(value)
 
     def add_repeated_value(self, _Shared shared, int value, int count):
-        self.count += count 
+        self.count += count
         self.sum += count * value
         self.log_prod += count * log_factorial(value)
 

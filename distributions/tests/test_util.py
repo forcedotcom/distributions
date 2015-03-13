@@ -26,18 +26,11 @@
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import numpy
-from nose.tools import (
-    assert_less,
-    assert_less_equal,
-    assert_greater,
-    assert_list_equal,
-)
-from distributions.util import (
-    scores_to_probs,
-    bin_samples,
-    multinomial_goodness_of_fit,
-)
-from distributions.tests.util import seed_all
+from nose.tools import assert_less
+from nose.tools import assert_less_equal
+from nose.tools import assert_list_equal
+from distributions.util import bin_samples
+from distributions.util import scores_to_probs
 
 
 def test_scores_to_probs():
@@ -47,26 +40,6 @@ def test_scores_to_probs():
     for prob in probs:
         assert_less_equal(0, prob)
         assert_less_equal(prob, 1)
-
-
-def test_multinomial_goodness_of_fit():
-    for dim in range(2, 20):
-        yield _test_multinomial_goodness_of_fit, dim
-
-
-def _test_multinomial_goodness_of_fit(dim):
-    seed_all(0)
-    thresh = 1e-3
-    sample_count = int(1e5)
-    probs = numpy.random.dirichlet([1] * dim)
-
-    counts = numpy.random.multinomial(sample_count, probs)
-    p_good = multinomial_goodness_of_fit(probs, counts, sample_count)
-    assert_greater(p_good, thresh)
-
-    unif_counts = numpy.random.multinomial(sample_count, [1. / dim] * dim)
-    p_bad = multinomial_goodness_of_fit(probs, unif_counts, sample_count)
-    assert_less(p_bad, thresh)
 
 
 def test_bin_samples():

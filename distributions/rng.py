@@ -36,7 +36,7 @@ import numpy as np
 
 class Rng:
     def __init__(self):
-        #print 'RNG_CC', rng_cc
+        # print 'RNG_CC', rng_cc
         self.np = np
         if rng_cc is not None:
             self.cc = rng_cc.RngCc()

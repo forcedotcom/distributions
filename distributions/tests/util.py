@@ -36,7 +36,7 @@ from nose import SkipTest
 from nose.tools import assert_true, assert_less, assert_equal
 import importlib
 import distributions
-from distributions.util import multinomial_goodness_of_fit
+from goftests import multinomial_goodness_of_fit
 
 ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 TOL = 1e-3
