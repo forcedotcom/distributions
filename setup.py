@@ -53,9 +53,9 @@ except ImportError:
 clang = False
 if sys.platform.lower().startswith('darwin'):
     clang = True
-if os.env.get('CC', '').startswith('gcc'):
+if os.environ.get('CC', '').startswith('gcc'):
     clang = False
-if os.env.get('CXX', '').startswith('g++'):
+if os.environ.get('CXX', '').startswith('g++'):
     clang = False
 
 
