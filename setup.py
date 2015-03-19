@@ -62,6 +62,8 @@ if os.environ.get('CXX', '').startswith('g++'):
 include_dirs = ['include', 'distributions']
 include_dirs.append(numpy.get_include())
 
+conda_include = os.path.join(os.path.dirname(sys.executable), "../include")
+include_dirs.append(conda_include)
 if 'EXTRA_INCLUDE_PATH' in os.environ:
     include_dirs.append(os.environ['EXTRA_INCLUDE_PATH'])
 
