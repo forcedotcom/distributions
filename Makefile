@@ -20,9 +20,16 @@ ifdef VIRTUAL_ENV
 	library_path=$(LIBRARY_PATH):$(VIRTUAL_ENV)/lib/
 	nose_env+=$(ld_library_path)=$($(ld_library_path)):$(VIRTUAL_ENV)/lib/
 else
-	cmake_args=-DCMAKE_INSTALL_PREFIX=../..
-	library_path=$(LIBRARY_PATH):`pwd`/lib/
-	nose_env+=$(ld_library_path)=$($(ld_library_path)):`pwd`/lib/
+	ifdef CONDA_ROOT
+		cmake_args=-DCMAKE_INSTALL_PREFIX=$(CONDA_ROOT)
+		library_path=$(LIBRARY_PATH):$(CONDA_ROOT)/lib/
+		nose_env+=$(ld_library_path)=$($(ld_library_path)):$(CONDA_ROOT)/lib/
+	else
+		cmake_args=-DCMAKE_INSTALL_PREFIX=../..
+		library_path=$(LIBRARY_PATH):`pwd`/lib/
+		nose_env+=$(ld_library_path)=$($(ld_library_path)):`pwd`/lib/
+
+	endif
 endif
 ifdef CMAKE_INSTALL_PREFIX
 	cmake_args=-DCMAKE_INSTALL_PREFIX=$(CMAKE_INSTALL_PREFIX)
