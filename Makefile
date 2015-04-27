@@ -16,14 +16,18 @@ endif
 cmake_args=
 nose_env:=NOSE_PROCESSES=$(cpu_count) NOSE_PROCESS_TIMEOUT=240
 ifdef VIRTUAL_ENV
-	cmake_args=-DCMAKE_INSTALL_PREFIX=$(VIRTUAL_ENV)
-	library_path=$(LIBRARY_PATH):$(VIRTUAL_ENV)/lib/
-	nose_env+=$(ld_library_path)=$($(ld_library_path)):$(VIRTUAL_ENV)/lib/
+	root_path=$(VIRTUAL_ENV)
 else
-	cmake_args=-DCMAKE_INSTALL_PREFIX=../..
-	library_path=$(LIBRARY_PATH):`pwd`/lib/
-	nose_env+=$(ld_library_path)=$($(ld_library_path)):`pwd`/lib/
+	ifdef CONDA_ROOT
+		root_path=$(CONDA_ROOT)
+	else
+		root_path='../..'
+	endif
 endif
+cmake_args=-DCMAKE_INSTALL_PREFIX=$(root_path)
+library_path=$(LIBRARY_PATH):$(root_path)/lib/
+nose_env+=$(ld_library_path)=$($(ld_library_path)):$(root_path)/lib/
+
 ifdef CMAKE_INSTALL_PREFIX
 	cmake_args=-DCMAKE_INSTALL_PREFIX=$(CMAKE_INSTALL_PREFIX)
 endif
