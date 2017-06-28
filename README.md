@@ -1,8 +1,8 @@
-[![Build Status](https://travis-ci.org/posterior/distributions.svg?branch=master)](https://travis-ci.org/posterior/distributions)
-[![Code Quality](http://img.shields.io/scrutinizer/g/posterior/distributions.svg)](https://scrutinizer-ci.com/g/posterior/distributions/code-structure/master/hot-spots)
-[![Latest Version](https://badge.fury.io/py/distributions.svg)](https://pypi.python.org/pypi/distributions)
-
 # Distributions
+
+[![Build Status](https://travis-ci.org/posterior/distributions.svg?branch=master)](https://travis-ci.org/posterior/distributions)
+[![Latest Version](https://badge.fury.io/py/distributions.svg)](https://pypi.python.org/pypi/distributions)
+[![DOI](https://zenodo.org/badge/29212688.svg)](https://zenodo.org/badge/latestdoi/29212688)
 
 Distributions provides low-level primitives for
 collapsed Gibbs sampling in Python and C++ including:
