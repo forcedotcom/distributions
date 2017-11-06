@@ -46,7 +46,9 @@ struct Packed_ : std::vector<Value, Alloc> {
 
     void packed_remove(size_t pos) {
         DIST_ASSERT1(pos < Base::size(), "bad pos: " << pos);
-        Base::operator[](pos) = std::move(Base::back());
+        if (pos != Base::size() - 1) {
+            Base::operator[](pos) = std::move(Base::back());
+        }
         Base::pop_back();
     }
 
