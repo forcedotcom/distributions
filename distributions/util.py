@@ -29,7 +29,7 @@ import numpy
 
 
 def scores_to_probs(scores):
-    scores = numpy.array(scores)
+    scores = numpy.array(scores, dtype='d')
     scores -= scores.max()
     probs = numpy.exp(scores, out=scores)
     probs /= probs.sum()
