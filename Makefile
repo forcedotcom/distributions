@@ -41,7 +41,7 @@ src/test_headers.cc: $(headers)
 	  > src/test_headers.cc
 	@echo '\nint main () { return 0; }' >> src/test_headers.cc
 
-prepare_cc: src/test_headers.cc FORCE
+prepare_cc: src/test_headers.cc protobuf FORCE
 	mkdir -p lib
 
 build/python: prepare_cc FORCE
