@@ -26,4 +26,4 @@ test:
     - distributions.lp.models.bb
 
 about:
-  home: https://github.com/forcedotcom/distributions
+  home: https://github.com/posterior/distributions

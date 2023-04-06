@@ -46,7 +46,9 @@ struct Packed_ : std::vector<Value, Alloc> {
 
     void packed_remove(size_t pos) {
         DIST_ASSERT1(pos < Base::size(), "bad pos: " << pos);
-        Base::operator[](pos) = std::move(Base::back());
+        if (pos != Base::size() - 1) {
+            Base::operator[](pos) = std::move(Base::back());
+        }
         Base::pop_back();
     }
 
@@ -62,7 +64,7 @@ struct Packed_ : std::vector<Value, Alloc> {
 
 template<class Value>
 class Aligned_ {
-  public:
+ public:
     Aligned_(Value * data, size_t size) :
         data_(data),
         size_(size) {
@@ -81,7 +83,7 @@ class Aligned_ {
     size_t size() const { return size_; }
     Value & operator[] (size_t i) { return data_[i]; }
 
-  private:
+ private:
     Value * const data_;
     const size_t size_;
 };

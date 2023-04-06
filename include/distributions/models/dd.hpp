@@ -283,7 +283,7 @@ struct MixtureDataScorer
         }
     }
 
-  private:
+ private:
     void _init(
             const Shared & shared,
             const std::vector<Group> & groups) const {
@@ -454,7 +454,7 @@ struct MixtureValueScorer : MixtureSlaveValueScorerMixin<Model> {
         DIST_ASSERT_EQ(scores_shift_.size(), groups.size());
     }
 
-  private:
+ private:
     void _update_group_value(
             const Shared & shared,
             size_t groupid,

@@ -26,12 +26,10 @@
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import numpy
-import scipy.stats
-from collections import defaultdict
 
 
 def scores_to_probs(scores):
-    scores = numpy.array(scores)
+    scores = numpy.array(scores, dtype='d')
     scores -= scores.max()
     probs = numpy.exp(scores, out=scores)
     probs /= probs.sum()
@@ -45,123 +43,6 @@ def score_to_empirical_kl(score, count):
     """
     count = float(count)
     return -score / count - numpy.log(count)
-
-
-def print_histogram(probs, counts):
-    WIDTH = 60.0
-    max_count = max(counts)
-    print '{: >8} {: >8}'.format('Prob', 'Count')
-    for prob, count in sorted(zip(probs, counts), reverse=True):
-        width = int(round(WIDTH * count / max_count))
-        print '{: >8.3f} {: >8d} {}'.format(prob, count, '-' * width)
-
-
-def multinomial_goodness_of_fit(
-        probs,
-        counts,
-        total_count,
-        truncated=False,
-        plot=False):
-    """
-    Pearson's chi^2 test, on possibly truncated data.
-    http://en.wikipedia.org/wiki/Pearson%27s_chi-squared_test
-
-    Returns:
-        p-value of truncated multinomial sample.
-    """
-    assert len(probs) == len(counts)
-    assert truncated or total_count == sum(counts)
-    chi_squared = 0
-    dof = 0
-    if plot:
-        print_histogram(probs, counts)
-    for p, c in zip(probs, counts):
-        if p == 1:
-            return 1 if c == total_count else 0
-        assert p < 1, 'bad probability: %g' % p
-        if p > 0:
-            mean = total_count * p
-            variance = total_count * p * (1 - p)
-            assert variance > 1,\
-                'WARNING goodness of fit is inaccurate; use more samples'
-            chi_squared += (c - mean) ** 2 / variance
-            dof += 1
-        else:
-            print 'WARNING zero probability in goodness-of-fit test'
-            if c > 0:
-                return float('inf')
-
-    if not truncated:
-        dof -= 1
-
-    survival = scipy.stats.chi2.sf(chi_squared, dof)
-    return survival
-
-
-def unif01_goodness_of_fit(samples, plot=False):
-    """
-    Bin uniformly distributed samples and apply Pearson's chi^2 test.
-    """
-    samples = numpy.array(samples, dtype=float)
-    assert samples.min() >= 0.0
-    assert samples.max() <= 1.0
-    bin_count = int(round(len(samples) ** 0.333))
-    assert bin_count >= 7, 'WARNING imprecise test, use more samples'
-    probs = numpy.ones(bin_count, dtype=numpy.float) / bin_count
-    counts = numpy.zeros(bin_count, dtype=numpy.int)
-    for sample in samples:
-        counts[int(bin_count * sample)] += 1
-    return multinomial_goodness_of_fit(probs, counts, len(samples), plot=plot)
-
-
-def density_goodness_of_fit(samples, probs, plot=False):
-    """
-    Transform arbitrary continuous samples to unif01 distribution
-    and assess goodness of fit via Pearson's chi^2 test.
-
-    Inputs:
-        samples - a list of real-valued samples from a distribution
-        probs - a list of probability densities evaluated at those samples
-    """
-    assert len(samples) == len(probs)
-    assert len(samples) > 100, 'WARNING imprecision; use more samples'
-    pairs = zip(samples, probs)
-    pairs.sort()
-    samples = numpy.array([x for x, p in pairs])
-    probs = numpy.array([p for x, p in pairs])
-    density = numpy.sqrt(probs[1:] * probs[:-1])
-    gaps = samples[1:] - samples[:-1]
-    unif01_samples = 1.0 - numpy.exp(-len(samples) * gaps * density)
-    return unif01_goodness_of_fit(unif01_samples, plot=plot)
-
-
-def discrete_goodness_of_fit(
-        samples,
-        probs_dict,
-        truncate_beyond=8,
-        plot=False):
-    """
-    Transform arbitrary discrete data to multinomial
-    and assess goodness of fit via Pearson's chi^2 test.
-    """
-    assert len(samples) > 100, 'WARNING imprecision; use more samples'
-    counts = defaultdict(lambda: 0)
-    for sample in samples:
-        assert sample in probs_dict
-        counts[sample] += 1
-    items = [(prob, counts.get(i, 0)) for i, prob in probs_dict.iteritems()]
-    items.sort(reverse=True)
-    truncated = (truncate_beyond and truncate_beyond < len(items))
-    if truncated:
-        items = items[:truncate_beyond]
-    probs = [prob for prob, count in items]
-    counts = [count for prob, count in items]
-    return multinomial_goodness_of_fit(
-        probs,
-        counts,
-        len(samples),
-        truncated=truncated,
-        plot=plot)
 
 
 def bin_samples(samples, k=10, support=[]):
@@ -183,8 +64,8 @@ def bin_samples(samples, k=10, support=[]):
 
     N = len(samples)
     q, r = divmod(N, k)
-    #we need to distribute the remainder relatively evenly
-    #tests will be inaccurate if we have small bins at the end
+    # We need to distribute the remainder relatively evenly;
+    # tests will be inaccurate if we have small bins at the end.
     indices = [i * q + min(r, i) for i in range(k + 1)]
     bins = [samples[indices[i]: indices[i + 1]] for i in range(k)]
     bin_ranges = []

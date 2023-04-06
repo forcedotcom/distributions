@@ -63,7 +63,7 @@ static const size_t default_alignment = 32;
 
 template<class T, size_t alignment = default_alignment>
 class aligned_allocator {
-  public:
+ public:
     typedef T value_type;
     typedef size_t size_type;
     typedef ptrdiff_t difference_type;

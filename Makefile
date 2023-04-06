@@ -16,14 +16,18 @@ endif
 cmake_args=
 nose_env:=NOSE_PROCESSES=$(cpu_count) NOSE_PROCESS_TIMEOUT=240
 ifdef VIRTUAL_ENV
-	cmake_args=-DCMAKE_INSTALL_PREFIX=$(VIRTUAL_ENV)
-	library_path=$(LIBRARY_PATH):$(VIRTUAL_ENV)/lib/
-	nose_env+=$(ld_library_path)=$($(ld_library_path)):$(VIRTUAL_ENV)/lib/
+	root_path=$(VIRTUAL_ENV)
 else
-	cmake_args=-DCMAKE_INSTALL_PREFIX=../..
-	library_path=$(LIBRARY_PATH):`pwd`/lib/
-	nose_env+=$(ld_library_path)=$($(ld_library_path)):`pwd`/lib/
+	ifdef CONDA_ROOT
+		root_path=$(CONDA_ROOT)
+	else
+		root_path='../..'
+	endif
 endif
+cmake_args=-DCMAKE_INSTALL_PREFIX=$(root_path)
+library_path=$(LIBRARY_PATH):$(root_path)/lib/
+nose_env+=$(ld_library_path)=$($(ld_library_path)):$(root_path)/lib/
+
 ifdef CMAKE_INSTALL_PREFIX
 	cmake_args=-DCMAKE_INSTALL_PREFIX=$(CMAKE_INSTALL_PREFIX)
 endif
@@ -32,12 +36,12 @@ all: test
 
 headers:=$(shell find include | grep '\.hpp' | grep -v protobuf | sort -d)
 src/test_headers.cc: $(headers)
-	echo $(headers) \
-	  | sed 's/include\/\(\S*\)\s*/#include <\1>\n/g' \
+	find include | grep '\.hpp' | grep -v protobuf | sort -d \
+	  | sed 's/include\/\(.*\)/#include <\1>/g' \
 	  > src/test_headers.cc
-	echo 'int main () { return 0; }' >> src/test_headers.cc
+	@echo '\nint main () { return 0; }' >> src/test_headers.cc
 
-prepare_cc: src/test_headers.cc FORCE
+prepare_cc: src/test_headers.cc protobuf FORCE
 	mkdir -p lib
 
 build/python: prepare_cc FORCE
@@ -73,7 +77,7 @@ dev_cy: deps_cy FORCE
 	LIBRARY_PATH=$(library_path) pip install -e .
 
 install_cy: deps_cy FORCE
-	LIBRARY_PATH=$(library_path) pip install .
+	LIBRARY_PATH=$(library_path) pip install --upgrade .
 
 install: install_cc install_cy FORCE
 
@@ -90,7 +94,7 @@ test_cc_examples: install_cc_examples FORCE
 CPP_SOURCES:=$(shell find include src examples benchmarks | grep -v 'vendor\|\.pb\.'  | grep -v 'src/test_headers.cc' | grep '\.\(cc\|hpp\)$$')
 
 lint_cc: FORCE
-	cpplint --filter=-build/include_order,-readability/streams,-readability/function,-runtime/arrays $(CPP_SOURCES)
+	cpplint --filter=-build/include_order,-readability/streams,-readability/function,-runtime/arrays,-runtime/reference,-runtime/explicit,-readability/alt_tokens,-build/c++11 $(CPP_SOURCES)
 
 test_cc: install_cc lint_cc FORCE
 	cd build && ctest
@@ -101,7 +105,7 @@ PY_SOURCES=setup.py update_license.py distributions derivations examples/mixture
 
 test_cy: dev_cy FORCE
 	pyflakes $(PY_SOURCES)
-	pep8 --repeat --ignore=E265 --exclude=*_pb2.py,vendor $(PY_SOURCES)
+	pep8 --repeat --ignore=E265,E402,W503 --exclude=*_pb2.py,vendor $(PY_SOURCES)
 	$(nose_env) nosetests -v distributions derivations examples
 	@echo '----------------'
 	@echo 'PASSED CY TESTS'

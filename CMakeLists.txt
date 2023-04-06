@@ -42,7 +42,8 @@ if(DEFINED EXTRA_LIBRARY_PATH)
 endif()
 
 find_package(Eigen3 REQUIRED)
-include_directories(${EIGEN3_INCLUDE_DIRS})
+get_filename_component(PARENT_DIR ${EIGEN3_INCLUDE_DIR} PATH)
+include_directories(${PARENT_DIR})
 
 find_package(Yeppp)
 if(YEPPP_FOUND)

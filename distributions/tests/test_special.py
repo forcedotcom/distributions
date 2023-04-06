@@ -48,11 +48,11 @@ def test_log_stirling1_row():
         row_cpp = log_stirling1_row(n)[1:]
         assert_equal(len(row_py), len(row_cpp))
 
-        # only the slopes need to be accurate
-        #print 0,
-        #assert_close(row_py[0], row_cpp[0])
-        #print len(row_py)
-        #assert_close(row_py[-1], row_cpp[-1])
+        # Only the slopes need to be accurate
+        # print 0,
+        # assert_close(row_py[0], row_cpp[0])
+        # print len(row_py)
+        # assert_close(row_py[-1], row_cpp[-1])
 
         diff_py = numpy.diff(row_py)
         diff_cpp = numpy.diff(row_cpp)

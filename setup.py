@@ -53,6 +53,10 @@ except ImportError:
 clang = False
 if sys.platform.lower().startswith('darwin'):
     clang = True
+if os.environ.get('CC', '').startswith('gcc'):
+    clang = False
+if os.environ.get('CXX', '').startswith('g++'):
+    clang = False
 
 
 include_dirs = ['include', 'distributions']
@@ -86,15 +90,15 @@ else:
         '-O3',
         '-ffast-math',
         '-funsafe-math-optimizations',
-        #'-fno-trapping-math',
-        #'-ffinite-math-only',
-        #'-fvect-cost-model',
+        # '-fno-trapping-math',
+        # '-ffinite-math-only',
+        # '-fvect-cost-model',
         '-mfpmath=sse',
         '-msse4.1',
-        #'-mavx',
-        #'-mrecip',
-        #'-march=native',
-        #'-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION',
+        # '-mavx',
+        # '-mrecip',
+        # '-march=native',
+        # '-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION',
     ])
 
 
@@ -184,7 +188,7 @@ config = {
     'name': 'distributions',
     'description': 'Primitives for Bayesian MCMC inference',
     'long_description': long_description,
-    'url': 'https://github.com/forcedotcom/distributions',
+    'url': 'https://github.com/posterior/distributions',
     'author': 'Jonathan Glidden, Eric Jonas, Fritz Obermeyer, Cap Petschulat',
     'maintainer': 'Fritz Obermeyer',
     'maintainer_email': 'fritz.obermeyer@gmail.com',

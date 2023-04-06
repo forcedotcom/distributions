@@ -39,7 +39,7 @@ from nose.tools import (
     assert_is_instance,
 )
 from distributions.dbg.random import sample_discrete
-from distributions.util import discrete_goodness_of_fit
+from goftests import discrete_goodness_of_fit
 from distributions.tests.util import (
     require_cython,
     seed_all,
@@ -255,7 +255,7 @@ def test_mixture_score_matches_score_add_value(Model, EXAMPLE, *unused):
     assert_greater(nonempty_group_count, 1, "test is inaccurate")
 
     def check_counts(mixture, counts, empty_group_count):
-        #print 'counts =', counts
+        # print 'counts =', counts
         empty_groupids = frozenset(mixture.empty_groupids)
         assert_equal(len(empty_groupids), empty_group_count)
         for groupid in empty_groupids:

@@ -5,7 +5,7 @@ fi
 echo "Conda build env"
 printenv
 echo "protoc: `which protoc`"
-git clone https://github.com/forcedotcom/distributions.git
+git clone https://github.com/posterior/distributions.git
 cd distributions && git checkout tags/2.0.26
 make protobuf
 mkdir build && cd build

@@ -124,7 +124,7 @@ struct PitmanYor {
 
     // HACK gcc doesn't want Mixture defined outside of PitmanYor
     class CachedMixture {
-      public:
+     public:
         typedef PitmanYor Model;
         typedef typename MixtureDriver<PitmanYor, count_t>::IdSet IdSet;
 
@@ -211,7 +211,7 @@ struct PitmanYor {
             return driver_.score_data(model);
         }
 
-      private:
+     private:
         void _update_nonempty_group(const Model & model, size_t groupid) {
             auto const group_size = counts(groupid);
             DIST_ASSERT2(group_size, "expected nonempty group");
@@ -312,7 +312,7 @@ struct LowEntropy {
 
     typedef MixtureDriver<LowEntropy, count_t> Mixture;
 
-  private:
+ private:
     // ad hoc approximation,
     // see `python derivations/clustering.py postpred`
     // see `python derivations/clustering.py approximations`
