@@ -1,5 +1,5 @@
 uname:=$(shell uname -s)
-cpu_count=$(shell python -c 'import multiprocessing as m; print m.cpu_count()')
+cpu_count=$(shell python -c 'import multiprocessing as m; print(m.cpu_count())')
 
 
 ld_library_path=
