@@ -39,7 +39,7 @@ def flavors_by_model():
     for spec in list_models():
         models[spec['name']].append(spec['flavor'])
     for model in sorted(models):
-        print 'model {}: {}'.format(model, ' '.join(sorted(models[model])))
+        print('model {}: {}'.format(model, ' '.join(sorted(models[model]))))
 
 
 @parsable.command
@@ -51,7 +51,7 @@ def models_by_flavor():
     for spec in list_models():
         flavors[spec['flavor']].append(spec['name'])
     for flavor in sorted(flavors):
-        print 'flavor {}: {}'.format(flavor, ' '.join(sorted(flavors[flavor])))
+        print('flavor {}: {}'.format(flavor, ' '.join(sorted(flavors[flavor]))))
 
 
 @parsable.command
@@ -73,13 +73,14 @@ def model_apis():
                 methods.append(attr)
             else:
                 constants.append(attr)
-        print 'distributions.{}.models.{}.{}:'.format(
-            spec['flavor'],
-            spec['name'],
-            Model.__name__)
-        print '  types:\n    {}'.format('\n    '.join(types))
-        print '  methods:\n    {}'.format('\n    '.join(methods))
-        print '  constants:\n    {}'.format('\n    '.join(constants))
+        print(
+            'distributions.{}.models.{}.{}:'.format(
+                spec['flavor'], spec['name'], Model.__name__
+            )
+        )
+        print('  types:\n    {}'.format('\n    '.join(types)))
+        print('  methods:\n    {}'.format('\n    '.join(methods)))
+        print('  constants:\n    {}'.format('\n    '.join(constants)))
 
 
 if __name__ == '__main__':

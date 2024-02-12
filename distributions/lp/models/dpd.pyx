@@ -76,12 +76,12 @@ cdef class _Shared(_dpd.Shared):
         cdef int value
         cdef float beta
         cdef double beta0 = 1.0
-        for value, beta in raw_betas.iteritems():
+        for value, beta in raw_betas.items():
             self.ptr.betas.add(int(value), beta)
             beta0 -= beta
         self.ptr.beta0 = beta0
         cdef int count
-        for value, count in raw_counts.iteritems():
+        for value, count in raw_counts.items():
             self.ptr.counts.add(int(value), count)
 
     def dump(self):
@@ -111,7 +111,7 @@ cdef class _Shared(_dpd.Shared):
         cdef int value
         cdef float beta
         cdef double beta0 = 1.0
-        for i in xrange(len(message.betas)):
+        for i in range(len(message.betas)):
             value = message.values[i]
             beta = message.betas[i]
             self.ptr.betas.add(value, beta)
@@ -146,7 +146,7 @@ cdef class _Group(_dpd.Group):
         cdef dict raw_counts = raw['counts']
         cdef int value
         cdef int count
-        for value, count in raw_counts.iteritems():
+        for value, count in raw_counts.items():
             counts.init_count(value, count)
 
     def dump(self):

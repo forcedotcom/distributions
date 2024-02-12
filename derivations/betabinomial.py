@@ -47,7 +47,7 @@ def simtwo(alpha, beta, n, ITERS):
     thetas = np.random.beta(alpha, beta, size=ITERS)
     for i in range(ITERS):
         if i % 1000000 == 0:
-            print i
+          print(i)
 
         counts[i] = np.random.binomial(n, thetas[i], size=2)
     return counts
@@ -126,7 +126,7 @@ def test_post_pred_equal_likelihood():
     for alpha in [5.0]:
         for beta in [5.0]:
             for ks in [[9, 1], [1, 9]]:
-                print "-" * 60
+                print("-" * 60)
                 hps.alpha = alpha
                 hps.beta = beta
 
@@ -139,12 +139,12 @@ def test_post_pred_equal_likelihood():
 
                 total_score = compute_total_likelihood(hps, ss)
                 res = two_d_hist(alpha, beta, hps.N, 10000000)
-                print res
-                print res.shape
+                print(res)
+                print(res.shape)
                 emp_score = res[ks[0], ks[1]]
                 d1 = abs(pred_score - emp_score)
                 d2 = abs(emp_score - total_score)
                 d3 = abs(total_score - pred_score)
-                print "alpha=", alpha, "beta=", beta, "ks =", ks
-                print pred_score, total_score, emp_score
-                print "error=", d1 + d2 + d3
+                print("alpha=", alpha, "beta=", beta, "ks =", ks)
+                print(pred_score, total_score, emp_score)
+                print("error=", d1 + d2 + d3)

@@ -52,7 +52,7 @@ def test_pp():
 
     pos = 0
     for mi, m in enumerate(ms):
-        print mi
+        print(mi)
         for ni, n in enumerate(ns):
             for ai, a in enumerate(alphas):
                 for bi, b in enumerate(betas):
@@ -69,8 +69,8 @@ def test_pp():
                     pos += 1
 
     x, residues, rank, s = np.linalg.lstsq(A, B)
-    print x
-    print residues
+    print(x)
+    print(residues)
 
     pyplot.plot(((np.dot(A, x) - B) / B) * 100)
     pyplot.ylabel("Percent error")
@@ -91,7 +91,7 @@ def test_pp2():
 
         pos = 0
         for mi, m in enumerate(ms):
-            print mi
+            print(mi)
             for ni, n in enumerate(ns):
                 for ai, a in enumerate(alphas):
                     for bi, b in enumerate(betas):

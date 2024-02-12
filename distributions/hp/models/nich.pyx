@@ -229,6 +229,6 @@ def sample_group(_Shared shared, int size):
     sampler.init(shared)
     cdef list result = []
     cdef int i
-    for i in xrange(size):
+    for i in range(size):
         result.append(sampler.eval(shared))
     return result

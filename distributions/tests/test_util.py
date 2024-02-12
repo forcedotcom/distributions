@@ -43,7 +43,7 @@ def test_scores_to_probs():
 
 
 def test_bin_samples():
-    samples = range(6)
+    samples = numpy.arange(6)
     numpy.random.shuffle(samples)
     counts, bounds = bin_samples(samples, 2)
     assert_list_equal(list(counts), [3, 3])

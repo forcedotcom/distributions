@@ -38,7 +38,7 @@ def test_rng():
     assert_true(rng.np is not None)
     assert_true(rng.cc is not None)
 
-    print hpr.random()
-    print hpr.random()
-    print hpr.random()
-    print hpr.random()
+    print(hpr.random())
+    print(hpr.random())
+    print(hpr.random())
+    print(hpr.random())

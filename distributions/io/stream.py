@@ -48,27 +48,27 @@ def open_compressed(filename, mode='r'):
         if dirname:
             mkdir_p(dirname)
     if filename.endswith('.bz2'):
-        return bz2.BZ2File(filename, mode.replace('b', ''))
+        return bz2.open(filename, mode)
     elif filename.endswith('.gz'):
-        return gzip.GzipFile(filename, mode)
+        return gzip.open(filename, mode)
     else:
-        return file(filename, mode)
+        return open(filename, mode)
 
 
 def json_dump(data, filename, **kwargs):
-    with open_compressed(filename, 'w') as f:
+    with open_compressed(filename, 'wt') as f:
         simplejson.dump(data, f, **kwargs)
 
 
 def json_load(filename):
-    with open_compressed(filename, 'rb') as f:
+    with open_compressed(filename, 'rt') as f:
         return simplejson.load(f)
 
 
 def json_stream_dump(stream, filename, **kwargs):
     kwargs['separators'] = (',', ':')
     stream = iter(stream)
-    with open_compressed(filename, 'w') as f:
+    with open_compressed(filename, 'wt') as f:
         f.write('[')
         try:
             item = next(stream)
@@ -84,7 +84,7 @@ def json_stream_dump(stream, filename, **kwargs):
 
 def json_costream_dump(filename, **kwargs):
     kwargs['separators'] = (',', ':')
-    with open_compressed(filename, 'w') as f:
+    with open_compressed(filename, 'wt') as f:
         f.write('[')
         try:
             item = (yield)
@@ -115,7 +115,7 @@ class json_stream_load(object):
     files, however in practice this is ~40x slower.
     '''
     def __init__(self, filename):
-        self.fd = open_compressed(filename, 'rb')
+        self.fd = open_compressed(filename, 'rt')
         line = self.fd.readline(2)
         if line != '[\n':
             raise IOError(
@@ -126,7 +126,7 @@ class json_stream_load(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         line = self.fd.readline().rstrip(',\n')
         if line == ']':
             self.close()
@@ -139,7 +139,6 @@ class json_stream_load(object):
 
 
 def protobuf_stream_write(item, fd):
-    assert isinstance(item, str), item
     fd.write(struct.pack('<I', len(item)))
     fd.write(item)
 
@@ -165,7 +164,7 @@ class protobuf_stream_load(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         return protobuf_stream_read(self.fd)
 
     def close(self):

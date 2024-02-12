@@ -35,8 +35,6 @@
 #include <distributions/common.hpp>
 #include <distributions/vendor/fmath.hpp>
 
-#define M_PIf (3.14159265358979f)
-
 namespace distributions {
 
 template<class T> T sqr(const T & t) {

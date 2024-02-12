@@ -29,7 +29,6 @@
 \cite{teh2006hierarchical}
 """
 
-from itertools import izip
 from distributions.dbg.special import log, gammaln
 from distributions.dbg.random import (
     sample_discrete,
@@ -81,12 +80,12 @@ class Shared(SharedMixin, SharedIoMixin):
         self.counts = None
 
     def _load_beta0(self):
-        self.beta0 = max(0.0, 1.0 - sum(self.betas.itervalues()))
+        self.beta0 = max(0.0, 1.0 - sum(self.betas.values()))
         if not (self.beta0 <= 1):
             raise ValueError('beta0 out of bounds: {}'.format(self.beta0))
         if self.betas:
-            min_beta = min(self.betas.itervalues())
-            max_beta = max(self.betas.itervalues())
+            min_beta = min(self.betas.values())
+            max_beta = max(self.betas.values())
             if not (0 <= min_beta and max_beta <= 1):
                 raise ValueError('betas out of bounds: {}'.format(self.betas))
 
@@ -94,12 +93,10 @@ class Shared(SharedMixin, SharedIoMixin):
         self.gamma = float(raw['gamma'])
         self.alpha = float(raw['alpha'])
         self.betas = {
-            int(value): float(beta)
-            for value, beta in raw['betas'].iteritems()
+            int(value): float(beta) for value, beta in raw['betas'].items()
         }
         self.counts = {
-            int(value): int(count)
-            for value, count in raw['counts'].iteritems()
+            int(value): int(count) for value, count in raw['counts'].items()
         }
         self._load_beta0()
 
@@ -112,17 +109,17 @@ class Shared(SharedMixin, SharedIoMixin):
         }
 
     def protobuf_load(self, message):
-        assert len(message.betas) == len(message.values), "invalid message"
-        assert len(message.counts) == len(message.values), "invalid message"
+        assert len(message.betas) == len(message.values), 'invalid message'
+        assert len(message.counts) == len(message.values), 'invalid message'
         self.gamma = float(message.gamma)
         self.alpha = float(message.alpha)
         self.betas = {
             int(value): float(beta)
-            for value, beta in izip(message.values, message.betas)
+            for value, beta in zip(message.values, message.betas)
         }
         self.counts = {
             int(value): int(count)
-            for value, count in izip(message.values, message.counts)
+            for value, count in zip(message.values, message.counts)
         }
         self._load_beta0()
 
@@ -130,7 +127,7 @@ class Shared(SharedMixin, SharedIoMixin):
         message.Clear()
         message.gamma = self.gamma
         message.alpha = self.alpha
-        for value, beta in self.betas.iteritems():
+        for value, beta in self.betas.items():
             message.values.append(value)
             message.betas.append(beta)
             message.counts.append(self.counts[value])
@@ -156,7 +153,7 @@ class Shared(SharedMixin, SharedIoMixin):
     def realize(self):
         max_size = 10000
         min_beta0 = 1e-4
-        new_value = 1 + max(self.betas.iterkeys()) if self.betas else 0
+        new_value = 1 + max(self.betas.keys()) if self.betas else 0
         while len(self.betas) < max_size - 1 and self.beta0 > min_beta0:
             self.add_value(new_value)
             new_value += 1
@@ -214,9 +211,9 @@ class Group(GroupIoMixin):
         """
         See doc/dpd.pdf Equation (3)
         """
-        score = 0.
-        for i, count in self.counts.iteritems():
-            assert count >= 0, "cannot score while in debt"
+        score = 0.0
+        for i, count in self.counts.items():
+            assert count >= 0, 'cannot score while in debt'
             prior_i = shared.betas[i] * shared.alpha
             score += gammaln(prior_i + count) - gammaln(prior_i)
         score += gammaln(shared.alpha) - gammaln(shared.alpha + self.total)
@@ -228,37 +225,33 @@ class Group(GroupIoMixin):
         return sampler.eval(shared)
 
     def merge(self, shared, source):
-        for i, count in source.counts.iteritems():
+        for i, count in source.counts.items():
             self.add_repeated_value(shared, i, count)
         self.total += source.total
 
     def load(self, raw):
         self.counts = {}
         self.total = 0
-        for i, count in raw['counts'].iteritems():
+        for i, count in raw['counts'].items():
             if count:
                 self.counts[int(i)] = int(count)
                 self.total += count
 
     def dump(self):
-        counts = {
-            value: count
-            for value, count in self.counts.iteritems()
-            if count
-        }
+        counts = {value: count for value, count in self.counts.items() if count}
         return {'counts': counts}
 
     def protobuf_load(self, message):
         self.counts = {}
         self.total = 0
-        for i, count in izip(message.keys, message.values):
+        for i, count in zip(message.keys, message.values):
             if count:
                 self.counts[int(i)] = int(count)
                 self.total += count
 
     def protobuf_dump(self, message):
         message.Clear()
-        for i, count in self.counts.iteritems():
+        for i, count in self.counts.items():
             if count:
                 message.keys.append(i)
                 message.values.append(count)
@@ -270,7 +263,7 @@ class Sampler(object):
         post = []
         alpha = shared.alpha
         counts = {} if group is None else group.counts
-        for value, beta in shared.betas.iteritems():
+        for value, beta in shared.betas.items():
             self.values.append(value)
             post.append(beta * alpha + counts.get(value, 0))
         if shared.beta0 > 0:
@@ -288,4 +281,4 @@ def sample_group(shared, size):
     group.init(shared)
     sampler = Sampler()
     sampler.init(shared, group)
-    return [sampler.eval(shared) for _ in xrange(size)]
+    return [sampler.eval(shared) for _ in range(size)]

@@ -160,9 +160,9 @@ class Shared(SharedMixin, SharedIoMixin):
         }
 
     def protobuf_load(self, message):
-        self.mu = np.array(message.mu, dtype=np.float)
+        self.mu = np.array(message.mu, dtype=np.float32)
         self.kappa = message.kappa
-        self.psi = np.array(message.psi, dtype=np.float)
+        self.psi = np.array(message.psi, dtype=np.float32)
         D = self.dim()
         assert self.psi.shape[0] == (D * D)
         self.psi = self.psi.reshape((D, D))
@@ -256,8 +256,8 @@ class Group(GroupIoMixin):
 
     def protobuf_load(self, message):
         self.count = message.count
-        self.sum_x = np.array(message.sum_x, dtype=np.float)
-        self.sum_xxT = np.array(message.sum_xxT, dtype=np.float)
+        self.sum_x = np.array(message.sum_x, dtype=np.float32)
+        self.sum_xxT = np.array(message.sum_xxT, dtype=np.float32)
         D = self.sum_x.shape[0]
         self.sum_xxT = self.sum_xxT.reshape((D, D))
 
@@ -287,4 +287,4 @@ def sample_group(shared, size):
     group.init(shared)
     sampler = Sampler()
     sampler.init(shared, group)
-    return [sampler.eval(shared) for _ in xrange(size)]
+    return [sampler.eval(shared) for _ in range(size)]
