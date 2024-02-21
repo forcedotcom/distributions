@@ -45,8 +45,8 @@ EXAMPLES = [
         'values': [0, 1, 1, 1, 1, 0, 1],
     },
     {
-        'shared': {'alphas': [2.0 / n for n in xrange(1, 21)]},
-        'values': range(20),
+        'shared': {'alphas': [2.0 / n for n in range(1, 21)]},
+        'values': list(range(20)),
     },
 ]
 Value = int
@@ -67,11 +67,11 @@ cdef class _Shared:
         self.dim = len(alphas)
         assert self.dim <= MAX_DIM
         cdef int i
-        for i in xrange(self.dim):
+        for i in range(self.dim):
             self.alphas[i] = alphas[i]
 
     def dump(self):
-        return {'alphas': [self.alphas[i] for i in xrange(self.dim)]}
+        return {'alphas': [self.alphas[i] for i in range(self.dim)]}
 
 
 class Shared(_Shared, SharedMixin, SharedIoMixin):
@@ -88,7 +88,7 @@ cdef class _Group:
     def init(self, _Shared shared):
         self.dim = shared.dim
         cdef int i
-        for i in xrange(self.dim):
+        for i in range(self.dim):
             self.counts[i] = 0
 
     def add_value(self, _Shared shared, int value):
@@ -102,7 +102,7 @@ cdef class _Group:
 
     def merge(self, _Shared shared, _Group source):
         cdef int i
-        for i in xrange(self.dim):
+        for i in range(self.dim):
             self.counts[i] += source.counts[i]
 
     def score_value(self, _Shared shared, _Value value):
@@ -111,7 +111,7 @@ cdef class _Group:
         """
         cdef double total = 0.0
         cdef int i
-        for i in xrange(shared.dim):
+        for i in range(shared.dim):
             total += self.counts[i] + shared.alphas[i]
         return log((self.counts[value] + shared.alphas[value]) / total)
 
@@ -125,11 +125,11 @@ cdef class _Group:
         cdef double alpha_sum = 0.0
         cdef int count_sum = 0
         cdef double sum = 0.0
-        for i in xrange(shared.dim):
+        for i in range(shared.dim):
             alpha_sum += shared.alphas[i]
-        for i in xrange(shared.dim):
+        for i in range(shared.dim):
             count_sum += self.counts[i]
-        for i in xrange(shared.dim):
+        for i in range(shared.dim):
             sum += (gammaln(shared.alphas[i] + self.counts[i])
                     - gammaln(shared.alphas[i]))
         return sum + gammaln(alpha_sum) - gammaln(alpha_sum + count_sum)
@@ -144,11 +144,11 @@ cdef class _Group:
         self.dim = len(counts)
         assert self.dim <= MAX_DIM
         cdef int i
-        for i in xrange(self.dim):
+        for i in range(self.dim):
             self.counts[i] = counts[i]
 
     def dump(self):
-        return {'counts': [self.counts[i] for i in xrange(self.dim)]}
+        return {'counts': [self.counts[i] for i in range(self.dim)]}
 
 
 class Group(_Group, GroupIoMixin):
@@ -165,10 +165,10 @@ cdef class Sampler:
         cdef double * ps = <double *> self.ps.data
         cdef int i
         if group is None:
-            for i in xrange(shared.dim):
+            for i in range(shared.dim):
                 ps[i] = shared.alphas[i]
         else:
-            for i in xrange(shared.dim):
+            for i in range(shared.dim):
                 ps[i] = group.counts[i] + shared.alphas[i]
         sample_dirichlet(shared.dim, ps, ps)
 
@@ -181,6 +181,6 @@ def sample_group(_Shared shared, int size):
     sampler.init(shared)
     cdef list result = []
     cdef int i
-    for i in xrange(size):
+    for i in range(size):
         result.append(sampler.eval(shared))
     return result

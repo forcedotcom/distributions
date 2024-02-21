@@ -125,8 +125,7 @@ class LowEntropy(SharedIoMixin):
         scores = []
         bogus = 0
 
-        for size in xrange(sample_size):
-
+        for size in range(sample_size):
             score_empty = self.score_add_value(0, bogus, size)
             if len(counts) == 0 or counts[-1] != 0:
                 counts.append(0)

@@ -42,8 +42,8 @@ EXAMPLES = [
         'values': [0, 1, 1, 1, 1, 0, 1],
     },
     {
-        'shared': {'alphas': [2.0 / n for n in xrange(1, 21)]},
-        'values': range(20),
+        'shared': {'alphas': [2.0 / n for n in range(1, 21)]},
+        'values': list(range(20)),
     },
 ]
 Value = int
@@ -58,13 +58,13 @@ class Shared(SharedMixin, SharedIoMixin):
         return len(self.alphas)
 
     def load(self, raw):
-        self.alphas = numpy.array(raw['alphas'], dtype=numpy.float)
+        self.alphas = numpy.array(raw['alphas'], dtype=numpy.float32)
 
     def dump(self):
         return {'alphas': self.alphas.tolist()}
 
     def protobuf_load(self, message):
-        self.alphas = numpy.array(message.alphas, dtype=numpy.float)
+        self.alphas = numpy.array(message.alphas, dtype=numpy.float32)
 
     def protobuf_dump(self, message):
         message.Clear()
@@ -77,7 +77,7 @@ class Group(GroupIoMixin):
         self.counts = None
 
     def init(self, shared):
-        self.counts = numpy.zeros(shared.dim, dtype=numpy.int)
+        self.counts = numpy.zeros(shared.dim, dtype=numpy.int32)
 
     def add_value(self, shared, value):
         self.counts[value] += 1
@@ -112,7 +112,7 @@ class Group(GroupIoMixin):
         a = shared.alphas
         m = self.counts
 
-        score = sum(gammaln(a[k] + m[k]) - gammaln(a[k]) for k in xrange(dim))
+        score = sum(gammaln(a[k] + m[k]) - gammaln(a[k]) for k in range(dim))
         score += gammaln(a.sum())
         score -= gammaln(a.sum() + m.sum())
         return score
@@ -123,13 +123,13 @@ class Group(GroupIoMixin):
         return sampler.eval(shared)
 
     def load(self, raw):
-        self.counts = numpy.array(raw['counts'], dtype=numpy.int)
+        self.counts = numpy.array(raw['counts'], dtype=numpy.int32)
 
     def dump(self):
         return {'counts': self.counts.tolist()}
 
     def protobuf_load(self, message):
-        self.counts = numpy.array(message.counts, dtype=numpy.int)
+        self.counts = numpy.array(message.counts, dtype=numpy.int32)
 
     def protobuf_dump(self, message):
         message.Clear()
@@ -153,4 +153,4 @@ def sample_group(shared, size):
     group.init(shared)
     sampler = Sampler()
     sampler.init(shared, group)
-    return [sampler.eval(shared) for _ in xrange(size)]
+    return [sampler.eval(shared) for _ in range(size)]

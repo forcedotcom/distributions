@@ -26,6 +26,7 @@
 # USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from nose.tools import assert_equal
+import pytest
 from distributions import fileutil
 from distributions import io
 
@@ -49,7 +50,7 @@ EXAMPLES.append([
 
 def costream_dump(stream, filename):
     costream = io.stream.json_costream_dump(filename)
-    costream.next()
+    next(costream)
     for item in stream:
         costream.send(item)
     costream.close()
@@ -68,35 +69,36 @@ named_pairs = {
 }
 
 
-def test_pair():
-    for dump, load in named_pairs:
-        for filetype in ['', '.gz', '.bz2']:
-            yield _test_pair, dump, load, filetype
+@pytest.mark.parametrize('name', named_pairs.keys())
+def test_pair(name):
+    dump, load = named_pairs[name]
+    for filetype in ['', '.gz', '.bz2']:
+        _test_pair(dump, load, filetype)
 
 
 def _test_pair(dump, load, filetype):
-    dump, load = named_pairs[dump, load]
-    for example in EXAMPLES:
-        print example
-        with fileutil.tempdir():
-            expected = example
-            filename = 'test.json' + filetype
-            dump(expected, filename)
-            actual = list(load(filename))
-            assert_equal(actual, expected)
+  for example in EXAMPLES:
+      print(example)
+      with fileutil.tempdir():
+          expected = example
+          filename = 'test.json' + filetype
+          dump(expected, filename)
+          actual = list(load(filename))
+          assert_equal(actual, expected)
 
 
 def test_protobuf_stream():
     for filetype in ['', '.gz', '.bz2']:
-        yield _test_protobuf_stream, filetype
+        _test_protobuf_stream(filetype)
 
 
 def _test_protobuf_stream(filetype):
     filename = 'test.stream' + filetype
     expected = ['asdf', '', 'asdfasdfasdf', 'a', 's', '', '', '', 'd', 'f']
+    expected = [s.encode('utf-8') for s in expected]
     with fileutil.tempdir():
-        print 'dumping'
+        print('dumping')
         io.stream.protobuf_stream_dump(expected, filename)
-        print 'loading'
+        print('loading')
         actual = list(io.stream.protobuf_stream_load(filename))
     assert_equal(actual, expected)

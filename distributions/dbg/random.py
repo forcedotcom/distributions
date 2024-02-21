@@ -35,14 +35,10 @@ from numpy.random import multivariate_normal
 from numpy.random import beta as sample_beta
 from numpy.random import poisson as sample_poisson
 from numpy.random import gamma as sample_gamma
-from scipy.stats import norm, chi2, bernoulli, nbinom
+from scipy.stats import norm, chi2, bernoulli, nbinom, invwishart
 from scipy.special import gammaln
 from distributions.util import scores_to_probs
 import logging
-
-from distributions.vendor.stats import (
-    sample_invwishart as _sample_inverse_wishart
-)
 
 LOG = logging.getLogger(__name__)
 
@@ -78,7 +74,7 @@ def sample_discrete(probs, total=None):
     """
     if total is None:
         total = float(sum(probs))
-    for attempt in xrange(10):
+    for attempt in range(10):
         dart = numpy.random.rand() * total
         for i, prob in enumerate(probs):
             dart -= prob
@@ -146,7 +142,7 @@ def sample_wishart(nu, Lambda):
     ch = cholesky(Lambda)
     d = Lambda.shape[0]
     z = numpy.zeros((d, d))
-    for i in xrange(d):
+    for i in range(d):
         if i != 0:
             z[i, :i] = numpy.random.normal(size=(i,))
         z[i, i] = sqrt(numpy.random.gamma(0.5 * nu - d + 1, 2.0))
@@ -162,7 +158,7 @@ def sample_wishart_v2(nu, Lambda):
     d = Lambda.shape[0]
     ch = cholesky(Lambda)
     T = numpy.zeros((d, d))
-    for i in xrange(d):
+    for i in range(d):
         if i != 0:
             T[i, :i] = numpy.random.normal(size=(i,))
         T[i, i] = sqrt(chi2.rvs(nu - i + 1))
@@ -170,8 +166,7 @@ def sample_wishart_v2(nu, Lambda):
 
 
 def sample_inverse_wishart(nu, S):
-    # matt's parameters are reversed
-    return _sample_inverse_wishart(S, nu)
+  return invwishart(nu, scale=S).rvs()
 
 
 def sample_normal_inverse_wishart(mu0, lambda0, psi0, nu0):
@@ -179,7 +174,7 @@ def sample_normal_inverse_wishart(mu0, lambda0, psi0, nu0):
     assert psi0.shape == (D, D)
     assert lambda0 > 0.0
     assert nu0 > D - 1
-    cov = sample_inverse_wishart(nu0, psi0)
+    cov = numpy.atleast_2d(sample_inverse_wishart(nu0, psi0))
     mu = np.random.multivariate_normal(mean=mu0, cov=(1. / lambda0) * cov)
     return mu, cov
 

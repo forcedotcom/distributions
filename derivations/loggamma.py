@@ -42,7 +42,7 @@ def create_coeff(N, order):
 
         y = gammaln(xrange)
         z = np.polyfit(xrange, y, order)
-        print z.shape
+        print(z.shape)
         coeff[pos] = z
     return coeff
 
@@ -118,12 +118,12 @@ def func_test(approx_func, max):
     pyplot.subplot(2, 1, 2)
 
     delta = yhat - y
-    err_frac = (delta / gammaln(x))
+    err_frac = delta / gammaln(x)
     pyplot.plot(x, err_frac * 100)
     THOLD = 0.001
     accuracy = np.sum(np.abs(err_frac) < THOLD).astype(float) / len(x) * 100
-    print "accurate", accuracy
-    pyplot.ylabel('percent error')
+    print("accurate", accuracy)
+    pyplot.ylabel("percent error")
 
     pyplot.show()
 
@@ -180,12 +180,12 @@ def test_beta():
 
 def coeff_gen():
     mycoeff = create_coeff(33, 5)
-    print "const float coeff[] = {",
+    print("const float coeff[] = {")
     for a in mycoeff:
         for ai in a:
-            print "%.14e," % ai,
-        print
-    print "};"
+            print("%.14e," % ai)
+        print("\n")
+    print("};")
 
 
 def lt25test():
@@ -199,7 +199,7 @@ def lt25test():
     pyplot.plot(x, w(x))
     pyplot.figure()
     delta = np.abs(y - w(x))
-    print delta
+    print(delta)
     pyplot.plot(x, delta / y * 100)
     pyplot.ylabel("percent error")
     pyplot.grid(1)
@@ -222,7 +222,7 @@ def lstudent():
         z = np.polyfit(x, y, order)
         coeffs.append(z)
 
-        print z
+        print(z)
 
         # w = np.poly1d(z)
         # yhat = w(x)
@@ -230,9 +230,9 @@ def lstudent():
         # pyplot.plot(x, yhat)
 
         # pyplot.show()
-    print "const float lgamma_nu_func_approx_coeff3[] = {",
+    print("const float lgamma_nu_func_approx_coeff3[] = {")
     for a in coeffs:
         for ai in a:
-            print "%.14e," % ai,
-        print
-    print "};"
+            print("%.14e," % ai)
+        print("\n")
+    print("};")

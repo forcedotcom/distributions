@@ -174,4 +174,4 @@ def sample_group(shared, size):
     group.init(shared)
     sampler = Sampler()
     sampler.init(shared, group)
-    return [sampler.eval(shared) for _ in xrange(size)]
+    return [sampler.eval(shared) for _ in range(size)]

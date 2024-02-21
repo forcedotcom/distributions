@@ -28,7 +28,6 @@
 import os
 import glob
 from collections import defaultdict
-from itertools import izip
 import math
 import numpy
 from numpy.testing import assert_array_almost_equal
@@ -74,9 +73,9 @@ def list_models():
             yield spec
         except ImportError:
             module_name = 'distributions.{flavor}.models.{name}'.format(**spec)
-            print 'failed to import {}'.format(module_name)
+            print('failed to import {}'.format(module_name))
             import traceback
-            print traceback.format_exc()
+            print(traceback.format_exc())
 
 
 def import_model(spec):
@@ -104,7 +103,7 @@ def assert_close(lhs, rhs, tol=TOL, err_msg=None):
                 isinstance(rhs, dict),
                 'type mismatch: {} vs {}'.format(type(lhs), type(rhs)))
             assert_equal(set(lhs.keys()), set(rhs.keys()))
-            for key, val in lhs.iteritems():
+            for key, val in lhs.items():
                 msg = '{}[{}]'.format(err_msg or '', key)
                 assert_close(val, rhs[key], tol, msg)
         elif isinstance(lhs, float) or isinstance(lhs, numpy.float64):
@@ -133,15 +132,15 @@ def assert_close(lhs, rhs, tol=TOL, err_msg=None):
             assert_true(
                 isinstance(rhs, list) or isinstance(rhs, tuple),
                 'type mismatch: {} vs {}'.format(type(lhs), type(rhs)))
-            for pos, (x, y) in enumerate(izip(lhs, rhs)):
+            for pos, (x, y) in enumerate(zip(lhs, rhs)):
                 msg = '{}[{}]'.format(err_msg or '', pos)
                 assert_close(x, y, tol, msg)
         else:
             assert_equal(lhs, rhs, err_msg)
     except Exception:
-        print err_msg or ''
-        print 'actual = {}'.format(print_short(lhs))
-        print 'expected = {}'.format(print_short(rhs))
+        print(err_msg or '')
+        print('actual = {}'.format(print_short(lhs)))
+        print('expected = {}'.format(print_short(rhs)))
         raise
 
 
@@ -166,14 +165,14 @@ def collect_samples_and_scores(sampler, total_count=10000):
     '''
     counts = defaultdict(lambda: 0)
     probs = defaultdict(lambda: 0.0)
-    for _ in xrange(total_count):
+    for _ in range(total_count):
         sample, prob = sampler()
         counts[sample] += 1
         probs[sample] += prob
 
-    for key, count in counts.iteritems():
+    for key, count in counts.items():
         probs[key] /= count
-    total_prob = sum(probs.itervalues())
+    total_prob = sum(probs.values())
     assert_close(total_prob, 1.0, tol=1e-2, err_msg='total_prob is biased')
 
     return counts, probs
@@ -193,13 +192,13 @@ def assert_counts_match_probs(counts, probs, tol=1e-3):
     counts = [counts[key] for key in keys]
     total_count = sum(counts)
 
-    print 'EXPECT\tACTUAL\tVALUE'
-    for prob, count, key in sorted(izip(probs, counts, keys), reverse=True):
+    print('EXPECT\tACTUAL\tVALUE')
+    for prob, count, key in sorted(zip(probs, counts, keys), reverse=True):
         expect = prob * total_count
-        print '{:0.1f}\t{}\t{}'.format(expect, count, key)
+        print('{:0.1f}\t{}\t{}'.format(expect, count, key))
 
     gof = multinomial_goodness_of_fit(probs, counts, total_count)
-    print 'goodness of fit = {}'.format(gof)
+    print('goodness of fit = {}'.format(gof))
     assert gof > tol, 'failed with goodness of fit {}'.format(gof)
 
 

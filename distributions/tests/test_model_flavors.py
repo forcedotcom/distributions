@@ -39,7 +39,7 @@ for spec in list_models():
 
 def test_model():
     for name in MODULES:
-        yield _test_model, name
+        _test_model(name)
 
 
 def _test_model(name):
@@ -55,7 +55,7 @@ def _test_model(name):
 
 def test_group():
     for name in MODULES:
-        yield _test_group, name
+        _test_group(name)
 
 
 def _test_group(name):
@@ -93,11 +93,11 @@ def _test_group(name):
                 for module, shared, group in modules_shareds_groups
             ]
             for module, shared, group in modules_shareds_groups:
-                print "------------------"
-                print module
-                print shared.dump()
-                print group.dump()
-            print value
+                print('------------------')
+                print(module)
+                print(shared.dump())
+                print(group.dump())
+            print(value)
             assert_all_close(scores, err_msg='score_value')
 
         scores = [
@@ -118,7 +118,7 @@ def _test_group(name):
 
 def test_plus_group():
     for name in MODULES:
-        yield _test_plus_group, name
+        _test_plus_group(name)
 
 
 def _test_plus_group(name):

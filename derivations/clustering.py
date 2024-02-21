@@ -96,21 +96,21 @@ CACHE = {}
 def savefig(stem):
     for extension in ['png', 'pdf']:
         name = '{}/{}.{}'.format(TEMP, stem, extension)
-        print 'saving', name
+        print('saving', name)
         pyplot.tight_layout()
         pyplot.savefig(name)
 
 
 def get_larger_counts(small_counts):
     large_counts = defaultdict(lambda: 0.0)
-    for small_shape, count in small_counts.iteritems():
+    for small_shape, count in small_counts.items():
 
         # create a new partition
         large_shape = (1,) + small_shape
         large_counts[large_shape] += count
 
         # add to each existing partition
-        for i in xrange(len(small_shape)):
+        for i in range(len(small_shape)):
             large_shape = list(small_shape)
             large_shape[i] += 1
             large_shape.sort()
@@ -123,7 +123,7 @@ def get_larger_counts(small_counts):
 def get_smaller_probs(small_counts, large_counts, large_probs):
     assert len(large_counts) == len(large_probs)
     small_probs = {}
-    for small_shape, count in small_counts.iteritems():
+    for small_shape, count in small_counts.items():
         prob = 0.0
 
         # create a new partition
@@ -131,7 +131,7 @@ def get_smaller_probs(small_counts, large_counts, large_probs):
         prob += large_probs[large_shape] / large_counts[large_shape]
 
         # add to each existing partition
-        for i in xrange(len(small_shape)):
+        for i in range(len(small_shape)):
             large_shape = list(small_shape)
             large_shape[i] += 1
             large_shape.sort()
@@ -163,8 +163,8 @@ def get_counts(size):
             else:
                 small = get_counts(size - 1)
                 large = get_larger_counts(small)
-            print 'caching', cache_file
-            json_stream_dump(large.iteritems(), cache_file)
+            print('caching', cache_file)
+            json_stream_dump(large.items(), cache_file)
         CACHE[cache_file] = large
     return CACHE[cache_file]
 
@@ -180,16 +180,16 @@ def get_log_z(shape):
 def get_log_Z(counts):
     return numpy.logaddexp.reduce([
         get_log_z(shape) + math.log(count)
-        for shape, count in counts.iteritems()
+        for shape, count in counts.items()
     ])
 
 
 def get_probs(size):
     counts = get_counts(size).copy()
-    for shape, count in counts.iteritems():
+    for shape, count in counts.items():
         counts[shape] = get_log_z(shape) + math.log(count)
     log_Z = numpy.logaddexp.reduce(counts.values())
-    for shape, log_z in counts.iteritems():
+    for shape, log_z in counts.items():
         counts[shape] = math.exp(log_z - log_Z)
     return counts
 
@@ -218,12 +218,9 @@ def get_subprobs(size, max_size):
                 small_counts = get_counts(size)
                 large_counts = get_counts(size + 1)
                 large_probs = get_subprobs(size + 1, max_size)
-                small_probs = get_smaller_probs(
-                    small_counts,
-                    large_counts,
-                    large_probs)
-            print 'caching', cache_file
-            json_stream_dump(small_probs.iteritems(), cache_file)
+                small_probs = get_smaller_probs(small_counts, large_counts, large_probs)
+            print('caching', cache_file)
+            json_stream_dump(small_probs.items(), cache_file)
         CACHE[cache_file] = small_probs
     return CACHE[cache_file]
 
@@ -286,7 +283,7 @@ def priors(N=100):
 def get_pairwise(counts):
     size = sum(iter(counts).next())
     paired = 0.0
-    for shape, prob in counts.iteritems():
+    for shape, prob in counts.items():
         paired += prob * sum(n * (n - 1) for n in shape) / (size * (size - 1))
     return paired
 
@@ -360,8 +357,8 @@ def postpred(subsample_size=10):
 
         plot([], [], label='max_size = {}'.format(max_size))
 
-        max_small_prob = max(small_probs.itervalues())
-        for small_shape, small_prob in small_probs.iteritems():
+        max_small_prob = max(small_probs.values())
+        for small_shape, small_prob in small_probs.items():
             X = []
             Y = []
 
@@ -442,7 +439,7 @@ def true_postpred_correction(subsample_size, dataset_size):
     numer = 0
     denom = 0
 
-    for small_shape, small_prob in small_probs.iteritems():
+    for small_shape, small_prob in small_probs.items():
         probs = []
 
         # create a new partition
@@ -487,7 +484,7 @@ def dataprob(subsample_size=10, dataset_size=50):
     # apply ad hoc size factor
     approx_probs = naive_probs.copy()
     factor = ad_hoc_size_factor(subsample_size, dataset_size)
-    print 'factor =', factor
+    print('factor =', factor)
     for shape in shapes:
         approx_probs[shape] *= factor ** (len(shape) - 2)
 
@@ -527,7 +524,7 @@ def true_dataprob_correction(subsample_size, dataset_size):
     factor = ad_hoc_size_factor(subsample_size, dataset_size)
     Z = sum(
         prob * factor ** (len(shape) - 1)
-        for shape, prob in naive_probs.iteritems()
+        for shape, prob in naive_probs.items()
     )
     return -math.log(Z)
 
@@ -559,7 +556,7 @@ def normalization(max_size=DEFAULT_MAX_SIZE):
     ]
     coeffs += [0.27, 0.275, 0.28]
     for coeff in coeffs:
-        print coeff
+        print(coeff)
         approx = log_z_max * (1 + coeff * sizes ** -0.75)
         X = sizes ** -0.75
         Y = (log_Z - approx) / log_Z
@@ -685,9 +682,9 @@ def code(max_size=DEFAULT_MAX_SIZE):
         for size in sizes
     ]
     size = sizes[-1]
-    coeff = (log_Z[-1] / get_log_z([size]) - 1.0) * size ** 0.75
+    coeff = (log_Z[-1] / get_log_z([size]) - 1.0) * size**0.75
 
-    print '# Insert this in src/clustering.cc:'
+    print('# Insert this in src/clustering.cc:')
     lines = [
         '// this code was generated by derivations/clustering.py',
         'static const float log_partition_function_table[%d] =' %
@@ -712,10 +709,10 @@ def code(max_size=DEFAULT_MAX_SIZE):
         '    }',
         '}',
     ]
-    print '\n'.join(lines)
-    print
+    print('\n'.join(lines))
+    print('\n')
 
-    print '# Insert this in distributions/dbg/clustering.py:'
+    print('# Insert this in distributions/dbg/clustering.py:')
     lines = [
         '# this code was generated by derivations/clustering.py',
         'log_partition_function_table = [',
@@ -734,8 +731,8 @@ def code(max_size=DEFAULT_MAX_SIZE):
         '        log_z_max = n * log(n)',
         '        return log_z_max * (1.0 + coeff * n ** -0.75)',
     ]
-    print '\n'.join(lines)
-    print
+    print('\n'.join(lines))
+    print('\n')
 
 
 @parsable.command

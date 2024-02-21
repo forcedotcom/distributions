@@ -55,7 +55,7 @@ from distributions.tests.util import (
 )
 
 
-SAMPLES = 1000
+SAMPLES = 2000
 
 
 def assert_normal(x, y, sigma, stddevs=4.0):
@@ -72,9 +72,9 @@ def test_seed():
     import distributions.hp.random
     global_rng = distributions.hp.random.random
     distributions.hp.random.seed(0)
-    values1 = [global_rng() for _ in xrange(10)]
+    values1 = [global_rng() for _ in range(10)]
     distributions.hp.random.seed(0)
-    values2 = [global_rng() for _ in xrange(10)]
+    values2 = [global_rng() for _ in range(10)]
     assert_equal(values1, values2)
 
 
@@ -169,15 +169,15 @@ def test_sample_pair_from_urn():
     sample_count = 1
     while test_fail_prob(sample_count) > TEST_FAIL_PROB:
         sample_count *= 2
-    print 'pair_count = {}'.format(pair_count)
-    print 'sample_count = {}'.format(sample_count)
+    print('pair_count = {}'.format(pair_count))
+    print('sample_count = {}'.format(sample_count))
 
-    for _ in xrange(sample_count):
-        i, j = distributions.lp.random.sample_pair_from_urn(items)
+    for _ in range(sample_count):
+        i, j = distributions.lp.random.sample_pair_from_urn(list(items))
         assert i != j
         counts[i, j] += 1
 
-    assert_less(0, min(counts.itervalues()))
+    assert_less(0, min(counts.values()))
 
 
 def test_prob_from_scores():
@@ -185,9 +185,8 @@ def test_prob_from_scores():
     import distributions.lp.random
     for size in range(1, 100):
         scores = numpy.random.normal(size=size).tolist()
-        for _ in xrange(size):
-            sample, prob1 = distributions.lp.random.sample_prob_from_scores(
-                scores)
+        for _ in range(size):
+            sample, prob1 = distributions.lp.random.sample_prob_from_scores(scores)
             assert 0 <= sample and sample < size
             prob2 = distributions.lp.random.prob_from_scores(
                 sample,
@@ -214,7 +213,7 @@ def test_log_sum_exp():
     require_cython()
     import distributions.lp.random
 
-    for size in xrange(20):
+    for size in range(20):
         scores = numpy.random.normal(size=size).tolist()
         expected = numpy.logaddexp.reduce(scores) if size else 0.0
         actual = distributions.lp.random.log_sum_exp(scores)
@@ -268,14 +267,14 @@ def test_sample_iw():
     ntries = 100
     samples = []
     while ntries:
-        samples.extend([sample_inverse_wishart(nu, S) for _ in xrange(10000)])
+        samples.extend([sample_inverse_wishart(nu, S) for _ in range(10000)])
         mean = sum(samples) / len(samples)
         diff = numpy.linalg.norm(true_mean - mean)
         if diff <= 0.1:
             return
         ntries -= 1
 
-    assert_true(False, "mean did not converge")
+    assert_true(False, 'mean did not converge')
 
 
 def test_score_student_t_scalar_equiv():
@@ -316,8 +315,8 @@ def test_score_student_t_dbg_lp_equiv():
                 random_cov(dim))
 
     values = (
-        [random_values(2) for _ in xrange(10)] +
-        [random_values(3) for _ in xrange(10)]
+        [random_values(2) for _ in range(10)] +
+        [random_values(3) for _ in range(10)]
     )
 
     for x, nu, mu, cov in values:

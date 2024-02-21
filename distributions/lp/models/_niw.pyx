@@ -95,7 +95,7 @@ def sample_group(Shared shared, int size):
     cdef list result = []
     cdef int i
     cdef VectorXf value
-    for i in xrange(size):
+    for i in range(size):
         value = sampler.eval(shared.ptr[0], get_rng()[0])
         result.append(to_np_1darray(value))
     return result

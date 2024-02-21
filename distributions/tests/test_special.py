@@ -43,7 +43,7 @@ def test_log_stirling1_row():
         rows.append(row)
 
     for n in range(1, MAX_N + 1):
-        print 'Row {}:'.format(n),
+        print('Row {}:'.format(n))
         row_py = numpy.log(numpy.array(rows[n][1:], dtype=numpy.double))
         row_cpp = log_stirling1_row(n)[1:]
         assert_equal(len(row_py), len(row_cpp))
@@ -57,7 +57,6 @@ def test_log_stirling1_row():
         diff_py = numpy.diff(row_py)
         diff_cpp = numpy.diff(row_cpp)
         for k_minus_1, (dx_py, dx_cpp) in enumerate(zip(diff_py, diff_cpp)):
-            k = k_minus_1 + 1
-            print '%d-%d' % (k, k + 1),
-            assert_close(dx_py, dx_cpp, tol=0.5)
-        print
+          k = k_minus_1 + 1
+          print('%d-%d' % (k, k + 1))
+          assert_close(dx_py, dx_cpp, tol=0.5)

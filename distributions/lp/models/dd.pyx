@@ -42,8 +42,8 @@ EXAMPLES = [
         'values': [0, 1, 1, 1, 1, 0, 1],
     },
     {
-        'shared': {'alphas': [2.0 / n for n in xrange(1, 21)]},
-        'values': range(20),
+        'shared': {'alphas': [2.0 / n for n in range(1, 21)]},
+        'values': list(range(20)),
     },
 ]
 Value = int
@@ -55,13 +55,13 @@ cdef class _Shared(_dd.Shared):
         cdef int dim = len(alphas)
         self.ptr.dim = dim
         cdef int i
-        for i in xrange(dim):
+        for i in range(dim):
             self.ptr.alphas[i] = float(alphas[i])
 
     def dump(self):
         alphas = []
         cdef int i
-        for i in xrange(self.ptr.dim):
+        for i in range(self.ptr.dim):
             alphas.append(float(self.ptr.alphas[i]))
         return {'alphas': alphas}
 
@@ -69,13 +69,13 @@ cdef class _Shared(_dd.Shared):
         cdef int dim = len(message.alphas)
         self.ptr.dim = dim
         cdef int i
-        for i in xrange(self.ptr.dim):
+        for i in range(self.ptr.dim):
             self.ptr.alphas[i] = message.alphas[i]
 
     def protobuf_dump(self, message):
         message.Clear()
         cdef int i
-        for i in xrange(self.ptr.dim):
+        for i in range(self.ptr.dim):
             message.alphas.append(float(self.ptr.alphas[i]))
 
 
@@ -94,14 +94,14 @@ cdef class _Group(_dd.Group):
         self.dim = len(counts)
         self.ptr.count_sum = 0
         cdef int i
-        for i in xrange(self.dim):
+        for i in range(self.dim):
             self.ptr.count_sum += counts[i]
             self.ptr.counts[i] = counts[i]
 
     def dump(self):
         counts = []
         cdef int i
-        for i in xrange(self.dim):
+        for i in range(self.dim):
             counts.append(self.ptr.counts[i])
         return {'counts': counts}
 
