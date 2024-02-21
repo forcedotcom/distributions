@@ -55,7 +55,7 @@ from distributions.tests.util import (
 )
 
 
-SAMPLES = 1000
+SAMPLES = 2000
 
 
 def assert_normal(x, y, sigma, stddevs=4.0):

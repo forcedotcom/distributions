@@ -56,7 +56,7 @@ except ImportError:
     has_protobuf = False
 
 DATA_COUNT = 20
-SAMPLE_COUNT = 1000
+SAMPLE_COUNT = 5000
 MIN_GOODNESS_OF_FIT = 1e-3
 
 MODULES = {
