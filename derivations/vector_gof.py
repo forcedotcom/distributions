@@ -66,12 +66,12 @@ def get_samples(model, EXAMPLE, sample_count):
     # sampler = model.Sampler()
     # sampler.init(shared, group)
     # ...
-    # for _ in xrange(sample_count):
+    # for _ in range(sample_count):
     #     value = sampler.eval(shared)
 
     samples = []
     scores = []
-    for _ in xrange(sample_count):
+    for _ in range(sample_count):
         value = group.sample_value(shared)
         samples.append(value)
         score = group.score_value(shared, value)
