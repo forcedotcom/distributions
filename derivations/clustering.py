@@ -402,7 +402,7 @@ def postpred(subsample_size=10):
     alpha = math.exp(-1)
     Y = numpy.array([x - 1 if x > 1 else alpha for x in X])
     Y /= Y.min()
-    pyplot.plot(X, Y, 'g-', label='CRP(exp(-1))'.format(alpha))
+    pyplot.plot(X, Y, 'g-', label='CRP(alpha={})'.format(alpha))
 
     # ad hoc
     factors = ad_hoc_size_factor(size, numpy.array(max_sizes))
